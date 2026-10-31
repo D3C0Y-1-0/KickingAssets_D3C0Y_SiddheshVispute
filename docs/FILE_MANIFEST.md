@@ -78,3 +78,8 @@ skills-lock.json
 ```
 
 Local-only generated state is excluded: .venv/, frontend/node_modules/, frontend/dist/, SQLite database files, Python/test caches, .review/, artifacts/ and the installed .agents/skills/anatomy/ tooling. skills-lock.json records the reviewed upstream skill fingerprint; the application ships generated SVG paths rather than a third-party example app.
+
+## Hosting additions (codex/innovations)
+
+Created: `render.yaml`, `scripts/render-build.sh` (Render blueprint, not used by the current hosting), `vercel.json`, `.vercelignore`.
+Modified: `backend/app/db/store.py`, `backend/app/main.py`, `backend/requirements.txt`, `backend/requirements-lock.txt`, `frontend/src/features/infrastructure/Infrastructure.tsx` (merge resolution), `.gitignore`.

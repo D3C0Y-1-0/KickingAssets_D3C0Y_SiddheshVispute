@@ -77,3 +77,10 @@ No known Phase 1 functional blocker remains. The test-client deprecation warning
 - Browser: ran the simulation from the Command Overview against Neon; the run completed and the page reported "Simulated as of 2026-10-01". The console showed two HTTP 409 responses (expected: the API refuses simulation-dependent reads before a run exists) and repeated ERR_CONNECTION_REFUSED entries, probably from an initial navigation made before the server finished starting or from stopping it afterwards; this was not re-checked on a clean load.
 - Frontend: typecheck, build and 7 tests pass. `format:check` reports 33 files from the digital-twins push; those files were not reformatted.
 - Not verified: hosting this backend remotely, concurrent users, other pages beyond the overview.
+
+## Hosted deployment checks (31 October 2026)
+
+- Azure: `/api/v1/health` returned `intelligence: ready`. First simulation run took 69 s (cold data load), later runs 7.7 s; options 7.8 s; optimizer 16.6 to 17.2 s on B1. Optimize before a run returns 409 as designed.
+- Vercel to Azure proxy: `/`, `/ml`, health, ML status, assets returned 200; a simulation run through the proxy returned 200 in 8.7 s (warm). The live Command Overview rendered with a computed city risk index.
+- Not verified: other pages on the live site, several visitors at once, the first-run cold start through the Vercel proxy, memory headroom on B1 under load, the force-directed map with a run overlay.
+- The earlier `codex/deploy` Vercel function deployment was replaced by this one.

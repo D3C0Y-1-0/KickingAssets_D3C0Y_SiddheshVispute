@@ -76,3 +76,12 @@ Agree the exact file list and schema owner before concurrent work. Keep the user
 - Added on top: the PostgreSQL-capable repository (`backend/app/db/store.py`, SQLite stays the default; `GRIDSENTINEL_DATABASE_URL` selects Neon), gzip and security-header middleware, and the ML runtime dependencies (pandas, numpy, pyarrow, xgboost, scikit-learn, networkx, psycopg) in `requirements.txt` and the lock.
 - The simulation result is held in `app.state.simulation` (one process). Run a single worker; this app cannot be hosted as stateless serverless without moving that state out of process.
 - The reference data cache (`data/reference/cache`, about 231 MB, git-ignored) must be present at runtime for ML scoring.
+
+## Hosting (31 October 2026)
+
+- Frontend: https://gridsentinel-phi.vercel.app (Vercel project `gridsentinel`, static build of `frontend/`). `vercel.json` proxies `/api/*` to the Azure backend and falls back to `index.html`.
+- Backend: Azure App Service (Linux, B1, Python 3.12) `gridsentinel-api-72420` in Malaysia West, resource group `gridsentinel-rg`. One uvicorn worker, because the latest simulation lives in process memory (`app.state.simulation`), so every visitor shares one simulation state.
+- Database: Neon PostgreSQL 17, Singapore (`GRIDSENTINEL_DATABASE_URL` is an App Service setting; never commit it).
+- Package: a zip with the app, the ML code and models, the Linux wheels in `.python_packages` (CPU `xgboost-cpu`), and the reduced reference data (KEV, EPSS snapshots, derived parquet; raw NVD files are not needed). Oryx build is disabled. Startup command: `cd backend && PYTHONPATH=/home/site/wwwroot/.python_packages/lib/site-packages python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 1`. Do not put an unquoted `*` in the command: the shell expands it.
+- Azure Container Registry Tasks are blocked on the Azure for Students subscription, so container builds are not available.
+- Not on this branch: the read-only `/api/v1/impact` and `/models/kev-signal` endpoints exist only on `codex/deploy`. This branch's own workflow endpoints supersede them.
