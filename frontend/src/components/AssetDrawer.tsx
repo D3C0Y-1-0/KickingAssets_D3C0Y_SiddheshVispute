@@ -2,7 +2,8 @@ import { useEffect, useRef } from 'react'
 import { ExternalLink, ShieldCheck, X } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { useAsset } from '../hooks/queries'
-import { EmptyState, QueryState, SampleBadge, SectorBadge } from './ui'
+import { QueryState, SampleBadge, SectorBadge } from './ui'
+import { VulnerabilityEvidence } from '../features/assets/VulnerabilityEvidence'
 
 export function AssetDrawer({ id, onClose }: { id: string | null; onClose: () => void }) {
   const query = useAsset(id)
@@ -88,10 +89,7 @@ export function AssetDrawer({ id, onClose }: { id: string | null; onClose: () =>
               Configuration is a scenario assumption, not a verified observation.
             </div>
             <h3>Vulnerability records</h3>
-            <EmptyState compact title="No vulnerability intelligence imported">
-              No CVEs have been matched. An empty record does not establish that this asset is
-              secure.
-            </EmptyState>
+            <VulnerabilityEvidence assetId={detail.asset.id} />
             <h3>Risk assessment</h3>
             <div className="inset-note">
               Unavailable · {detail.risk.unavailable_reason}. No score is assigned.

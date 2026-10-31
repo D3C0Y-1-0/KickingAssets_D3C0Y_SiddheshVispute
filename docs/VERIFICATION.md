@@ -1,5 +1,22 @@
 # Phase 1 verification record
 
+## Phase 2A verification — 31 October 2026
+
+The historical Phase 1 record below is preserved. Phase 2A was verified on feature/vulnerability-assessment without edits to shared models.py, engine/ or ml/.
+
+- Full backend suite: **42 passed**, including Phase 1 regressions and new ingestion, conservative matching, numeric version bounds, unsupported compound/platform rules, absent/unknown software, separate configuration/exposure rules, checksums, atomic failed import, snapshot staleness, idempotence, reset cascade and degraded-cache availability tests. The Phase 1 asset-detail test now expects real evidence in its unchanged fields while still requiring null/unavailable risk.
+- Frontend: **8 tests passed**, strict typecheck passed, production build passed, format check passed. OpenAPI and TypeScript were regenerated from the additive feature contracts. Ruff passed. No dependencies were added.
+- Offline CLI import/re-assessment succeeded. The implemented online --refresh command also succeeded against NVD, FIRST EPSS and the official CISA KEV mirror into artifacts/reference-refresh-2a/. The bundled cache was then restored with the offline CLI for reproducible verification. No network is required for default application startup or reads.
+- HTTP verification on port 8001: 30 assets; three supported version matches, two candidates, six configuration weaknesses, three exposure indicators and nine reviews. Dataset report stale=false, rules_version=applicability-config-1.0.1; asset risk stayed unavailable. Repeating the assessment POST returned the same run ID and assessed_at timestamp.
+- Actual compiled-browser checks: register coverage/row evidence; PWR-001 version matches with CVSS, EPSS date and KEV listing; expanded CPE/source URLs/retrieval dates/SHA-256; PWR-008 unknown-version candidates; HLT-001 outside-affected-version evidence; WTR-006 identity unassessed and patch-status unknown. Configuration findings remained separate from CVEs and risk stayed unavailable.
+- All seven routes were navigated after backend restart. The captured browser log contained no errors/warnings. Desktop 1440×1000 and laptop 1366×768 rendered; mobile 390×844 had document client/scroll widths 375/375 and drawer widths 374/374. Screenshots phase2a-register.jpg, phase2a-evidence.jpg and phase2a-mobile.jpg under artifacts/screenshots were visually inspected.
+- An initial attempt to bind port 8000 found an existing process. It was left untouched; verification used a separately owned server on port 8001.
+- One existing non-failing Starlette/httpx test-client deprecation warning remains. No ML evaluation, asset risk, cascade, What-If or optimizer result was calculated. Cached reference coverage and authored software declarations are explicitly limited in PHASE_2A.md. A full accessibility audit, live scan and exhaustive CPE applicability validation were not performed.
+
+Reference JSON is marked -text in .gitattributes so Git cannot change bytes covered by source checksums. Cache integrity is also checked against the staged Git blobs before commit.
+
+---
+
 Executed on 31 October 2026 on Windows with Python 3.12.10, Node 24.20.0 and npm 11.19.0. All assertions below distinguish executed checks from architectural capability. No later intelligence engine was exercised or claimed.
 
 ## Installation and launch

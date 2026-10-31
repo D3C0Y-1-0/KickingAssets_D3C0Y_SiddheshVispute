@@ -78,3 +78,50 @@ skills-lock.json
 ```
 
 Local-only generated state is excluded: .venv/, frontend/node_modules/, frontend/dist/, SQLite database files, Python/test caches, .review/, artifacts/ and the installed .agents/skills/anatomy/ tooling. skills-lock.json records the reviewed upstream skill fingerprint; the application ships generated SVG paths rather than a third-party example app.
+
+## Phase 2A additions and modifications
+
+Phase 1 entries above remain historical. The following 40 paths were added or modified for the vulnerability assessment branch; engine/ML files and shared models.py were not changed.
+
+```text
+.gitattributes
+README.md
+backend/app/api/routes.py
+backend/app/api/vulnerability.py
+backend/app/db/vulnerability_store.py
+backend/app/main.py
+backend/app/schemas/vulnerability.py
+backend/app/services/vulnerability_cli.py
+backend/app/services/vulnerability_ingestion.py
+backend/app/services/vulnerability_matching.py
+backend/tests/test_foundation.py
+backend/tests/test_vulnerability.py
+backend/tests/test_vulnerability_persistence.py
+data/reference/README.md
+data/reference/vulnerability-v1/epss.json
+data/reference/vulnerability-v1/kev.json
+data/reference/vulnerability-v1/nvd-41773.json
+data/reference/vulnerability-v1/nvd-42013.json
+data/reference/vulnerability-v1/sources.json
+data/scenarios/aurora-software-evidence.json
+docs/API_CONTRACT.md
+docs/ARCHITECTURE.md
+docs/DOMAIN_MODELS.md
+docs/FILE_MANIFEST.md
+docs/HANDOFF.md
+docs/IMPLEMENTATION_PLAN.md
+docs/PHASE_2A.md
+docs/PROJECT_SPEC.md
+docs/VERIFICATION.md
+docs/openapi.json
+frontend/src/api/client.ts
+frontend/src/api/schema.d.ts
+frontend/src/components/AssetDrawer.tsx
+frontend/src/features/assets/Assets.tsx
+frontend/src/features/assets/VulnerabilityEvidence.tsx
+frontend/src/features/assets/vulnerability.css
+frontend/src/features/intelligence/Intelligence.tsx
+frontend/src/features/methodology/Methodology.tsx
+frontend/src/hooks/vulnerability.ts
+frontend/tests/api.test.ts
+```

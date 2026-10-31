@@ -44,8 +44,9 @@ def test_inventory_filters_and_detail(client):
     assert detail["asset"]["security"]["mfa_enabled"] is False
     assert detail["risk"]["score"] is None
     assert detail["risk"]["status"] == "unavailable"
-    assert detail["vulnerabilities"] == []
-    assert detail["observations"] == []
+    assert len(detail["vulnerabilities"]) == 2  # Phase 2A preserves the response contract, adds evidence.
+    assert all(v["applicability"] == "confirmed" for v in detail["vulnerabilities"])
+    assert len(detail["observations"]) == 3
 
 
 def test_two_graphs_are_distinct(client):

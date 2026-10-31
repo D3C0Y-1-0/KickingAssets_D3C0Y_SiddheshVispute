@@ -1,1 +1,5 @@
 * text=auto eol=lf
+# Reference checksums cover original response bytes; never normalize cached JSON line endings.
+/data/reference/**/*.json -text
+# The authored manifest is not itself checksum-covered.
+/data/reference/**/sources.json text eol=lf

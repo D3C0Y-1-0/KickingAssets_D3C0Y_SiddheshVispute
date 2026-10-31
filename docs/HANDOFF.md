@@ -1,5 +1,7 @@
 # Phase 1 handoff
 
+**Latest: Phase 2A** is implemented on feature/vulnerability-assessment. Read [PHASE_2A.md](PHASE_2A.md) for contracts, source data, CLI, limits and Claude integration boundaries. Checks are appended to VERIFICATION.md. The Phase 1 record below is retained as history. Shared models.py, engine/ML files, base assets and graphs are unchanged. Coordinate the small router/bootstrap and generated-artifact integration points when merging the impact branch; do not replace either feature.
+
 ## Implemented
 
 - React/TypeScript strict/Vite application with semantic Mission-Control Noir tokens, responsive sidebar/topbar, visible fictional-sample status, API health, global inventory search and stable routes for all seven required screens.

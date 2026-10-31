@@ -17,6 +17,17 @@ function response(body: unknown, status = 200) {
 }
 
 describe('snapshot-scoped API integration boundary', () => {
+  it('keeps vulnerability assessments scoped and preserves source-only CVSS separately from risk', async () => {
+    const fetchMock = response({ id: 'run', assets: [], stale: false })
+    await api.vulnerabilityAssessment(context)
+    expect(fetchMock.mock.calls[0][0]).toBe(
+      '/api/v1/vulnerabilities/assessment?scenario_id=city-a&snapshot_id=snapshot-b',
+    )
+    response({ references: [{ reference: { cvss: 9.8, epss: null, kev_listed: null } }] })
+    const refs = await api.vulnerabilityReferences()
+    expect(refs.references[0].reference.epss).toBeNull()
+    expect(refs.references[0].reference.cvss).toBe(9.8)
+  })
   it('preserves both IDs and cancellation for inventory reads', async () => {
     const fetchMock = response([])
     const controller = new AbortController()

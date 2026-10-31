@@ -1,3 +1,3 @@
 # External reference intelligence
 
-No vulnerability feeds have been ingested. Future NVD, CVSS, EPSS and CISA KEV imports must retain source URL, retrieval time, source publication time, dataset version and licensing. Fictional products must never be asserted to match a real CVE without applicability evidence.
+Phase 2A bundles real NVD/CVSS, EPSS and CISA KEV JSON under vulnerability-v1/. sources.json records official URLs, retrieval timestamps, source versions and content checksums. See docs/PHASE_2A.md for offline ingestion, online refresh, supported applicability and coverage limits. Fictional baseline products are never asserted to match real CVEs; a separate, explicitly simulated software-component overlay supplies product/version evidence. No ML or asset risk score is provided.

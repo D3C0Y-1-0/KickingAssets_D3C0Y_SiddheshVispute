@@ -19,10 +19,13 @@ import {
   SectorBadge,
 } from '../../components/ui'
 import type { Asset } from '../../api/client'
+import { useVulnerabilityAssessment } from '../../hooks/vulnerability'
+import { VulnerabilitySummary } from './VulnerabilityEvidence'
 
 type SortKey = 'name' | 'sector' | 'asset_type' | 'criticality' | 'exposure'
 export default function Assets() {
   const query = useAssets()
+  const evidence = useVulnerabilityAssessment()
   const [params, setParams] = useSearchParams()
   const search = params.get('q') ?? ''
   const [sector, setSector] = useState('all')
@@ -81,6 +84,7 @@ export default function Assets() {
         description="Inspect the infrastructure, configuration and evidence behind each asset."
         actions={<SampleBadge>Scenario inventory</SampleBadge>}
       />
+      <VulnerabilitySummary />
       <Panel
         title="Infrastructure inventory"
         aside={<span className="subtle-label mono">{query.data?.length ?? '—'} TOTAL ASSETS</span>}
@@ -138,7 +142,8 @@ export default function Assets() {
                     {header('asset_type', 'TYPE')}
                     {header('criticality', 'CRITICALITY')}
                     {header('exposure', 'EXPOSURE')}
-                    <th>ASSESSMENT</th>
+                    <th>CVE EVIDENCE / CONFIGURATION</th>
+                    <th>RISK</th>
                     <th>
                       <span className="sr-only">Details</span>
                     </th>
@@ -164,6 +169,34 @@ export default function Assets() {
                       </td>
                       <td>
                         <span className={`exposure ${a.exposure}`}>{a.exposure}</span>
+                      </td>
+                      <td>
+                        <div className="evidence-cell">
+                          {(() => {
+                            const item = evidence.data?.stale
+                              ? undefined
+                              : evidence.data?.assets.find((e) => e.asset_id === a.id)
+                            return item ? (
+                              <>
+                                <span>
+                                  {item.components.length
+                                    ? `${item.applicability.filter((f) => f.link.applicability === 'confirmed').length} version matches · ${item.applicability.filter((f) => f.link.applicability === 'candidate').length} candidates`
+                                    : 'CVE identity unassessed'}
+                                </span>
+                                <small>
+                                  {item.configuration.filter((f) => f.kind === 'weakness').length}{' '}
+                                  weaknesses ·{' '}
+                                  {item.configuration.filter((f) => f.kind === 'exposure').length}{' '}
+                                  exposure indicators ·{' '}
+                                  {item.configuration.filter((f) => f.kind === 'review').length}{' '}
+                                  reviews
+                                </small>
+                              </>
+                            ) : (
+                              <span>Evidence unavailable</span>
+                            )
+                          })()}
+                        </div>
                       </td>
                       <td>
                         <span className="muted">Not assessed</span>
@@ -201,8 +234,8 @@ export default function Assets() {
       </Panel>
       <div className="preview-notice">
         <span>
-          Calculated risk and vulnerability findings will appear here after the relevant engines are
-          implemented. Missing scores are never treated as zero.
+          CVE applicability uses declared simulated software and real cached references. Risk
+          remains unassessed. CVSS is severity; EPSS is not an asset incident probability.
         </span>
       </div>
       <AssetDrawer id={selected} onClose={() => setSelected(null)} />

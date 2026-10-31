@@ -1,5 +1,7 @@
 # API contract v1
 
+**Phase 2A:** [PHASE_2A.md](PHASE_2A.md) documents the additive `/api/v1/vulnerabilities` router, explicit assessment POST, coverage/staleness and compatible asset-detail projection. Empty evidence examples below describe the historical Phase 1 baseline. Current PWR-001 responses contain two applicability links and three configuration/exposure/review observations; risk remains unavailable.
+
 Machine-readable authority: `GET /openapi.json`; tracked export: `docs/openapi.json`. Interactive API docs: `/docs`. Generated frontend types: `frontend/src/api/schema.d.ts`. Pydantic's runtime OpenAPI can split input/output schema names when defaults differ; generated names are authoritative.
 
 ## Conventions
