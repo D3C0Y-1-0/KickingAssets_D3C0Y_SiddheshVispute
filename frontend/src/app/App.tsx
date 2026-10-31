@@ -142,7 +142,7 @@ export default function App() {
           <div className="foundation-note">
             <div>
               <span className="status-dot" />
-              PHASE 01 · FOUNDATION
+              PHASE 03A · RISK INTELLIGENCE
             </div>
             <p>
               A clear view of the system.
@@ -213,7 +213,10 @@ export default function App() {
         <div className="environment-bar">
           <div>
             <SampleBadge>Sample scenario</SampleBadge>
-            <span>Fictional infrastructure. Illustrative risk previews. No live monitoring.</span>
+            <span>
+              Simulated infrastructure. Calculated review priorities with partial coverage. No live
+              monitoring.
+            </span>
           </div>
           <Link to="/methodology">
             About this environment
@@ -261,7 +264,7 @@ export default function App() {
             before the incident.
           </span>
           <span>
-            PS03 · D3COY <span className="muted">/</span> Foundation v0.1
+            PS03 · D3COY <span className="muted">/</span> Experimental intelligence
           </span>
         </footer>
       </div>

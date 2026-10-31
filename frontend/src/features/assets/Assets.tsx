@@ -8,13 +8,14 @@ import {
   SlidersHorizontal,
 } from 'lucide-react'
 import { useSearchParams } from 'react-router-dom'
-import { useAssets } from '../../hooks/queries'
+import { useAssets, useIntelligence } from '../../hooks/queries'
 import { AssetDrawer } from '../../components/AssetDrawer'
 import {
   EmptyState,
   PageHeading,
   Panel,
   QueryState,
+  RiskBadge,
   SampleBadge,
   SectorBadge,
 } from '../../components/ui'
@@ -22,10 +23,12 @@ import type { Asset } from '../../api/client'
 import { useVulnerabilityAssessment } from '../../hooks/vulnerability'
 import { VulnerabilitySummary } from './VulnerabilityEvidence'
 
-type SortKey = 'name' | 'sector' | 'asset_type' | 'criticality' | 'exposure'
+type SortKey = 'name' | 'sector' | 'asset_type' | 'criticality' | 'exposure' | 'risk'
 export default function Assets() {
   const query = useAssets()
   const evidence = useVulnerabilityAssessment()
+  const intelligence = useIntelligence()
+  const priorities = intelligence.isError ? [] : (intelligence.data?.assets ?? [])
   const [params, setParams] = useSearchParams()
   const search = params.get('q') ?? ''
   const [sector, setSector] = useState('all')
@@ -45,6 +48,13 @@ export default function Assets() {
             ),
         )
         .sort((a, b) => {
+          if (sort === 'risk') {
+            const left = priorities.find((r) => r.asset_id === a.id)?.risk.score
+            const right = priorities.find((r) => r.asset_id === b.id)?.risk.score
+            if (left == null) return right == null ? a.id.localeCompare(b.id) : 1
+            if (right == null) return -1
+            return descending ? left - right : right - left
+          }
           const order =
             sort === 'criticality'
               ? { essential: 0, important: 1, supporting: 2 }[a.criticality] -
@@ -52,7 +62,7 @@ export default function Assets() {
               : a[sort].localeCompare(b[sort])
           return descending ? -order : order
         }),
-    [query.data, sector, type, search, sort, descending],
+    [query.data, sector, type, search, sort, descending, priorities],
   )
   const sortColumn = (key: SortKey) => {
     if (sort === key) setDescending(!descending)
@@ -85,6 +95,11 @@ export default function Assets() {
         actions={<SampleBadge>Scenario inventory</SampleBadge>}
       />
       <VulnerabilitySummary />
+      <QueryState
+        pending={intelligence.isPending}
+        error={intelligence.error}
+        retry={intelligence.refetch}
+      />
       <Panel
         title="Infrastructure inventory"
         aside={<span className="subtle-label mono">{query.data?.length ?? '—'} TOTAL ASSETS</span>}
@@ -143,7 +158,8 @@ export default function Assets() {
                     {header('criticality', 'CRITICALITY')}
                     {header('exposure', 'EXPOSURE')}
                     <th>CVE EVIDENCE / CONFIGURATION</th>
-                    <th>RISK</th>
+                    {header('risk', 'RISK INDEX')}
+                    <th>RISK CATEGORY</th>
                     <th>
                       <span className="sr-only">Details</span>
                     </th>
@@ -199,7 +215,17 @@ export default function Assets() {
                         </div>
                       </td>
                       <td>
-                        <span className="muted">Not assessed</span>
+                        <span className="mono">
+                          {priorities.find((r) => r.asset_id === a.id)?.risk.score?.toFixed(2) ??
+                            'Unavailable'}
+                        </span>
+                      </td>
+                      <td>
+                        <RiskBadge
+                          category={
+                            priorities.find((r) => r.asset_id === a.id)?.risk.category ?? undefined
+                          }
+                        />
                       </td>
                       <td>
                         <button
@@ -234,8 +260,10 @@ export default function Assets() {
       </Panel>
       <div className="preview-notice">
         <span>
-          CVE applicability uses declared simulated software and real cached references. Risk
-          remains unassessed. CVSS is severity; EPSS is not an asset incident probability.
+          CVE applicability uses declared simulated software and real cached references. Risk is a
+          calculated relative index where evidence supports it. Curated coverage is partial;
+          unavailable does not mean safe. CVSS is severity; EPSS and ML signals are not
+          asset-compromise probabilities.
         </span>
       </div>
       <AssetDrawer id={selected} onClose={() => setSelected(null)} />

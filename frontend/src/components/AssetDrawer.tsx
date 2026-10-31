@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom'
 import { useAsset } from '../hooks/queries'
 import { QueryState, SampleBadge, SectorBadge } from './ui'
 import { VulnerabilityEvidence } from '../features/assets/VulnerabilityEvidence'
+import { RiskEvidence } from '../features/intelligence/RiskEvidence'
 
 export function AssetDrawer({ id, onClose }: { id: string | null; onClose: () => void }) {
   const query = useAsset(id)
@@ -91,9 +92,7 @@ export function AssetDrawer({ id, onClose }: { id: string | null; onClose: () =>
             <h3>Vulnerability records</h3>
             <VulnerabilityEvidence assetId={detail.asset.id} />
             <h3>Risk assessment</h3>
-            <div className="inset-note">
-              Unavailable · {detail.risk.unavailable_reason}. No score is assigned.
-            </div>
+            <RiskEvidence assetId={detail.asset.id} />
             <h3>Source & context</h3>
             <dl className="detail-grid">
               <dt>Provenance</dt>

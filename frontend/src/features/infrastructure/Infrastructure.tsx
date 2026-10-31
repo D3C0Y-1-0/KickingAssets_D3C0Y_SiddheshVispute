@@ -3,7 +3,7 @@ import cytoscape from 'cytoscape'
 import type { Core, EventObject, StylesheetJson } from 'cytoscape'
 import { ArrowRight, ArrowUpRight, Focus, Minus, Network, Plus, Search, X } from 'lucide-react'
 import { useSearchParams } from 'react-router-dom'
-import { useGraph } from '../../hooks/queries'
+import { useGraph, useIntelligence } from '../../hooks/queries'
 import type { Asset, GraphMode } from '../../api/client'
 import { AssetDrawer } from '../../components/AssetDrawer'
 import {
@@ -14,7 +14,7 @@ import {
   SampleBadge,
   SectorBadge,
 } from '../../components/ui'
-import { categoryLabels, demoFor } from '../../fixtures/previews'
+const categoryLabels = ['low', 'medium', 'high', 'critical'] as const
 
 export default function Infrastructure() {
   const [params, setParams] = useSearchParams()
@@ -25,12 +25,14 @@ export default function Infrastructure() {
     : 'all'
   const focusId = params.get('focus')
   const query = useGraph(mode)
+  const intelligence = useIntelligence()
+  const priorities = intelligence.isError ? undefined : intelligence.data?.assets
   const container = useRef<HTMLDivElement>(null)
   const cy = useRef<Core | null>(null)
   const [selected, setSelected] = useState<string | null>(focusId)
   const [detail, setDetail] = useState<string | null>(null)
   const [search, setSearch] = useState('')
-  const [preview, setPreview] = useState(false)
+  const [preview, setPreview] = useState(true)
   const [zoom, setZoom] = useState(100)
   const selection = useRef(selected)
   useEffect(() => {
@@ -121,8 +123,10 @@ export default function Infrastructure() {
     const getColor = (asset: Asset) =>
       colors
         .getPropertyValue(
-          preview && demoFor(asset.id)
-            ? `--risk-${demoFor(asset.id)!.category}`
+          preview
+            ? priorities?.find((r) => r.asset_id === asset.id)?.risk.category
+              ? `--risk-${priorities.find((r) => r.asset_id === asset.id)!.risk.category}`
+              : '--text-secondary'
             : `--sector-${asset.sector}`,
         )
         .trim()
@@ -177,7 +181,7 @@ export default function Infrastructure() {
       c.destroy()
       cy.current = null
     }
-  }, [query.data, nodes, edges, mode, preview, focusId])
+  }, [query.data, nodes, edges, mode, preview, focusId, priorities])
   useEffect(() => {
     const c = cy.current
     if (!c) return
@@ -205,6 +209,11 @@ export default function Infrastructure() {
         title="Infrastructure map"
         description="Two independent views. One inventory. Explore connections without confusing their meaning."
         actions={<SampleBadge>Fictional topology</SampleBadge>}
+      />
+      <QueryState
+        pending={intelligence.isPending}
+        error={intelligence.error}
+        retry={intelligence.refetch}
       />
       <div className="graph-mode-bar">
         <div className="segmented-control" aria-label="Graph display mode">
@@ -326,7 +335,7 @@ export default function Infrastructure() {
           <div className="panel-footnote">
             {mode === 'cyber'
               ? 'Directed paths represent fictional protocol and access assumptions. They do not establish exploit success or attack propagation.'
-              : 'Edges point from provider to dependent. Backup and redundancy requirements are stored; cascading disruption is not calculated.'}
+              : 'Edges point from provider to dependent. Inspect conditional service impact in asset details; paths alone do not establish failure.'}
           </div>
         </Panel>
         <aside className="inspector panel">
@@ -374,14 +383,21 @@ export default function Infrastructure() {
                   <dt>Criticality</dt>
                   <dd>{active.criticality}</dd>
                   <dt>Assessment</dt>
-                  <dd>Unavailable</dd>
+                  <dd>
+                    {priorities?.find((r) => r.asset_id === active.id)?.risk.score?.toFixed(2) ??
+                      'Unavailable'}
+                  </dd>
                   <dt>Relationships</dt>
                   <dd>{selectedEdges.length} in this view</dd>
                 </dl>
-                {preview && demoFor(active.id) && (
+                {preview && priorities?.find((r) => r.asset_id === active.id)?.risk.category && (
                   <div className="inline-items">
-                    <RiskBadge category={demoFor(active.id)!.category} />
-                    <span className="tiny-demo">DEMO ONLY</span>
+                    <RiskBadge
+                      category={
+                        priorities.find((r) => r.asset_id === active.id)!.risk.category ?? undefined
+                      }
+                    />
+                    <span className="badge neutral">CURATED COVERAGE</span>
                   </div>
                 )}
                 <button
@@ -422,15 +438,15 @@ export default function Infrastructure() {
                 checked={preview}
                 onChange={(e) => setPreview(e.target.checked)}
               />
-              Show demo risk colors
+              Show calculated risk colors
             </label>
             <p className="muted small">
-              Preview colors are illustrative, not calculated assessments. Unlabelled assets retain
-              sector colors.
+              Calculated relative priorities use risk colors. Grey nodes have unavailable results;
+              this does not establish safety. Turn off highlighting to show sector colors.
             </p>
             {preview && (
               <div className="demo-risk-legend">
-                <span className="tiny-demo">DEMO LABELS</span>
+                <span className="subtle-label">CALCULATED PRIORITY</span>
                 {categoryLabels.map((category) => (
                   <span key={category}>
                     <i className={`legend-dot ${category}`} />

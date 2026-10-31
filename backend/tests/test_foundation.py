@@ -42,11 +42,11 @@ def test_inventory_filters_and_detail(client):
     assert client.get("/api/v1/assets?q=North%20Grid").json()[0]["id"] == "PWR-001"
     detail = client.get("/api/v1/assets/PWR-001").json()
     assert detail["asset"]["security"]["mfa_enabled"] is False
-    assert detail["risk"]["score"] is None
-    assert detail["risk"]["status"] == "unavailable"
+    assert 0 <= detail["risk"]["score"] <= 100
+    assert detail["risk"]["status"] == "computed"
     assert (
-        len(detail["vulnerabilities"]) == 2
-    )  # Phase 2A preserves the response contract, adds evidence.
+        len(detail["vulnerabilities"]) == 3
+    )  # Phase 3 adds a reference-backed, model-eligible Apache CVE.
     assert all(v["applicability"] == "confirmed" for v in detail["vulnerabilities"])
     assert len(detail["observations"]) == 3
 

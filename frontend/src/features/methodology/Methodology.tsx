@@ -7,8 +7,8 @@ const status = [
   { name: 'Independent cyber & operational graphs', done: true },
   { name: 'Local hypothetical action staging', done: true },
   { name: 'Curated real CVE ingestion & declared-version matching', done: true },
-  { name: 'ML prioritization & model evaluation', done: false },
-  { name: 'Risk scoring & conditional impact simulation', done: false },
+  { name: 'Experimental CVE ML signal & temporal evaluation', done: true },
+  { name: 'Explainable priority index & conditional impact', done: true },
   { name: 'What-if calculations & remediation optimization', done: false },
 ]
 
@@ -18,7 +18,7 @@ export default function Methodology() {
       <PageHeading
         title="Methodology & evidence"
         description="Know what is observed, what is assumed, and what has yet to be calculated."
-        actions={<SampleBadge>Phase 1 foundation</SampleBadge>}
+        actions={<SampleBadge>Phase 3A · experimental intelligence</SampleBadge>}
       />
       <div className="methodology-intro">
         <span className="empty-icon">
@@ -120,7 +120,7 @@ export default function Methodology() {
             </p>
           </div>
         </Panel>
-        <Panel title="Future ML evaluation">
+        <Panel title="ML evaluation & scoring policy">
           <div className="method-section">
             <p>
               Use versioned reference datasets, time-based train/validation/test splits and
@@ -132,9 +132,21 @@ export default function Methodology() {
               outputs intended to represent probabilities.
             </p>
             <p>
-              Separate CVE prioritization quality from asset-level risk and service-impact
-              assumptions. No model training, evaluation metrics or AI explanations are implemented
-              in Phase 1.
+              Risk Intelligence exposes the actual trained model, temporal holdout metrics,
+              baselines and signed tree contributions. The no-KEV-history variant uses supported
+              runtime features. It is experimental and uncalibrated; improvement over EPSS is not
+              statistically established. Non-KEV records are unlabeled, not confirmed unexploited.
+            </p>
+            <p>
+              Asset priority = 40 × vulnerability + 15 × exposure + 10 × configuration weakness + 15
+              × criticality + 20 × conditional impact. Vulnerability is the maximum confirmed CVE
+              value: 0.6 × CVSS/10 + 0.4 × (known KEV = 1, otherwise ML signal). EPSS is a model
+              input and has no separate score weight. Missing required evidence remains unavailable.
+            </p>
+            <p>
+              All indices are relative review priorities within curated coverage. Conditional impact
+              independently assumes asset unavailability over 1,440 minutes. Backups do not relieve
+              edge cascades, so impact is an upper bound with respect to backups.
             </p>
           </div>
         </Panel>

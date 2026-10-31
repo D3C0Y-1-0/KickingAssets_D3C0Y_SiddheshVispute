@@ -3,3 +3,4 @@
 /data/reference/**/*.json -text
 # The authored manifest is not itself checksum-covered.
 /data/reference/**/sources.json text eol=lf
+/data/reference/risk-inference.json text eol=lf

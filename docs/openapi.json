@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "GridSentinel",
-    "description": "Phase 1: deterministic fictional inventory and two distinct graphs. Intelligence engines are unavailable.",
+    "description": "Simulated infrastructure, real reference-backed vulnerability evidence and experimental explainable risk prioritization. No incident probability is claimed.",
     "version": "0.1.0"
   },
   "paths": {
@@ -1125,6 +1125,127 @@
           }
         }
       }
+    },
+    "/api/v1/intelligence": {
+      "get": {
+        "tags": [
+          "Risk intelligence"
+        ],
+        "summary": "Report",
+        "operationId": "report_api_v1_intelligence_get",
+        "parameters": [
+          {
+            "name": "scenario_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "aurora-city",
+              "title": "Scenario Id"
+            }
+          },
+          {
+            "name": "snapshot_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Snapshot Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IntelligenceReport"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/intelligence/assess": {
+      "post": {
+        "tags": [
+          "Risk intelligence"
+        ],
+        "summary": "Assess",
+        "operationId": "assess_api_v1_intelligence_assess_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Context"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IntelligenceReport"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/intelligence/model": {
+      "get": {
+        "tags": [
+          "Risk intelligence"
+        ],
+        "summary": "Model",
+        "operationId": "model_api_v1_intelligence_model_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModelEvidence"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -1454,6 +1575,67 @@
         ],
         "title": "AssetEvidence"
       },
+      "AssetPriority": {
+        "properties": {
+          "asset_id": {
+            "type": "string",
+            "title": "Asset Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "sector": {
+            "type": "string",
+            "title": "Sector"
+          },
+          "coverage": {
+            "type": "string",
+            "enum": [
+              "partial",
+              "unavailable"
+            ],
+            "title": "Coverage"
+          },
+          "risk": {
+            "$ref": "#/components/schemas/RiskAssessment"
+          },
+          "signals": {
+            "items": {
+              "$ref": "#/components/schemas/CVESignal"
+            },
+            "type": "array",
+            "title": "Signals"
+          },
+          "impacts": {
+            "items": {
+              "$ref": "#/components/schemas/ImpactResult"
+            },
+            "type": "array",
+            "title": "Impacts"
+          },
+          "assumptions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Assumptions"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "asset_id",
+          "name",
+          "sector",
+          "coverage",
+          "risk",
+          "signals",
+          "impacts",
+          "assumptions"
+        ],
+        "title": "AssetPriority"
+      },
       "AssetVulnerability": {
         "properties": {
           "scenario_id": {
@@ -1522,6 +1704,75 @@
           "provenance"
         ],
         "title": "AssetVulnerability"
+      },
+      "CVESignal": {
+        "properties": {
+          "cve_id": {
+            "type": "string",
+            "title": "Cve Id"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "computed",
+              "known_kev",
+              "unavailable"
+            ],
+            "title": "Status"
+          },
+          "signal": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 1.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Signal"
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason"
+          },
+          "model_version": {
+            "type": "string",
+            "title": "Model Version"
+          },
+          "model_variant": {
+            "type": "string",
+            "title": "Model Variant"
+          },
+          "artifact_sha256": {
+            "type": "string",
+            "title": "Artifact Sha256"
+          },
+          "feature_date": {
+            "type": "string",
+            "title": "Feature Date"
+          },
+          "contributions": {
+            "items": {
+              "$ref": "#/components/schemas/FeatureContribution"
+            },
+            "type": "array",
+            "title": "Contributions"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "cve_id",
+          "status",
+          "reason",
+          "model_version",
+          "model_variant",
+          "artifact_sha256",
+          "feature_date"
+        ],
+        "title": "CVESignal"
       },
       "ConfigurationFinding": {
         "properties": {
@@ -1800,6 +2051,50 @@
         ],
         "title": "EssentialService"
       },
+      "FeatureContribution": {
+        "properties": {
+          "feature": {
+            "type": "string",
+            "title": "Feature"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          },
+          "log_odds_contribution": {
+            "type": "number",
+            "title": "Log Odds Contribution"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "feature",
+          "value",
+          "log_odds_contribution"
+        ],
+        "title": "FeatureContribution"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
       "Health": {
         "properties": {
           "status": {
@@ -2075,6 +2370,106 @@
         ],
         "title": "InfrastructureAsset"
       },
+      "IntelligenceReport": {
+        "properties": {
+          "scenario_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Scenario Id"
+          },
+          "snapshot_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Snapshot Id"
+          },
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "calculated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Calculated At"
+          },
+          "reference_dataset_id": {
+            "type": "string",
+            "title": "Reference Dataset Id"
+          },
+          "vulnerability_assessment_id": {
+            "type": "string",
+            "title": "Vulnerability Assessment Id"
+          },
+          "scoring_version": {
+            "type": "string",
+            "title": "Scoring Version"
+          },
+          "impact_version": {
+            "type": "string",
+            "title": "Impact Version"
+          },
+          "model": {
+            "$ref": "#/components/schemas/ModelEvidence"
+          },
+          "assets": {
+            "items": {
+              "$ref": "#/components/schemas/AssetPriority"
+            },
+            "type": "array",
+            "title": "Assets"
+          },
+          "assessed_count": {
+            "type": "integer",
+            "title": "Assessed Count"
+          },
+          "unavailable_count": {
+            "type": "integer",
+            "title": "Unavailable Count"
+          },
+          "covered_asset_mean": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 100.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Covered Asset Mean"
+          },
+          "limitations": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Limitations"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "scenario_id",
+          "snapshot_id",
+          "id",
+          "calculated_at",
+          "reference_dataset_id",
+          "vulnerability_assessment_id",
+          "scoring_version",
+          "impact_version",
+          "model",
+          "assets",
+          "assessed_count",
+          "unavailable_count",
+          "covered_asset_mean",
+          "limitations"
+        ],
+        "title": "IntelligenceReport"
+      },
       "MitigationAction": {
         "properties": {
           "scenario_id": {
@@ -2165,6 +2560,82 @@
           "provenance"
         ],
         "title": "MitigationAction"
+      },
+      "ModelEvidence": {
+        "properties": {
+          "model_version": {
+            "type": "string",
+            "title": "Model Version"
+          },
+          "variant": {
+            "type": "string",
+            "title": "Variant"
+          },
+          "artifact_sha256": {
+            "type": "string",
+            "title": "Artifact Sha256"
+          },
+          "feature_names": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Feature Names"
+          },
+          "task": {
+            "type": "string",
+            "title": "Task"
+          },
+          "metrics": {
+            "additionalProperties": {
+              "additionalProperties": {
+                "anyOf": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "items": {
+                      "type": "number"
+                    },
+                    "type": "array"
+                  }
+                ]
+              },
+              "type": "object"
+            },
+            "type": "object",
+            "title": "Metrics"
+          },
+          "limitations": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Limitations"
+          },
+          "manifest_sha256": {
+            "type": "string",
+            "title": "Manifest Sha256"
+          },
+          "evaluation_status": {
+            "type": "string",
+            "title": "Evaluation Status"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "model_version",
+          "variant",
+          "artifact_sha256",
+          "feature_names",
+          "task",
+          "metrics",
+          "limitations",
+          "manifest_sha256",
+          "evaluation_status"
+        ],
+        "title": "ModelEvidence"
       },
       "OperationalDependencyEdge": {
         "properties": {
@@ -3290,6 +3761,46 @@
           "action_type"
         ],
         "title": "StagedAction"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
       },
       "VulnerabilityAssessment": {
         "properties": {

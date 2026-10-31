@@ -242,6 +242,57 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/intelligence": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Report */
+        get: operations["report_api_v1_intelligence_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/intelligence/assess": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Assess */
+        post: operations["assess_api_v1_intelligence_assess_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/intelligence/model": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Model */
+        get: operations["model_api_v1_intelligence_model_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -350,6 +401,27 @@ export interface components {
             /** Coverage */
             coverage: string;
         };
+        /** AssetPriority */
+        AssetPriority: {
+            /** Asset Id */
+            asset_id: string;
+            /** Name */
+            name: string;
+            /** Sector */
+            sector: string;
+            /**
+             * Coverage
+             * @enum {string}
+             */
+            coverage: "partial" | "unavailable";
+            risk: components["schemas"]["RiskAssessment"];
+            /** Signals */
+            signals: components["schemas"]["CVESignal"][];
+            /** Impacts */
+            impacts: components["schemas"]["ImpactResult"][];
+            /** Assumptions */
+            assumptions: string[];
+        };
         /** AssetVulnerability */
         AssetVulnerability: {
             /** Scenario Id */
@@ -370,6 +442,30 @@ export interface components {
             /** Rationale */
             rationale: string;
             provenance: components["schemas"]["Provenance"];
+        };
+        /** CVESignal */
+        CVESignal: {
+            /** Cve Id */
+            cve_id: string;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "computed" | "known_kev" | "unavailable";
+            /** Signal */
+            signal?: number | null;
+            /** Reason */
+            reason: string;
+            /** Model Version */
+            model_version: string;
+            /** Model Variant */
+            model_variant: string;
+            /** Artifact Sha256 */
+            artifact_sha256: string;
+            /** Feature Date */
+            feature_date: string;
+            /** Contributions */
+            contributions?: components["schemas"]["FeatureContribution"][];
         };
         /** ConfigurationFinding */
         ConfigurationFinding: {
@@ -459,6 +555,20 @@ export interface components {
             /** Assumptions */
             assumptions: string[];
             provenance: components["schemas"]["Provenance"];
+        };
+        /** FeatureContribution */
+        FeatureContribution: {
+            /** Feature */
+            feature: string;
+            /** Value */
+            value: number | null;
+            /** Log Odds Contribution */
+            log_odds_contribution: number;
+        };
+        /** HTTPValidationError */
+        HTTPValidationError: {
+            /** Detail */
+            detail?: components["schemas"]["ValidationError"][];
         };
         /** Health */
         Health: {
@@ -558,6 +668,39 @@ export interface components {
             security: components["schemas"]["SecurityConfiguration"];
             provenance: components["schemas"]["Provenance"];
         };
+        /** IntelligenceReport */
+        IntelligenceReport: {
+            /** Scenario Id */
+            scenario_id: string;
+            /** Snapshot Id */
+            snapshot_id: string;
+            /** Id */
+            id: string;
+            /**
+             * Calculated At
+             * Format: date-time
+             */
+            calculated_at: string;
+            /** Reference Dataset Id */
+            reference_dataset_id: string;
+            /** Vulnerability Assessment Id */
+            vulnerability_assessment_id: string;
+            /** Scoring Version */
+            scoring_version: string;
+            /** Impact Version */
+            impact_version: string;
+            model: components["schemas"]["ModelEvidence"];
+            /** Assets */
+            assets: components["schemas"]["AssetPriority"][];
+            /** Assessed Count */
+            assessed_count: number;
+            /** Unavailable Count */
+            unavailable_count: number;
+            /** Covered Asset Mean */
+            covered_asset_mean: number | null;
+            /** Limitations */
+            limitations: string[];
+        };
         /** MitigationAction */
         MitigationAction: {
             /** Scenario Id */
@@ -584,6 +727,31 @@ export interface components {
             /** Preconditions */
             preconditions: string[];
             provenance: components["schemas"]["Provenance"];
+        };
+        /** ModelEvidence */
+        ModelEvidence: {
+            /** Model Version */
+            model_version: string;
+            /** Variant */
+            variant: string;
+            /** Artifact Sha256 */
+            artifact_sha256: string;
+            /** Feature Names */
+            feature_names: string[];
+            /** Task */
+            task: string;
+            /** Metrics */
+            metrics: {
+                [key: string]: {
+                    [key: string]: number | number[];
+                };
+            };
+            /** Limitations */
+            limitations: string[];
+            /** Manifest Sha256 */
+            manifest_sha256: string;
+            /** Evaluation Status */
+            evaluation_status: string;
         };
         /**
          * OperationalDependencyEdge
@@ -949,6 +1117,19 @@ export interface components {
              * @enum {string}
              */
             action_type: "enable_mfa" | "restrict_remote_access" | "patch_review" | "offline_backup";
+        };
+        /** ValidationError */
+        ValidationError: {
+            /** Location */
+            loc: (string | number)[];
+            /** Message */
+            msg: string;
+            /** Error Type */
+            type: string;
+            /** Input */
+            input?: unknown;
+            /** Context */
+            ctx?: Record<string, never>;
         };
         /** VulnerabilityAssessment */
         VulnerabilityAssessment: {
@@ -1809,6 +1990,91 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    report_api_v1_intelligence_get: {
+        parameters: {
+            query?: {
+                scenario_id?: string;
+                snapshot_id?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IntelligenceReport"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    assess_api_v1_intelligence_assess_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Context"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IntelligenceReport"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    model_api_v1_intelligence_model_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ModelEvidence"];
                 };
             };
         };

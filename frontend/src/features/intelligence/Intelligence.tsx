@@ -1,120 +1,203 @@
 import { useState } from 'react'
-import { ArrowUpRight, ChartNoAxesCombined, Fingerprint, Layers, ShieldAlert } from 'lucide-react'
-import { Link } from 'react-router-dom'
-import { useAssets } from '../../hooks/queries'
-import { demoFor } from '../../fixtures/previews'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { api } from '../../api/client'
+import { useContext, useIntelligence } from '../../hooks/queries'
 import { AssetDrawer } from '../../components/AssetDrawer'
 import {
   EmptyState,
   PageHeading,
   Panel,
-  PreviewNotice,
   QueryState,
   RiskBadge,
-  SampleBadge,
   SectorBadge,
 } from '../../components/ui'
+import { PriorityEvidence } from './RiskEvidence'
 
 export default function Intelligence() {
-  const assets = useAssets()
+  const query = useIntelligence()
+  const context = useContext()
+  const client = useQueryClient()
+  const run = useMutation({
+    mutationFn: () => api.assessIntelligence(context),
+    onSuccess: () => client.invalidateQueries(),
+  })
   const [selected, setSelected] = useState<string | null>(null)
-  const ranking = (assets.data ?? [])
-    .filter((a) => demoFor(a.id))
-    .sort((a, b) => demoFor(b.id)!.score - demoFor(a.id)!.score)
+  const [detail, setDetail] = useState<string | null>(null)
+  const [sector, setSector] = useState('all')
+  const [band, setBand] = useState('all')
+  const [search, setSearch] = useState('')
+  const report = query.data
+  const rows =
+    report?.assets.filter(
+      (a) =>
+        (sector === 'all' || sector === a.sector) &&
+        (band === 'all' || (a.risk.category ?? 'unavailable') === band) &&
+        `${a.name} ${a.asset_id}`.toLowerCase().includes(search.toLowerCase()),
+    ) ?? []
+  const active = report?.assets.find((a) => a.asset_id === selected) ?? rows[0]
   return (
     <>
       <PageHeading
         title="Risk intelligence"
-        description="Prioritization with a traceable reason behind every result."
-        actions={<span className="badge neutral">ENGINE NOT CONNECTED</span>}
+        description="Calculated review priorities, real CVE evidence and conditional operational consequences."
+        actions={
+          <button className="button primary" disabled={run.isPending} onClick={() => run.mutate()}>
+            {run.isPending ? 'Assessing…' : 'Run risk assessment'}
+          </button>
+        }
       />
-      <PreviewNotice />
-      <div className="intelligence-layout">
-        <Panel title="Risk-priority ranking" aside={<SampleBadge>Design preview</SampleBadge>}>
-          <QueryState pending={assets.isPending} error={assets.error} retry={assets.refetch} />
-          <div className="ranking-list">
-            {ranking.map((a, i) => (
-              <button className="ranking-row" key={a.id} onClick={() => setSelected(a.id)}>
-                <span className="rank-number mono">{(i + 1).toString().padStart(2, '0')}</span>
-                <div>
-                  <strong>{a.name}</strong>
-                  <small>
-                    <span className="mono">{a.id}</span> · <SectorBadge sector={a.sector} />
-                  </small>
-                </div>
-                <RiskBadge category={demoFor(a.id)?.category} />
-                <strong className="mono rank-score">{demoFor(a.id)?.score}</strong>
-                <ArrowUpRight size={15} />
-              </button>
-            ))}
+      <QueryState
+        pending={query.isPending}
+        error={run.error ?? query.error}
+        retry={query.refetch}
+      />
+      {report && (
+        <>
+          <div className="risk-coverage">
+            <strong>
+              {report.assessed_count} / {report.assets.length} assets with calculated priority
+            </strong>{' '}
+            · {report.unavailable_count} unavailable.
+            <br />
+            Curated references and simulated infrastructure. Relative index, not an asset-compromise
+            probability.
+            <br />
+            <span className="mono small">
+              {report.scoring_version} · {report.model.model_version}/{report.model.variant} ·{' '}
+              {new Date(report.calculated_at).toLocaleString()}
+            </span>
           </div>
-          <div className="panel-footnote">
-            Only seven illustrative labels are supplied. No score is inferred for the remaining
-            assets.
+          <div className="intelligence-filters">
+            <input
+              aria-label="Search risk priorities"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search assets…"
+            />
+            <select
+              aria-label="Risk sector"
+              value={sector}
+              onChange={(e) => setSector(e.target.value)}
+            >
+              <option value="all">All sectors</option>
+              {['power', 'water', 'healthcare'].map((s) => (
+                <option key={s}>{s}</option>
+              ))}
+            </select>
+            <select
+              aria-label="Risk category"
+              value={band}
+              onChange={(e) => setBand(e.target.value)}
+            >
+              <option value="all">All risk categories</option>
+              {['critical', 'high', 'medium', 'low', 'unavailable'].map((s) => (
+                <option key={s}>{s}</option>
+              ))}
+            </select>
           </div>
-        </Panel>
-        <Panel title="Explainability factors" aside={<Fingerprint size={17} className="muted" />}>
-          <div className="factor-list">
-            {[
-              {
-                name: 'Vulnerability evidence',
-                text: 'CVE applicability, CVSS, EPSS and KEV references.',
-                icon: ShieldAlert,
-              },
-              {
-                name: 'Configuration & exposure',
-                text: 'Snapshot-scoped controls and network assumptions.',
-                icon: Layers,
-              },
-              {
-                name: 'Conditional service impact',
-                text: 'Consequences accounting for redundancy and backups.',
-                icon: ChartNoAxesCombined,
-              },
-            ].map(({ name, text, icon: Icon }) => (
-              <div key={name} className="factor-item">
-                <span className="empty-icon">
-                  <Icon size={18} />
-                </span>
-                <div>
-                  <strong>{name}</strong>
-                  <p>{text}</p>
-                  <span className="subtle-label">PLANNED · NO CONTRIBUTION CALCULATED</span>
-                </div>
+          <div className="intelligence-layout">
+            <Panel title="Calculated asset priorities">
+              <div className="ranking-list">
+                {rows.map((a, i) => (
+                  <button
+                    key={a.asset_id}
+                    className={`ranking-row ${a.asset_id === active?.asset_id ? 'selected' : ''}`}
+                    onClick={() => setSelected(a.asset_id)}
+                    aria-label={`Explain ${a.name}`}
+                  >
+                    <span className="rank-number mono">{i + 1}</span>
+                    <div>
+                      <strong>{a.name}</strong>
+                      <small>
+                        {a.asset_id} ·{' '}
+                        <SectorBadge sector={a.sector as 'power' | 'water' | 'healthcare'} />
+                      </small>
+                    </div>
+                    <RiskBadge category={a.risk.category ?? undefined} />
+                    <strong className="mono rank-score">{a.risk.score?.toFixed(2) ?? '—'}</strong>
+                  </button>
+                ))}
               </div>
-            ))}
+              {rows.length === 0 && (
+                <EmptyState title="No matching priorities">
+                  Change the filters to inspect other assets.
+                </EmptyState>
+              )}
+            </Panel>
+            <Panel title={active ? `Why ${active.name}?` : 'Risk explanation'}>
+              {active && (
+                <>
+                  <button className="button secondary" onClick={() => setDetail(active.asset_id)}>
+                    Inspect asset & vulnerability findings
+                  </button>
+                  <PriorityEvidence item={active} />
+                </>
+              )}
+            </Panel>
           </div>
-          <Link to="/methodology" className="button secondary full-width">
-            Read scoring principles
-            <ArrowUpRight size={14} />
-          </Link>
-        </Panel>
-      </div>
-      <div className="three-column">
-        <Panel title="Model evidence">
-          <EmptyState title="Awaiting a validated model">
-            Model version, temporal evaluation, calibration and dataset provenance will appear after
-            training and validation.
-          </EmptyState>
-        </Panel>
-        <Panel title="Vulnerability prioritization">
-          <EmptyState title="Prioritization engine unavailable">
-            Real cached CVE, EPSS and KEV evidence is available in the Asset Register. No ML
-            priority or asset risk score has been calculated.
-          </EmptyState>
-        </Panel>
-        <Panel title="Snapshot comparison">
-          <EmptyState title="No calculated assessments">
-            Risk changes require two comparable, versioned assessments. Only the unassessed baseline
-            inventory exists.
-          </EmptyState>
-        </Panel>
-      </div>
-      <div className="inset-note">
-        A relative risk index orders review priorities. It is not a calibrated probability of a real
-        incident, and a network path alone does not prove exploitability.
-      </div>
-      <AssetDrawer id={selected} onClose={() => setSelected(null)} />
+          <Panel title="Model evaluation & provenance">
+            <p>{report.model.task}</p>
+            <p>{report.model.evaluation_status}</p>
+            <div className="table-scroll">
+              <table className="model-metrics">
+                <thead>
+                  <tr>
+                    <th>MODEL / BASELINE</th>
+                    <th>TEST AP</th>
+                    <th>ROC-AUC</th>
+                    <th>PRECISION @ 200 / MONTH</th>
+                    <th>RECALL @ 200 / MONTH</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {Object.entries(report.model.metrics).map(([name, m]) => (
+                    <tr key={name}>
+                      <td>{name}</td>
+                      {[
+                        'average_precision',
+                        'roc_auc',
+                        'precision_at_200_per_month',
+                        'recall_at_200_per_month',
+                      ].map((k) => (
+                        <td className="mono" key={k}>
+                          {typeof m[k] === 'number' ? m[k].toFixed(4) : '—'}
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <p className="mono small hash">
+              Model SHA-256 {report.model.artifact_sha256}
+              <br />
+              Training manifest SHA-256 {report.model.manifest_sha256}
+            </p>
+            <details className="signal-card">
+              <summary>Model limitations and coverage</summary>
+              <ul>
+                {report.model.limitations.map((l) => (
+                  <li key={l}>{l}</li>
+                ))}
+              </ul>
+            </details>
+          </Panel>
+          <Panel title="Assessment context">
+            <p className="mono small hash">
+              Report {report.id}
+              <br />
+              Vulnerability assessment {report.vulnerability_assessment_id}
+              <br />
+              Reference dataset {report.reference_dataset_id}
+            </p>
+            <p>
+              One inventory snapshot; no comparable risk trend is available. Current priorities and
+              projected impact assumptions remain distinct.
+            </p>
+          </Panel>
+        </>
+      )}
+      <AssetDrawer id={detail} onClose={() => setDetail(null)} />
     </>
   )
 }

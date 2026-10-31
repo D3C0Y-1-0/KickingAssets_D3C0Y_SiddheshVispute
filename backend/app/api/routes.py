@@ -22,6 +22,7 @@ from app.schemas.models import (
     WhatIfRequest,
     WhatIfResult,
 )
+from app.services.intelligence import get_report
 from app.services.inventory import Inventory
 
 router = APIRouter(
@@ -102,6 +103,13 @@ def asset_detail(
         state="current",
         provenance=asset["provenance"],
     )
+    try:
+        priority = get_report(inv.path, scenario_id, snapshot_id)
+        risk = next(item.risk for item in priority.assets if item.asset_id == asset_id)
+    except (HTTPException, OSError, ValueError):
+        risk.unavailable_reason = (
+            "Current risk intelligence is unavailable; inspect the intelligence endpoint"
+        )
     evidence = None
     try:
         assessment = report(inv.path, scenario_id, snapshot_id)

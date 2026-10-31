@@ -8,24 +8,27 @@ from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from starlette.exceptions import HTTPException
 
+from app.api.intelligence import router as intelligence_router
 from app.api.routes import router
 from app.api.vulnerability import router as vulnerability_router
 from app.db.store import default_db_path, initialize
 from app.db.vulnerability_store import bootstrap
 from app.domain.seed import ROOT
+from app.services.intelligence import bootstrap as bootstrap_intelligence
 
 
 def create_app(db_path: Path | None = None, static_dir: Path | None = None) -> FastAPI:
     @asynccontextmanager
     async def lifespan(application: FastAPI):
         initialize(application.state.db_path)
-        bootstrap(application.state.db_path)
+        bootstrap(application.state.db_path, ROOT / "data/reference/risk-v1")
+        bootstrap_intelligence(application.state.db_path)
         yield
 
     application = FastAPI(
         title="GridSentinel",
         version="0.1.0",
-        description="Phase 1: deterministic fictional inventory and two distinct graphs. Intelligence engines are unavailable.",
+        description="Simulated infrastructure, real reference-backed vulnerability evidence and experimental explainable risk prioritization. No incident probability is claimed.",
         lifespan=lifespan,
     )
     application.state.db_path = db_path or default_db_path()
@@ -73,6 +76,7 @@ def create_app(db_path: Path | None = None, static_dir: Path | None = None) -> F
 
     application.include_router(router)
     application.include_router(vulnerability_router)
+    application.include_router(intelligence_router)
     compiled = (static_dir or ROOT / "frontend" / "dist").resolve()
     if (compiled / "assets").is_dir():
         application.mount(
