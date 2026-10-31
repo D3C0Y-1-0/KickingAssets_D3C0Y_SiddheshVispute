@@ -155,6 +155,8 @@ kbd {
   display: flex;
   flex-direction: column;
   z-index: 40;
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 .brand {
   display: flex;
