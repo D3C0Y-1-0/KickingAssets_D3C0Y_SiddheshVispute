@@ -1,5 +1,13 @@
 # Phase 3A and latest-repository integration
 
+## Final synchronized snapshot
+
+The final fetched snapshot also includes readable Live UI `7f09433`, attack-path API/engine `ce13015`, and combined integration/updated force graph `3983920`. All **12 remote branch heads** from that fetch are ancestors of the local branch. Exact full SHAs and the fetch time are in [REMOTE_BRANCH_SNAPSHOT.json](REMOTE_BRANCH_SNAPSHOT.json). Subsequent teammate pushes are outside this recorded snapshot; this task is not a continuous merge watcher.
+
+The latest UI uses these names: **Overview**, **Live Simulation**, **Assets & Risk**, **Risk Ranking**, **AI Model**, **What-If**, **Fix Plan**, **Trends & Activity**, **Weak Points**, **Challenge Coverage**, plus the graph, twins, methodology and preserved **Curated CVE Assessment**. The route URLs remain stable. Live Simulation is an on-demand local simulation, not real infrastructure monitoring. It completed all seven API-backed steps in browser verification. The latest cached date **2026-10-01** produced index **35.62**, nine critical assets, one simulated activity anomaly, eleven single-failure chokepoints and fourteen supplier scenarios. Its three-action estimate reduced the index to approximately **27.5**; this is projected, never verified. Select **2025-01-01** on Overview to reproduce the **35.14** held-out-date example below.
+
+Existing imported modules additionally cover simulated activity, fixed-estate monthly replay, supplier concentration/failure scenarios, risk briefs and requirement coverage. The attack-path engine is exposed at `GET /api/v1/simulation/attack-paths` after a simulation. Its ordinal path-ranking weights are not probabilities, and operational dependencies are only used to report consequences, never as cyber traversal edges. No attack-path frontend was invented. The activity, supplier, chokepoint, trend, brief and attack-path endpoints all returned HTTP 200 in the local verification. New module behavior is covered by the expanded **141 passing backend tests**; frontend API tests remain **10 passing**. ML code, model artifacts and numerical dependency versions did not change in this final synchronization, so the source-verified model reevaluation below remains applicable.
+
 Local branch: `integration/phase-3`. No remote branch was pushed or rewritten; remote main remains Phase 1. User approved integrating all subsequently discovered branches and keeping launch on local SQLite.
 
 ## Preserved histories

@@ -8,8 +8,8 @@ from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from starlette.exceptions import HTTPException
 
-from app.api.intelligence import router as intelligence_router
 from app.api.insights import router as insights_router
+from app.api.intelligence import router as intelligence_router
 from app.api.routes import router
 from app.api.vulnerability import router as vulnerability_router
 from app.api.workflow import router as workflow_router

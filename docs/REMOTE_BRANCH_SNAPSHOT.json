@@ -1,0 +1,20 @@
+{
+  "fetched_at": "2026-10-31T15:49:30.145159+00:00",
+  "remote": "https://github.com/D3C0Y-1-0/KickingAssets_D3C0Y_SiddheshVispute.git",
+  "integrated_branch": "integration/phase-3",
+  "all_heads_are_ancestors": true,
+  "heads": {
+    "origin/codex/force-graph-infrastructure-map": "398392035db8e56031243e9244d5d6134a990d2a",
+    "origin/codex/innovations": "3485c03a79932c6fb34369faf6917e94322b9e72",
+    "origin/codex/readable-live-ui": "7f09433e408fda7e82192945167ee066afa1bca2",
+    "origin/feature/anatomy-digital-twins": "33c963c3b1c9f34bfa51568d5dc4cd8aaea56bf8",
+    "origin/feature/conditional-impact": "95160bc492f24c63ad74df96e8ab54eb0a1b742b",
+    "origin/feature/cyber-attack-path-engine": "ce130158993c0a8bcde26b04239e5988df4c469b",
+    "origin/feature/integrated-innovations-digital-twins": "398392035db8e56031243e9244d5d6134a990d2a",
+    "origin/feature/integrated-workflow": "d87c46344a22905bd449d7d23fa9a21ebc049a68",
+    "origin/feature/ml-kev-signal": "37c97ad933f6d2730a17d42fe319874a7a533e0e",
+    "origin/feature/real-data-link": "024ab9849114cea16b5a0b8d1fcd57ef766fb09f",
+    "origin/feature/vulnerability-assessment": "5b4d82fdf0c3bee732e58a81feb409eecbb2352b",
+    "origin/main": "4acfd7ebfb708cb9442e9a879e28e238c448d666"
+  }
+}

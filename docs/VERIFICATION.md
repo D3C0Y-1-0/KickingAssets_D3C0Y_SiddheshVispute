@@ -1,5 +1,11 @@
 # Phase 1 verification record
 
+## Final late-push synchronization
+
+The user's all-branches instruction also covered new pushes discovered in the final refresh: readable Live UI `7f09433`, attack-path analysis `ce13015`, and combined/force-graph history `3983920`. [REMOTE_BRANCH_SNAPSHOT.json](REMOTE_BRANCH_SNAPSHOT.json) records the exact fetched heads. Final full backend run: **141 passed**, one existing Starlette/httpx warning. Frontend: **10 passed**, typecheck, Prettier and production build passed. The D3 graph chunk configuration was updated from the obsolete Cytoscape entry, removing the empty-chunk build warning.
+
+The additional four browser routes (Live Simulation, Trends & Activity, Weak Points, Challenge Coverage) loaded actual data, bringing browser route coverage to fourteen. Live Simulation completed all seven steps against the actual local API: health, ML simulation, simulated activity, conditional chokepoints, supplier what-if, existing optimizer and risk brief. Latest cached-date index: **35.62**; nine critical assets; one simulated anomaly; eleven single-failure chokepoints; fourteen suppliers; projected three-action plan approximately **27.5**. The six added insight/attack-path GET endpoints returned 200. Existing ML artifacts/features/dependencies were unchanged by these late merges. Browser focus/navigation interruptions were recovered through fresh observations and direct navigation to known local routes. No browser warnings/errors were captured after the new page checks. These results supersede the smaller earlier test counts below.
+
 ## Phase 3A and latest-repository integration — 31 October 2026
 
 See [PHASE_3_INTEGRATION.md](PHASE_3_INTEGRATION.md) for fetched SHAs, two explicit assessment contexts, actual predictions, metrics, commands and limits. All fetched branch heads are ancestors of local `integration/phase-3`; no remote push/main merge occurred. Local SQLite was explicitly selected.

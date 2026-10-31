@@ -198,9 +198,11 @@ function Vendors() {
           </table>
         </div>
         <p className="ins-note">
-          Every asset of the vendor suffers its default effect for its type at the same moment,
-          at once. Vendors are assumed products, not a scan.
-          {data.kev_available ? '' : ' The attacked-flaws list was not available, so those counts show 0.'}
+          Every asset of the vendor suffers its default effect for its type at the same moment, at
+          once. Vendors are assumed products, not a scan.
+          {data.kev_available
+            ? ''
+            : ' The attacked-flaws list was not available, so those counts show 0.'}
         </p>
       </Panel>
       <div className="ins-grid">

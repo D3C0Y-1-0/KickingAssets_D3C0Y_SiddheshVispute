@@ -4,6 +4,8 @@
 
 **See the blast radius before the incident.**
 
+The synchronized snapshot also preserves the latest **Live Simulation**, trends/activity, resilience, coverage and attack-path API work. See `docs/REMOTE_BRANCH_SNAPSHOT.json` for the precise fetched heads and `docs/PHASE_3_INTEGRATION.md` for the final 141-test verification and current navigation names.
+
 Critical infrastructure cybersecurity risk intelligence for D3COY PS03. The application combines simulated infrastructure, independent graphs, real cached NVD/CVSS/EPSS/KEV evidence, actual evaluated ML outputs and explainable relative-priority calculations. It does not estimate calibrated infrastructure-compromise probabilities, monitor live systems or change real infrastructure.
 
 Read [docs/PHASE_2A.md](docs/PHASE_2A.md) for offline/online ingestion, supported matching, APIs, provenance and coverage limits. Four assets have separately declared simulated Apache components; no CVE is inferred from fictional baseline product names. Shared risk/impact schemas and engine files are unchanged.

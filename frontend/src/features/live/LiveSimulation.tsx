@@ -88,7 +88,9 @@ export default function LiveSimulation() {
                     {a.asset_id}
                   </Link>
                   <span className="mono">{a.risk.score?.toFixed(1)}</span>
-                  <span className={`badge ${a.risk.category === 'critical' ? 'sample' : 'neutral'}`}>
+                  <span
+                    className={`badge ${a.risk.category === 'critical' ? 'sample' : 'neutral'}`}
+                  >
                     {a.risk.category}
                   </span>
                 </li>

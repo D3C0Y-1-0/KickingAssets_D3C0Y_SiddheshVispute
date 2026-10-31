@@ -39,14 +39,16 @@ const initial: LiveStep[] = [
   {
     id: 'simulate',
     label: 'Find weaknesses and score risk',
-    explain: 'Match each asset to known vulnerabilities, let the AI model rank them, then work out the damage if they fail.',
+    explain:
+      'Match each asset to known vulnerabilities, let the AI model rank them, then work out the damage if they fail.',
     call: 'POST /simulation/run',
     status: 'idle',
   },
   {
     id: 'activity',
     label: 'Watch network activity',
-    explain: 'Compare each asset’s traffic with its own normal and flag the odd ones. The traffic is simulated.',
+    explain:
+      'Compare each asset’s traffic with its own normal and flag the odd ones. The traffic is simulated.',
     call: 'GET /activity',
     status: 'idle',
   },
@@ -67,7 +69,8 @@ const initial: LiveStep[] = [
   {
     id: 'plan',
     label: 'Plan the best fixes',
-    explain: 'Pick the fixes that cut the most risk for the least effort. Results are estimates, not checked.',
+    explain:
+      'Pick the fixes that cut the most risk for the least effort. Results are estimates, not checked.',
     call: 'POST /actions/optimize',
     status: 'idle',
   },
