@@ -3635,3 +3635,16 @@ button.ov-rail-item:focus-visible {
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+/* ---- Encrypted-text greeting reveal ---- */
+.ov-greeting-scramble {
+  color: var(--text-muted);
+}
+.ov-greeting-revealed {
+  color: var(--text);
+}
+@media (prefers-reduced-motion: reduce) {
+  .ov-greeting-scramble {
+    color: var(--text);
+  }
+}

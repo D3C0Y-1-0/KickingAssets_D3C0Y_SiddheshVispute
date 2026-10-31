@@ -36,6 +36,7 @@ import {
   useTrend,
 } from '../../hooks/queries'
 import { AssetDrawer } from '../../components/AssetDrawer'
+import { EncryptedText } from '../../components/EncryptedText'
 import {
   AsOfBanner,
   AsOfSelect,
@@ -95,7 +96,14 @@ export default function Overview() {
           <div className="ov-greeting-top">
             <div>
               <h1>
-                Hi<span className="ov-wave"> 👋</span> — what do you want to check?
+                <EncryptedText
+                  text="Hi — what do you want to check?"
+                  revealDelayMs={35}
+                  flipDelayMs={40}
+                  encryptedClassName="ov-greeting-scramble"
+                  revealedClassName="ov-greeting-revealed"
+                />
+                <span className="ov-wave"> 👋</span>
               </h1>
               <p>
                 See how risky Aurora City is, which assets need attention first, and what to fix.
