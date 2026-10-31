@@ -349,3 +349,49 @@ Recovery targets, costs, topology/control assumptions, pre-incident downtime and
 allocation limitations are documented. No UI, physical recovery, load/concurrency, hosted
 release or security penetration test is claimed. Credential-pattern and scope review precedes
 commit; environments/databases/cache/build output/QA logs remain ignored.
+
+
+## Phase 8 interactive resilience UI — 1 November 2026
+
+From exact Phase 7 ec1ed80174817b42886914c302a93136bc62beba, local branch
+feature/phase-8-resilience-ui. No backend, API schema, original graph, dataset, model artifact,
+package version, theme or landing-page change. Full modified-file inventory is FILE_MANIFEST.md.
+
+- Full backend regression: **247 passed**, no skips, **295.18s**; one existing upstream
+  Starlette/httpx deprecation warning. Ruff lint/format passed (**85 files**).
+- Full frontend regression: **99 passed**, four files, **11.88s**, including **14 new** planner
+  cases. Strict TypeScript, frontend Prettier and production build passed (**2607 modules,
+  9.02s**). No separate ESLint task exists. The earlier 12-case planner set passed before
+  adding explicit wrong-graph-type and catalog-fingerprint rejection tests.
+- New tests protect exact request identity/action transfer, changed baselines, late responses,
+  scenario/budget invalidation, invalid API responses, structured errors/retry, missing baseline,
+  catalog failure/retry, event play/pause/scrub/replay, graph separation, simultaneous events
+  and horizon-truncation semantics. Test fixtures are isolated from application data.
+- Actual compiled browser: Live Simulation completed, followed by PWR-008 power-loss simulation,
+  actual optimization and fresh protected replay **360 -> 90** service-minutes. Recovery selected
+  **4 credits / 8h effort / 1h downtime**. The existing D3 node for PWR-008 changed red -> green
+  at the API's minute-30 boundary. Native inspector/fit and Play/Pause/Next controls worked.
+- Actual standby-extension alternative selected **12 credits / 16h / 2h**, nominal 90 minutes;
+  half-energy stress returned **360**, extra 270. Forced standby unavailable with the recovery
+  plan returned **180**, extra 90. Zero-credit optimization returned an empty plan and replay
+  **360 -> 360**. No fallback constants supply these values.
+- Actual replacement run cleared prior results (no replay slider remained) after baseline check.
+  Asset Register drawer navigation retained PWR-008 in the planner selector. Invalid/failed API
+  boundaries are automated tests, not claimed as all deliberately induced in the real browser.
+- Mobile viewport **390x844**, document client/scroll width **375/375**. Controls wrap, native
+  inputs and energy range keyboard controls worked. Menu opening was observed; a browser
+  navigation automation issue required restoring the planner URL. No full menu/WCAG/touch-device
+  audit is claimed. The final console had no errors/warnings.
+- Existing scripts/demo_resilience.py against the same isolated SQLite API passed **11 HTTP
+  checks** without creating its initial run (the browser created it). Phase 6/7 results stayed
+  **35.62 -> 27.72**, **15** paths and **360 -> 90** continuity minutes, with baseline payload
+  immutability. A later isolated replacement was intentional for the stale-result test.
+- Screenshots under ignored artifacts/screenshots/: phase8-desktop.jpg and phase8-mobile.jpg
+  were captured and visually inspected. No browser verification was inferred from the build.
+
+The initial test command before continuation was not executed because automatic approval review
+had hit a usage limit. The resumed authorized command executed successfully; no approval check
+was bypassed. All final gates above passed. The original app/teammate API instances were not
+restarted; isolated QA port 8001 uses artifacts/phase8.sqlite3. Restart an older backend from this
+branch before using the new frontend with it. The runbook lists exact steps and remaining
+prototype limits. New results stay projected/not_verified, and no infrastructure action occurs.

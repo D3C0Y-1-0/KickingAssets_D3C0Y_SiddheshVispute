@@ -45,6 +45,7 @@ const Resilience = lazy(() => import('../features/resilience/Resilience'))
 const Coverage = lazy(() => import('../features/coverage/Coverage'))
 const LiveSimulation = lazy(() => import('../features/live/LiveSimulation'))
 const AttackPaths = lazy(() => import('../features/attack-paths/AttackPaths'))
+const Planner = lazy(() => import('../features/planner/Planner'))
 const navigation: { path: string; name: string; icon: typeof Grid2X2; tag?: string }[] = [
   { path: '/', name: 'Overview', icon: Grid2X2 },
   { path: '/live', name: 'Live Simulation', icon: PlayCircle, tag: 'NEW' },
@@ -59,6 +60,7 @@ const navigation: { path: string; name: string; icon: typeof Grid2X2; tag?: stri
   { path: '/remediation', name: 'Fix Plan', icon: ListChecks },
   { path: '/posture', name: 'Trends & Activity', icon: Radar },
   { path: '/resilience', name: 'Weak Points', icon: Waypoints },
+  { path: '/resilience-planner', name: 'Resilience Planner', icon: ShieldCheck },
   { path: '/coverage', name: 'Challenge Coverage', icon: ClipboardCheck },
 ]
 
@@ -282,6 +284,7 @@ export default function App() {
                 <Route path="/assets" element={<Assets />} />
                 <Route path="/intelligence" element={<Intelligence />} />
                 <Route path="/attack-paths" element={<AttackPaths />} />
+                <Route path="/resilience-planner" element={<Planner />} />
                 <Route path="/curated-intelligence" element={<CuratedIntelligence />} />
                 <Route path="/ml" element={<MlLab />} />
                 <Route path="/what-if" element={<WhatIf />} />

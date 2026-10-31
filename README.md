@@ -1,5 +1,7 @@
 # GridSentinel
 
+**Phase 8 interactive resilience:** [Planner runbook](docs/PHASE_8_RESILIENCE_UI.md) documents the new `/resilience-planner` workflow, API-supported operational replay, exact budget planning, before/after comparison and stress tests. Existing visual identity, D3 graph, engines, datasets and API contracts are preserved. Local branch `feature/phase-8-resilience-ui`; no push or merge.
+
 **Phase 7 backend:** [Preventive Resilience Optimizer](docs/PHASE_7_RESILIENCE_ENGINE.md) adds separate run-bound continuity simulation, a documented intervention catalog, exact bounded service-minute optimization and stress-test APIs. Based on Phase 6 `91f2ab55`; no UI redesign or existing engine/model replacement. Demo: `python scripts/demo_resilience.py --run` using the project virtual environment and a running backend. Full verification is recorded in docs/VERIFICATION.md. This feature branch is local until the owner authorizes a push.
 
 **Phase 6 finalization:** [Final demo runbook](docs/FINAL_DEMO_RUNBOOK.md) and [module audit](docs/PHASE_6_MODULE_AUDIT.md) are the current local launch/demo authority. Adds run-bound inspection of the existing attack-path engine, real brief verification, safer latest-run handling and responsive diagram fitting. Original PS03 objectives and existing engines/model artifacts remain unchanged. Branch `feature/phase-6-finalization`; no merge to main. Older records below are historical.

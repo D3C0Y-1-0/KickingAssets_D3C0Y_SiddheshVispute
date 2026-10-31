@@ -72,6 +72,14 @@ function post<T>(path: string, body?: unknown, params: Record<string, string | u
 }
 
 export const api = {
+  resilienceCatalog: (body: Models['Binding']) =>
+    post<Models['Catalog']>('/resilience/preventive/catalog', body),
+  resilienceSimulate: (body: Models['EvaluationRequest']) =>
+    post<Models['Evaluation']>('/resilience/preventive/simulate', body),
+  resilienceOptimize: (body: Models['OptimizationRequest']) =>
+    post<Models['Optimization']>('/resilience/preventive/optimize', body),
+  resilienceStress: (body: Models['StressRequest']) =>
+    post<Models['StressReport']>('/resilience/preventive/stress-test', body),
   intelligence: (context: Context, signal?: AbortSignal) =>
     get<Models['IntelligenceReport']>('/intelligence', context, signal),
   assessIntelligence: async (context: Context) => {

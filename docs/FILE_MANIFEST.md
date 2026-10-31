@@ -262,3 +262,28 @@ frontend/src/api/schema.d.ts
 scripts/check.ps1
 scripts/demo_resilience.py
 ```
+
+
+## Phase 8 interactive resilience UI
+
+Exact modified/created files:
+
+```text
+README.md
+docs/ARCHITECTURE.md
+docs/FILE_MANIFEST.md
+docs/HANDOFF.md
+docs/PHASE_8_RESILIENCE_UI.md
+docs/VERIFICATION.md
+frontend/src/api/client.ts
+frontend/src/app/App.tsx
+frontend/src/components/AssetDrawer.tsx
+frontend/src/features/actions/WorkflowUI.tsx
+frontend/src/features/infrastructure/Infrastructure.tsx
+frontend/src/features/planner/Planner.tsx
+frontend/src/features/planner/Replay.tsx
+frontend/src/features/planner/model.ts
+frontend/src/features/planner/planner.css
+frontend/src/features/planner/queries.ts
+frontend/tests/planner.test.tsx
+```

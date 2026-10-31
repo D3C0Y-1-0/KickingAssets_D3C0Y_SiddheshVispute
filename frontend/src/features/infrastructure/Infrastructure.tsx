@@ -134,6 +134,12 @@ export default function Infrastructure() {
             <Link className="button secondary" to="/attack-paths">
               Inspect attack paths
             </Link>
+            <Link
+              className="button secondary"
+              to={`/resilience-planner${selected ? `?asset=${selected}` : ''}`}
+            >
+              Open Resilience Planner
+            </Link>
           </>
         }
       />
