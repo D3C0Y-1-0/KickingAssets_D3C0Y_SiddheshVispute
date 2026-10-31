@@ -22,4 +22,4 @@ Cutting HLT-004, PWR-004 and WTR-004 (72 h) removes all 15 plausible routes; iso
 ## Status
 - [x] Engine, schemas, service, API, tests
 - [x] Frontend page, coverage row
-- [ ] Deployed and checked in the browser (see HANDOFF.md)
+- [x] Deployed (Azure backend delta, Vercel frontend) and checked live in the browser: attacker replay, prevent and react tabs
