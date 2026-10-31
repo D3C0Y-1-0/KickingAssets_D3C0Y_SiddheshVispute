@@ -2,6 +2,7 @@ import { useState } from 'react'
 import {
   ArrowRight,
   ArrowUpRight,
+  BrainCircuit,
   Clock3,
   Download,
   Database,
@@ -13,14 +14,26 @@ import {
   Zap,
 } from 'lucide-react'
 import { Link } from 'react-router-dom'
-import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts'
+import {
+  Area,
+  AreaChart,
+  Cell,
+  Pie,
+  PieChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from 'recharts'
 import { api } from '../../api/client'
 import {
+  useActivity,
   useAssets,
   useIntelligence,
   useLatestRun,
   useScenarioContext,
   useServices,
+  useTrend,
 } from '../../hooks/queries'
 import { AssetDrawer } from '../../components/AssetDrawer'
 import {
@@ -31,7 +44,6 @@ import {
 } from '../../components/Simulation'
 import {
   EmptyState,
-  PageHeading,
   Panel,
   QueryState,
   RiskBadge,
@@ -42,6 +54,8 @@ import {
 import { categoryLabels } from '../../lib/risk'
 import type { Sector } from '../../api/client'
 import Station from '../../components/illustration/Station'
+import { ActivityHeatmap } from './ActivityHeatmap'
+import { RiskArcGauge } from './RiskArcGauge'
 
 const sectorIcons = { power: Zap, water: Droplets, healthcare: HeartPulse }
 
@@ -50,6 +64,8 @@ export default function Overview() {
   const services = useServices()
   const latest = useLatestRun()
   const curated = useIntelligence()
+  const trend = useTrend()
+  const activity = useActivity()
   const [sector, setSector] = useState<Sector>('power')
   const [selected, setSelected] = useState<string | null>(null)
   const [asOf, setAsOf] = useState('')
@@ -61,14 +77,33 @@ export default function Overview() {
   const counts = Object.fromEntries((run?.category_counts ?? []).map((c) => [c.category, c.count]))
   const distribution = categoryLabels.map((name) => ({ name, value: counts[name] ?? 0 }))
   const index = run?.city_risk.score ?? null
+  const trendPoints = trend.data?.points ?? []
+  const trendValues = trendPoints.map((p) => p.city_index).filter((v): v is number => v != null)
+  const trendMin = trendValues.length ? Math.min(...trendValues) : 0
+  const trendMax = trendValues.length ? Math.max(...trendValues) : 100
+  const trendPad = Math.max(2, (trendMax - trendMin) * 0.25)
+  const trendDomain: [number, number] = [
+    Math.max(0, Math.floor(trendMin - trendPad)),
+    Math.min(100, Math.ceil(trendMax + trendPad)),
+  ]
+  const topCritical = run?.assets.filter((a) => a.risk.category === 'critical') ?? []
+
   return (
     <>
-      <PageHeading
-        eyebrow="WORKSPACE / OVERVIEW"
-        title="Overview"
-        description="See how risky the city is, which assets need attention first, and what to fix. Scores use real vulnerability data."
-        actions={
-          <>
+      <div className="ov-hero-row">
+        <section className="panel glow-card ov-greeting">
+          <div className="ov-greeting-top">
+            <div>
+              <h1>
+                Hi<span className="ov-wave"> 👋</span> — what do you want to check?
+              </h1>
+              <p>
+                See how risky Aurora City is, which assets need attention first, and what to fix.
+                Every score below is computed from real vulnerability data, not a mock-up.
+              </p>
+            </div>
+          </div>
+          <div className="ov-greeting-actions">
             <AsOfSelect value={asOf} onChange={setAsOf} />
             <RunSimulationButton
               asOf={asOf || undefined}
@@ -80,9 +115,50 @@ export default function Overview() {
               <ArrowUpRight size={14} />
             </Link>
             {run && <BriefLinks />}
-          </>
-        }
-      />
+          </div>
+        </section>
+        <aside className="ov-rail" aria-label="What's next">
+          <div className="ov-rail-head">
+            <span>{run ? 'Needs attention' : "What's next"}</span>
+            <small>{run ? `as of ${run.as_of}` : 'No run yet'}</small>
+          </div>
+          {!run && (
+            <div className="ov-rail-item pending">
+              <span className="ov-rail-dot" />
+              <div>
+                <strong>Run the simulation</strong>
+                <small>Scores every asset from real vulnerability data</small>
+              </div>
+            </div>
+          )}
+          {run &&
+            topCritical.slice(0, 3).map((a) => (
+              <button
+                key={a.asset_id}
+                className="ov-rail-item critical"
+                onClick={() => setSelected(a.asset_id)}
+              >
+                <span className="ov-rail-dot" />
+                <div>
+                  <strong>{a.name}</strong>
+                  <small>
+                    {a.asset_id} · {a.risk.score?.toFixed(1)} critical
+                  </small>
+                </div>
+              </button>
+            ))}
+          {run && topCritical.length === 0 && (
+            <div className="ov-rail-item">
+              <span className="ov-rail-dot" />
+              <div>
+                <strong>Nothing critical right now</strong>
+                <small>No asset is in the critical band</small>
+              </div>
+            </div>
+          )}
+        </aside>
+      </div>
+
       <div className="metric-grid">
         <section className="metric-card city-risk">
           <div className="metric-label">
@@ -161,6 +237,98 @@ export default function Overview() {
         </section>
       </div>
       {run && <AsOfBanner run={run} />}
+
+      <div className="overview-middle">
+        <Panel
+          title={
+            <>
+              <span className="panel-dot" />
+              Risk trend
+            </>
+          }
+          aside={<span className="subtle-label mono">MONTHLY · HELD-OUT TEST</span>}
+          className="ov-trend-panel"
+        >
+          {trendPoints.length > 0 ? (
+            <ResponsiveContainer width="100%" height={200}>
+              <AreaChart data={trendPoints} margin={{ top: 10, right: 16, left: -16, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="trendFill" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="var(--accent)" stopOpacity={0.35} />
+                    <stop offset="100%" stopColor="var(--accent)" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <XAxis
+                  dataKey="as_of"
+                  tick={{ fill: 'var(--text-muted)', fontSize: 10 }}
+                  tickFormatter={(v: string) => v.slice(2, 7)}
+                  axisLine={{ stroke: 'var(--border)' }}
+                  tickLine={false}
+                  interval="preserveStartEnd"
+                />
+                <YAxis
+                  domain={trendDomain}
+                  tick={{ fill: 'var(--text-muted)', fontSize: 10 }}
+                  axisLine={false}
+                  tickLine={false}
+                  width={28}
+                />
+                <Tooltip
+                  content={({ active, payload, label }) => {
+                    if (!active || !payload?.length) return null
+                    const p = payload[0].payload as (typeof trendPoints)[number]
+                    return (
+                      <div className="chart-tip">
+                        <strong>{label}</strong>
+                        <div className="chart-tip-row">
+                          <i style={{ background: 'var(--accent)' }} />
+                          City index {p.city_index?.toFixed(1) ?? '—'} · {p.category ?? 'n/a'}
+                        </div>
+                      </div>
+                    )
+                  }}
+                />
+                <Area
+                  type="monotone"
+                  dataKey="city_index"
+                  stroke="var(--accent)"
+                  strokeWidth={2}
+                  fill="url(#trendFill)"
+                  isAnimationActive={false}
+                  connectNulls
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+          ) : trend.isError ? (
+            <EmptyState compact title="Trend unavailable">
+              Posture trend could not be loaded for this scenario.
+            </EmptyState>
+          ) : (
+            <EmptyState compact title="No trend yet">
+              Computed once enough historical snapshots are scored.
+            </EmptyState>
+          )}
+          <div className="panel-footnote">
+            City risk index over time on held-out test snapshots; a relative index (0-100), not a
+            probability of an incident. The axis is zoomed to the observed range
+            ({trendDomain[0]}-{trendDomain[1]}) to make real month-to-month movement visible.
+          </div>
+        </Panel>
+        <Panel title="Weekly activity" aside={<span className="subtle-label mono">14 DAYS</span>}>
+          {activity.data ? (
+            <ActivityHeatmap series={activity.data.series} />
+          ) : activity.isError ? (
+            <EmptyState compact title="Activity unavailable">
+              Could not load the simulated network activity signal.
+            </EmptyState>
+          ) : (
+            <EmptyState compact title="Loading activity…">
+              Simulated anomaly signal across the scenario window.
+            </EmptyState>
+          )}
+        </Panel>
+      </div>
+
       <div className="overview-middle">
         <Panel
           title={
@@ -272,6 +440,7 @@ export default function Overview() {
           )}
         </Panel>
       </div>
+
       <div className="overview-bottom">
         <Panel
           title="Priority assets"
@@ -354,6 +523,24 @@ export default function Overview() {
             </EmptyState>
           )}
         </Panel>
+        <div className="ov-side-stack">
+          <div className="orb-card">
+            <div className="orb-ring">
+              <BrainCircuit size={28} />
+            </div>
+            <h3>AI risk model</h3>
+            <p>See the trained model's accuracy, drivers and limitations.</p>
+            <Link className="button primary" to="/ml">
+              Open AI model
+            </Link>
+          </div>
+          <div className="panel glow-card" style={{ padding: '18px 20px' }}>
+            <RiskArcGauge value={index} category={run?.city_risk.category ?? null} />
+          </div>
+        </div>
+      </div>
+
+      <div className="overview-bottom">
         <Panel
           title="Essential services"
           aside={<TextLink to="/infrastructure?mode=operational">Dependencies</TextLink>}
@@ -394,117 +581,120 @@ export default function Overview() {
             forecast and not monitored status.
           </div>
         </Panel>
+        <Panel
+          title="Curated vulnerability check"
+          aside={
+            <Link to="/curated-intelligence" className="text-link">
+              What this means →
+            </Link>
+          }
+        >
+          <QueryState pending={curated.isPending} error={curated.error} retry={curated.refetch} />
+          {!curated.isError && curated.data && (
+            <p>
+              {curated.data.assessed_count} / {curated.data.assets.length} assets assessed ·
+              average score {curated.data.covered_asset_mean?.toFixed(1) ?? 'unavailable'} out of
+              100 · {curated.data.unavailable_count} not assessed. This is a separate check, so do
+              not compare it with the main risk scores.
+            </p>
+          )}
+        </Panel>
       </div>
+
       <details className="stage-details">
         <summary>Technical details of the last run</summary>
-      <Panel
-        title="Last simulation"
-        aside={
-          <span className="subtle-label">
-            <Clock3 size={13} />
-            {run ? new Date(run.created_at).toLocaleString('en-GB') : 'NOT RUN'}
-          </span>
-        }
-        className="history-panel"
-      >
-        {run ? (
-          <ol className="stage-list">
-            {run.stages.map((s) => (
-              <li key={s.name}>
-                <span>
-                  <strong>{s.name}</strong>
-                  <small>{s.detail}</small>
-                </span>
-                <span className="mono muted">{s.seconds.toFixed(2)} s</span>
-              </li>
-            ))}
-          </ol>
-        ) : (
-          <EmptyState compact title="No simulation yet">
-            Press Run simulation. The stages and timings of the run will be listed here.
-          </EmptyState>
-        )}
-      </Panel>
+        <Panel
+          title="Last simulation"
+          aside={
+            <span className="subtle-label">
+              <Clock3 size={13} />
+              {run ? new Date(run.created_at).toLocaleString('en-GB') : 'NOT RUN'}
+            </span>
+          }
+          className="history-panel"
+        >
+          {run ? (
+            <ol className="stage-list">
+              {run.stages.map((s) => (
+                <li key={s.name}>
+                  <span>
+                    <strong>{s.name}</strong>
+                    <small>{s.detail}</small>
+                  </span>
+                  <span className="mono muted">{s.seconds.toFixed(2)} s</span>
+                </li>
+              ))}
+            </ol>
+          ) : (
+            <EmptyState compact title="No simulation yet">
+              Press Run simulation. The stages and timings of the run will be listed here.
+            </EmptyState>
+          )}
+        </Panel>
       </details>
-      <Panel
-        title="Curated vulnerability check"
-        aside={
-          <Link to="/curated-intelligence" className="text-link">
-            What this means →
-          </Link>
-        }
-      >
-        <QueryState pending={curated.isPending} error={curated.error} retry={curated.refetch} />
-        {!curated.isError && curated.data && (
-          <p>
-            {curated.data.assessed_count} / {curated.data.assets.length} assets assessed ·
-            average score {curated.data.covered_asset_mean?.toFixed(1) ?? 'unavailable'} out of 100 ·
-            {curated.data.unavailable_count} not assessed. This is a separate check, so do not compare it with the
-            main risk scores.
-          </p>
-        )}
-      </Panel>
+
       <details className="how-it-works" open={!run}>
         <summary>How it works in three steps</summary>
-      <div className="workflow-steps">
-        <section className={`workflow-step ${run ? 'done' : ''}`}>
-          <span className="step-number">STEP 1 · SIMULATE</span>
-          <h3>Find the weaknesses</h3>
-          <p>
-            Each asset is assumed to run a real product version. The public list of known flaws shows
-            which ones apply, and the trained model scores them.
-          </p>
-          <div className="step-actions">
-            <RunSimulationButton
-              asOf={asOf || undefined}
-              variant={run ? 'secondary' : 'primary'}
-              label={run ? 'Re-run' : 'Run simulation'}
-            />
-            {run && <span className="subtle-label mono">{run.id}</span>}
-          </div>
-        </section>
-        <section className={`workflow-step ${run ? 'done' : ''}`}>
-          <span className="step-number">STEP 2 · ASSESS</span>
-          <h3>Score the risk and see why</h3>
-          <p>
-            How likely a flaw is to be attacked, how exposed the asset is, and how many services
-            would stop. Every score shows its reasons.
-          </p>
-          <div className="step-actions">
-            {run ? (
-              <Link className="button secondary" to="/intelligence">
-                Open risk ranking <ArrowRight size={14} />
+        <div className="workflow-steps">
+          <section className={`workflow-step ${run ? 'done' : ''}`}>
+            <span className="step-number">STEP 1 · SIMULATE</span>
+            <h3>Find the weaknesses</h3>
+            <p>
+              Each asset is assumed to run a real product version. The public list of known flaws
+              shows which ones apply, and the trained model scores them.
+            </p>
+            <div className="step-actions">
+              <RunSimulationButton
+                asOf={asOf || undefined}
+                variant={run ? 'secondary' : 'primary'}
+                label={run ? 'Re-run' : 'Run simulation'}
+              />
+              {run && <span className="subtle-label mono">{run.id}</span>}
+            </div>
+          </section>
+          <section className={`workflow-step ${run ? 'done' : ''}`}>
+            <span className="step-number">STEP 2 · ASSESS</span>
+            <h3>Score the risk and see why</h3>
+            <p>
+              How likely a flaw is to be attacked, how exposed the asset is, and how many services
+              would stop. Every score shows its reasons.
+            </p>
+            <div className="step-actions">
+              {run ? (
+                <Link className="button secondary" to="/intelligence">
+                  Open risk ranking <ArrowRight size={14} />
+                </Link>
+              ) : (
+                <span className="subtle-label">Needs step 1</span>
+              )}
+              <Link className="text-link" to="/ml">
+                AI model
               </Link>
-            ) : (
-              <span className="subtle-label">Needs step 1</span>
-            )}
-            <Link className="text-link" to="/ml">
-              AI model
-            </Link>
-          </div>
-        </section>
-        <section className="workflow-step">
-          <span className="step-number">STEP 3 · ACT</span>
-          <h3>Plan the fixes</h3>
-          <p>
-            Which updates and access changes cut the most risk for the least effort. These are estimates.
-          </p>
-          <div className="step-actions">
-            {run ? (
-              <>
-                <Link className="button secondary" to="/what-if">
-                  What-if <ArrowRight size={14} />
-                </Link>
-                <Link className="button secondary" to="/remediation">
-                  Remediation plan <ArrowRight size={14} />
-                </Link>
-              </>
-            ) : (
-              <span className="subtle-label">Needs step 1</span>
-            )}
-          </div>
-        </section>
-      </div>
+            </div>
+          </section>
+          <section className="workflow-step">
+            <span className="step-number">STEP 3 · ACT</span>
+            <h3>Plan the fixes</h3>
+            <p>
+              Which updates and access changes cut the most risk for the least effort. These are
+              estimates.
+            </p>
+            <div className="step-actions">
+              {run ? (
+                <>
+                  <Link className="button secondary" to="/what-if">
+                    What-if <ArrowRight size={14} />
+                  </Link>
+                  <Link className="button secondary" to="/remediation">
+                    Remediation plan <ArrowRight size={14} />
+                  </Link>
+                </>
+              ) : (
+                <span className="subtle-label">Needs step 1</span>
+              )}
+            </div>
+          </section>
+        </div>
       </details>
       <ProvenanceNotice />
       <AssetDrawer id={selected} onClose={() => setSelected(null)} />
