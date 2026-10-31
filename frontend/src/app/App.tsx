@@ -27,7 +27,8 @@ import {
 import { NavLink, Route, Routes, Link, useLocation, useNavigate } from 'react-router-dom'
 import { api } from '../api/client'
 import { useScenario } from '../hooks/queries'
-import { QueryState, SampleBadge } from '../components/ui'
+import { CursorFx } from '../components/CursorFx'
+import { QueryState } from '../components/ui'
 import Overview from '../features/overview/Overview'
 import brandMark from '../assets/brand/gridinal-mark.png'
 import brandWord from '../assets/brand/gridinal-wordmark.png'
@@ -134,6 +135,7 @@ export default function App() {
   }, [])
   return (
     <div className={`app-shell${collapsed ? ' nav-collapsed' : ''}`}>
+      <CursorFx />
       <a className="skip-link" href="#main-content">
         Skip to content
       </a>
@@ -256,19 +258,7 @@ export default function App() {
             </Link>
           </div>
         </header>
-        <div className="environment-bar">
-          <div>
-            <SampleBadge>Sample scenario</SampleBadge>
-            <span>
-              Fictional infrastructure, real vulnerability data. Scores are computed by the ML model
-              after a simulation. No live monitoring.
-            </span>
-          </div>
-          <Link to="/methodology">
-            About this environment
-            <ChevronRight size={13} />
-          </Link>
-        </div>
+        <div className="scroll-fade-bottom" aria-hidden />
         <main id="main-content" tabIndex={-1}>
           <Suspense fallback={<QueryState pending error={null} />}>
             {location.pathname === '/digital-twins' ? (

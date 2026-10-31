@@ -48,4 +48,23 @@
   --color-foreground: var(--text);
   --color-muted: var(--text-secondary);
   --font-sans: 'Inter', 'Segoe UI', sans-serif;
+  /* BackgroundRippleEffect: per-cell click ripple, timed via the --delay/--duration
+     custom properties the component sets inline on each clicked-radius cell. */
+  --animate-cell-ripple: cell-ripple var(--duration, 200ms) ease-out var(--delay, 0ms);
+}
+
+@keyframes cell-ripple {
+  0% {
+    opacity: 0.4;
+    transform: scale(1);
+  }
+  30% {
+    opacity: 1;
+    transform: scale(0.94);
+    background-color: var(--cell-shadow-color);
+  }
+  100% {
+    opacity: 0.4;
+    transform: scale(1);
+  }
 }

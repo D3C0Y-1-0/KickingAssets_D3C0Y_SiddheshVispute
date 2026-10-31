@@ -4,7 +4,6 @@ import {
   ArrowUpRight,
   BrainCircuit,
   Clock3,
-  Download,
   Database,
   Droplets,
   HeartPulse,
@@ -25,24 +24,17 @@ import {
   XAxis,
   YAxis,
 } from 'recharts'
-import { api } from '../../api/client'
 import {
   useActivity,
   useAssets,
   useIntelligence,
   useLatestRun,
-  useScenarioContext,
   useServices,
   useTrend,
 } from '../../hooks/queries'
 import { AssetDrawer } from '../../components/AssetDrawer'
 import { EncryptedText } from '../../components/EncryptedText'
-import {
-  AsOfBanner,
-  AsOfSelect,
-  ProvenanceNotice,
-  RunSimulationButton,
-} from '../../components/Simulation'
+import { AsOfSelect, ProvenanceNotice, RunSimulationButton } from '../../components/Simulation'
 import {
   EmptyState,
   Panel,
@@ -53,6 +45,7 @@ import {
   TextLink,
 } from '../../components/ui'
 import { categoryLabels } from '../../lib/risk'
+import { useCardTilt } from '../../lib/useCardTilt'
 import type { Sector } from '../../api/client'
 import Station from '../../components/illustration/Station'
 import { ActivityHeatmap } from './ActivityHeatmap'
@@ -70,6 +63,21 @@ export default function Overview() {
   const [sector, setSector] = useState<Sector>('power')
   const [selected, setSelected] = useState<string | null>(null)
   const [asOf, setAsOf] = useState('')
+  const heroTilt = useCardTilt<HTMLElement>()
+  const railTilt = useCardTilt<HTMLElement>()
+  const cityRiskTilt = useCardTilt<HTMLElement>()
+  const assetsTilt = useCardTilt<HTMLElement>()
+  const sectorsTilt = useCardTilt<HTMLElement>()
+  const servicesTilt = useCardTilt<HTMLElement>()
+  const trendTilt = useCardTilt<HTMLElement>()
+  const activityTilt = useCardTilt<HTMLElement>()
+  const infraTilt = useCardTilt<HTMLElement>()
+  const distributionTilt = useCardTilt<HTMLElement>()
+  const priorityTilt = useCardTilt<HTMLElement>()
+  const orbTilt = useCardTilt<HTMLDivElement>()
+  const gaugeTilt = useCardTilt<HTMLDivElement>()
+  const essentialTilt = useCardTilt<HTMLElement>()
+  const curatedTilt = useCardTilt<HTMLElement>()
   if (assets.isPending || assets.isError)
     return <QueryState pending={assets.isPending} error={assets.error} retry={assets.refetch} />
   const rows = assets.data
@@ -83,18 +91,30 @@ export default function Overview() {
   const trendMin = trendValues.length ? Math.min(...trendValues) : 0
   const trendMax = trendValues.length ? Math.max(...trendValues) : 100
   const trendPad = Math.max(2, (trendMax - trendMin) * 0.25)
+  const trendStep = 5
   const trendDomain: [number, number] = [
-    Math.max(0, Math.floor(trendMin - trendPad)),
-    Math.min(100, Math.ceil(trendMax + trendPad)),
+    Math.max(0, Math.floor((trendMin - trendPad) / trendStep) * trendStep),
+    Math.min(100, Math.ceil((trendMax + trendPad) / trendStep) * trendStep),
   ]
   const topCritical = run?.assets.filter((a) => a.risk.category === 'critical') ?? []
 
   return (
     <>
       <div className="ov-hero-row">
-        <section className="panel glow-card ov-greeting">
+        <section
+          className="panel glow-card card-fx ov-greeting"
+          ref={heroTilt.ref}
+          onMouseMove={heroTilt.onMouseMove}
+          onMouseLeave={heroTilt.onMouseLeave}
+        >
           <div className="ov-greeting-top">
             <div>
+              <div className="ov-greeting-badge">
+                <span className="status-dot" />
+                <span>Cyber-Risk Command Center</span>
+                {run && <span className="ov-badge-sep">·</span>}
+                {run && <span>{run.assets.length} Assets Evaluated</span>}
+              </div>
               <h1>
                 <EncryptedText
                   text="Hi — what do you want to check?"
@@ -122,10 +142,15 @@ export default function Overview() {
               Explore infrastructure
               <ArrowUpRight size={14} />
             </Link>
-            {run && <BriefLinks />}
           </div>
         </section>
-        <aside className="ov-rail" aria-label="What's next">
+        <aside
+          className="ov-rail glow-card card-fx"
+          aria-label="What's next"
+          ref={railTilt.ref}
+          onMouseMove={railTilt.onMouseMove}
+          onMouseLeave={railTilt.onMouseLeave}
+        >
           <div className="ov-rail-head">
             <span>{run ? 'Needs attention' : "What's next"}</span>
             <small>{run ? `as of ${run.as_of}` : 'No run yet'}</small>
@@ -168,7 +193,12 @@ export default function Overview() {
       </div>
 
       <div className="metric-grid">
-        <section className="metric-card city-risk">
+        <section
+          className="metric-card glow-card card-fx city-risk"
+          ref={cityRiskTilt.ref}
+          onMouseMove={cityRiskTilt.onMouseMove}
+          onMouseLeave={cityRiskTilt.onMouseLeave}
+        >
           <div className="metric-label">
             City Risk Index
             <ShieldAlert size={16} />
@@ -195,7 +225,12 @@ export default function Overview() {
             )}
           </div>
         </section>
-        <section className="metric-card">
+        <section
+          className="metric-card glow-card card-fx"
+          ref={assetsTilt.ref}
+          onMouseMove={assetsTilt.onMouseMove}
+          onMouseLeave={assetsTilt.onMouseLeave}
+        >
           <div className="metric-label">
             Infrastructure assets
             <Database size={16} />
@@ -211,7 +246,12 @@ export default function Overview() {
               : 'Loaded from scenario inventory'}
           </div>
         </section>
-        <section className="metric-card">
+        <section
+          className="metric-card glow-card card-fx"
+          ref={sectorsTilt.ref}
+          onMouseMove={sectorsTilt.onMouseMove}
+          onMouseLeave={sectorsTilt.onMouseLeave}
+        >
           <div className="metric-label">
             Connected sectors
             <Waypoints size={16} />
@@ -226,7 +266,12 @@ export default function Overview() {
           </div>
           <div className="metric-foot">Power, water & healthcare</div>
         </section>
-        <section className="metric-card">
+        <section
+          className="metric-card glow-card card-fx"
+          ref={servicesTilt.ref}
+          onMouseMove={servicesTilt.onMouseMove}
+          onMouseLeave={servicesTilt.onMouseLeave}
+        >
           <div className="metric-label">
             Essential services
             <HeartPulse size={16} />
@@ -244,8 +289,6 @@ export default function Overview() {
           </div>
         </section>
       </div>
-      {run && <AsOfBanner run={run} />}
-
       <div className="overview-middle">
         <Panel
           title={
@@ -255,10 +298,13 @@ export default function Overview() {
             </>
           }
           aside={<span className="subtle-label mono">MONTHLY · HELD-OUT TEST</span>}
-          className="ov-trend-panel"
+          className="card-fx ov-trend-panel"
+          cardRef={trendTilt.ref}
+          onMouseMove={trendTilt.onMouseMove}
+          onMouseLeave={trendTilt.onMouseLeave}
         >
           {trendPoints.length > 0 ? (
-            <ResponsiveContainer width="100%" height={200}>
+            <ResponsiveContainer width="100%" height="100%" minHeight={200}>
               <AreaChart data={trendPoints} margin={{ top: 10, right: 16, left: -16, bottom: 0 }}>
                 <defs>
                   <linearGradient id="trendFill" x1="0" y1="0" x2="0" y2="1">
@@ -276,6 +322,11 @@ export default function Overview() {
                 />
                 <YAxis
                   domain={trendDomain}
+                  ticks={[
+                    trendDomain[0],
+                    Math.round((trendDomain[0] + trendDomain[1]) / 2),
+                    trendDomain[1],
+                  ]}
                   tick={{ fill: 'var(--text-muted)', fontSize: 10 }}
                   axisLine={false}
                   tickLine={false}
@@ -322,7 +373,14 @@ export default function Overview() {
             ({trendDomain[0]}-{trendDomain[1]}) to make real month-to-month movement visible.
           </div>
         </Panel>
-        <Panel title="Weekly activity" aside={<span className="subtle-label mono">14 DAYS</span>}>
+        <Panel
+          title="Weekly activity"
+          aside={<span className="subtle-label mono">14 DAYS</span>}
+          className="card-fx"
+          cardRef={activityTilt.ref}
+          onMouseMove={activityTilt.onMouseMove}
+          onMouseLeave={activityTilt.onMouseLeave}
+        >
           {activity.data ? (
             <ActivityHeatmap series={activity.data.series} />
           ) : activity.isError ? (
@@ -346,7 +404,10 @@ export default function Overview() {
             </>
           }
           aside={<span className="subtle-label mono">AURORA / BASELINE V1</span>}
-          className="infrastructure-panel"
+          className="card-fx infrastructure-panel"
+          cardRef={infraTilt.ref}
+          onMouseMove={infraTilt.onMouseMove}
+          onMouseLeave={infraTilt.onMouseLeave}
         >
           <div className="infrastructure-body">
             <div className="infrastructure-copy">
@@ -392,7 +453,13 @@ export default function Overview() {
             <span>Illustration · no telemetry</span>
           </div>
         </Panel>
-        <Panel title="Risk distribution" className="distribution-panel">
+        <Panel
+          title="Risk distribution"
+          className="card-fx distribution-panel"
+          cardRef={distributionTilt.ref}
+          onMouseMove={distributionTilt.onMouseMove}
+          onMouseLeave={distributionTilt.onMouseLeave}
+        >
           {run ? (
             <>
               <div className="risk-donut">
@@ -457,7 +524,10 @@ export default function Overview() {
               <TextLink to="/intelligence">Risk intelligence</TextLink>
             </div>
           }
-          className="priority-panel"
+          className="card-fx priority-panel"
+          cardRef={priorityTilt.ref}
+          onMouseMove={priorityTilt.onMouseMove}
+          onMouseLeave={priorityTilt.onMouseLeave}
         >
           {run ? (
             <div className="table-scroll">
@@ -532,7 +602,12 @@ export default function Overview() {
           )}
         </Panel>
         <div className="ov-side-stack">
-          <div className="orb-card">
+          <div
+            className="orb-card glow-card card-fx"
+            ref={orbTilt.ref}
+            onMouseMove={orbTilt.onMouseMove}
+            onMouseLeave={orbTilt.onMouseLeave}
+          >
             <div className="orb-ring">
               <BrainCircuit size={28} />
             </div>
@@ -542,7 +617,13 @@ export default function Overview() {
               Open AI model
             </Link>
           </div>
-          <div className="panel glow-card" style={{ padding: '18px 20px' }}>
+          <div
+            className="panel glow-card card-fx"
+            style={{ padding: '18px 20px' }}
+            ref={gaugeTilt.ref}
+            onMouseMove={gaugeTilt.onMouseMove}
+            onMouseLeave={gaugeTilt.onMouseLeave}
+          >
             <RiskArcGauge value={index} category={run?.city_risk.category ?? null} />
           </div>
         </div>
@@ -552,6 +633,10 @@ export default function Overview() {
         <Panel
           title="Essential services"
           aside={<TextLink to="/infrastructure?mode=operational">Dependencies</TextLink>}
+          className="card-fx"
+          cardRef={essentialTilt.ref}
+          onMouseMove={essentialTilt.onMouseMove}
+          onMouseLeave={essentialTilt.onMouseLeave}
         >
           <QueryState
             pending={services.isPending}
@@ -596,6 +681,10 @@ export default function Overview() {
               What this means →
             </Link>
           }
+          className="card-fx"
+          cardRef={curatedTilt.ref}
+          onMouseMove={curatedTilt.onMouseMove}
+          onMouseLeave={curatedTilt.onMouseLeave}
         >
           <QueryState pending={curated.isPending} error={curated.error} retry={curated.refetch} />
           {!curated.isError && curated.data && (
@@ -707,31 +796,5 @@ export default function Overview() {
       <ProvenanceNotice />
       <AssetDrawer id={selected} onClose={() => setSelected(null)} />
     </>
-  )
-}
-
-function BriefLinks() {
-  const context = useScenarioContext()
-  return (
-    <span className="ins-brief">
-      <a
-        className="button secondary"
-        href={api.briefUrl('html', context)}
-        download
-        title="Download the risk brief as a web page"
-      >
-        <Download size={16} />
-        Brief (HTML)
-      </a>
-      <a
-        className="button secondary"
-        href={api.briefUrl('md', context)}
-        download
-        title="Download the risk brief as Markdown"
-      >
-        <Download size={16} />
-        Markdown
-      </a>
-    </span>
   )
 }

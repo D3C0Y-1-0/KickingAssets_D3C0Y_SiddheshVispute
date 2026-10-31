@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react'
+import type { MouseEventHandler, ReactNode, Ref } from 'react'
 import { ArrowUpRight, CircleAlert, Database, LoaderCircle, RotateCw } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import type { Category } from '../lib/risk'
@@ -38,14 +38,25 @@ export function Panel({
   aside,
   children,
   className = '',
+  cardRef,
+  onMouseMove,
+  onMouseLeave,
 }: {
   title: ReactNode
   aside?: ReactNode
   children: ReactNode
   className?: string
+  cardRef?: Ref<HTMLElement>
+  onMouseMove?: MouseEventHandler<HTMLElement>
+  onMouseLeave?: MouseEventHandler<HTMLElement>
 }) {
   return (
-    <section className={`panel ${className}`}>
+    <section
+      className={`panel ${className}`}
+      ref={cardRef}
+      onMouseMove={onMouseMove}
+      onMouseLeave={onMouseLeave}
+    >
       <div className="panel-heading">
         <h2>{title}</h2>
         {aside}
