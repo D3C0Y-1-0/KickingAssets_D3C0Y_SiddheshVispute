@@ -194,15 +194,6 @@ export default function Intelligence() {
                   <small>100 × S × E × I′</small>
                 </div>
               </div>
-              <div className="callout">
-                <strong>Scenario assumption.</strong> This fictional asset is assumed to run{' '}
-                <strong>{active.product.label}</strong> ({active.product.role}). Real NVD
-                affected-version ranges were applied to that version:{' '}
-                <strong>{m.version_confirmed}</strong> CVEs include it,{' '}
-                <strong>{m.version_unknown}</strong> match the product but cannot be evaluated by
-                version, and <strong>{m.excluded_by_version}</strong> were excluded because their
-                ranges do not include it.
-              </div>
               <h3 className="section-label">Why this score</h3>
               <ul className="list-plain">
                 {(active.risk.factors ?? []).map((f) => (
