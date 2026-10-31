@@ -1,4 +1,5 @@
-'use client'
+import { DiagramViewport } from '../DiagramViewport'
+;('use client')
 
 import React, { useState, useRef, useMemo, useEffect } from 'react'
 import { Plate } from '../iso/react/draw'
@@ -390,102 +391,104 @@ export function SubstationViewer({
         }`}
         style={{ minHeight: '440px' }}
       >
-        <Plate
-          fig="FIG 01"
-          title="33/11kV BULK SUPPLY SUBSTATION ASSEMBLY"
-          hint="DRAG TO PAN · CLICK PART TO INSPECT · HOVER TO PROBE"
-          readout={readoutText}
-          keys={[
-            { mark: 'lit', label: 'Selected Active Component' },
-            { mark: 'raised', label: 'Engineered High-Voltage Solids' },
-            { mark: 'edge', label: '33kV Flexible Dropper Jumpers' },
-            { mark: 'dotted', label: 'Buried Earth Grounding Grid' },
-          ]}
-          caption="Detailed isometric digital twin of a critical municipal electrical substation assembly: 25MVA power transformer, forced cooling radiators, SF6 circuit breaker, motorized disconnect switch, surge arresters, overhead gantry busbars, and digital protection cabinet."
-        >
-          <div
-            className="w-full h-full flex items-center justify-center transition-transform duration-75"
-            style={{
-              transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`,
-              transformOrigin: 'center center',
-            }}
+        <DiagramViewport width={WIDTH} height={HEIGHT}>
+          <Plate
+            fig="FIG 01"
+            title="33/11kV BULK SUPPLY SUBSTATION ASSEMBLY"
+            hint="DRAG TO PAN · CLICK PART TO INSPECT · HOVER TO PROBE"
+            readout={readoutText}
+            keys={[
+              { mark: 'lit', label: 'Selected Active Component' },
+              { mark: 'raised', label: 'Engineered High-Voltage Solids' },
+              { mark: 'edge', label: '33kV Flexible Dropper Jumpers' },
+              { mark: 'dotted', label: 'Buried Earth Grounding Grid' },
+            ]}
+            caption="Detailed isometric digital twin of a critical municipal electrical substation assembly: 25MVA power transformer, forced cooling radiators, SF6 circuit breaker, motorized disconnect switch, surge arresters, overhead gantry busbars, and digital protection cabinet."
           >
-            <div className="relative" style={{ width: `${WIDTH}px`, height: `${HEIGHT}px` }}>
-              <svg
-                viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
-                className="w-full h-full iso-svg block"
-                role="img"
-                aria-label="Electrical Substation Digital Twin Isometric Diagram"
-              >
-                <SubstationArt
-                  selectedComponentId={selectedComponentId}
-                  statusMap={statusMap}
-                  showJumpers={showJumpers}
-                  showGroundGrid={showGroundGrid}
-                  onSelectComponent={handleSelectComponent}
-                />
-              </svg>
+            <div
+              className="w-full h-full flex items-center justify-center transition-transform duration-75"
+              style={{
+                transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`,
+                transformOrigin: 'center center',
+              }}
+            >
+              <div className="relative" style={{ width: `${WIDTH}px`, height: `${HEIGHT}px` }}>
+                <svg
+                  viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
+                  className="w-full h-full iso-svg block"
+                  role="img"
+                  aria-label="Electrical Substation Digital Twin Isometric Diagram"
+                >
+                  <SubstationArt
+                    selectedComponentId={selectedComponentId}
+                    statusMap={statusMap}
+                    showJumpers={showJumpers}
+                    showGroundGrid={showGroundGrid}
+                    onSelectComponent={handleSelectComponent}
+                  />
+                </svg>
 
-              {/* Interactive Hotspot Pins Overlay */}
-              {showHotspots && (
-                <div className="absolute inset-0 pointer-events-none">
-                  {hotspots.map((spot) => {
-                    const isSelected = selectedComponentId === spot.id
-                    const status = statusMap[spot.id] || 'operational'
-                    const isHovered = hoveredComponentId === spot.id
+                {/* Interactive Hotspot Pins Overlay */}
+                {showHotspots && (
+                  <div className="absolute inset-0 pointer-events-none">
+                    {hotspots.map((spot) => {
+                      const isSelected = selectedComponentId === spot.id
+                      const status = statusMap[spot.id] || 'operational'
+                      const isHovered = hoveredComponentId === spot.id
 
-                    let badgeColor = 'bg-[#111319]/95 text-slate-200 border-[#283244] shadow-md'
-                    let dotColor = 'bg-[#ccff00]'
+                      let badgeColor = 'bg-[#111319]/95 text-slate-200 border-[#283244] shadow-md'
+                      let dotColor = 'bg-[#ccff00]'
 
-                    if (status === 'offline') {
-                      badgeColor = 'bg-red-950/90 text-red-300 border-red-800 shadow-sm'
-                      dotColor = 'bg-red-500 animate-ping'
-                    } else if (status === 'degraded') {
-                      badgeColor = 'bg-amber-950/90 text-amber-300 border-amber-800 shadow-sm'
-                      dotColor = 'bg-amber-500'
-                    } else if (isSelected) {
-                      badgeColor = 'bg-[#ccff00] text-black border-[#ccff00] font-black shadow-lg'
-                      dotColor = 'bg-black'
-                    }
+                      if (status === 'offline') {
+                        badgeColor = 'bg-red-950/90 text-red-300 border-red-800 shadow-sm'
+                        dotColor = 'bg-red-500 animate-ping'
+                      } else if (status === 'degraded') {
+                        badgeColor = 'bg-amber-950/90 text-amber-300 border-amber-800 shadow-sm'
+                        dotColor = 'bg-amber-500'
+                      } else if (isSelected) {
+                        badgeColor = 'bg-[#ccff00] text-black border-[#ccff00] font-black shadow-lg'
+                        dotColor = 'bg-black'
+                      }
 
-                    return (
-                      <div
-                        key={spot.id}
-                        className="substation-hotspot absolute pointer-events-auto cursor-pointer"
-                        style={{
-                          left: `${spot.coord[0]}px`,
-                          top: `${spot.coord[1]}px`,
-                        }}
-                        onClick={() => handleSelectComponent(spot.id)}
-                        onMouseEnter={() => setHoveredComponentId(spot.id)}
-                        onMouseLeave={() => setHoveredComponentId(null)}
-                      >
-                        <RadarPing risk={risk[spot.id]} />
+                      return (
                         <div
-                          className={`flex items-center gap-1.5 px-2 py-0.5 rounded-full border text-[10px] font-mono shadow-sm backdrop-blur-xs transition ${badgeColor} ${
-                            isHovered || isSelected
-                              ? 'scale-105 z-20'
-                              : 'opacity-90 hover:opacity-100'
-                          }`}
+                          key={spot.id}
+                          className="substation-hotspot absolute pointer-events-auto cursor-pointer"
+                          style={{
+                            left: `${spot.coord[0]}px`,
+                            top: `${spot.coord[1]}px`,
+                          }}
+                          onClick={() => handleSelectComponent(spot.id)}
+                          onMouseEnter={() => setHoveredComponentId(spot.id)}
+                          onMouseLeave={() => setHoveredComponentId(null)}
                         >
-                          <span className={`h-1.5 w-1.5 rounded-full ${dotColor}`} />
-                          <span className="font-sans font-semibold tracking-tight">
-                            {spot.label}
-                            {risk[spot.id] && (
-                              <span className="font-mono ml-1 opacity-80">
-                                {risk[spot.id].score.toFixed(0)}
-                              </span>
-                            )}
-                          </span>
+                          <RadarPing risk={risk[spot.id]} />
+                          <div
+                            className={`flex items-center gap-1.5 px-2 py-0.5 rounded-full border text-[10px] font-mono shadow-sm backdrop-blur-xs transition ${badgeColor} ${
+                              isHovered || isSelected
+                                ? 'scale-105 z-20'
+                                : 'opacity-90 hover:opacity-100'
+                            }`}
+                          >
+                            <span className={`h-1.5 w-1.5 rounded-full ${dotColor}`} />
+                            <span className="font-sans font-semibold tracking-tight">
+                              {spot.label}
+                              {risk[spot.id] && (
+                                <span className="font-mono ml-1 opacity-80">
+                                  {risk[spot.id].score.toFixed(0)}
+                                </span>
+                              )}
+                            </span>
+                          </div>
                         </div>
-                      </div>
-                    )
-                  })}
-                </div>
-              )}
+                      )
+                    })}
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
-        </Plate>
+          </Plate>
+        </DiagramViewport>
       </div>
 
       {/* Floating Status Bar / Telemetry Footer */}

@@ -13,7 +13,7 @@ import {
   Shuffle,
   X,
 } from 'lucide-react'
-import { useSearchParams } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { useGraph, useLatestRun, useIntelligence } from '../../hooks/queries'
 import type { Asset, GraphMode } from '../../api/client'
 import { AssetDrawer } from '../../components/AssetDrawer'
@@ -128,7 +128,14 @@ export default function Infrastructure() {
       <PageHeading
         title="Infrastructure map"
         description="Two independent views. One inventory. Explore connections without confusing their meaning."
-        actions={<SampleBadge>Fictional topology</SampleBadge>}
+        actions={
+          <>
+            <SampleBadge>Fictional topology</SampleBadge>
+            <Link className="button secondary" to="/attack-paths">
+              Inspect attack paths
+            </Link>
+          </>
+        }
       />
       <div className="graph-mode-bar">
         <div className="segmented-control" aria-label="Graph display mode">

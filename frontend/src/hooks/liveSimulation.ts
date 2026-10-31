@@ -162,7 +162,12 @@ export function useLiveSimulation() {
         out.plan = plan
         return `${plan.steps.length} fixes could take risk from ${plan.starting_city_index.toFixed(1)} to ${plan.ending_city_index.toFixed(1)}`
       })
-      await step('brief', 'GET /reports/brief', async () => 'Report ready to download')
+      await step('brief', 'GET /reports/brief', async () => {
+        const brief = await api.riskBrief(context)
+        if (brief.run_id !== out.run?.id)
+          throw new Error('The report belongs to a different simulation. Run the workflow again.')
+        return 'Report fetched and checked against this run; ready to download'
+      })
       for (const key of ['activity', 'asset', 'actions'] as const) {
         void client.invalidateQueries({ queryKey: [key] })
       }

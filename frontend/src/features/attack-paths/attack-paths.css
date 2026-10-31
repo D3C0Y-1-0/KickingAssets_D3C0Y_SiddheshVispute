@@ -1,0 +1,106 @@
+.attack-page .panel {
+  min-width: 0;
+}
+.attack-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+  gap: 18px;
+  align-items: start;
+  margin-top: 18px;
+}
+.attack-layout > div {
+  min-width: 0;
+}
+.attack-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  align-items: end;
+}
+.attack-controls label {
+  display: grid;
+  gap: 7px;
+  flex: 1 1 200px;
+  font-size: 12px;
+  min-width: 0;
+}
+.attack-controls select {
+  width: 100%;
+  min-width: 0;
+}
+.attack-controls p,
+.attack-isolations {
+  width: 100%;
+}
+.attack-isolations {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.attack-list {
+  display: grid;
+  gap: 8px;
+  padding: 12px;
+  max-height: 680px;
+  overflow: auto;
+}
+.attack-path {
+  text-align: left;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface-inset);
+  color: var(--text);
+}
+.attack-path.selected {
+  border-color: var(--accent-border);
+  background: var(--accent-soft);
+}
+.attack-path span,
+.attack-path small {
+  display: block;
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+.attack-route {
+  font-family: monospace;
+  color: var(--accent);
+  padding-bottom: 12px;
+  overflow-wrap: anywhere;
+}
+.attack-hops {
+  padding-left: 20px;
+  font-size: 13px;
+}
+.attack-hops li {
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border-soft);
+}
+.attack-hops p {
+  margin: 8px 0;
+}
+.attack-hops small,
+.attack-hops a {
+  display: block;
+  margin-top: 6px;
+}
+.attack-page details {
+  margin: 12px 0;
+  line-height: 1.8;
+}
+.attack-page .table-scroll {
+  max-width: 100%;
+}
+.attack-page .callout,
+.attack-page .panel-padding {
+  overflow-wrap: anywhere;
+}
+@media (max-width: 900px) {
+  .attack-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .attack-list {
+    max-height: 350px;
+  }
+}

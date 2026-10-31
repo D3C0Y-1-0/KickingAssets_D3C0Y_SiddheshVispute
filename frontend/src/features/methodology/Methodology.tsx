@@ -10,7 +10,8 @@ const status = [
   { name: 'Live simulation: candidate CVEs scored by the model', done: true },
   { name: 'Conditional service impact over reachability and dependencies', done: true },
   { name: 'What-if recalculation and greedy remediation plan', done: true },
-  { name: 'Confirmed CVE applicability (needs real product versions)', done: false },
+  { name: 'Version-range applicability for declared simulated products', done: true },
+  { name: 'Verification of actual installed products and exploitation', done: false },
   { name: 'Verification of real changes (needs independent evidence)', done: false },
   { name: 'Live monitoring or real incident prediction', done: false },
 ]
@@ -34,7 +35,8 @@ export default function Methodology() {
             GridSentinel is a critical infrastructure cybersecurity risk intelligence platform for
             D3COY PS03. It will support preventive decisions with traceable vulnerability evidence,
             transparent relative risk assessments and conditional service impact estimates. This
-            foundation demonstrates the interface and inventory architecture.
+            prototype implements reference-backed assessment, evaluated CVE ranking, conditional
+            analysis and projected remediation.
           </p>
         </div>
       </div>
@@ -89,8 +91,9 @@ export default function Methodology() {
               <span className="evidence-key reference">REFERENCE</span>
               <p>
                 Real NVD, CVSS, EPSS and KEV records, with a manifest of exactly which files were
-                retrieved and when. Assets are fictional, so a CVE is only ever a candidate for an
-                asset's assumed product family, never confirmed.
+                retrieved and when. A confirmed affected-version match applies to the declared
+                simulated product; it does not verify an actual installation or exploitation.
+                Unevaluable ranges remain uncertain.
               </p>
             </div>
             <div>
@@ -111,9 +114,10 @@ export default function Methodology() {
               does not predict that a real incident will occur, or when.
             </p>
             <p>
-              Every score is computed by the backend after a simulation from ML-scored real CVEs,
-              exposure and conditional impact. Before a simulation there is no score. Missing is
-              never zero.
+              Workflow risk indices require a simulation and combine ML-scored real CVEs, exposure
+              and conditional impact in the backend. The separate curated CVE assessment uses its
+              published deterministic formula and cached reference scope. Missing analysis is never
+              zero.
             </p>
             <h3>Current → Projected → Verified</h3>
             <p>
@@ -137,7 +141,7 @@ export default function Methodology() {
             <p>
               CVE prioritization quality is evaluated separately from asset-level risk and
               service-impact assumptions. See the ML Lab for the held-out metrics, baselines and
-              limits. The model is statistically tied with the EPSS baseline.
+              limits. The evaluation does not establish a statistically clear improvement over EPSS.
             </p>
           </div>
         </Panel>
@@ -157,7 +161,7 @@ export default function Methodology() {
               )}
               <span>{item.name}</span>
               <span className={`badge ${item.done ? 'implemented' : 'neutral'}`}>
-                {item.done ? 'Implemented' : 'Planned'}
+                {item.done ? 'Implemented' : 'Not provided'}
               </span>
             </div>
           ))}

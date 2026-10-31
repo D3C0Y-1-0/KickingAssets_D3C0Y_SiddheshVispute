@@ -27,7 +27,8 @@ export function RiskLine({ risk }: { risk?: TwinRisk }) {
               : '#9aa4b8',
       }}
     >
-      ML risk {risk.score.toFixed(1)} · {(risk.category ?? '').toUpperCase()} · {risk.assetId}
+      Calculated risk {risk.score.toFixed(1)} · {(risk.category ?? '').toUpperCase()} ·{' '}
+      {risk.assetId}
     </div>
   )
 }

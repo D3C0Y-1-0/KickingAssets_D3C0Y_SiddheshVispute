@@ -1,3 +1,4 @@
+import { DiagramViewport } from '../DiagramViewport'
 import React, { useState, useRef, useMemo, useEffect } from 'react'
 import { Plate } from '../iso/react/draw'
 import { TransitArt } from './art'
@@ -264,84 +265,86 @@ export function TransitViewer() {
         onMouseLeave={handleMouseUp}
         className="flex-1 w-full bg-[#08090d] relative overflow-hidden flex items-center justify-center cursor-grab active:cursor-grabbing"
       >
-        <Plate
-          fig="FIG 04"
-          title="METROPOLITAN SMART TRANSIT & RAIL TRANSPORTATION NETWORK"
-          style={{
-            transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`,
-            transformOrigin: 'center center',
-            transition: isDragging ? 'none' : 'transform 0.15s ease-out',
-          }}
-        >
-          <div
-            className="relative pointer-events-auto"
-            style={{ width: `${WIDTH}px`, height: `${HEIGHT}px` }}
+        <DiagramViewport width={WIDTH} height={HEIGHT}>
+          <Plate
+            fig="FIG 04"
+            title="METROPOLITAN SMART TRANSIT & RAIL TRANSPORTATION NETWORK"
+            style={{
+              transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`,
+              transformOrigin: 'center center',
+              transition: isDragging ? 'none' : 'transform 0.15s ease-out',
+            }}
           >
-            <svg
-              viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
-              className="w-full h-full iso-svg block"
-              role="img"
-              aria-label="Smart Transit & Rail Network Isometric Diagram"
+            <div
+              className="relative pointer-events-auto"
+              style={{ width: `${WIDTH}px`, height: `${HEIGHT}px` }}
             >
-              <TransitArt
-                selectedComponentId={selectedId}
-                onSelectComponent={(id) => setSelectedId(id)}
-                showCatenary={showCatenary}
-              />
-            </svg>
+              <svg
+                viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
+                className="w-full h-full iso-svg block"
+                role="img"
+                aria-label="Smart Transit & Rail Network Isometric Diagram"
+              >
+                <TransitArt
+                  selectedComponentId={selectedId}
+                  onSelectComponent={(id) => setSelectedId(id)}
+                  showCatenary={showCatenary}
+                />
+              </svg>
 
-            {/* Hotspots */}
-            {showHotspots && (
-              <div className="transit-hotspots-layer">
-                {TRANSIT_HOTSPOTS.map((h) => {
-                  const isSel = selectedId === h.id
-                  return (
-                    <div
-                      key={h.id}
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        setSelectedId(h.id)
-                      }}
-                      style={{
-                        position: 'absolute',
-                        left: `${h.coord[0]}px`,
-                        top: `${h.coord[1]}px`,
-                        transform: 'translate(-50%, -50%)',
-                      }}
-                      className="group cursor-pointer z-30"
-                    >
-                      <div className="relative flex items-center justify-center">
-                        {isSel && (
-                          <span className="absolute w-7 h-7 rounded-full bg-[#ccff00]/40 animate-ping pointer-events-none" />
-                        )}
-                        <div
-                          className={`w-3.5 h-3.5 rounded-full border-2 transition shadow-lg ${
-                            isSel
-                              ? 'bg-[#ccff00] border-black scale-125 ring-2 ring-[#ccff00]'
-                              : 'bg-blue-500 border-white'
-                          }`}
-                        />
-                      </div>
+              {/* Hotspots */}
+              {showHotspots && (
+                <div className="transit-hotspots-layer">
+                  {TRANSIT_HOTSPOTS.map((h) => {
+                    const isSel = selectedId === h.id
+                    return (
                       <div
-                        className={`absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 p-2.5 rounded-lg bg-[#111319]/98 border border-[#283244] shadow-2xl backdrop-blur-md pointer-events-none transition duration-150 z-50 ${
-                          isSel
-                            ? 'opacity-100 scale-100'
-                            : 'opacity-0 group-hover:opacity-100 scale-95'
-                        }`}
+                        key={h.id}
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          setSelectedId(h.id)
+                        }}
+                        style={{
+                          position: 'absolute',
+                          left: `${h.coord[0]}px`,
+                          top: `${h.coord[1]}px`,
+                          transform: 'translate(-50%, -50%)',
+                        }}
+                        className="group cursor-pointer z-30"
                       >
-                        <div className="text-[9px] font-mono text-[#ccff00] font-bold uppercase">
-                          {h.metric}: {h.value}
+                        <div className="relative flex items-center justify-center">
+                          {isSel && (
+                            <span className="absolute w-7 h-7 rounded-full bg-[#ccff00]/40 animate-ping pointer-events-none" />
+                          )}
+                          <div
+                            className={`w-3.5 h-3.5 rounded-full border-2 transition shadow-lg ${
+                              isSel
+                                ? 'bg-[#ccff00] border-black scale-125 ring-2 ring-[#ccff00]'
+                                : 'bg-blue-500 border-white'
+                            }`}
+                          />
                         </div>
-                        <div className="text-xs font-bold text-white truncate">{h.label}</div>
-                        <div className="text-[10px] text-slate-400">{h.sub}</div>
+                        <div
+                          className={`absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 p-2.5 rounded-lg bg-[#111319]/98 border border-[#283244] shadow-2xl backdrop-blur-md pointer-events-none transition duration-150 z-50 ${
+                            isSel
+                              ? 'opacity-100 scale-100'
+                              : 'opacity-0 group-hover:opacity-100 scale-95'
+                          }`}
+                        >
+                          <div className="text-[9px] font-mono text-[#ccff00] font-bold uppercase">
+                            {h.metric}: {h.value}
+                          </div>
+                          <div className="text-xs font-bold text-white truncate">{h.label}</div>
+                          <div className="text-[10px] text-slate-400">{h.sub}</div>
+                        </div>
                       </div>
-                    </div>
-                  )
-                })}
-              </div>
-            )}
-          </div>
-        </Plate>
+                    )
+                  })}
+                </div>
+              )}
+            </div>
+          </Plate>
+        </DiagramViewport>
       </div>
 
       {/* Part selector */}

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { RunSimulationButton } from '../../components/Simulation'
 import { useTwinRisk } from '../../hooks/twinRisk'
+import { QueryState } from '../../components/ui'
 
 // 5 Dedicated Anatomy Diagram Viewers
 import { SmartCityViewer } from '../../components/smartcity/SmartCityViewer'
@@ -28,7 +29,7 @@ export default function DigitalTwins() {
     INITIAL_DEMO_ASSETS[0],
   )
   const assets = INITIAL_DEMO_ASSETS
-  const { run, risk } = useTwinRisk()
+  const { run, risk, error, pending, retry } = useTwinRisk()
   const prefix = VIEWS.find((v) => v.id === activeTab)?.prefix
   const flagged = (run?.assets ?? []).filter(
     (a) =>
@@ -55,7 +56,15 @@ export default function DigitalTwins() {
           </select>
         </label>
         <div className="twin-bar-alerts">
-          {!run && <span>Run the simulation to light up the twin</span>}
+          {!run && (
+            <span>
+              {pending
+                ? 'Checking calculated risk…'
+                : error
+                  ? 'Calculated risk unavailable'
+                  : 'Run the simulation to light up the twin'}
+            </span>
+          )}
           {run && activeTab === 'transit' && (
             <span>Transit is not part of the scored scenario</span>
           )}
@@ -84,9 +93,10 @@ export default function DigitalTwins() {
 
       <p className="twin-scenario-note">
         Illustrative diagrams: readings, operational labels and criticality values are static
-        scenario assumptions, not telemetry. Only labelled ML risk badges come from the calculated
-        workflow.
+        scenario assumptions, not telemetry. Only labelled calculated-risk badges come from the
+        calculated workflow.
       </p>
+      {error && <QueryState pending={false} error={error} retry={retry} />}
       <div className="twin-stage">
         {activeTab === 'smartcity' && (
           <SmartCityViewer

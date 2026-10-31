@@ -1,4 +1,5 @@
-'use client'
+import { DiagramViewport } from '../DiagramViewport'
+;('use client')
 
 import React, { useState, useRef, useMemo, useEffect } from 'react'
 import { Plate } from '../iso/react/draw'
@@ -445,123 +446,125 @@ export function SmartCityViewer({
         onWheel={handleWheel}
         className="relative flex-1 w-full h-full cursor-grab active:cursor-grabbing overflow-hidden flex items-center justify-center"
       >
-        <Plate
-          fig="FIG 02"
-          title="DISTRIBUTED SMART CITY ARCHITECTURE (MODULAR ISLAND BASES)"
-          hint="DRAG TO PAN · WHEEL TO ZOOM · CLICK ANY ISLAND CAMPUS TO INSPECT"
-          readout={readoutText}
-          keys={[
-            { mark: 'lit', label: 'Selected Active Campus' },
-            { mark: 'raised', label: 'Engineered Modular Island Bases' },
-            { mark: 'edge', label: 'Inter-Island Sky-Bridges & Rail Viaduct' },
-            { mark: 'dotted', label: 'Microgrid & Wireless Mesh' },
-          ]}
-          caption="Distributed Smart City Architecture digital twin showing distinct modular infrastructure island platforms: Bulk Electricity Power Plant & Substation Campus, Regional Trauma Medical Campus, Urban IOC Command Skyscraper & Civic Plaza, 5G Telecom & Edge Compute Compound, Municipal Water Purification Works, and Smart Transit Hub, interconnected by elevated Sky-Train rail viaducts and structural sky-bridges."
-        >
-          <div
-            style={{
-              transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`,
-              transformOrigin: 'center center',
-              transition: isDragging ? 'none' : 'transform 0.15s ease-out',
-            }}
-            className="relative"
+        <DiagramViewport width={WIDTH} height={HEIGHT}>
+          <Plate
+            fig="FIG 02"
+            title="DISTRIBUTED SMART CITY ARCHITECTURE (MODULAR ISLAND BASES)"
+            hint="DRAG TO PAN · WHEEL TO ZOOM · CLICK ANY ISLAND CAMPUS TO INSPECT"
+            readout={readoutText}
+            keys={[
+              { mark: 'lit', label: 'Selected Active Campus' },
+              { mark: 'raised', label: 'Engineered Modular Island Bases' },
+              { mark: 'edge', label: 'Inter-Island Sky-Bridges & Rail Viaduct' },
+              { mark: 'dotted', label: 'Microgrid & Wireless Mesh' },
+            ]}
+            caption="Distributed Smart City Architecture digital twin showing distinct modular infrastructure island platforms: Bulk Electricity Power Plant & Substation Campus, Regional Trauma Medical Campus, Urban IOC Command Skyscraper & Civic Plaza, 5G Telecom & Edge Compute Compound, Municipal Water Purification Works, and Smart Transit Hub, interconnected by elevated Sky-Train rail viaducts and structural sky-bridges."
           >
-            {/* Anatomy Isometric SVG Assembly */}
-            <div className="relative" style={{ width: `${WIDTH}px`, height: `${HEIGHT}px` }}>
-              <svg
-                viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
-                className="w-full h-full iso-svg block"
-                role="img"
-                aria-label="Smart City Architecture Digital Twin Isometric Diagram"
-              >
-                <SmartCityArt
-                  selectedComponentId={selectedComponentId}
-                  statusMap={statusMap}
-                  showMicrogrid={showMicrogrid}
-                  showFiberMesh={showFiberMesh}
-                  showTransitFlow={showTransitFlow}
-                  showBridges={showBridges}
-                  showWirelessWaves={showWirelessWaves}
-                  onSelectComponent={handleSelectComponent}
-                />
-              </svg>
+            <div
+              style={{
+                transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`,
+                transformOrigin: 'center center',
+                transition: isDragging ? 'none' : 'transform 0.15s ease-out',
+              }}
+              className="relative"
+            >
+              {/* Anatomy Isometric SVG Assembly */}
+              <div className="relative" style={{ width: `${WIDTH}px`, height: `${HEIGHT}px` }}>
+                <svg
+                  viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
+                  className="w-full h-full iso-svg block"
+                  role="img"
+                  aria-label="Smart City Architecture Digital Twin Isometric Diagram"
+                >
+                  <SmartCityArt
+                    selectedComponentId={selectedComponentId}
+                    statusMap={statusMap}
+                    showMicrogrid={showMicrogrid}
+                    showFiberMesh={showFiberMesh}
+                    showTransitFlow={showTransitFlow}
+                    showBridges={showBridges}
+                    showWirelessWaves={showWirelessWaves}
+                    onSelectComponent={handleSelectComponent}
+                  />
+                </svg>
 
-              {/* Interactive Projected Hotspots Overlay */}
-              {showHotspots &&
-                hotspots.map((h) => {
-                  const isSelected = selectedComponentId === h.id
-                  const status = statusMap[h.id] || 'operational'
+                {/* Interactive Projected Hotspots Overlay */}
+                {showHotspots &&
+                  hotspots.map((h) => {
+                    const isSelected = selectedComponentId === h.id
+                    const status = statusMap[h.id] || 'operational'
 
-                  let statusColor = 'bg-cyan-500 border-cyan-300 text-cyan-300'
-                  if (status === 'offline')
-                    statusColor = 'bg-red-500 border-red-300 text-red-300 animate-pulse'
-                  else if (status === 'degraded')
-                    statusColor = 'bg-amber-500 border-amber-300 text-amber-300 animate-pulse'
+                    let statusColor = 'bg-cyan-500 border-cyan-300 text-cyan-300'
+                    if (status === 'offline')
+                      statusColor = 'bg-red-500 border-red-300 text-red-300 animate-pulse'
+                    else if (status === 'degraded')
+                      statusColor = 'bg-amber-500 border-amber-300 text-amber-300 animate-pulse'
 
-                  return (
-                    <div
-                      key={h.id}
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        handleSelectComponent(h.id)
-                      }}
-                      onMouseEnter={() => setHoveredComponentId(h.id)}
-                      onMouseLeave={() => setHoveredComponentId(null)}
-                      style={{
-                        position: 'absolute',
-                        left: `${h.coord[0]}px`,
-                        top: `${h.coord[1]}px`,
-                        transform: 'translate(-50%, -50%)',
-                      }}
-                      className="group cursor-pointer z-30"
-                    >
-                      <div className="relative flex items-center justify-center">
-                        <RadarPing risk={risk[h.id]} />
-                        {/* Pulsing ring for selected or alert */}
-                        {isSelected && (
-                          <span className="absolute w-7 h-7 rounded-full bg-cyan-400/30 animate-ping pointer-events-none" />
-                        )}
-                        <div
-                          className={`w-3.5 h-3.5 rounded-full border-2 transition shadow-lg ${
-                            isSelected
-                              ? 'bg-cyan-400 border-white scale-125 ring-2 ring-cyan-500/50'
-                              : statusColor
-                          }`}
-                        />
-                      </div>
-
-                      {/* Hotspot Floating Tooltip */}
+                    return (
                       <div
-                        className={`absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 p-2.5 rounded-lg bg-[#111319]/98 border border-[#283244] shadow-2xl backdrop-blur-md pointer-events-none transition duration-150 z-50 ${
-                          isSelected || hoveredComponentId === h.id
-                            ? 'opacity-100 scale-100'
-                            : 'opacity-0 scale-95'
-                        }`}
+                        key={h.id}
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          handleSelectComponent(h.id)
+                        }}
+                        onMouseEnter={() => setHoveredComponentId(h.id)}
+                        onMouseLeave={() => setHoveredComponentId(null)}
+                        style={{
+                          position: 'absolute',
+                          left: `${h.coord[0]}px`,
+                          top: `${h.coord[1]}px`,
+                          transform: 'translate(-50%, -50%)',
+                        }}
+                        className="group cursor-pointer z-30"
                       >
-                        <div className="flex items-center justify-between text-[9px] font-mono text-slate-400 mb-0.5">
-                          <span className="text-[#ccff00] font-bold">{h.assetId}</span>
-                          <span
-                            className={`font-bold uppercase px-1.5 py-0.2 rounded text-[8px] ${
-                              status === 'offline'
-                                ? 'bg-red-950 text-red-400 border border-red-800'
-                                : status === 'degraded'
-                                  ? 'bg-amber-950 text-amber-400 border border-amber-800'
-                                  : 'bg-[#182306] text-[#ccff00] border border-[#4d6313]'
+                        <div className="relative flex items-center justify-center">
+                          <RadarPing risk={risk[h.id]} />
+                          {/* Pulsing ring for selected or alert */}
+                          {isSelected && (
+                            <span className="absolute w-7 h-7 rounded-full bg-cyan-400/30 animate-ping pointer-events-none" />
+                          )}
+                          <div
+                            className={`w-3.5 h-3.5 rounded-full border-2 transition shadow-lg ${
+                              isSelected
+                                ? 'bg-cyan-400 border-white scale-125 ring-2 ring-cyan-500/50'
+                                : statusColor
                             }`}
-                          >
-                            {status}
-                          </span>
+                          />
                         </div>
-                        <div className="text-xs font-bold text-white truncate">{h.label}</div>
-                        <div className="text-[10px] text-slate-400 leading-tight">{h.sub}</div>
-                        <RiskLine risk={risk[h.id]} />
+
+                        {/* Hotspot Floating Tooltip */}
+                        <div
+                          className={`absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 p-2.5 rounded-lg bg-[#111319]/98 border border-[#283244] shadow-2xl backdrop-blur-md pointer-events-none transition duration-150 z-50 ${
+                            isSelected || hoveredComponentId === h.id
+                              ? 'opacity-100 scale-100'
+                              : 'opacity-0 scale-95'
+                          }`}
+                        >
+                          <div className="flex items-center justify-between text-[9px] font-mono text-slate-400 mb-0.5">
+                            <span className="text-[#ccff00] font-bold">{h.assetId}</span>
+                            <span
+                              className={`font-bold uppercase px-1.5 py-0.2 rounded text-[8px] ${
+                                status === 'offline'
+                                  ? 'bg-red-950 text-red-400 border border-red-800'
+                                  : status === 'degraded'
+                                    ? 'bg-amber-950 text-amber-400 border border-amber-800'
+                                    : 'bg-[#182306] text-[#ccff00] border border-[#4d6313]'
+                              }`}
+                            >
+                              {status}
+                            </span>
+                          </div>
+                          <div className="text-xs font-bold text-white truncate">{h.label}</div>
+                          <div className="text-[10px] text-slate-400 leading-tight">{h.sub}</div>
+                          <RiskLine risk={risk[h.id]} />
+                        </div>
                       </div>
-                    </div>
-                  )
-                })}
+                    )
+                  })}
+              </div>
             </div>
-          </div>
-        </Plate>
+          </Plate>
+        </DiagramViewport>
       </div>
 
       {/* Part selector */}

@@ -1,0 +1,450 @@
+{
+  "verified_at": "2026-10-31T21:10:08.837672+00:00",
+  "checks": 35,
+  "scenario_id": "aurora-city",
+  "snapshot_id": "aurora-baseline-v1",
+  "run_id": "run-20261031-205057-202610",
+  "fingerprint": "fd5c651c1885ec6b207192bf985490fb",
+  "as_of": "2026-10-01",
+  "baseline_city_index": 35.62,
+  "attack_entries": [
+    "HLT-001",
+    "PWR-001",
+    "WTR-001"
+  ],
+  "attack_paths": 15,
+  "isolated_paths": 10,
+  "example_path": {
+    "rank": 2,
+    "entry_point": "PWR-001",
+    "target": "PWR-008",
+    "nodes": [
+      "PWR-001",
+      "PWR-004",
+      "PWR-008"
+    ],
+    "hops": [
+      {
+        "edge_id": null,
+        "source": "internet",
+        "target": "PWR-001",
+        "protocol": null,
+        "access": null,
+        "status": "plausible",
+        "basis": [
+          "kev_listed_vulnerability"
+        ],
+        "effects": [],
+        "explanation": "Initial access to PWR-001 from the internet: plausible; PWR-001 has 7 applicable vulnerabilities listed as known exploited (CISA KEV)."
+      },
+      {
+        "edge_id": "cyber-PWR-1-4",
+        "source": "PWR-001",
+        "target": "PWR-004",
+        "protocol": "HTTPS",
+        "access": "remote_management",
+        "status": "plausible",
+        "basis": [
+          "kev_listed_vulnerability"
+        ],
+        "effects": [
+          "data_integrity",
+          "unavailability"
+        ],
+        "explanation": "PWR-001 \u2192 PWR-004 over HTTPS (remote management): plausible; PWR-004 has 53 applicable vulnerabilities listed as known exploited (CISA KEV)."
+      },
+      {
+        "edge_id": "cyber-PWR-4-8",
+        "source": "PWR-004",
+        "target": "PWR-008",
+        "protocol": "OPC UA",
+        "access": "remote_management",
+        "status": "plausible",
+        "basis": [
+          "kev_listed_vulnerability"
+        ],
+        "effects": [
+          "data_integrity",
+          "unavailability"
+        ],
+        "explanation": "PWR-004 \u2192 PWR-008 over OPC UA (remote management): plausible; PWR-008 has 59 applicable vulnerabilities listed as known exploited (CISA KEV)."
+      }
+    ],
+    "status": "plausible",
+    "ranking_score": 0.729,
+    "weakest_hop": 0,
+    "final_effects": [
+      "data_integrity",
+      "unavailability"
+    ],
+    "consequence": {
+      "effect": "data_integrity",
+      "services": [
+        {
+          "service_id": "svc-healthcare",
+          "disruption_fraction": 1.0
+        },
+        {
+          "service_id": "svc-power",
+          "disruption_fraction": 1.0
+        },
+        {
+          "service_id": "svc-water",
+          "disruption_fraction": 1.0
+        }
+      ],
+      "max_disruption": 1.0
+    },
+    "explanation": "internet \u2192 PWR-001 \u2192 PWR-004 \u2192 PWR-008: plausible. Weakest step: Initial access to PWR-001 from the internet: plausible; PWR-001 has 7 applicable vulnerabilities listed as known exploited (CISA KEV)."
+  },
+  "plan_city_index": 27.72,
+  "plan_effort_hours": 56.0,
+  "plan_downtime_hours": 14.0,
+  "plan_steps": [
+    {
+      "rank": 1,
+      "kind": "selected",
+      "prerequisite_for": null,
+      "asset_id": "HLT-008",
+      "asset_name": "Hospital Operations Server",
+      "action_type": "network_segmentation",
+      "name": "Network segmentation",
+      "effort_hours": 24.0,
+      "downtime_hours": 6.0,
+      "marginal_reduction": 3.68,
+      "reduction_per_effort_hour": 0.1533,
+      "cumulative_reduction": 3.68,
+      "city_index_after": 31.94,
+      "justification": "Remove internet exposure and remote access, and isolate the asset from its configured cyber routes in both directions. Asset risk 60.0 -> 50.0 (projected).",
+      "operational_disruption": "May interrupt remote operator access and cross-zone data flows.",
+      "patch": null
+    },
+    {
+      "rank": 2,
+      "kind": "selected",
+      "prerequisite_for": null,
+      "asset_id": "PWR-008",
+      "asset_name": "Dispatch Control Server",
+      "action_type": "network_segmentation",
+      "name": "Network segmentation",
+      "effort_hours": 24.0,
+      "downtime_hours": 6.0,
+      "marginal_reduction": 3.62,
+      "reduction_per_effort_hour": 0.1508,
+      "cumulative_reduction": 7.3,
+      "city_index_after": 28.32,
+      "justification": "Remove internet exposure and remote access, and isolate the asset from its configured cyber routes in both directions. Asset risk 60.0 -> 50.0 (projected).",
+      "operational_disruption": "May interrupt remote operator access and cross-zone data flows.",
+      "patch": null
+    },
+    {
+      "rank": 3,
+      "kind": "selected",
+      "prerequisite_for": null,
+      "asset_id": "HLT-007",
+      "asset_name": "Medical Gas Controller",
+      "action_type": "patch_prioritization",
+      "name": "Patch prioritization",
+      "effort_hours": 8.0,
+      "downtime_hours": 2.0,
+      "marginal_reduction": 0.6,
+      "reduction_per_effort_hour": 0.075,
+      "cumulative_reduction": 7.9,
+      "city_index_after": 27.72,
+      "justification": "Patch the KEV-listed and highest ML-ranked CVEs that have a documented fixed version, up to 3 per maintenance window. Asset risk 47.8 -> 33.98 (projected).",
+      "operational_disruption": "Restart or maintenance window; validate vendor compatibility and rollback first.",
+      "patch": {
+        "scope": "default_batch",
+        "target_version": null,
+        "remediated": [
+          {
+            "cve_id": "CVE-2022-0778",
+            "status": "remediated",
+            "applicability": "version_confirmed",
+            "fixed_in": "V3.0.1",
+            "reason": "NVD documents the fix at V3.0.1; modelled as resolved by updating to V3.0.1 or later."
+          },
+          {
+            "cve_id": "CVE-2023-28831",
+            "status": "remediated",
+            "applicability": "version_confirmed",
+            "fixed_in": "V3.0.3",
+            "reason": "NVD documents the fix at V3.0.3; modelled as resolved by updating to V3.0.3 or later."
+          },
+          {
+            "cve_id": "CVE-2026-25786",
+            "status": "remediated",
+            "applicability": "version_confirmed",
+            "fixed_in": "V4.1.6",
+            "reason": "NVD documents the fix at V4.1.6; modelled as resolved by updating to V4.1.6 or later."
+          }
+        ],
+        "not_remediated": []
+      }
+    }
+  ],
+  "constrained_city_index": 33.87,
+  "access_control_city_index": 35.05,
+  "model_metrics": [
+    {
+      "name": "xgboost_with_epss",
+      "average_precision": 0.0037,
+      "average_precision_ci95": [
+        0.0023,
+        0.0071
+      ],
+      "roc_auc": 0.8789,
+      "precision_at_50_per_month": 0.0182,
+      "recall_at_50_per_month": 0.0272,
+      "precision_at_200_per_month": 0.0119,
+      "ap_delta_vs_epss_ci95": [
+        -0.0141,
+        0.0017
+      ],
+      "is_baseline": false
+    },
+    {
+      "name": "xgboost_no_epss",
+      "average_precision": 0.0006,
+      "average_precision_ci95": [
+        0.0005,
+        0.0009
+      ],
+      "roc_auc": 0.799,
+      "precision_at_50_per_month": 0.0009,
+      "recall_at_50_per_month": 0.0013,
+      "precision_at_200_per_month": 0.0015,
+      "ap_delta_vs_epss_ci95": [
+        -0.0177,
+        -0.0013
+      ],
+      "is_baseline": false
+    },
+    {
+      "name": "xgboost_no_kev_history",
+      "average_precision": 0.0061,
+      "average_precision_ci95": [
+        0.0027,
+        0.0183
+      ],
+      "roc_auc": 0.8864,
+      "precision_at_50_per_month": 0.0148,
+      "recall_at_50_per_month": 0.022,
+      "precision_at_200_per_month": 0.0079,
+      "ap_delta_vs_epss_ci95": [
+        -0.0119,
+        0.0115
+      ],
+      "is_baseline": false
+    },
+    {
+      "name": "logistic_with_epss",
+      "average_precision": 0.0012,
+      "average_precision_ci95": [
+        0.0009,
+        0.0055
+      ],
+      "roc_auc": 0.8226,
+      "precision_at_50_per_month": 0.0053,
+      "recall_at_50_per_month": 0.0078,
+      "precision_at_200_per_month": 0.005,
+      "ap_delta_vs_epss_ci95": [
+        -0.0171,
+        0.002
+      ],
+      "is_baseline": false
+    },
+    {
+      "name": "epss_percentile_baseline",
+      "average_precision": 0.0044,
+      "average_precision_ci95": [
+        0.002,
+        0.0184
+      ],
+      "roc_auc": 0.729,
+      "precision_at_50_per_month": 0.0266,
+      "recall_at_50_per_month": 0.0402,
+      "precision_at_200_per_month": 0.0133,
+      "ap_delta_vs_epss_ci95": null,
+      "is_baseline": true
+    },
+    {
+      "name": "cvss_only_baseline",
+      "average_precision": 0.0004,
+      "average_precision_ci95": [
+        0.0003,
+        0.0005
+      ],
+      "roc_auc": 0.7518,
+      "precision_at_50_per_month": 0.0165,
+      "recall_at_50_per_month": 0.0246,
+      "precision_at_200_per_month": 0.0056,
+      "ap_delta_vs_epss_ci95": [
+        -0.018,
+        -0.0016
+      ],
+      "is_baseline": true
+    },
+    {
+      "name": "vendor_kev_history_baseline",
+      "average_precision": 0.0002,
+      "average_precision_ci95": [
+        0.0002,
+        0.0003
+      ],
+      "roc_auc": 0.5765,
+      "precision_at_50_per_month": 0.0374,
+      "recall_at_50_per_month": 0.0571,
+      "precision_at_200_per_month": 0.0128,
+      "ap_delta_vs_epss_ci95": [
+        -0.0181,
+        -0.0017
+      ],
+      "is_baseline": true
+    }
+  ],
+  "baseline_unchanged_by_projections": true,
+  "verification_results": [
+    {
+      "check": "health",
+      "status": 200
+    },
+    {
+      "check": "latest simulation",
+      "status": 200
+    },
+    {
+      "check": "inventory",
+      "status": 200
+    },
+    {
+      "check": "asset evidence",
+      "status": 200
+    },
+    {
+      "check": "curated applicability",
+      "status": 200
+    },
+    {
+      "check": "curated references",
+      "status": 200
+    },
+    {
+      "check": "curated priorities",
+      "status": 200
+    },
+    {
+      "check": "cyber graph",
+      "status": 200
+    },
+    {
+      "check": "operational graph",
+      "status": 200
+    },
+    {
+      "check": "model card",
+      "status": 200
+    },
+    {
+      "check": "model readiness",
+      "status": 200
+    },
+    {
+      "check": "services",
+      "status": 200
+    },
+    {
+      "check": "simulated activity",
+      "status": 200
+    },
+    {
+      "check": "asset activity",
+      "status": 200
+    },
+    {
+      "check": "posture replay",
+      "status": 200
+    },
+    {
+      "check": "operational choke points",
+      "status": 200
+    },
+    {
+      "check": "vendor scenarios",
+      "status": 200
+    },
+    {
+      "check": "risk brief",
+      "status": 200
+    },
+    {
+      "check": "action catalog",
+      "status": 200
+    },
+    {
+      "check": "bound action options",
+      "status": 200
+    },
+    {
+      "check": "bound attack paths",
+      "status": 200
+    },
+    {
+      "check": "isolated attack paths",
+      "status": 200
+    },
+    {
+      "check": "invalid isolation",
+      "status": 422
+    },
+    {
+      "check": "60h plan",
+      "status": 200
+    },
+    {
+      "check": "exact plan replay",
+      "status": 200
+    },
+    {
+      "check": "excluded target plan",
+      "status": 200
+    },
+    {
+      "check": "constrained plan",
+      "status": 200
+    },
+    {
+      "check": "access control",
+      "status": 200
+    },
+    {
+      "check": "invalid patch",
+      "status": 422
+    },
+    {
+      "check": "incompatible actions",
+      "status": 422
+    },
+    {
+      "check": "fingerprint mismatch",
+      "status": 409
+    },
+    {
+      "check": "baseline after projections",
+      "status": 200
+    },
+    {
+      "check": "replacement simulation",
+      "status": 200
+    },
+    {
+      "check": "stale attack paths",
+      "status": 409
+    },
+    {
+      "check": "stale plan replay",
+      "status": 409
+    }
+  ],
+  "record_kind": "Measured API outputs, never an inference fixture"
+}

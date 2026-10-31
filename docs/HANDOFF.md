@@ -1,5 +1,7 @@
 # Phase 1 handoff
 
+**Current: Phase 6 finalization.** Read [FINAL_DEMO_RUNBOOK.md](FINAL_DEMO_RUNBOOK.md), [PHASE_6_MODULE_AUDIT.md](PHASE_6_MODULE_AUDIT.md) and the latest VERIFICATION.md entry. Branch `feature/phase-6-finalization` starts at verified Phase 5 `62dece9793b3b0a901091bbd80bd6860a6ef69b8`. All 14 modules plus additive Attack Paths were audited; the existing path/impact/scoring/model algorithms and original objectives were preserved. The new API wrapper is `schemas/attack_paths.py`; generated OpenAPI/TypeScript are synchronized. No main or teammate branch was modified. Historical absence claims below apply only to their named phase.
+
 **Latest: Phase 5 final integration.** `integration/phase-5` preserves backend 33ed965, frontend 50f65e9 and their a5bac82 combined history, then adds verified contract wiring. Read [PHASE_5_INTEGRATION.md](PHASE_5_INTEGRATION.md) for exact API behavior, corrected results, launch, tests and Phase 6 readiness/limits. Earlier Phase 5B proposals and historical phase records below are superseded by the integrated actual contract. Do not retrain or push to main as part of this delivery.
 
 **Phase 5B frontend:** `feature/phase-5-frontend` adds stale-result handling, searchable exclusions and typed Fix Plan → What-If handoff to the verified integration baseline. Read [PHASE_5_FRONTEND.md](PHASE_5_FRONTEND.md) for checks, demonstration and pending backend contract coordination. Claude's unfinished branch was not merged; generated contracts/engines remain unchanged.

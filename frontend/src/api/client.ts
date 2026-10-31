@@ -13,6 +13,7 @@ export type VendorReport = Models['VendorReport']
 export type ChokepointReport = Models['ChokepointReport']
 export type PostureTrend = Models['PostureTrend']
 type Context = { scenario_id: string; snapshot_id?: string }
+type QueryParams = Record<string, string | string[] | undefined>
 
 export class ApiError extends Error {
   constructor(
@@ -30,12 +31,14 @@ const base = (import.meta.env.VITE_API_BASE_URL ?? '/api/v1').replace(/\/$/, '')
 
 async function request<T>(
   path: string,
-  init: RequestInit & { params?: Record<string, string | undefined> } = {},
+  init: RequestInit & { params?: QueryParams } = {},
 ): Promise<T> {
   const { params = {}, ...options } = init
-  const query = new URLSearchParams(
-    Object.entries(params).filter((entry): entry is [string, string] => entry[1] !== undefined),
-  )
+  const query = new URLSearchParams()
+  for (const [key, value] of Object.entries(params)) {
+    if (Array.isArray(value)) value.forEach((item) => query.append(key, item))
+    else if (value !== undefined) query.append(key, value)
+  }
   const response = await fetch(`${base}${path}${query.size ? `?${query}` : ''}`, {
     ...options,
     headers: {
@@ -56,11 +59,7 @@ async function request<T>(
   return response.json() as Promise<T>
 }
 
-function get<T>(
-  path: string,
-  params: Record<string, string | undefined> = {},
-  signal?: AbortSignal,
-): Promise<T> {
+function get<T>(path: string, params: QueryParams = {}, signal?: AbortSignal): Promise<T> {
   return request<T>(path, { params, signal })
 }
 
@@ -123,6 +122,26 @@ export const api = {
       throw error
     }
   },
+  attackPaths: (
+    run: Pick<SimulationRun, 'id' | 'fingerprint' | 'scenario_id' | 'snapshot_id'>,
+    isolated: string[],
+    limit: number,
+    signal?: AbortSignal,
+  ) =>
+    get<Models['AttackPathReport']>(
+      '/simulation/attack-paths',
+      {
+        scenario_id: run.scenario_id,
+        snapshot_id: run.snapshot_id,
+        run_id: run.id,
+        baseline_fingerprint: run.fingerprint,
+        isolate: isolated,
+        max_paths_per_target: String(limit),
+      },
+      signal,
+    ),
+  riskBrief: (context: Context, signal?: AbortSignal) =>
+    get<Models['RiskBrief']>('/reports/brief', context, signal),
   actionOptions: (signal?: AbortSignal, runId?: string) =>
     get<Models['ActionOption'][]>('/actions/options', { run_id: runId }, signal),
   whatIf: (body: Models['WhatIfRequest']) => post<Models['WhatIfResult']>('/actions/what-if', body),

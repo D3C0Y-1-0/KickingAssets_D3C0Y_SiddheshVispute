@@ -128,7 +128,7 @@ export function AssetDrawer({ id, onClose }: { id: string | null; onClose: () =>
                     </li>
                   ))}
                 </ul>
-                <Link className="text-link" to="/intelligence" onClick={onClose}>
+                <Link className="text-link" to={`/intelligence?asset=${id}`} onClick={onClose}>
                   Full reasoning in Risk Intelligence
                 </Link>
               </>

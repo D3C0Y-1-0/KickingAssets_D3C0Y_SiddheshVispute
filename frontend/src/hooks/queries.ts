@@ -69,11 +69,19 @@ export function useMlOverview() {
   })
 }
 export function useLatestRun() {
-  return useQuery({
+  const context = useContext()
+  const query = useQuery({
     queryKey: ['simulation', 'latest'],
     queryFn: ({ signal }) => api.latestRun(signal),
-    staleTime: Infinity,
+    staleTime: 15000,
+    refetchInterval: 15000,
+    refetchOnWindowFocus: true,
+    select: (run) =>
+      run && run.scenario_id === context.scenario_id && run.snapshot_id === context.snapshot_id
+        ? run
+        : null,
   })
+  return { ...query, data: query.isError ? undefined : query.data }
 }
 export function useRunSimulation() {
   const client = useQueryClient()

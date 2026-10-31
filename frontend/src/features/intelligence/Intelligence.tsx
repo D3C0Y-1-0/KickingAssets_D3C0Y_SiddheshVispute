@@ -1,9 +1,15 @@
-import { useState } from 'react'
 import { ArrowRight, Route } from 'lucide-react'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { useLatestRun } from '../../hooks/queries'
 import { ProvenanceNotice, SimulationRequired } from '../../components/Simulation'
-import { PageHeading, Panel, QueryState, RiskBadge, SectorBadge } from '../../components/ui'
+import {
+  EmptyState,
+  PageHeading,
+  Panel,
+  QueryState,
+  RiskBadge,
+  SectorBadge,
+} from '../../components/ui'
 import { percent } from '../../lib/risk'
 import type { AssetSimulation, SimulationRun } from '../../api/client'
 
@@ -112,7 +118,9 @@ function RunBacktest({ run }: { run: SimulationRun }) {
 
 export default function Intelligence() {
   const latest = useLatestRun()
-  const [selected, setSelected] = useState<string | null>(null)
+  const [params, setParams] = useSearchParams()
+  const selected = params.get('asset')
+  const setSelected = (id: string) => setParams({ asset: id })
   if (latest.isPending || latest.isError)
     return <QueryState pending={latest.isPending} error={latest.error} retry={latest.refetch} />
   const run = latest.data
@@ -126,6 +134,12 @@ export default function Intelligence() {
         <SimulationRequired />
       </>
     )
+  if (!run.assets.length)
+    return (
+      <EmptyState title="No scored inventory assets">
+        The simulation returned no assets. Review the scenario before ranking.
+      </EmptyState>
+    )
   const active = run.assets.find((a) => a.asset_id === selected) ?? run.assets[0]
   const m = active.matching
   return (
@@ -134,9 +148,14 @@ export default function Intelligence() {
         title="Risk intelligence"
         description="Assets ranked by an ML-driven relative index, with the reason behind every score."
         actions={
-          <Link className="button primary" to="/what-if">
-            Continue to actions <ArrowRight size={15} />
-          </Link>
+          <>
+            <Link className="button secondary" to={`/attack-paths?asset=${active.asset_id}`}>
+              Inspect attack paths
+            </Link>
+            <Link className="button primary" to="/what-if">
+              Continue to actions <ArrowRight size={15} />
+            </Link>
+          </>
         }
       />
       <div className="split-layout spaced-panel">

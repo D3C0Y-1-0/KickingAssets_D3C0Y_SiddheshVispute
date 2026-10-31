@@ -1686,6 +1686,80 @@
               "default": 5,
               "title": "Max Paths Per Target"
             }
+          },
+          {
+            "name": "run_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 120
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Run Id"
+            }
+          },
+          {
+            "name": "baseline_fingerprint",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 8,
+                  "maxLength": 64
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Baseline Fingerprint"
+            }
+          },
+          {
+            "name": "scenario_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 100,
+                  "pattern": "^[a-zA-Z0-9_.-]+$"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Scenario Id"
+            }
+          },
+          {
+            "name": "snapshot_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 100,
+                  "pattern": "^[a-zA-Z0-9_.-]+$"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Snapshot Id"
+            }
           }
         ],
         "responses": {
@@ -1694,7 +1768,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/AttackPathAnalysis"
+                  "$ref": "#/components/schemas/AttackPathReport"
                 }
               }
             }
@@ -1822,7 +1896,9 @@
             "schema": {
               "anyOf": [
                 {
-                  "type": "string"
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 120
                 },
                 {
                   "type": "null"
@@ -4077,7 +4153,7 @@
         ],
         "title": "AttackPath"
       },
-      "AttackPathAnalysis": {
+      "AttackPathReport": {
         "properties": {
           "method_version": {
             "type": "string",
@@ -4131,6 +4207,37 @@
             },
             "type": "array",
             "title": "Notes"
+          },
+          "scenario_id": {
+            "type": "string",
+            "title": "Scenario Id"
+          },
+          "snapshot_id": {
+            "type": "string",
+            "title": "Snapshot Id"
+          },
+          "run_id": {
+            "type": "string",
+            "title": "Run Id"
+          },
+          "baseline_fingerprint": {
+            "type": "string",
+            "title": "Baseline Fingerprint"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "current",
+              "projected"
+            ],
+            "title": "State"
+          },
+          "isolated_assets": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Isolated Assets"
           }
         },
         "additionalProperties": false,
@@ -4143,9 +4250,15 @@
           "paths",
           "chokepoints",
           "target_reachability",
-          "notes"
+          "notes",
+          "scenario_id",
+          "snapshot_id",
+          "run_id",
+          "baseline_fingerprint",
+          "state",
+          "isolated_assets"
         ],
-        "title": "AttackPathAnalysis"
+        "title": "AttackPathReport"
       },
       "Backtest": {
         "properties": {

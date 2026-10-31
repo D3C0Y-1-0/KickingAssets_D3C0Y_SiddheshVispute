@@ -174,3 +174,108 @@ Hosted checks (31 October 2026): on Azure, `/activity`, `/activity/assets/PWR-00
 - Reference scenario: baseline 35.62 reproduced; plan 35.62 -> 27.72, 3 steps, 56 h (was 25.90, 5 steps). Explanation in `docs/PHASE_5A.md`.
 - Frontend: typecheck fails in `Remediation.tsx` and `hooks/liveSimulation.ts` because `run_id` is now required (Codex-owned, not edited). Build and frontend tests were not run on this branch.
 - Not verified: behaviour against the Postgres store, concurrent runs during a planning request.
+
+
+## Phase 6 final verification — 1 November 2026
+
+Authoritative current delivery: [FINAL_DEMO_RUNBOOK.md](FINAL_DEMO_RUNBOOK.md),
+[PHASE_6_MODULE_AUDIT.md](PHASE_6_MODULE_AUDIT.md), measured
+[PHASE_6_DEMO.json](PHASE_6_DEMO.json) and
+[PHASE_6_MODEL_EVALUATION.json](PHASE_6_MODEL_EVALUATION.json).
+Branch `feature/phase-6-finalization` was created from verified
+`origin/integration/phase-5` at `62dece9793b3b0a901091bbd80bd6860a6ef69b8`.
+The initial working tree was clean. Fetched remote work was inspected; unrelated branch
+advances were not merged into the verified base. Earlier phase records above are historical.
+
+### Code gates
+
+- Full backend: **190 passed**, no skips, one upstream Starlette/httpx deprecation warning.
+  Final complete run took **561.59s** on this loaded Windows laptop; an earlier complete run
+  of the same backend changes passed in 199.41s. New Phase 6 tests cover exact path context,
+  cyber-edge-only traversal, isolation/immutability, invalid parameters, fingerprint/snapshot
+  mismatch, superseded runs and missing-reference failure without a score. The existing
+  39 Phase 5 hardening tests protect patch evidence, constraints and handoff.
+- Full frontend: **85 passed** across three files; final rerun **16.14s**. Adds 36 tests
+  across Phase 6 boundary tests and the API client case, including actual brief fetching/run
+  validation, cached error/scenario guards, report mismatch, isolation/empty/retry and
+  data-backed module loading/failure handling. Diagram mocks are confined to unit tests;
+  the browser audit uses actual SVGs and the actual API.
+- Strict TypeScript and frontend Prettier checks run over source/tests/Vite configuration.
+  Ruff lint and format checks passed over backend, OpenAPI exporter and the new verifier:
+  **76 Python files already formatted**. There is no separate ESLint task in this repository.
+  OpenAPI was exported, TypeScript regenerated, and a fresh in-memory backend export matched
+  docs/openapi.json exactly. No hand-authored generated declarations or dependency changes.
+- Production build passed (2602 modules), including the new lazy Attack Paths view and the
+  responsive canvas repair. The compiled application served by FastAPI was also exercised.
+
+Verification attempt notes: a restricted-shell pytest temp directory could not be created;
+that attempt did not pass. A subsequent restricted run stalled and was stopped only after
+verifying its exact owned pytest process. The final complete backend run used a fresh,
+validated workspace directory under ignored artifacts/ outside that restriction. A parallel
+frontend/build attempt timed out one existing 5s UI test under load (84 passed, one timeout);
+the serial complete reruns passed all 85 with assertions/timeouts unchanged. The last ML
+wording edit required Prettier; the frontend gates were rerun after formatting. None of these
+failed attempts is counted as a passing gate, and no result was replaced with a fixture.
+
+### Real model and API evidence
+
+- Saved-model reevaluation without fetch or retraining verified **95 source checksums** and
+  **147,305 test rows**, reproducing point metrics and model hashes. Deployed AP **0.0037**,
+  AUC **0.8789**, precision@200/month **0.0119**, recall@200/month **0.0532**. EPSS baseline
+  AP **0.0044**, AUC **0.7290**. Original model-card AP CI [0.0023, 0.0071] and paired delta
+  CI [-0.0141, 0.0017] were preserved, not recalculated. No clear AP improvement over EPSS
+  is established. No model, training source, original inventory or pure engine file changed.
+- **35 live API checks passed** with scripts/verify_demo.py --replace-baseline. Earlier
+  no-replacement pass had 32 checks. These include all data-backed modules, actual inference,
+  both graph APIs, attack consequences/isolation, plans, exclusions, budget/constraints,
+  exact What-If replay, invalid isolation/patch/incompatible actions and fingerprint mismatch.
+  Baseline payload was identical before/after projections. A new run with the same fingerprint
+  made the old bound attack-path and plan requests return **409 stale_baseline**.
+- Default October 2026 baseline **35.62**; 60h plan and replay **27.72**, three steps, **56h
+  effort / 14h downtime**. Segmentation HLT-008 and PWR-008 plus the evidenced HLT-007 patch.
+  Fifteen candidate paths; PWR-008 isolation leaves ten. The example path uses cyber-PWR-1-4
+  and cyber-PWR-4-8, not operational edges. Conditional data-integrity service upper bounds
+  remain 100%; this is not a probability or a claim of verified recovery.
+
+### Actual browser observations
+
+- All **14 assigned modules plus Attack Paths** opened at desktop and mobile widths; specific
+  actions/source distinctions and boundary checks are enumerated in PHASE_6_MODULE_AUDIT.md.
+  Desktop document client/scroll width **1265/1265**; mobile viewport **390x844**, document
+  **375/375**. No document-level horizontal overflow in recorded checkpoints. Wide tables
+  remain internally scrollable. This is browser viewport testing, not a physical touch device.
+- Full Live -> PWR-001 register/drawer -> selected ranking -> PWR-008 attack path -> operational
+  graph -> 60h Fix Plan -> exact What-If calculation reproduced 35.62 -> 27.72. The obsolete
+  asset-register API-route error did not occur. The final brief stage made its actual GET.
+- Attack filters/isolation/empty recovery, graph mode/sector/native inspector/fit/zoom,
+  mobile menu close, curated POST/no-match search, invalid CVE scoring/valid score recovery,
+  all five twins/part selectors/layers/zoom/expand, vendor view and keyboard PWR-002 activity
+  inspection were exercised. Fixed-canvas clipping was found visually and repaired; actual
+  fitted SVG bounds checked in all five mobile diagrams and desktop views.
+- Compiled port-8000 app repeated the path -> plan -> projection flow. Editing the patch hid
+  the previous comparison; unsupported CVE returned structured 422 invalid_actions without
+  losing three staged actions. A 1h maintenance window returned per-action 422 constraint
+  issues. Restoring valid inputs permits recalculation. Prior clean compiled navigation
+  had no console warnings/errors; expected deliberate 404/422 validation responses are
+  distinct from application faults. Model/API unavailable states are automated boundaries,
+  not falsely claimed as forced through every real-browser module.
+- Ignored screenshots visually inspected: phase6-attack-paths-desktop.jpg,
+  phase6-attack-paths-mobile.jpg, phase6-projection-desktop.jpg, phase6-projection-mobile.jpg,
+  phase6-final-projection.jpg, phase6-twin-desktop.jpg and repaired phase6-twin-mobile.jpg
+  under artifacts/screenshots/. Browser checkpoints are in artifacts/phase6-browser-audit.json.
+
+### Delivery review and readiness
+
+Reviewed thin API context validation, existing run-bound POSTs, escaped structured errors,
+reference provenance, generated contract coherence and absence of engine/model changes.
+Credential-pattern preflight scans reachable Git history plus all tracked/nonignored working
+files; no matches or sensitive tracked files were found. Databases, local environments,
+reference cache, build output and transient QA evidence stay ignored. The targeted review
+is not a penetration test or proof that every possible credential format is absent.
+
+Ready for the documented local hackathon demonstration. Remaining limitations include process-local
+shared latest-run state, coarse candidate-path/control evidence, numeric vendor-version matching,
+uncalibrated relative risk/ML output, conditional worst-plausible service bounds, heuristic optimizer
+and fixed effort/downtime assumptions. No real scanning, compromise, remediation execution,
+production load/concurrency, hosted release, full accessibility audit or physical offline test is
+claimed. Original objectives and all earlier implementation history remain preserved.

@@ -1,5 +1,7 @@
 # GridSentinel
 
+**Phase 6 finalization:** [Final demo runbook](docs/FINAL_DEMO_RUNBOOK.md) and [module audit](docs/PHASE_6_MODULE_AUDIT.md) are the current local launch/demo authority. Adds run-bound inspection of the existing attack-path engine, real brief verification, safer latest-run handling and responsive diagram fitting. Original PS03 objectives and existing engines/model artifacts remain unchanged. Branch `feature/phase-6-finalization`; no merge to main. Older records below are historical.
+
 **Phase 5 final integration:** [integration runbook and measured demonstration](docs/PHASE_5_INTEGRATION.md), branch `integration/phase-5`. The combined frontend/backend now bind What-If and optimization to exact runs/fingerprints, preserve CVE-specific patch evidence and constraints, and support the complete Fix Plan → What-If workflow. Local SQLite remains the launch configuration. Older integration records below are retained as history.
 
 **Latest local integration:** [Phase 3 runbook, metrics and demonstration](docs/PHASE_3_INTEGRATION.md). Branch `integration/phase-3` preserves all fetched repository branches: the ML workflow, version-aware real-data link, force graph, digital twins, existing actions and optional PostgreSQL support, plus the original curated vulnerability/priority assessment. Launch with `-SQLite` for a fully local database. The historical Phase 2 integration record remains in docs/PHASE_2_INTEGRATION.md.

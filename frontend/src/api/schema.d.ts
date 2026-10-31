@@ -1091,8 +1091,8 @@ export interface components {
             /** Explanation */
             explanation: string;
         };
-        /** AttackPathAnalysis */
-        AttackPathAnalysis: {
+        /** AttackPathReport */
+        AttackPathReport: {
             /** Method Version */
             method_version: string;
             /** Entry Points */
@@ -1109,6 +1109,21 @@ export interface components {
             target_reachability: components["schemas"]["TargetReachability"][];
             /** Notes */
             notes: string[];
+            /** Scenario Id */
+            scenario_id: string;
+            /** Snapshot Id */
+            snapshot_id: string;
+            /** Run Id */
+            run_id: string;
+            /** Baseline Fingerprint */
+            baseline_fingerprint: string;
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "current" | "projected";
+            /** Isolated Assets */
+            isolated_assets: string[];
         };
         /**
          * Backtest
@@ -4143,6 +4158,10 @@ export interface operations {
                 /** @description Assets treated as segmented away */
                 isolate?: string[] | null;
                 max_paths_per_target?: number;
+                run_id?: string | null;
+                baseline_fingerprint?: string | null;
+                scenario_id?: string | null;
+                snapshot_id?: string | null;
             };
             header?: never;
             path?: never;
@@ -4156,7 +4175,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["AttackPathAnalysis"];
+                    "application/json": components["schemas"]["AttackPathReport"];
                 };
             };
             /** @description Not Found */

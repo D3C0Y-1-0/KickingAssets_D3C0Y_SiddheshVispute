@@ -3235,6 +3235,30 @@ main:has(.graph-full) .graph-mode-bar > .subtle-label {
 .twin-stage .iso-svg {
   max-height: 100%;
 }
+.diagram-viewport {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+.diagram-coordinate-space {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform-origin: center;
+}
+.diagram-coordinate-space .iso-plate {
+  padding: 48px 20px 24px;
+}
+@media (max-width: 700px) {
+  .twin-page {
+    height: auto;
+    min-height: 0;
+  }
+  .twin-stage {
+    flex: none;
+    height: 650px;
+  }
+}
 .graph-layout {
   display: block;
   position: relative;

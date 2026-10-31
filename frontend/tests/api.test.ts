@@ -17,6 +17,19 @@ function response(body: unknown, status = 200) {
 }
 
 describe('snapshot-scoped API integration boundary', () => {
+  it('pins attack-path context and preserves repeated isolation parameters', async () => {
+    const fetchMock = response({ paths: [] })
+    await api.attackPaths(
+      { ...context, id: 'run-1', fingerprint: 'fingerprint-123' },
+      ['A', 'B'],
+      3,
+    )
+    const query = new URL(fetchMock.mock.calls[0][0] as string, 'http://localhost').searchParams
+    expect(query.get('run_id')).toBe('run-1')
+    expect(query.get('baseline_fingerprint')).toBe('fingerprint-123')
+    expect(query.getAll('isolate')).toEqual(['A', 'B'])
+    expect(query.get('max_paths_per_target')).toBe('3')
+  })
   it('requests action options against the exact run', async () => {
     const fetchMock = response([])
     await api.actionOptions(undefined, 'run-1')

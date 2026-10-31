@@ -27,7 +27,7 @@ import {
 } from 'lucide-react'
 import { NavLink, Route, Routes, Link, useLocation, useNavigate } from 'react-router-dom'
 import { api } from '../api/client'
-import { useScenario } from '../hooks/queries'
+import { useScenario, useLatestRun } from '../hooks/queries'
 import { QueryState, SampleBadge } from '../components/ui'
 import Overview from '../features/overview/Overview'
 
@@ -44,6 +44,7 @@ const Posture = lazy(() => import('../features/posture/Posture'))
 const Resilience = lazy(() => import('../features/resilience/Resilience'))
 const Coverage = lazy(() => import('../features/coverage/Coverage'))
 const LiveSimulation = lazy(() => import('../features/live/LiveSimulation'))
+const AttackPaths = lazy(() => import('../features/attack-paths/AttackPaths'))
 const navigation: { path: string; name: string; icon: typeof Grid2X2; tag?: string }[] = [
   { path: '/', name: 'Overview', icon: Grid2X2 },
   { path: '/live', name: 'Live Simulation', icon: PlayCircle, tag: 'NEW' },
@@ -51,6 +52,7 @@ const navigation: { path: string; name: string; icon: typeof Grid2X2; tag?: stri
   { path: '/digital-twins', name: 'Digital Twins', icon: Building2, tag: 'ANATOMY' },
   { path: '/assets', name: 'Assets & Risk', icon: Layers },
   { path: '/intelligence', name: 'Risk Ranking', icon: Activity },
+  { path: '/attack-paths', name: 'Attack Paths', icon: Network },
   { path: '/curated-intelligence', name: 'Curated CVE Assessment', icon: ShieldCheck },
   { path: '/ml', name: 'AI Model', icon: BrainCircuit },
   { path: '/what-if', name: 'What-If', icon: FlaskConical },
@@ -67,6 +69,7 @@ export default function App() {
   const location = useLocation()
   const navigate = useNavigate()
   const scenarioQuery = useScenario()
+  const latest = useLatestRun()
   const health = useQuery({
     queryKey: ['health'],
     queryFn: ({ signal }) => api.health(signal),
@@ -239,8 +242,8 @@ export default function App() {
           <div>
             <SampleBadge>Sample scenario</SampleBadge>
             <span>
-              Fictional infrastructure, real vulnerability data. Scores are computed by the ML model
-              after a simulation. No live monitoring.
+              Fictional infrastructure, real vulnerability data. Calculated risk combines an ML CVE
+              signal, configured exposure and conditional impact. No live monitoring.
             </span>
           </div>
           <Link to="/methodology">
@@ -248,6 +251,15 @@ export default function App() {
             <ChevronRight size={13} />
           </Link>
         </div>
+        {latest.isError && (
+          <div className="callout warn" role="alert">
+            Simulation results are unavailable: {latest.error.message}. Cached risk values are
+            hidden.
+            <button className="button secondary" onClick={() => void latest.refetch()}>
+              Retry simulation results
+            </button>
+          </div>
+        )}
         <main id="main-content" tabIndex={-1}>
           <Suspense fallback={<QueryState pending error={null} />}>
             {location.pathname === '/digital-twins' ? (
@@ -269,6 +281,7 @@ export default function App() {
                 <Route path="/digital-twins" element={<DigitalTwins />} />
                 <Route path="/assets" element={<Assets />} />
                 <Route path="/intelligence" element={<Intelligence />} />
+                <Route path="/attack-paths" element={<AttackPaths />} />
                 <Route path="/curated-intelligence" element={<CuratedIntelligence />} />
                 <Route path="/ml" element={<MlLab />} />
                 <Route path="/what-if" element={<WhatIf />} />
