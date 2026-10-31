@@ -88,11 +88,16 @@ The ML model is only read, never changed.
 Needs the local reference data and trained model. The output is deterministic (two runs are
 byte-identical); the committed `docs/ATTACK_PATH_DEMO.md` is the output as of the Aurora snapshot.
 
+## API
+
+`GET /api/v1/simulation/attack-paths?isolate=PWR-008&max_paths_per_target=5` analyses the latest
+simulation run (409 until one exists). `isolate` repeats per asset and models segmentation as a
+what-if; the response is `AttackPathAnalysis` (models in `models.py`, used directly as the OpenAPI
+response model, so the generated TypeScript types include them).
+
 ## Integration requirements (for the coordinator)
 
-No API route, schema or UI was added. To expose the engine: add a thin route in `api/workflow.py`
-that calls `evidence_from_run(latest_run)` -> `from_bundle(bundle, evidence, Controls(...))` ->
-`AttackPathEngine(consequence_lookup(bundle)).analyze(...)`, and copy the output models in
-`models.py` into `schemas/` (they are frozen Pydantic v2, JSON serializable) before regenerating
-OpenAPI and the TypeScript client. Segmentation actions from the what-if stage map directly to
-`Controls.isolated_assets`.
+No UI was added. The route reuses `evidence_from_run` -> `from_bundle` -> `AttackPathEngine`. If the
+coordinator wants these models under `schemas/`, move `models.py` there and re-export it, then
+regenerate OpenAPI and the TypeScript client. Segmentation actions from the what-if stage map
+directly to `Controls.isolated_assets`.

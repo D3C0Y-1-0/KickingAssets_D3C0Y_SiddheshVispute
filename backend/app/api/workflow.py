@@ -2,10 +2,19 @@
 
 import threading
 from datetime import date
+from typing import Annotated
 
-from fastapi import APIRouter, HTTPException, Request
+from fastapi import APIRouter, HTTPException, Query, Request
 
 from app.domain.seed import SCENARIO_ID
+from app.engine.attack_path import (
+    AnalysisConfig,
+    AttackPathAnalysis,
+    AttackPathEngine,
+    AttackPathInputError,
+    Controls,
+)
+from app.engine.attack_path.adapter import consequence_lookup, evidence_from_run, from_bundle
 from app.schemas.models import ErrorEnvelope
 from app.schemas.simulation import (
     ActionDefinition,
@@ -136,6 +145,30 @@ def progress():
 @router.get("/simulation/latest", response_model=SimulationRun, tags=["Simulation"])
 def latest(request: Request):
     return _latest(request).run
+
+
+@router.get("/simulation/attack-paths", response_model=AttackPathAnalysis, tags=["Simulation"])
+def attack_paths(
+    request: Request,
+    isolate: Annotated[
+        list[str] | None, Query(description="Assets treated as segmented away")
+    ] = None,
+    max_paths_per_target: Annotated[int, Query(ge=1, le=50)] = 5,
+):
+    """Plausible cyber routes from exposed entry points to critical assets, using the latest
+    simulation's vulnerability evidence. Reachability is not compromise."""
+    ctx = _latest(request)
+    try:
+        return AttackPathEngine(consequence_lookup(ctx.bundle)).analyze(
+            from_bundle(
+                ctx.bundle,
+                evidence_from_run(ctx.run),
+                Controls(isolated_assets=frozenset(isolate or [])),
+            ),
+            AnalysisConfig(max_paths_per_target=max_paths_per_target),
+        )
+    except AttackPathInputError as exc:
+        raise HTTPException(422, str(exc)) from exc
 
 
 @router.get("/actions/catalog", response_model=list[ActionDefinition], tags=["Actions"])

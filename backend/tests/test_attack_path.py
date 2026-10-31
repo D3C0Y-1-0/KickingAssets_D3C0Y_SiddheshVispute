@@ -370,3 +370,18 @@ def test_aurora_with_real_simulation_evidence(tmp_path):
     assert engine.analyze(from_bundle(bundle, evidence)) == engine.analyze(
         from_bundle(bundle, evidence)
     )
+
+
+def test_attack_paths_route_needs_a_run_and_honours_isolation(tmp_path):
+    with TestClient(create_app(tmp_path / "t.sqlite3", static_dir=tmp_path / "s")) as client:
+        assert client.get("/api/v1/simulation/attack-paths").status_code == 409
+        if not inference.status()["ready"]:
+            pytest.skip("local reference data or model not available")
+        client.post("/api/v1/simulation/run")
+        base = client.get("/api/v1/simulation/attack-paths").json()
+        cut = client.get("/api/v1/simulation/attack-paths", params={"isolate": ["PWR-008"]}).json()
+        bad = client.get("/api/v1/simulation/attack-paths", params={"isolate": ["NOPE"]})
+    assert base["method_version"] == "attack-path-v1" and base["paths"]
+    assert len(cut["paths"]) < len(base["paths"])
+    assert not any("PWR-008" in p["nodes"] for p in cut["paths"])
+    assert bad.status_code == 200  # unknown isolated ids are ignored, not an error
