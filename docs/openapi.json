@@ -1205,6 +1205,103 @@
         }
       }
     },
+    "/api/v1/simulation/attack-paths": {
+      "get": {
+        "tags": [
+          "Simulation"
+        ],
+        "summary": "Attack Paths",
+        "description": "Plausible cyber routes from exposed entry points to critical assets, using the latest\nsimulation's vulnerability evidence. Reachability is not compromise.",
+        "operationId": "attack_paths_api_v1_simulation_attack_paths_get",
+        "parameters": [
+          {
+            "name": "isolate",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Assets treated as segmented away",
+              "title": "Isolate"
+            },
+            "description": "Assets treated as segmented away"
+          },
+          {
+            "name": "max_paths_per_target",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 50,
+              "minimum": 1,
+              "default": 5,
+              "title": "Max Paths Per Target"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AttackPathAnalysis"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unprocessable Content"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        }
+      }
+    },
     "/api/v1/actions/catalog": {
       "get": {
         "tags": [
@@ -3080,6 +3177,166 @@
         "title": "AssumedProduct",
         "description": "The real product and version a fictional asset is ASSUMED to run (scenario assumption)."
       },
+      "AttackPath": {
+        "properties": {
+          "rank": {
+            "type": "integer",
+            "title": "Rank"
+          },
+          "entry_point": {
+            "type": "string",
+            "title": "Entry Point"
+          },
+          "target": {
+            "type": "string",
+            "title": "Target"
+          },
+          "nodes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Nodes"
+          },
+          "hops": {
+            "items": {
+              "$ref": "#/components/schemas/HopAssessment"
+            },
+            "type": "array",
+            "title": "Hops"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "plausible",
+              "conditional",
+              "insufficient_evidence"
+            ],
+            "title": "Status"
+          },
+          "ranking_score": {
+            "type": "number",
+            "title": "Ranking Score"
+          },
+          "weakest_hop": {
+            "type": "integer",
+            "title": "Weakest Hop"
+          },
+          "final_effects": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "loss_of_control",
+                "loss_of_visibility",
+                "data_integrity",
+                "unavailability"
+              ]
+            },
+            "type": "array",
+            "title": "Final Effects"
+          },
+          "consequence": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Consequence"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "explanation": {
+            "type": "string",
+            "title": "Explanation"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "rank",
+          "entry_point",
+          "target",
+          "nodes",
+          "hops",
+          "status",
+          "ranking_score",
+          "weakest_hop",
+          "final_effects",
+          "consequence",
+          "explanation"
+        ],
+        "title": "AttackPath"
+      },
+      "AttackPathAnalysis": {
+        "properties": {
+          "method_version": {
+            "type": "string",
+            "title": "Method Version"
+          },
+          "entry_points": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Entry Points"
+          },
+          "targets": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Targets"
+          },
+          "unknown_exposure_assets": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Unknown Exposure Assets"
+          },
+          "paths": {
+            "items": {
+              "$ref": "#/components/schemas/AttackPath"
+            },
+            "type": "array",
+            "title": "Paths"
+          },
+          "chokepoints": {
+            "items": {
+              "$ref": "#/components/schemas/ChokePoint"
+            },
+            "type": "array",
+            "title": "Chokepoints"
+          },
+          "target_reachability": {
+            "items": {
+              "$ref": "#/components/schemas/TargetReachability"
+            },
+            "type": "array",
+            "title": "Target Reachability"
+          },
+          "notes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Notes"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "method_version",
+          "entry_points",
+          "targets",
+          "unknown_exposure_assets",
+          "paths",
+          "chokepoints",
+          "target_reachability",
+          "notes"
+        ],
+        "title": "AttackPathAnalysis"
+      },
       "Backtest": {
         "properties": {
           "as_of": {
@@ -3413,6 +3670,38 @@
         ],
         "title": "CategoryCount"
       },
+      "ChokePoint": {
+        "properties": {
+          "asset_id": {
+            "type": "string",
+            "title": "Asset Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "paths_through": {
+            "type": "integer",
+            "title": "Paths Through"
+          },
+          "targets_cut": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Targets Cut"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "asset_id",
+          "name",
+          "paths_through",
+          "targets_cut"
+        ],
+        "title": "ChokePoint"
+      },
       "Chokepoint": {
         "properties": {
           "asset_id": {
@@ -3599,6 +3888,40 @@
           "services_fully_disrupted"
         ],
         "title": "ChokepointScenario"
+      },
+      "Consequence": {
+        "properties": {
+          "effect": {
+            "type": "string",
+            "enum": [
+              "loss_of_control",
+              "loss_of_visibility",
+              "data_integrity",
+              "unavailability"
+            ],
+            "title": "Effect"
+          },
+          "services": {
+            "items": {
+              "$ref": "#/components/schemas/ServiceConsequence"
+            },
+            "type": "array",
+            "title": "Services"
+          },
+          "max_disruption": {
+            "type": "number",
+            "title": "Max Disruption"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "effect",
+          "services",
+          "max_disruption"
+        ],
+        "title": "Consequence",
+        "description": "Downstream effect of the target, from the operational dependency graph. Reporting only."
       },
       "CveScore": {
         "properties": {
@@ -4033,6 +4356,105 @@
           "application_version"
         ],
         "title": "Health"
+      },
+      "HopAssessment": {
+        "properties": {
+          "edge_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Edge Id"
+          },
+          "source": {
+            "type": "string",
+            "title": "Source"
+          },
+          "target": {
+            "type": "string",
+            "title": "Target"
+          },
+          "protocol": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Protocol"
+          },
+          "access": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "network",
+                  "remote_management",
+                  "local_trust"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Access"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "plausible",
+              "conditional",
+              "insufficient_evidence",
+              "not_supported",
+              "blocked"
+            ],
+            "title": "Status"
+          },
+          "basis": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Basis"
+          },
+          "effects": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "loss_of_control",
+                "loss_of_visibility",
+                "data_integrity",
+                "unavailability"
+              ]
+            },
+            "type": "array",
+            "title": "Effects",
+            "default": []
+          },
+          "explanation": {
+            "type": "string",
+            "title": "Explanation"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "edge_id",
+          "source",
+          "target",
+          "protocol",
+          "access",
+          "status",
+          "basis",
+          "explanation"
+        ],
+        "title": "HopAssessment"
       },
       "InfrastructureAsset": {
         "properties": {
@@ -5812,6 +6234,25 @@
         ],
         "title": "ServiceConcentration"
       },
+      "ServiceConsequence": {
+        "properties": {
+          "service_id": {
+            "type": "string",
+            "title": "Service Id"
+          },
+          "disruption_fraction": {
+            "type": "number",
+            "title": "Disruption Fraction"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "service_id",
+          "disruption_fraction"
+        ],
+        "title": "ServiceConsequence"
+      },
       "ServiceDisruption": {
         "properties": {
           "service_id": {
@@ -6302,6 +6743,40 @@
           "action_type"
         ],
         "title": "StagedActionRequest"
+      },
+      "TargetReachability": {
+        "properties": {
+          "target": {
+            "type": "string",
+            "title": "Target"
+          },
+          "reachable": {
+            "type": "boolean",
+            "title": "Reachable"
+          },
+          "supported_paths": {
+            "type": "integer",
+            "title": "Supported Paths"
+          },
+          "verdict": {
+            "type": "string",
+            "enum": [
+              "supported_path",
+              "reachable_without_supported_path",
+              "unreachable"
+            ],
+            "title": "Verdict"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "target",
+          "reachable",
+          "supported_paths",
+          "verdict"
+        ],
+        "title": "TargetReachability"
       },
       "TrendPoint": {
         "properties": {

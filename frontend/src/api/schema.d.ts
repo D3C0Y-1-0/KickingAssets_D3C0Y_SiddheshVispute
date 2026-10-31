@@ -282,6 +282,27 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/simulation/attack-paths": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Attack Paths
+         * @description Plausible cyber routes from exposed entry points to critical assets, using the latest
+         *     simulation's vulnerability evidence. Reachability is not compromise.
+         */
+        get: operations["attack_paths_api_v1_simulation_attack_paths_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/actions/catalog": {
         parameters: {
             query?: never;
@@ -798,6 +819,52 @@ export interface components {
             /** Role */
             role: string;
         };
+        /** AttackPath */
+        AttackPath: {
+            /** Rank */
+            rank: number;
+            /** Entry Point */
+            entry_point: string;
+            /** Target */
+            target: string;
+            /** Nodes */
+            nodes: string[];
+            /** Hops */
+            hops: components["schemas"]["HopAssessment"][];
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "plausible" | "conditional" | "insufficient_evidence";
+            /** Ranking Score */
+            ranking_score: number;
+            /** Weakest Hop */
+            weakest_hop: number;
+            /** Final Effects */
+            final_effects: ("loss_of_control" | "loss_of_visibility" | "data_integrity" | "unavailability")[];
+            consequence: components["schemas"]["Consequence"] | null;
+            /** Explanation */
+            explanation: string;
+        };
+        /** AttackPathAnalysis */
+        AttackPathAnalysis: {
+            /** Method Version */
+            method_version: string;
+            /** Entry Points */
+            entry_points: string[];
+            /** Targets */
+            targets: string[];
+            /** Unknown Exposure Assets */
+            unknown_exposure_assets: string[];
+            /** Paths */
+            paths: components["schemas"]["AttackPath"][];
+            /** Chokepoints */
+            chokepoints: components["schemas"]["ChokePoint"][];
+            /** Target Reachability */
+            target_reachability: components["schemas"]["TargetReachability"][];
+            /** Notes */
+            notes: string[];
+        };
         /**
          * Backtest
          * @description What actually happened after the simulated date, from the real KEV catalog.
@@ -910,6 +977,17 @@ export interface components {
             /** Count */
             count: number;
         };
+        /** ChokePoint */
+        ChokePoint: {
+            /** Asset Id */
+            asset_id: string;
+            /** Name */
+            name: string;
+            /** Paths Through */
+            paths_through: number;
+            /** Targets Cut */
+            targets_cut: string[];
+        };
         /** Chokepoint */
         Chokepoint: {
             /** Asset Id */
@@ -972,6 +1050,21 @@ export interface components {
             worst_disruption: number | null;
             /** Services Fully Disrupted */
             services_fully_disrupted: string[];
+        };
+        /**
+         * Consequence
+         * @description Downstream effect of the target, from the operational dependency graph. Reporting only.
+         */
+        Consequence: {
+            /**
+             * Effect
+             * @enum {string}
+             */
+            effect: "loss_of_control" | "loss_of_visibility" | "data_integrity" | "unavailability";
+            /** Services */
+            services: components["schemas"]["ServiceConsequence"][];
+            /** Max Disruption */
+            max_disruption: number;
         };
         /** CveScore */
         CveScore: {
@@ -1118,6 +1211,33 @@ export interface components {
              * @enum {string}
              */
             intelligence: "ready" | "unavailable" | "not_implemented";
+        };
+        /** HopAssessment */
+        HopAssessment: {
+            /** Edge Id */
+            edge_id: string | null;
+            /** Source */
+            source: string;
+            /** Target */
+            target: string;
+            /** Protocol */
+            protocol: string | null;
+            /** Access */
+            access: ("network" | "remote_management" | "local_trust") | null;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "plausible" | "conditional" | "insufficient_evidence" | "not_supported" | "blocked";
+            /** Basis */
+            basis: string[];
+            /**
+             * Effects
+             * @default []
+             */
+            effects: ("loss_of_control" | "loss_of_visibility" | "data_integrity" | "unavailability")[];
+            /** Explanation */
+            explanation: string;
         };
         /** InfrastructureAsset */
         InfrastructureAsset: {
@@ -1755,6 +1875,13 @@ export interface components {
             /** Top Vendor Share */
             top_vendor_share: number;
         };
+        /** ServiceConsequence */
+        ServiceConsequence: {
+            /** Service Id */
+            service_id: string;
+            /** Disruption Fraction */
+            disruption_fraction: number;
+        };
         /** ServiceDisruption */
         ServiceDisruption: {
             /** Service Id */
@@ -1912,6 +2039,20 @@ export interface components {
              * @enum {string}
              */
             action_type: "patch_prioritization" | "network_segmentation" | "access_control" | "enhanced_monitoring" | "incident_response_plan";
+        };
+        /** TargetReachability */
+        TargetReachability: {
+            /** Target */
+            target: string;
+            /** Reachable */
+            reachable: boolean;
+            /** Supported Paths */
+            supported_paths: number;
+            /**
+             * Verdict
+             * @enum {string}
+             */
+            verdict: "supported_path" | "reachable_without_supported_path" | "unreachable";
         };
         /** TrendPoint */
         TrendPoint: {
@@ -2902,6 +3043,66 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["SimulationRun"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Unprocessable Content */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    attack_paths_api_v1_simulation_attack_paths_get: {
+        parameters: {
+            query?: {
+                /** @description Assets treated as segmented away */
+                isolate?: string[] | null;
+                max_paths_per_target?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AttackPathAnalysis"];
                 };
             };
             /** @description Not Found */
