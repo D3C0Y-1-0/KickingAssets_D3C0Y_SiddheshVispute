@@ -1,7 +1,15 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
-import cytoscape from 'cytoscape'
-import type { Core, EventObject, StylesheetJson } from 'cytoscape'
-import { ArrowRight, ArrowUpRight, Focus, Minus, Network, Plus, Search, X } from 'lucide-react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import {
+  ArrowRight,
+  ArrowUpRight,
+  Focus,
+  Minus,
+  Network,
+  Plus,
+  Search,
+  Shuffle,
+  X,
+} from 'lucide-react'
 import { useSearchParams } from 'react-router-dom'
 import { useGraph, useLatestRun } from '../../hooks/queries'
 import type { Asset, GraphMode } from '../../api/client'
@@ -15,7 +23,7 @@ import {
   SectorBadge,
 } from '../../components/ui'
 import { categoryLabels } from '../../lib/risk'
-
+import { ForceGraph, type ForceGraphHandle } from './ForceGraph'
 export default function Infrastructure() {
   const [params, setParams] = useSearchParams()
   const mode: GraphMode = params.get('mode') === 'operational' ? 'operational' : 'cyber'
@@ -25,8 +33,7 @@ export default function Infrastructure() {
     : 'all'
   const focusId = params.get('focus')
   const query = useGraph(mode)
-  const container = useRef<HTMLDivElement>(null)
-  const cy = useRef<Core | null>(null)
+  const graph = useRef<ForceGraphHandle>(null)
   const [selected, setSelected] = useState<string | null>(focusId)
   const [detail, setDetail] = useState<string | null>(null)
   const [search, setSearch] = useState('')
@@ -35,10 +42,6 @@ export default function Infrastructure() {
   const runAssets = latestRun.data?.assets
   const riskOf = (id: string) => runAssets?.find((a) => a.asset_id === id)?.risk
   const [zoom, setZoom] = useState(100)
-  const selection = useRef(selected)
-  useEffect(() => {
-    selection.current = selected
-  }, [selected])
   useEffect(() => {
     if (focusId) setSelected(focusId)
   }, [focusId])
@@ -62,140 +65,24 @@ export default function Infrastructure() {
       return next
     })
 
-  useEffect(() => {
-    if (!container.current || !query.data) return
-    const colors = getComputedStyle(container.current)
-    const token = (name: string) => colors.getPropertyValue(name).trim()
-    const style: StylesheetJson = [
-      {
-        selector: 'node',
-        style: {
-          'background-color': 'data(color)',
-          'background-opacity': 0.13,
-          'border-color': 'data(color)',
-          'border-width': 1.5,
-          label: 'data(label)',
-          color: token('--text-secondary'),
-          'font-size': 9,
-          'font-family': 'Segoe UI, sans-serif',
-          'text-valign': 'bottom',
-          'text-margin-y': 8,
-          'text-wrap': 'wrap',
-          'text-max-width': '100px',
-          width: 26,
-          height: 26,
-          shape: 'round-rectangle',
-        },
-      },
-      { selector: 'node[essential]', style: { width: 34, height: 34, 'border-width': 2 } },
-      {
-        selector: 'edge',
-        style: {
-          width: 1.1,
-          'curve-style': 'bezier',
-          'target-arrow-shape': 'triangle',
-          'arrow-scale': 0.65,
-          'line-color': token('--graph-edge'),
-          'target-arrow-color': token('--graph-arrow'),
-          opacity: 0.85,
-          'line-style': mode === 'cyber' ? 'solid' : 'dashed',
-        },
-      },
-      {
-        selector: 'edge:selected',
-        style: {
-          'line-color': token('--accent'),
-          'target-arrow-color': token('--accent'),
-          width: 2,
-        },
-      },
-      {
-        selector: 'node:selected',
-        style: {
-          'background-opacity': 0.4,
-          'border-width': 3,
-          'border-color': token('--text'),
-          color: token('--text'),
-          'font-weight': 'bold',
-        },
-      },
-      { selector: '.dim', style: { opacity: 0.15 } },
-    ]
-    const getColor = (asset: Asset) =>
-      colors
-        .getPropertyValue(
-          preview && riskOf(asset.id)?.category
-            ? `--risk-${riskOf(asset.id)!.category}`
-            : `--sector-${asset.sector}`,
-        )
+  const colorOf = useCallback(
+    (asset: Asset) => {
+      const root = getComputedStyle(document.documentElement)
+      const category = preview ? riskOf(asset.id)?.category : undefined
+      return root
+        .getPropertyValue(category ? `--risk-${category}` : `--sector-${asset.sector}`)
         .trim()
-    const sectors = ['power', 'water', 'healthcare']
-    const c = cytoscape({
-      container: container.current,
-      elements: [
-        ...nodes.map((a) => {
-          const groupIndex = sectors.indexOf(a.sector)
-          const i = nodes.filter((n) => n.sector === a.sector).findIndex((n) => n.id === a.id)
-          return {
-            data: {
-              id: a.id,
-              label: `${a.id}\n${a.name.replace(/^(North |South |Central |Waterworks |Hospital |Aurora )/, '')}`,
-              color: getColor(a),
-              ...(a.criticality === 'essential' ? { essential: true } : {}),
-            },
-            position: {
-              x: groupIndex * 300 + (i % 3) * 100,
-              y: Math.floor(i / 3) * 115 + (i % 3 === 1 ? 25 : 0),
-            },
-          }
-        }),
-        ...edges.map((e) => ({
-          data: { id: e.id, source: e.source_asset_id, target: e.target_asset_id },
-        })),
-      ],
-      style,
-      layout: { name: 'preset', fit: true, padding: 45 },
-      minZoom: 0.25,
-      maxZoom: 3,
-    })
-    cy.current = c
-    if (selection.current) c.getElementById(selection.current).select()
-    c.on('tap', 'node', (event: EventObject) => setSelected(event.target.id() as string))
-    c.on('zoom', () => setZoom(Math.round(c.zoom() * 100)))
-    const observer = new ResizeObserver(() => {
-      c.resize()
-      c.fit(undefined, 45)
-    })
-    observer.observe(container.current)
-    if (focusId) {
-      const target = c.getElementById(focusId)
-      if (target.length) {
-        target.select()
-        c.center(target)
-        c.zoom({ level: 1.5, position: target.position() })
-      }
-    }
-    return () => {
-      observer.disconnect()
-      c.destroy()
-      cy.current = null
-    }
-  }, [query.data, nodes, edges, mode, preview, focusId, runAssets])
-  useEffect(() => {
-    const c = cy.current
-    if (!c) return
-    c.nodes().unselect()
-    if (selected) c.getElementById(selected).select()
-  }, [selected, nodes])
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [preview, runAssets],
+  )
   const focus = (id: string) => {
-    const c = cy.current
-    const n = c?.getElementById(id)
-    if (c && n?.length) {
-      setSelected(id)
-      c.center(n)
-      c.zoom({ level: 1.6, position: n.position() })
-    }
+    setSelected(id)
+    graph.current?.focus(id)
   }
+  useEffect(() => {
+    if (focusId) graph.current?.focus(focusId)
+  }, [focusId, nodes, mode])
   const matches = nodes.filter((a) =>
     `${a.name} ${a.id}`.toLowerCase().includes(search.toLowerCase()),
   )
@@ -269,9 +156,17 @@ export default function Infrastructure() {
               className="icon-button"
               title="Fit to screen"
               aria-label="Fit graph to screen"
-              onClick={() => cy.current?.fit(undefined, 45)}
+              onClick={() => graph.current?.fit()}
             >
               <Focus size={18} />
+            </button>
+            <button
+              className="icon-button"
+              title="Re-run layout"
+              aria-label="Re-run force layout"
+              onClick={() => graph.current?.relayout()}
+            >
+              <Shuffle size={18} />
             </button>
           </div>
           {query.isPending || query.isError ? (
@@ -281,17 +176,26 @@ export default function Infrastructure() {
               <div
                 className="graph-canvas"
                 data-testid="graph-canvas"
-                ref={container}
-                role="img"
-                aria-label={`${mode} directed graph, ${nodes.length} assets. Use the adjacent asset selector for keyboard inspection.`}
-              />
+                role="group"
+                aria-label={`${mode} directed force graph, ${nodes.length} assets. Drag nodes to rearrange, scroll to zoom. Nodes are keyboard focusable; the adjacent asset selector is also available.`}
+              >
+                <ForceGraph
+                  ref={graph}
+                  nodes={nodes}
+                  edges={edges}
+                  mode={mode}
+                  selected={selected}
+                  colorOf={colorOf}
+                  onSelect={setSelected}
+                  onZoom={setZoom}
+                />
+              </div>
               <div className="graph-controls">
                 <button
                   className="icon-button"
                   aria-label="Zoom out"
                   onClick={() => {
-                    const c = cy.current
-                    if (c) c.zoom(c.zoom() / 1.2)
+                    graph.current?.zoomBy(1 / 1.3)
                   }}
                 >
                   <Minus size={16} />
@@ -301,8 +205,7 @@ export default function Infrastructure() {
                   className="icon-button"
                   aria-label="Zoom in"
                   onClick={() => {
-                    const c = cy.current
-                    if (c) c.zoom(c.zoom() * 1.2)
+                    graph.current?.zoomBy(1.3)
                   }}
                 >
                   <Plus size={16} />
