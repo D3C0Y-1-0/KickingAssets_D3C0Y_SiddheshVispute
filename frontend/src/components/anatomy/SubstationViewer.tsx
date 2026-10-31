@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Plate } from "../iso/react/draw";
 import { SubstationArt } from "./art";
 import { WIDTH, HEIGHT, at } from "./view";
@@ -20,6 +20,12 @@ import {
 import { RadarPing } from "../TwinRadar";
 import type { TwinRisk } from "../../hooks/twinRisk";
 import "./substation.css";
+import { useStageView } from "../twin/useStageView";
+import { FlowOverlay, type LinkMode } from "../twin/FlowOverlay";
+import { TwinInspector } from "../twin/TwinInspector";
+import { useTwinNav } from "../twin/TwinNav";
+import { useLatestRun } from "../../hooks/queries";
+import { usePartLinks } from "../../hooks/twinConnections";
 
 interface SubstationViewerProps {
   assets: InfrastructureAsset[];
@@ -40,11 +46,18 @@ export function SubstationViewer({
   affectedAssetIds = [],
   risk = {},
 }: SubstationViewerProps) {
-  // Canvas View transform state (Pan & Zoom)
-  const [zoom, setZoom] = useState<number>(1);
-  const [pan, setPan] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
-  const [isDragging, setIsDragging] = useState<boolean>(false);
-  const [dragStart, setDragStart] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+  // Shared pan / zoom / fullscreen (drag, wheel, pinch, keyboard)
+  const stage = useStageView({ initialZoom: 0.8, content: { width: WIDTH, height: HEIGHT } });
+  const { zoom, isFullScreen, toggleFullScreen } = stage;
+  const handleZoomIn = stage.zoomIn;
+  const handleZoomOut = stage.zoomOut;
+  const handleResetView = stage.reset;
+  const containerRef = stage.frameRef;
+  const { requestedPart } = useTwinNav();
+  const [linkMode, setLinkMode] = useState<LinkMode>("operational");
+  const partLinks = usePartLinks();
+  const run = useLatestRun().data;
+  const scored = useMemo(() => new Map((run?.assets ?? []).map((a) => [a.asset_id, a])), [run]);
 
   // Layer toggles
   const [showJumpers, setShowJumpers] = useState<boolean>(true);
@@ -55,43 +68,6 @@ export function SubstationViewer({
   // Hover state for interactive readout
   const [hoveredComponentId, setHoveredComponentId] = useState<string | null>(null);
 
-  // Full Screen View state
-  const [isFullScreen, setIsFullScreen] = useState<boolean>(false);
-
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  const toggleFullScreen = () => {
-    if (!isFullScreen) {
-      if (containerRef.current?.requestFullscreen) {
-        containerRef.current.requestFullscreen().catch(() => {});
-      }
-      setIsFullScreen(true);
-    } else {
-      if (document.fullscreenElement && document.exitFullscreen) {
-        document.exitFullscreen().catch(() => {});
-      }
-      setIsFullScreen(false);
-    }
-  };
-
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && isFullScreen) {
-        setIsFullScreen(false);
-      }
-    };
-    const handleFsChange = () => {
-      if (!document.fullscreenElement && isFullScreen) {
-        setIsFullScreen(false);
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    document.addEventListener("fullscreenchange", handleFsChange);
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-      document.removeEventListener("fullscreenchange", handleFsChange);
-    };
-  }, [isFullScreen]);
 
   // Map of componentId -> InfrastructureAsset
   const componentToAssetMap = useMemo(() => {
@@ -199,30 +175,6 @@ export function SubstationViewer({
     }
   };
 
-  // Pan / Zoom Controls
-  const handleZoomIn = () => setZoom((z) => Math.min(2.5, Number((z + 0.2).toFixed(1))));
-  const handleZoomOut = () => setZoom((z) => Math.max(0.6, Number((z - 0.2).toFixed(1))));
-  const handleResetView = () => {
-    setZoom(1);
-    setPan({ x: 0, y: 0 });
-  };
-
-  // Mouse drag handlers
-  const handleMouseDown = (e: React.MouseEvent) => {
-    if (e.button !== 0) return;
-    setIsDragging(true);
-    setDragStart({ x: e.clientX - pan.x, y: e.clientY - pan.y });
-  };
-
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (!isDragging) return;
-    setPan({
-      x: e.clientX - dragStart.x,
-      y: e.clientY - dragStart.y,
-    });
-  };
-
-  const handleMouseUp = () => setIsDragging(false);
 
   // Dynamic Live Readout
   const activeAsset = hoveredComponentId
@@ -246,6 +198,16 @@ export function SubstationViewer({
     }
     return "SUBSTATION ATLAS · ALL SYSTEMS 33kV OPERATIONAL";
   }, [activeAsset, isSimulationActive, failedAssetIds, affectedAssetIds]);
+
+  const { centerOn } = stage;
+  useEffect(() => {
+    const h = requestedPart ? hotspots.find((x) => x.id === requestedPart) : undefined;
+    if (h) {
+      handleSelectComponent(h.id);
+      centerOn(h.coord[0], h.coord[1], WIDTH, HEIGHT);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [requestedPart]);
 
   return (
     <div
@@ -286,6 +248,26 @@ export function SubstationViewer({
           ))}
         </select>
 
+
+        <div className="ts-group" role="group" aria-label="Connection overlay">
+          {(["operational", "cyber", "off"] as const).map((m) => (
+            <button
+              key={m}
+              className="ts-btn"
+              aria-pressed={linkMode === m}
+              onClick={() => setLinkMode(m)}
+              title={
+                m === "operational"
+                  ? "Operational dependencies, provider to dependent"
+                  : m === "cyber"
+                    ? "Cyber reachability, permitted access paths"
+                    : "Hide connections"
+              }
+            >
+              {m === "off" ? "Links off" : m === "operational" ? "Operational" : "Cyber"}
+            </button>
+          ))}
+        </div>
         {/* View & Layer Controls */}
         <div className="flex items-center gap-1.5 bg-[#161922] p-1 rounded-lg border border-[#202634]">
           <button
@@ -376,15 +358,15 @@ export function SubstationViewer({
       </div>
 
       {/* Main Anatomy SVG Stage */}
+      <div className="ts-body">
       <div
-        onMouseDown={handleMouseDown}
-        onMouseMove={handleMouseMove}
-        onMouseUp={handleMouseUp}
-        onMouseLeave={handleMouseUp}
-        className={`relative flex-1 w-full overflow-hidden bg-[#08090d] ${
-          isDragging ? "cursor-grabbing" : "cursor-grab"
+        ref={stage.stageRef}
+        {...stage.stageProps}
+        aria-label="Substation diagram. Drag to pan, Ctrl or Cmd plus scroll to zoom, plus and minus keys to zoom."
+        className={`relative min-w-0 overflow-hidden bg-[#08090d] outline-none ${
+          stage.dragging ? "cursor-grabbing" : "cursor-grab"
         }`}
-        style={{ minHeight: "440px" }}
+        style={{ ...stage.stageProps.style, minHeight: "440px" }}
       >
         <Plate
           fig="FIG 01"
@@ -400,11 +382,8 @@ export function SubstationViewer({
           caption="Detailed isometric digital twin of a critical municipal electrical substation assembly: 25MVA power transformer, forced cooling radiators, SF6 circuit breaker, motorized disconnect switch, surge arresters, overhead gantry busbars, and digital protection cabinet."
         >
           <div
-            className="w-full h-full flex items-center justify-center transition-transform duration-75"
-            style={{
-              transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`,
-              transformOrigin: "center center",
-            }}
+            className="w-full h-full flex items-center justify-center"
+            style={stage.transformStyle}
           >
             <div className="relative" style={{ width: `${WIDTH}px`, height: `${HEIGHT}px` }}>
               <svg
@@ -421,6 +400,15 @@ export function SubstationViewer({
                   onSelectComponent={handleSelectComponent}
                 />
               </svg>
+
+              <FlowOverlay
+                width={WIDTH}
+                height={HEIGHT}
+                points={Object.fromEntries(hotspots.map((h) => [h.id, h.coord])) as Record<string, [number, number]>}
+                links={partLinks}
+                mode={linkMode}
+                focusId={hoveredComponentId ?? selectedComponentId ?? null}
+              />
 
               {/* Interactive Hotspot Pins Overlay */}
               {showHotspots && (
@@ -447,7 +435,7 @@ export function SubstationViewer({
                     return (
                       <div
                         key={spot.id}
-                        className="substation-hotspot absolute pointer-events-auto cursor-pointer"
+                        className="substation-hotspot absolute pointer-events-auto cursor-pointer" role="button" tabIndex={0} aria-label={spot.label} onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); handleSelectComponent(spot.id); } }} onFocus={() => setHoveredComponentId(spot.id)} onBlur={() => setHoveredComponentId(null)}
                         style={{
                           left: `${spot.coord[0]}px`,
                           top: `${spot.coord[1]}px`,
@@ -482,6 +470,21 @@ export function SubstationViewer({
         </Plate>
       </div>
 
+      <TwinInspector
+        view="power"
+        parts={hotspots}
+        selectedId={selectedComponentId ?? null}
+        onSelect={(id) => {
+          handleSelectComponent(id);
+          const h = hotspots.find((x) => x.id === id);
+          if (h) stage.centerOn(h.coord[0], h.coord[1], WIDTH, HEIGHT);
+        }}
+        risk={risk}
+        scored={scored}
+        links={partLinks}
+      />
+      </div>
+
       {/* Floating Status Bar / Telemetry Footer */}
       <div className="flex flex-wrap items-center justify-between px-4 py-2 bg-[#111319]/95 border-t border-[#202634] text-[11px] text-slate-400 font-mono">
         <div className="flex items-center gap-4">
@@ -507,7 +510,7 @@ export function SubstationViewer({
           <span className="text-slate-600">|</span>
           <span className="text-[#ccff00] flex items-center gap-1 font-bold">
             <span className="h-1.5 w-1.5 rounded-full bg-[#ccff00]" />
-            TWIN SYNCHRONIZED
+            ILLUSTRATIVE MODEL
           </span>
         </div>
       </div>

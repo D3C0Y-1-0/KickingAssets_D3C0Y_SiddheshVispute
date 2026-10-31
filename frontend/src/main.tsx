@@ -5,6 +5,9 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import App from './app/App'
 import ErrorBoundary from './components/ErrorBoundary'
 import './styles/index.css'
+import { initSmoothScroll } from './lib/smoothScroll'
+
+initSmoothScroll()
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: 60000, retry: 1, refetchOnWindowFocus: false } },

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Plate } from "../iso/react/draw";
 import { SmartCityArt } from "./art";
 import { WIDTH, HEIGHT, at } from "./view";
@@ -23,6 +23,12 @@ import {
 import { RadarPing, RiskLine } from "../TwinRadar";
 import type { TwinRisk } from "../../hooks/twinRisk";
 import "./smartcity.css";
+import { useStageView } from "../twin/useStageView";
+import { FlowOverlay, type LinkMode } from "../twin/FlowOverlay";
+import { TwinInspector } from "../twin/TwinInspector";
+import { useTwinNav } from "../twin/TwinNav";
+import { useLatestRun } from "../../hooks/queries";
+import { usePartLinks } from "../../hooks/twinConnections";
 
 interface SmartCityViewerProps {
   assets: InfrastructureAsset[];
@@ -43,11 +49,18 @@ export function SmartCityViewer({
   affectedAssetIds = [],
   risk = {},
 }: SmartCityViewerProps) {
-  // Canvas View transform state (Pan & Zoom)
-  const [zoom, setZoom] = useState<number>(0.68);
-  const [pan, setPan] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
-  const [isDragging, setIsDragging] = useState<boolean>(false);
-  const [dragStart, setDragStart] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+  // Shared pan / zoom / fullscreen (drag, wheel, pinch, keyboard)
+  const stage = useStageView({ initialZoom: 0.8, content: { width: WIDTH, height: HEIGHT } });
+  const { isFullScreen, toggleFullScreen } = stage;
+  const handleZoomIn = stage.zoomIn;
+  const handleZoomOut = stage.zoomOut;
+  const handleResetView = stage.reset;
+  const containerRef = stage.frameRef;
+  const { requestedPart } = useTwinNav();
+  const [linkMode, setLinkMode] = useState<LinkMode>("operational");
+  const partLinks = usePartLinks();
+  const run = useLatestRun().data;
+  const scored = useMemo(() => new Map((run?.assets ?? []).map((a) => [a.asset_id, a])), [run]);
 
   // Layer toggles
   const [showMicrogrid, setShowMicrogrid] = useState<boolean>(true);
@@ -60,43 +73,6 @@ export function SmartCityViewer({
   // Hover state for interactive readout
   const [hoveredComponentId, setHoveredComponentId] = useState<string | null>(null);
 
-  // Full Screen View state
-  const [isFullScreen, setIsFullScreen] = useState<boolean>(false);
-
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  const toggleFullScreen = () => {
-    if (!isFullScreen) {
-      if (containerRef.current?.requestFullscreen) {
-        containerRef.current.requestFullscreen().catch(() => {});
-      }
-      setIsFullScreen(true);
-    } else {
-      if (document.fullscreenElement && document.exitFullscreen) {
-        document.exitFullscreen().catch(() => {});
-      }
-      setIsFullScreen(false);
-    }
-  };
-
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && isFullScreen) {
-        setIsFullScreen(false);
-      }
-    };
-    const handleFsChange = () => {
-      if (!document.fullscreenElement && isFullScreen) {
-        setIsFullScreen(false);
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    document.addEventListener("fullscreenchange", handleFsChange);
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-      document.removeEventListener("fullscreenchange", handleFsChange);
-    };
-  }, [isFullScreen]);
 
   // Map of smartCityComponentId -> InfrastructureAsset
   const componentToAssetMap = useMemo(() => {
@@ -218,47 +194,6 @@ export function SmartCityViewer({
     ];
   }, []);
 
-  // Zoom handlers
-  const handleZoomIn = () => setZoom((prev) => Math.min(prev + 0.25, 2.5));
-  const handleZoomOut = () => setZoom((prev) => Math.max(prev - 0.25, 0.6));
-  const handleResetView = () => {
-    setZoom(0.68);
-    setPan({ x: 0, y: 0 });
-  };
-
-  // Mouse pan handling
-  const handleMouseDown = (e: React.MouseEvent) => {
-    if (e.button !== 0) return;
-    setIsDragging(true);
-    setDragStart({ x: e.clientX - pan.x, y: e.clientY - pan.y });
-  };
-
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (!isDragging) return;
-    setPan({
-      x: e.clientX - dragStart.x,
-      y: e.clientY - dragStart.y,
-    });
-  };
-
-  const handleMouseUp = () => setIsDragging(false);
-
-  // Wheel zoom only with Ctrl/Cmd held, so the page itself still scrolls normally.
-  // A native non-passive listener is needed to be allowed to cancel the browser zoom.
-  const canvasRef = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    const el = canvasRef.current;
-    if (!el) return;
-    const onWheel = (e: WheelEvent) => {
-      if (!e.ctrlKey && !e.metaKey) return;
-      e.preventDefault();
-      const delta = e.deltaY < 0 ? 0.1 : -0.1;
-      setZoom((prev) => Math.min(Math.max(prev + delta, 0.6), 2.5));
-    };
-    el.addEventListener("wheel", onWheel, { passive: false });
-    return () => el.removeEventListener("wheel", onWheel);
-  }, []);
-
   // Component click
   const handleSelectComponent = (componentId: string) => {
     const matchedAsset = componentToAssetMap.get(componentId);
@@ -270,6 +205,16 @@ export function SmartCityViewer({
   const readoutText = selectedAsset
     ? `${selectedAsset.id} · ${selectedAsset.name.toUpperCase()} · [${selectedAsset.status.toUpperCase()}] · CRITICALITY: ${selectedAsset.criticalityScore}/100`
     : "METROPOLITAN DIGITAL TWIN · SELECT ANY FACILITY OR SUBSYSTEM TO INSPECT";
+
+  const { centerOn } = stage;
+  useEffect(() => {
+    const h = requestedPart ? hotspots.find((x) => x.id === requestedPart) : undefined;
+    if (h) {
+      handleSelectComponent(h.id);
+      centerOn(h.coord[0], h.coord[1], WIDTH, HEIGHT);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [requestedPart]);
 
   return (
     <div
@@ -304,7 +249,9 @@ export function SmartCityViewer({
         </div>
 
         {/* Real-time City Telemetry Strip */}
-        <div className="hidden xl:flex items-center gap-4 text-xs font-mono bg-[#161922] px-3 py-1.5 rounded-lg border border-[#202634] shadow-xs">
+        <div className="hidden min-[1800px]:flex items-center gap-4 text-xs font-mono bg-[#161922] px-3 py-1.5 rounded-lg border border-[#202634] shadow-xs">
+          <span className="text-[#d8b16c]">Design ref., not live</span>
+          <div className="w-px h-3 bg-[#202634]" />
           <div className="flex items-center gap-1.5">
             <Zap className="w-3.5 h-3.5 text-[#ccff00]" />
             <span className="text-slate-400">Grid Load:</span>
@@ -330,6 +277,26 @@ export function SmartCityViewer({
           </div>
         </div>
 
+
+        <div className="ts-group" role="group" aria-label="Connection overlay">
+          {(["operational", "cyber", "off"] as const).map((m) => (
+            <button
+              key={m}
+              className="ts-btn"
+              aria-pressed={linkMode === m}
+              onClick={() => setLinkMode(m)}
+              title={
+                m === "operational"
+                  ? "Operational dependencies, provider to dependent"
+                  : m === "cyber"
+                    ? "Cyber reachability, permitted access paths"
+                    : "Hide connections"
+              }
+            >
+              {m === "off" ? "Links off" : m === "operational" ? "Operational" : "Cyber"}
+            </button>
+          ))}
+        </div>
         {/* View Controls */}
         <div className="flex items-center gap-1.5 bg-[#161922] p-1 rounded-lg border border-[#202634] shadow-xs">
           <button
@@ -369,7 +336,7 @@ export function SmartCityViewer({
       </div>
 
       {/* Layer Toggles Floating Filter Bar */}
-      <div className="absolute top-16 left-4 z-20 flex flex-wrap items-center gap-1.5 bg-[#111319]/95 backdrop-blur-md p-1.5 rounded-lg border border-[#202634] text-[11px] font-medium shadow-xl">
+      <div className="relative z-20 mx-3 mt-2 self-start flex flex-wrap items-center gap-1.5 bg-[#111319]/95 backdrop-blur-md p-1.5 rounded-lg border border-[#202634] text-[11px] font-medium shadow-xl">
         <span className="text-[10px] font-mono uppercase text-slate-400 px-1.5 flex items-center gap-1">
           <Layers className="w-3 h-3 text-[#ccff00]" />
           Overlays:
@@ -442,18 +409,17 @@ export function SmartCityViewer({
       </div>
 
       {/* Main Interactive Canvas */}
+      <div className="ts-body">
       <div
-        onMouseDown={handleMouseDown}
-        onMouseMove={handleMouseMove}
-        onMouseUp={handleMouseUp}
-        onMouseLeave={handleMouseUp}
-        ref={canvasRef}
-        className="relative flex-1 w-full h-full cursor-grab active:cursor-grabbing overflow-hidden flex items-center justify-center"
+        ref={stage.stageRef}
+        {...stage.stageProps}
+        aria-label="Smart city diagram. Drag to pan, Ctrl or Cmd plus scroll to zoom, plus and minus keys to zoom."
+        className={`relative min-w-0 overflow-hidden flex items-center justify-center outline-none ${stage.dragging ? "cursor-grabbing" : "cursor-grab"}`}
       >
         <Plate
           fig="FIG 02"
           title="DISTRIBUTED SMART CITY ARCHITECTURE (MODULAR ISLAND BASES)"
-          hint="DRAG TO PAN · WHEEL TO ZOOM · CLICK ANY ISLAND CAMPUS TO INSPECT"
+          hint="DRAG TO PAN · CTRL + WHEEL TO ZOOM · CLICK ANY ISLAND CAMPUS TO INSPECT"
           readout={readoutText}
           keys={[
             { mark: "lit", label: "Selected Active Campus" },
@@ -464,12 +430,8 @@ export function SmartCityViewer({
           caption="Distributed Smart City Architecture digital twin showing distinct modular infrastructure island platforms: Bulk Electricity Power Plant & Substation Campus, Regional Trauma Medical Campus, Urban IOC Command Skyscraper & Civic Plaza, 5G Telecom & Edge Compute Compound, Municipal Water Purification Works, and Smart Transit Hub, interconnected by elevated Sky-Train rail viaducts and structural sky-bridges."
         >
           <div
-            style={{
-              transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`,
-              transformOrigin: "center center",
-              transition: isDragging ? "none" : "transform 0.15s ease-out",
-            }}
-            className="relative"
+            style={stage.transformStyle}
+            className="absolute inset-0 flex items-center justify-center"
           >
             {/* Anatomy Isometric SVG Assembly */}
             <div className="relative" style={{ width: `${WIDTH}px`, height: `${HEIGHT}px` }}>
@@ -490,6 +452,15 @@ export function SmartCityViewer({
                   onSelectComponent={handleSelectComponent}
                 />
               </svg>
+
+              <FlowOverlay
+                width={WIDTH}
+                height={HEIGHT}
+                points={Object.fromEntries(hotspots.map((h) => [h.id, h.coord])) as Record<string, [number, number]>}
+                links={partLinks}
+                mode={linkMode}
+                focusId={hoveredComponentId ?? selectedComponentId ?? null}
+              />
 
               {/* Interactive Projected Hotspots Overlay */}
               {showHotspots &&
@@ -516,7 +487,7 @@ export function SmartCityViewer({
                         top: `${h.coord[1]}px`,
                         transform: "translate(-50%, -50%)",
                       }}
-                      className="group cursor-pointer z-30"
+                      className="group cursor-pointer z-30" role="button" tabIndex={0} aria-label={h.label} onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); handleSelectComponent(h.id); } }} onFocus={() => setHoveredComponentId(h.id)} onBlur={() => setHoveredComponentId(null)}
                     >
                       <div className="relative flex items-center justify-center">
                         <RadarPing risk={risk[h.id]} />
@@ -567,23 +538,19 @@ export function SmartCityViewer({
         </Plate>
       </div>
 
-      {/* Part selector */}
-      <div className="twin-dock">
-        <label className="twin-dock-label" htmlFor="twin-part-select">
-          Highlight part
-        </label>
-        <select
-          id="twin-part-select"
-          className="twin-select"
-          value={selectedComponentId ?? ""}
-          onChange={(e) => handleSelectComponent(e.target.value)}
-        >
-          {hotspots.map((h) => (
-            <option key={h.id} value={h.id}>
-              {h.label}
-            </option>
-          ))}
-        </select>
+      <TwinInspector
+        view="smartcity"
+        parts={hotspots}
+        selectedId={selectedComponentId ?? null}
+        onSelect={(id) => {
+          handleSelectComponent(id);
+          const h = hotspots.find((x) => x.id === id);
+          if (h) stage.centerOn(h.coord[0], h.coord[1], WIDTH, HEIGHT);
+        }}
+        risk={risk}
+        scored={scored}
+        links={partLinks}
+      />
       </div>
 
       {/* Floating Exit Fullscreen pill when in fullscreen */}

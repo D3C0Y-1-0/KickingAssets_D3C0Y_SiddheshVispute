@@ -79,6 +79,15 @@ skills-lock.json
 
 Local-only generated state is excluded: .venv/, frontend/node_modules/, frontend/dist/, SQLite database files, Python/test caches, .review/, artifacts/ and the installed .agents/skills/anatomy/ tooling. skills-lock.json records the reviewed upstream skill fingerprint; the application ships generated SVG paths rather than a third-party example app.
 
+## Digital twin interaction and connections
+
+Created: frontend/src/components/twin/ (useStageView.ts, HotspotTwin.tsx, TwinInspector.tsx, FlowOverlay.tsx, TwinNav.tsx, twin.css), frontend/src/data/twinParts.ts, frontend/src/hooks/twinConnections.ts.
+Modified: the five twin viewers (WaterPlantViewer, HospitalViewer, TransitViewer, SubstationViewer, SmartCityViewer), features/digital-twins/DigitalTwins.tsx, features/infrastructure/Infrastructure.tsx. Water, hospital and transit are now thin wrappers over HotspotTwin. station-art.ts and the generated art modules were not touched.
+
+## Gridinal rebrand and navigation
+
+Created: frontend/src/assets/brand/gridinal-mark.png and gridinal-wordmark.png (cropped, resized copies of the supplied logos), frontend/public/favicon.png.
+Modified: frontend/src/app/App.tsx (grouped, collapsible sidebar; visible name now Gridinal), frontend/src/styles/index.css (sidebar block replaced), frontend/index.html, ErrorBoundary.tsx, ui.tsx, Methodology.tsx (name only). Backend, docs and the generated station-art.ts header comment still say GridSentinel.
 ## Hosting additions (codex/innovations)
 
 Created: `render.yaml`, `scripts/render-build.sh` (Render blueprint, not used by the current hosting), `vercel.json`, `.vercelignore`.

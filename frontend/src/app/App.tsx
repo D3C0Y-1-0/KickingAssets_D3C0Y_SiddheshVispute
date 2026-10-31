@@ -2,14 +2,14 @@ import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import {
   Activity,
-  ArrowUpRight,
   BookOpen,
   BrainCircuit,
   Building2,
   ChevronDown,
+  ChevronLeft,
+  ChevronRight,
   CircleHelp,
   ClipboardCheck,
-  Command,
   FlaskConical,
   Grid2X2,
   Layers,
@@ -20,7 +20,6 @@ import {
   Radar,
   Search,
   Shield,
-  ShieldCheck,
   Waypoints,
   X,
 } from 'lucide-react'
@@ -29,6 +28,8 @@ import { api } from '../api/client'
 import { useScenario } from '../hooks/queries'
 import { QueryState } from '../components/ui'
 import Overview from '../features/overview/Overview'
+import brandMark from '../assets/brand/gridinal-mark.png'
+import brandWord from '../assets/brand/gridinal-wordmark.png'
 
 const Infrastructure = lazy(() => import('../features/infrastructure/Infrastructure'))
 const DigitalTwins = lazy(() => import('../features/digital-twins/DigitalTwins'))
@@ -42,23 +43,60 @@ const Posture = lazy(() => import('../features/posture/Posture'))
 const Resilience = lazy(() => import('../features/resilience/Resilience'))
 const Coverage = lazy(() => import('../features/coverage/Coverage'))
 const LiveSimulation = lazy(() => import('../features/live/LiveSimulation'))
-const navigation: { path: string; name: string; icon: typeof Grid2X2; tag?: string }[] = [
-  { path: '/', name: 'Overview', icon: Grid2X2 },
-  { path: '/live', name: 'Live Simulation', icon: PlayCircle, tag: 'NEW' },
-  { path: '/infrastructure', name: 'Infrastructure Map', icon: Network },
-  { path: '/digital-twins', name: 'Digital Twins', icon: Building2, tag: 'ANATOMY' },
-  { path: '/assets', name: 'Assets & Risk', icon: Layers },
-  { path: '/intelligence', name: 'Risk Ranking', icon: Activity },
-  { path: '/ml', name: 'AI Model', icon: BrainCircuit },
-  { path: '/what-if', name: 'What-If', icon: FlaskConical },
-  { path: '/remediation', name: 'Fix Plan', icon: ListChecks },
-  { path: '/posture', name: 'Trends & Activity', icon: Radar },
-  { path: '/resilience', name: 'Weak Points', icon: Waypoints },
-  { path: '/coverage', name: 'Challenge Coverage', icon: ClipboardCheck },
+type NavEntry = { path: string; name: string; icon: typeof Grid2X2 }
+const navGroups: { label: string; items: NavEntry[] }[] = [
+  {
+    label: 'Monitor',
+    items: [
+      { path: '/', name: 'Overview', icon: Grid2X2 },
+      { path: '/live', name: 'Live Simulation', icon: PlayCircle },
+      { path: '/infrastructure', name: 'Infrastructure Map', icon: Network },
+      { path: '/digital-twins', name: 'Digital Twins', icon: Building2 },
+    ],
+  },
+  {
+    label: 'Assess',
+    items: [
+      { path: '/assets', name: 'Assets & Risk', icon: Layers },
+      { path: '/intelligence', name: 'Risk Ranking', icon: Activity },
+      { path: '/ml', name: 'AI Model', icon: BrainCircuit },
+      { path: '/posture', name: 'Trends & Activity', icon: Radar },
+      { path: '/resilience', name: 'Weak Points', icon: Waypoints },
+    ],
+  },
+  {
+    label: 'Act',
+    items: [
+      { path: '/what-if', name: 'What-If', icon: FlaskConical },
+      { path: '/remediation', name: 'Fix Plan', icon: ListChecks },
+    ],
+  },
+  {
+    label: 'Evidence',
+    items: [{ path: '/coverage', name: 'Challenge Coverage', icon: ClipboardCheck }],
+  },
 ]
+const navigation = navGroups.flatMap((g) => g.items)
+const NAV_KEY = 'gridinal.nav.collapsed'
 
 export default function App() {
   const [menuOpen, setMenuOpen] = useState(false)
+  const [collapsed, setCollapsed] = useState(() => {
+    try {
+      return localStorage.getItem(NAV_KEY) === '1'
+    } catch {
+      return false
+    }
+  })
+  const toggleCollapsed = () =>
+    setCollapsed((c) => {
+      try {
+        localStorage.setItem(NAV_KEY, c ? '0' : '1')
+      } catch {
+        /* storage unavailable: the choice just will not persist */
+      }
+      return !c
+    })
   const [search, setSearch] = useState('')
   const searchInput = useRef<HTMLInputElement>(null)
   const location = useLocation()
@@ -74,7 +112,7 @@ export default function App() {
     navigation.find((x) => x.path === location.pathname)?.name ?? 'Methodology & Evidence'
   useEffect(() => {
     setMenuOpen(false)
-    document.title = `${activeName} | GridSentinel`
+    document.title = `${activeName} | Gridinal`
     window.scrollTo(0, 0)
   }, [location.pathname, activeName])
   useEffect(() => {
@@ -92,7 +130,7 @@ export default function App() {
     return () => document.removeEventListener('keydown', key)
   }, [])
   return (
-    <div className="app-shell">
+    <div className={`app-shell${collapsed ? ' nav-collapsed' : ''}`}>
       <a className="skip-link" href="#main-content">
         Skip to content
       </a>
@@ -108,15 +146,9 @@ export default function App() {
         className={`sidebar ${menuOpen ? 'open' : ''}`}
         aria-label="Main navigation"
       >
-        <Link to="/" className="brand">
-          <span className="brand-mark">
-            <Shield size={27} />
-            <Grid2X2 size={12} />
-          </span>
-          <span>
-            Grid<span className="brand-light">Sentinel</span>
-            <small>INFRASTRUCTURE INTELLIGENCE</small>
-          </span>
+        <Link to="/" className="brand" aria-label="Gridinal, home">
+          <img className="brand-mark" src={brandMark} alt="" width={40} height={40} />
+          <img className="brand-word" src={brandWord} alt="Gridinal" width={110} height={26} />
         </Link>
         <button
           className="icon-button mobile-close"
@@ -125,65 +157,54 @@ export default function App() {
         >
           <X size={20} />
         </button>
-        <div className="workspace-card">
-          <span className="workspace-icon">
-            <Command size={18} />
-          </span>
-          <div>
-            Aurora City<small>Critical infrastructure workspace</small>
-          </div>
-        </div>
-        <div className="nav-label">WORKSPACE</div>
-        <nav>
-          {navigation.map(({ path, name, icon: Icon, tag }) => (
-            <NavLink
-              key={path}
-              end={path === '/'}
-              to={path}
-              className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
-            >
-              <Icon size={18} />
-              <span>{name}</span>
-              {tag ? (
-                <span className="nav-tag">{tag}</span>
-              ) : (
-                path === '/what-if' && <span className="nav-tag">ACT</span>
-              )}
-            </NavLink>
+        <nav aria-label="Primary">
+          {navGroups.map((group) => (
+            <div className="nav-group" key={group.label}>
+              <div className="nav-label">{group.label}</div>
+              {group.items.map(({ path, name, icon: Icon }) => (
+                <NavLink
+                  key={path}
+                  end={path === '/'}
+                  to={path}
+                  title={collapsed ? name : undefined}
+                  className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
+                >
+                  <span className="nav-icon">
+                    <Icon size={18} />
+                  </span>
+                  <span className="nav-text">{name}</span>
+                </NavLink>
+              ))}
+            </div>
           ))}
         </nav>
         <div className="sidebar-bottom">
           <NavLink
-            className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
+            className={({ isActive }) => `nav-item subtle ${isActive ? 'active' : ''}`}
             to="/methodology"
+            title={collapsed ? 'Methodology & Evidence' : undefined}
           >
-            <BookOpen size={18} />
-            Methodology & Evidence
+            <span className="nav-icon">
+              <BookOpen size={17} />
+            </span>
+            <span className="nav-text">Methodology & Evidence</span>
           </NavLink>
-          <div className="foundation-note">
-            <div>
-              <span className="status-dot" />
-              PROTOTYPE · LIVE WORKFLOW
-            </div>
-            <p>
-              Simulate, assess with ML,
-              <br />
-              then act.
-            </p>
-            <Link to="/methodology">
-              How it works
-              <ArrowUpRight size={13} />
-            </Link>
-          </div>
-          <div className="sidebar-footer">
-            <span className="avatar">GS</span>
-            <div>
-              Local demonstration<small>Fictional city · real CVE data</small>
-            </div>
-            <ShieldCheck size={16} />
+          <div className="sidebar-status">
+            <span className="status-dot" aria-hidden />
+            <span className="nav-text">Local demo · Aurora City</span>
           </div>
         </div>
       </aside>
+      <button
+        className="nav-edge-toggle"
+        onClick={toggleCollapsed}
+        aria-pressed={collapsed}
+        aria-controls="workspace-navigation"
+        aria-label={collapsed ? 'Expand navigation' : 'Minimize navigation'}
+        title={collapsed ? 'Expand navigation' : 'Minimize navigation'}
+      >
+        {collapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
+      </button>
       <div className="main-shell">
         <header className="topbar">
           <div className="topbar-location">
@@ -279,7 +300,7 @@ export default function App() {
         </main>
         <footer className="app-footer">
           <span>
-            <Shield size={12} /> GRIDSENTINEL <span className="muted">/</span> See the blast radius
+            <Shield size={12} /> GRIDINAL <span className="muted">/</span> See the blast radius
             before the incident.
           </span>
           <span>

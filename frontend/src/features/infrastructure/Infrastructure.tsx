@@ -13,7 +13,9 @@ import {
   Shuffle,
   X,
 } from 'lucide-react'
-import { useSearchParams } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
+import { TWIN_LINKS } from '../../data/twinLinks'
+import { viewOfPart } from '../../data/twinParts'
 import { useGraph, useLatestRun } from '../../hooks/queries'
 import type { Asset, GraphMode } from '../../api/client'
 import { AssetDrawer } from '../../components/AssetDrawer'
@@ -27,6 +29,12 @@ import {
 } from '../../components/ui'
 import { categoryLabels } from '../../lib/risk'
 import { ForceGraph, type ForceGraphHandle } from './ForceGraph'
+
+/** The single-site twin part (not the campus roll-up) that has this asset behind it, if any. */
+const twinPartOf = (assetId: string) =>
+  Object.entries(TWIN_LINKS).find(
+    ([part, ids]) => !part.startsWith('city-') && ids.includes(assetId),
+  )?.[0]
 
 export default function Infrastructure() {
   const [params, setParams] = useSearchParams()
@@ -349,6 +357,15 @@ export default function Infrastructure() {
                   Open asset details
                   <ArrowUpRight size={14} />
                 </button>
+                {twinPartOf(active.id) && (
+                  <Link
+                    className="button secondary full-width"
+                    to={`/digital-twins?view=${viewOfPart(twinPartOf(active.id)!)}&part=${twinPartOf(active.id)}`}
+                  >
+                    Show in digital twin
+                    <ArrowUpRight size={14} />
+                  </Link>
+                )}
                 <div className="relationship-list">
                   {selectedEdges.map((edge) => (
                     <div key={edge.id}>
