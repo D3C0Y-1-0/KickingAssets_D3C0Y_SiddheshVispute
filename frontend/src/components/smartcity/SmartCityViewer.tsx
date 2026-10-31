@@ -239,12 +239,21 @@ export function SmartCityViewer({
 
   const handleMouseUp = () => setIsDragging(false);
 
-  // Wheel zoom
-  const handleWheel = (e: React.WheelEvent) => {
-    e.preventDefault();
-    const delta = e.deltaY < 0 ? 0.1 : -0.1;
-    setZoom((prev) => Math.min(Math.max(prev + delta, 0.6), 2.5));
-  };
+  // Wheel zoom only with Ctrl/Cmd held, so the page itself still scrolls normally.
+  // A native non-passive listener is needed to be allowed to cancel the browser zoom.
+  const canvasRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const el = canvasRef.current;
+    if (!el) return;
+    const onWheel = (e: WheelEvent) => {
+      if (!e.ctrlKey && !e.metaKey) return;
+      e.preventDefault();
+      const delta = e.deltaY < 0 ? 0.1 : -0.1;
+      setZoom((prev) => Math.min(Math.max(prev + delta, 0.6), 2.5));
+    };
+    el.addEventListener("wheel", onWheel, { passive: false });
+    return () => el.removeEventListener("wheel", onWheel);
+  }, []);
 
   // Component click
   const handleSelectComponent = (componentId: string) => {
@@ -437,7 +446,7 @@ export function SmartCityViewer({
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseUp}
-        onWheel={handleWheel}
+        ref={canvasRef}
         className="relative flex-1 w-full h-full cursor-grab active:cursor-grabbing overflow-hidden flex items-center justify-center"
       >
         <Plate
