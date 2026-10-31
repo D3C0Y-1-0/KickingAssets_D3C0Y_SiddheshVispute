@@ -50,7 +50,7 @@ function TrendPanels() {
   }
   if (!data || data.status !== 'computed') {
     return (
-      <Panel title="City risk index, monthly replay">
+      <Panel title="City risk over time (monthly replay)">
         <EmptyState title="Trend not built" compact>
           {data?.unavailable_reason ?? 'No trend is available.'}
         </EmptyState>
@@ -64,7 +64,7 @@ function TrendPanels() {
     <>
       <div className="ins-grid">
         <Panel
-          title="City risk index, monthly replay"
+          title="City risk over time (monthly replay)"
           aside={<span className="subtle-label mono">{data.scoring_version}</span>}
         >
           <div className="ins-chart">
@@ -195,8 +195,8 @@ export default function Posture() {
   return (
     <>
       <PageHeading
-        eyebrow="WORKSPACE / POSTURE"
-        title="Posture and activity"
+        eyebrow="WORKSPACE / TRENDS"
+        title="Trends and activity"
         description="How the city risk index moves against the public vulnerability record, and which assets deviate from their own network baseline."
         actions={<SampleBadge>Simulated telemetry</SampleBadge>}
       />

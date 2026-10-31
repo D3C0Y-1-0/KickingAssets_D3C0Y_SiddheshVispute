@@ -6,10 +6,10 @@ import '../insights/insights.css'
 
 type Tab = 'chokepoints' | 'vendors'
 const effectName: Record<string, string> = {
-  unavailability: 'Loss of availability',
-  loss_of_control: 'Loss of control',
-  data_integrity: 'Data integrity',
-  loss_of_visibility: 'Loss of visibility',
+  unavailability: 'Switched off',
+  loss_of_control: 'Taken over',
+  data_integrity: 'Data tampered',
+  loss_of_visibility: 'Blind',
 }
 
 function Disruption({ value }: { value: number | null | undefined }) {
@@ -47,7 +47,7 @@ function Chokepoints() {
       title="Single points of failure"
       aside={
         <span className="subtle-label">
-          {count} chokepoints of {data?.chokepoints.length} assets
+          {count} single points of failure among {data?.chokepoints.length} assets
         </span>
       }
     >
@@ -58,11 +58,11 @@ function Chokepoints() {
             checked={onlyChokepoints}
             onChange={(e) => setOnlyChokepoints(e.target.checked)}
           />
-          Chokepoints only
+          Single points of failure only
         </label>
         <span className="grow" />
         <span className="subtle-label">
-          Each asset lost alone, under loss of availability and loss of control
+          Each asset removed alone, either switched off or taken over
         </span>
       </div>
       <div className="table-scroll">
@@ -71,11 +71,11 @@ function Chokepoints() {
             <tr>
               <th>#</th>
               <th>Asset</th>
-              <th>Worst effect</th>
-              <th>Disrupts fully</th>
+              <th>Worst case</th>
+              <th>Services that stop</th>
               <th>Worst service</th>
               <th className="num">Assets lost</th>
-              <th className="num">Dependents</th>
+              <th className="num">Relied on by</th>
             </tr>
           </thead>
           <tbody>
@@ -158,9 +158,9 @@ function Vendors() {
                 <th className="num">Assets lost</th>
                 <th
                   className="num"
-                  title="CISA KEV entries whose vendorProject contains the vendor name"
+                  title="Flaws on the CISA list of vulnerabilities attackers are already using, matched by vendor name"
                 >
-                  KEV total / 24 mo
+                  Attacked flaws: all / last 2 yrs
                 </th>
                 <th>Services touched</th>
               </tr>
@@ -199,8 +199,8 @@ function Vendors() {
         </div>
         <p className="ins-note">
           Every asset of the vendor suffers its default effect for its type at the same moment,
-          analysed jointly. Vendors are the product map&apos;s assumed products, not a scan.
-          {data.kev_available ? '' : ' CISA KEV data was not available, so KEV counts show 0.'}
+          at once. Vendors are assumed products, not a scan.
+          {data.kev_available ? '' : ' The attacked-flaws list was not available, so those counts show 0.'}
         </p>
       </Panel>
       <div className="ins-grid">
@@ -212,8 +212,8 @@ function Vendors() {
                   <th>Service</th>
                   <th>Top vendor</th>
                   <th className="num">Share</th>
-                  <th className="num" title="Herfindahl-Hirschman index: 1 means a single vendor">
-                    HHI
+                  <th className="num" title="1.00 means one vendor supplies everything">
+                    Dependence
                   </th>
                 </tr>
               </thead>
@@ -251,9 +251,9 @@ export default function Resilience() {
   return (
     <>
       <PageHeading
-        eyebrow="WORKSPACE / RESILIENCE"
-        title="Resilience"
-        description="Where one failure hurts most: single points of failure inside the estate, and the reach of a compromised supplier."
+        eyebrow="WORKSPACE / WEAK POINTS"
+        title="Weak points"
+        description="Where one failure hurts most: single points of failure inside the city, and how far a hacked supplier would reach."
         actions={
           <div className="segmented-control" aria-label="Resilience view">
             <button
@@ -261,14 +261,14 @@ export default function Resilience() {
               aria-pressed={tab === 'chokepoints'}
               onClick={() => setTab('chokepoints')}
             >
-              Chokepoints
+              Single points
             </button>
             <button
               className={tab === 'vendors' ? 'selected' : ''}
               aria-pressed={tab === 'vendors'}
               onClick={() => setTab('vendors')}
             >
-              Supply chain
+              Suppliers
             </button>
           </div>
         }

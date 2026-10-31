@@ -17,6 +17,7 @@ import {
   ListChecks,
   Menu,
   Network,
+  PlayCircle,
   Radar,
   Search,
   Shield,
@@ -41,18 +42,20 @@ const MlLab = lazy(() => import('../features/ml/MlLab'))
 const Posture = lazy(() => import('../features/posture/Posture'))
 const Resilience = lazy(() => import('../features/resilience/Resilience'))
 const Coverage = lazy(() => import('../features/coverage/Coverage'))
+const LiveSimulation = lazy(() => import('../features/live/LiveSimulation'))
 const navigation: { path: string; name: string; icon: typeof Grid2X2; tag?: string }[] = [
-  { path: '/', name: 'Command Overview', icon: Grid2X2 },
+  { path: '/', name: 'Overview', icon: Grid2X2 },
+  { path: '/live', name: 'Live Simulation', icon: PlayCircle, tag: 'NEW' },
   { path: '/infrastructure', name: 'Infrastructure Map', icon: Network },
   { path: '/digital-twins', name: 'Digital Twins', icon: Building2, tag: 'ANATOMY' },
-  { path: '/assets', name: 'Asset & Risk Register', icon: Layers },
-  { path: '/intelligence', name: 'Risk Intelligence', icon: Activity },
-  { path: '/ml', name: 'ML Lab', icon: BrainCircuit },
-  { path: '/what-if', name: 'What-If Lab', icon: FlaskConical },
-  { path: '/remediation', name: 'Remediation Plan', icon: ListChecks },
-  { path: '/posture', name: 'Posture & Activity', icon: Radar },
-  { path: '/resilience', name: 'Resilience', icon: Waypoints },
-  { path: '/coverage', name: 'PS03 Coverage', icon: ClipboardCheck },
+  { path: '/assets', name: 'Assets & Risk', icon: Layers },
+  { path: '/intelligence', name: 'Risk Ranking', icon: Activity },
+  { path: '/ml', name: 'AI Model', icon: BrainCircuit },
+  { path: '/what-if', name: 'What-If', icon: FlaskConical },
+  { path: '/remediation', name: 'Fix Plan', icon: ListChecks },
+  { path: '/posture', name: 'Trends & Activity', icon: Radar },
+  { path: '/resilience', name: 'Weak Points', icon: Waypoints },
+  { path: '/coverage', name: 'Challenge Coverage', icon: ClipboardCheck },
 ]
 
 export default function App() {
@@ -270,6 +273,7 @@ export default function App() {
                 <Route path="/posture" element={<Posture />} />
                 <Route path="/resilience" element={<Resilience />} />
                 <Route path="/coverage" element={<Coverage />} />
+                <Route path="/live" element={<LiveSimulation />} />
                 <Route path="/methodology" element={<Methodology />} />
                 <Route
                   path="*"

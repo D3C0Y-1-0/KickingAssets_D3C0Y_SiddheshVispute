@@ -218,7 +218,7 @@ export default function Coverage() {
     <>
       <PageHeading
         eyebrow="WORKSPACE / COVERAGE"
-        title="PS03 coverage"
+        title="Challenge coverage"
         description="Each official objective, Challenge clause and CERT-In area mapped to what the product does and where it stops."
       />
       <div className="ins-metrics">
