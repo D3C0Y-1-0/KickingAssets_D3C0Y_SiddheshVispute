@@ -413,13 +413,13 @@ export function SmartCityViewer({
       <div
         ref={stage.stageRef}
         {...stage.stageProps}
-        aria-label="Smart city diagram. Drag to pan, scroll to zoom, plus and minus keys to zoom."
+        aria-label="Smart city diagram. Drag to pan, Ctrl or Cmd plus scroll to zoom, plus and minus keys to zoom."
         className={`relative min-w-0 overflow-hidden flex items-center justify-center outline-none ${stage.dragging ? "cursor-grabbing" : "cursor-grab"}`}
       >
         <Plate
           fig="FIG 02"
           title="DISTRIBUTED SMART CITY ARCHITECTURE (MODULAR ISLAND BASES)"
-          hint="DRAG TO PAN · WHEEL TO ZOOM · CLICK ANY ISLAND CAMPUS TO INSPECT"
+          hint="DRAG TO PAN · CTRL + WHEEL TO ZOOM · CLICK ANY ISLAND CAMPUS TO INSPECT"
           readout={readoutText}
           keys={[
             { mark: "lit", label: "Selected Active Campus" },

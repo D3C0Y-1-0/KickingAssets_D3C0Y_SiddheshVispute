@@ -79,3 +79,27 @@ Limits: touch pinch and real fullscreen were not exercised; the script drives on
 ## Gridinal rebrand and navigation
 
 Measured: `tsc -b` clean, 7 frontend tests passed, production build succeeded. In a real browser session: title reads "Command Overview | Gridinal", sidebar groups (Monitor / Assess / Act) render, clicking Digital Twins navigates and marks it active, the collapse toggle narrows the rail to 78px and shifts the page margin, the choice persists in localStorage, and the mobile drawer opens with the same grouping. Limits: no screen-reader or keyboard-only audit of the new sidebar beyond visible focus styles; supplied wordmark has rough edge noise visible only when enlarged.
+## codex/innovations: backend connection (31 October 2026)
+
+- `pytest backend/tests`: 75 passed (includes ML and workflow tests); Ruff check and format clean.
+- Against Neon PostgreSQL (Singapore), with the reference cache present: health, ML status, simulation run (8.7 s, process memory about 1.05 GB afterwards), 150 action options, optimizer (1.5 s), ML overview all returned 200. Optimize before a run correctly returns 409.
+- Browser: ran the simulation from the Command Overview against Neon; the run completed and the page reported "Simulated as of 2026-10-01". The console showed two HTTP 409 responses (expected: the API refuses simulation-dependent reads before a run exists) and repeated ERR_CONNECTION_REFUSED entries, probably from an initial navigation made before the server finished starting or from stopping it afterwards; this was not re-checked on a clean load.
+- Frontend: typecheck, build and 7 tests pass. `format:check` reports 33 files from the digital-twins push; those files were not reformatted.
+- Not verified: hosting this backend remotely, concurrent users, other pages beyond the overview.
+
+## Hosted deployment checks (31 October 2026)
+
+- Azure: `/api/v1/health` returned `intelligence: ready`. First simulation run took 69 s (cold data load), later runs 7.7 s; options 7.8 s; optimizer 16.6 to 17.2 s on B1. Optimize before a run returns 409 as designed.
+- Vercel to Azure proxy: `/`, `/ml`, health, ML status, assets returned 200; a simulation run through the proxy returned 200 in 8.7 s (warm). The live Command Overview rendered with a computed city risk index.
+- Not verified: other pages on the live site, several visitors at once, the first-run cold start through the Vercel proxy, memory headroom on B1 under load, the force-directed map with a run overlay.
+- The earlier `codex/deploy` Vercel function deployment was replaced by this one.
+
+## Challenge-gap features verification (31 October 2026)
+
+- `pytest backend/tests`: 95 passed (20 new: telemetry, resilience, insights API, brief). Ruff check and format clean. Frontend typecheck, build, 7 tests pass; the new and edited files pass Prettier (the digital-twins files from the other push were not reformatted).
+- Detector on the simulated telemetry: 0 flags on 800 clean asset-days; all four malicious authored events flagged; the benign maintenance event flagged (a documented false positive). These results validate the mechanics on simulated data only, not real-world detection performance.
+- Real outputs: 11 of 30 assets are chokepoints; vendor scenarios and KEV counts computed from the product map and the cached KEV file; trend of 18 monthly points from 33.6 (2025-05) to 35.6 (2026-10), with criticals rising from 6 to 9.
+- Browser (local, real API): Posture, Resilience (both tabs) and Coverage rendered with real data; running the simulation enabled the brief downloads; the Markdown brief was fetched and read: ranked assets, drivers, services, activity with urgency, vendors, chokepoints, optimizer actions labelled projected, assumptions. The only console error was a 409 from a page load before the first run.
+- Not verified: the new pages on the hosted site (see deployment notes), mobile layout, accessibility audit of the new tables and charts, the brief's HTML rendering in a browser.
+
+Hosted checks (31 October 2026): on Azure, `/activity`, `/activity/assets/PWR-002`, `/resilience/vendors`, `/resilience/chokepoints`, `/simulation/trend` (18 points) returned 200; the brief returned 409 before a run, then 200 after a run (31 s on the B1 plan, 28.7 s through the Vercel proxy); urgency became available after the run (PWR-002: risk 11.56, urgency 17.34). Through Vercel, `/posture`, `/resilience`, `/coverage` and the API endpoints returned 200 and the live Posture page loaded with no console errors. Not verified: the brief under concurrent use, mobile layout.

@@ -1,0 +1,35 @@
+# Render Blueprint: always-on API (the simulation keeps its result in process memory, so it
+# runs a single worker) plus a static frontend that proxies /api to it.
+services:
+  - type: web
+    name: gridsentinel-api
+    runtime: python
+    region: singapore
+    # The simulation needs about 1 GB of RAM once the reference data is loaded; Starter (512 MB)
+    # is too small. Check current Render pricing before choosing a plan.
+    plan: standard
+    branch: codex/innovations
+    buildCommand: bash scripts/render-build.sh
+    startCommand: cd backend && uvicorn app.main:app --host 0.0.0.0 --port $PORT --workers 1 --proxy-headers --forwarded-allow-ips '*'
+    healthCheckPath: /api/v1/health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.8
+      - key: GRIDSENTINEL_DB_POOL_MAX
+        value: "5"
+      - key: GRIDSENTINEL_DATABASE_URL
+        sync: false # set in the Render dashboard (the Neon connection string); never commit it
+
+  - type: web
+    name: gridsentinel-web
+    runtime: static
+    branch: codex/innovations
+    buildCommand: cd frontend && npm ci && npm run build
+    staticPublishPath: frontend/dist
+    routes:
+      - type: rewrite
+        source: /api/*
+        destination: https://gridsentinel-api.onrender.com/api/*
+      - type: rewrite
+        source: /*
+        destination: /index.html

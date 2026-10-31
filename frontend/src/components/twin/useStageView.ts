@@ -21,7 +21,7 @@ const DRAG_THRESHOLD = 4
  * Pan / zoom / fullscreen for an isometric diagram.
  * - fits the whole diagram to the stage (and refits on resize) until the user moves it
  * - drag to pan (a click on a part still selects it; only real drags swallow the click)
- * - wheel zooms towards the cursor, two-finger pinch zooms on touch
+ * - Ctrl/Cmd + wheel zooms towards the cursor, two-finger pinch zooms on touch
  * - focus the stage and use + / - / 0 / arrow keys
  * The transformed element must have the diagram box as its only child, so the
  * transform origin sits at the diagram centre (see `centerOn`).
@@ -129,6 +129,8 @@ export function useStageView({
     const el = stageRef.current
     if (!el) return
     const onWheel = (e: WheelEvent) => {
+      // Plain wheel scrolls the page; Ctrl/Cmd + wheel (and trackpad pinch) zooms the diagram.
+      if (!e.ctrlKey && !e.metaKey) return
       e.preventDefault()
       setAnimate(false)
       zoomAt(e.clientX, e.clientY, Math.exp(-e.deltaY * 0.0016))

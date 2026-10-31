@@ -226,7 +226,7 @@ export function HotspotTwin({
         <div
           ref={stage.stageRef}
           className={`ts-stage${stage.dragging ? ' dragging' : ''}`}
-          aria-label={`${ariaLabel}. Drag to pan, scroll to zoom, plus and minus keys to zoom.`}
+          aria-label={`${ariaLabel}. Drag to pan, Ctrl or Cmd plus scroll to zoom, plus and minus keys to zoom.`}
           {...stage.stageProps}
         >
           <Plate fig={fig} title={plateTitle}>
@@ -293,7 +293,9 @@ export function HotspotTwin({
               </div>
             </div>
           </Plate>
-          <span className="ts-hint">DRAG TO PAN · SCROLL TO ZOOM · CLICK A PART · + − 0 KEYS</span>
+          <span className="ts-hint">
+            DRAG TO PAN · CTRL + SCROLL TO ZOOM · CLICK A PART · + − 0 KEYS
+          </span>
         </div>
 
         <TwinInspector

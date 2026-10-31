@@ -362,7 +362,7 @@ export function SubstationViewer({
       <div
         ref={stage.stageRef}
         {...stage.stageProps}
-        aria-label="Substation diagram. Drag to pan, scroll to zoom, plus and minus keys to zoom."
+        aria-label="Substation diagram. Drag to pan, Ctrl or Cmd plus scroll to zoom, plus and minus keys to zoom."
         className={`relative min-w-0 overflow-hidden bg-[#08090d] outline-none ${
           stage.dragging ? "cursor-grabbing" : "cursor-grab"
         }`}

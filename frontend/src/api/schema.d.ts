@@ -350,6 +350,108 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/activity": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Activity */
+        get: operations["activity_api_v1_activity_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/activity/assets/{asset_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Asset Activity */
+        get: operations["asset_activity_api_v1_activity_assets__asset_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/resilience/vendors": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Vendors */
+        get: operations["vendors_api_v1_resilience_vendors_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/resilience/chokepoints": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Chokepoints */
+        get: operations["chokepoints_api_v1_resilience_chokepoints_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/simulation/trend": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Trend */
+        get: operations["trend_api_v1_simulation_trend_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/reports/brief": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Risk Brief */
+        get: operations["risk_brief_api_v1_reports_brief_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -403,6 +505,67 @@ export interface components {
             justification: string;
             /** Operational Disruption */
             operational_disruption: string;
+        };
+        /** ActivityDay */
+        ActivityDay: {
+            /**
+             * Day
+             * Format: date
+             */
+            day: string;
+            /** Index */
+            index: number;
+            /**
+             * Band
+             * @enum {string}
+             */
+            band: "calm" | "elevated" | "active";
+            /** Anomalous Assets */
+            anomalous_assets: number;
+        };
+        /** ActivityReport */
+        ActivityReport: {
+            /** Scenario Id */
+            scenario_id: string;
+            /** Snapshot Id */
+            snapshot_id: string;
+            /**
+             * State
+             * @default current
+             * @constant
+             */
+            state: "current";
+            /**
+             * As Of
+             * Format: date
+             */
+            as_of: string;
+            /**
+             * Window Start
+             * Format: date
+             */
+            window_start: string;
+            /**
+             * Window End
+             * Format: date
+             */
+            window_end: string;
+            /** Detector Version */
+            detector_version: string;
+            latest: components["schemas"]["ActivityDay"];
+            /** Series */
+            series: components["schemas"]["ActivityDay"][];
+            /** Assets */
+            assets: components["schemas"]["AssetActivity"][];
+            /** Events */
+            events: components["schemas"]["ScenarioEvent"][];
+            /** Urgency Available */
+            urgency_available: boolean;
+            /** Urgency Note */
+            urgency_note: string;
+            /** Assumptions */
+            assumptions: string[];
+            provenance: components["schemas"]["Provenance"];
         };
         /** ApiError */
         ApiError: {
@@ -465,6 +628,48 @@ export interface components {
             scoring_version?: string | null;
             /** Model Version */
             model_version?: string | null;
+            provenance: components["schemas"]["Provenance"];
+        };
+        /** AssetActivity */
+        AssetActivity: {
+            /** Asset Id */
+            asset_id: string;
+            /** Asset Name */
+            asset_name: string;
+            sector: components["schemas"]["Sector"];
+            /**
+             * Criticality
+             * @enum {string}
+             */
+            criticality: "essential" | "important" | "supporting";
+            /** Anomaly */
+            anomaly: number;
+            /** Consecutive Days */
+            consecutive_days: number;
+            /** Reasons */
+            reasons: components["schemas"]["MetricReading"][];
+            /** Risk Score */
+            risk_score?: number | null;
+            /** Urgency */
+            urgency?: number | null;
+        };
+        /** AssetActivitySeries */
+        AssetActivitySeries: {
+            /** Scenario Id */
+            scenario_id: string;
+            /** Snapshot Id */
+            snapshot_id: string;
+            /** Asset Id */
+            asset_id: string;
+            /** Asset Name */
+            asset_name: string;
+            /**
+             * As Of
+             * Format: date
+             */
+            as_of: string;
+            /** Series */
+            series: components["schemas"]["MetricSeries"][];
             provenance: components["schemas"]["Provenance"];
         };
         /** AssetDelta */
@@ -649,6 +854,15 @@ export interface components {
              */
             kev_added: string;
         };
+        /** BriefSection */
+        BriefSection: {
+            /** Title */
+            title: string;
+            /** Available */
+            available: boolean;
+            /** Lines */
+            lines: string[];
+        };
         /** CandidateCve */
         CandidateCve: {
             /** Cve Id */
@@ -695,6 +909,69 @@ export interface components {
             category: "low" | "medium" | "high" | "critical";
             /** Count */
             count: number;
+        };
+        /** Chokepoint */
+        Chokepoint: {
+            /** Asset Id */
+            asset_id: string;
+            /** Asset Name */
+            asset_name: string;
+            sector: components["schemas"]["Sector"];
+            /**
+             * Criticality
+             * @enum {string}
+             */
+            criticality: "essential" | "important" | "supporting";
+            /** Direct Dependents */
+            direct_dependents: number;
+            /** Has Backup Edge */
+            has_backup_edge: boolean;
+            /** Is Chokepoint */
+            is_chokepoint: boolean;
+            worst: components["schemas"]["ChokepointScenario"] | null;
+            /** Scenarios */
+            scenarios: components["schemas"]["ChokepointScenario"][];
+            /** Reason */
+            reason: string;
+        };
+        /** ChokepointReport */
+        ChokepointReport: {
+            /** Scenario Id */
+            scenario_id: string;
+            /** Snapshot Id */
+            snapshot_id: string;
+            /**
+             * State
+             * @default current
+             * @constant
+             */
+            state: "current";
+            /** Chokepoints */
+            chokepoints: components["schemas"]["Chokepoint"][];
+            /** Assumptions */
+            assumptions: string[];
+            /** Engine Version */
+            engine_version: string;
+            /**
+             * Calculated At
+             * Format: date-time
+             */
+            calculated_at: string;
+            provenance: components["schemas"]["Provenance"];
+        };
+        /** ChokepointScenario */
+        ChokepointScenario: {
+            /**
+             * Effect
+             * @enum {string}
+             */
+            effect: "loss_of_control" | "loss_of_visibility" | "data_integrity" | "unavailability";
+            /** Assets Lost */
+            assets_lost: number;
+            /** Worst Disruption */
+            worst_disruption: number | null;
+            /** Services Fully Disrupted */
+            services_fully_disrupted: string[];
         };
         /** CveScore */
         CveScore: {
@@ -898,6 +1175,50 @@ export interface components {
             scored: number;
             /** Product Known */
             product_known: boolean;
+        };
+        /** MetricPoint */
+        MetricPoint: {
+            /**
+             * Day
+             * Format: date
+             */
+            day: string;
+            /** Value */
+            value: number;
+            /** Baseline */
+            baseline: number;
+            /** Z Score */
+            z_score: number;
+            /** Anomalous */
+            anomalous: boolean;
+        };
+        /** MetricReading */
+        MetricReading: {
+            /**
+             * Metric
+             * @enum {string}
+             */
+            metric: "flows" | "bytes_out_mb" | "distinct_peers" | "failed_logins" | "off_hours_share" | "ot_writes";
+            /** Label */
+            label: string;
+            /** Observed */
+            observed: number;
+            /** Baseline */
+            baseline: number;
+            /** Z Score */
+            z_score: number;
+        };
+        /** MetricSeries */
+        MetricSeries: {
+            /**
+             * Metric
+             * @enum {string}
+             */
+            metric: "flows" | "bytes_out_mb" | "distinct_peers" | "failed_logins" | "off_hours_share" | "ot_writes";
+            /** Label */
+            label: string;
+            /** Points */
+            points: components["schemas"]["MetricPoint"][];
         };
         /** MlMetricRow */
         MlMetricRow: {
@@ -1148,6 +1469,30 @@ export interface components {
             /** Epss Percentile */
             epss_percentile: number | null;
         };
+        /** PostureTrend */
+        PostureTrend: {
+            /** Scenario Id */
+            scenario_id: string;
+            /** Snapshot Id */
+            snapshot_id: string;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "computed" | "unavailable";
+            /** Unavailable Reason */
+            unavailable_reason?: string | null;
+            /** Model Version */
+            model_version?: string | null;
+            /** Scoring Version */
+            scoring_version?: string | null;
+            /** Generated At */
+            generated_at?: string | null;
+            /** Points */
+            points?: components["schemas"]["TrendPoint"][];
+            /** Assumptions */
+            assumptions?: string[];
+        };
         /** ProductMap */
         ProductMap: {
             /** Provenance Note */
@@ -1261,6 +1606,32 @@ export interface components {
             calculated_at?: string | null;
             provenance: components["schemas"]["Provenance"];
         };
+        /** RiskBrief */
+        RiskBrief: {
+            /** Scenario Id */
+            scenario_id: string;
+            /** Snapshot Id */
+            snapshot_id: string;
+            /** Run Id */
+            run_id: string;
+            /**
+             * As Of
+             * Format: date
+             */
+            as_of: string;
+            /** Model Version */
+            model_version: string;
+            /** Scoring Version */
+            scoring_version: string;
+            /**
+             * Generated At
+             * Format: date-time
+             */
+            generated_at: string;
+            /** Sections */
+            sections: components["schemas"]["BriefSection"][];
+            provenance: components["schemas"]["Provenance"];
+        };
         /** RiskFactor */
         RiskFactor: {
             /** Name */
@@ -1292,6 +1663,32 @@ export interface components {
              */
             created_at: string;
             provenance: components["schemas"]["Provenance"];
+        };
+        /**
+         * ScenarioEvent
+         * @description An authored scenario event: part of the simulation, never an observed incident.
+         */
+        ScenarioEvent: {
+            /** Id */
+            id: string;
+            /** Asset Id */
+            asset_id: string;
+            /** Title */
+            title: string;
+            /**
+             * Start
+             * Format: date
+             */
+            start: string;
+            /**
+             * End
+             * Format: date
+             */
+            end: string;
+            /** Benign */
+            benign: boolean;
+            /** Description */
+            description: string;
         };
         /**
          * Sector
@@ -1345,6 +1742,19 @@ export interface components {
             observed_at: string;
             provenance: components["schemas"]["Provenance"];
         };
+        /** ServiceConcentration */
+        ServiceConcentration: {
+            /** Service Id */
+            service_id: string;
+            /** Service Name */
+            service_name: string;
+            /** Hhi */
+            hhi: number;
+            /** Top Vendor */
+            top_vendor: string;
+            /** Top Vendor Share */
+            top_vendor_share: number;
+        };
         /** ServiceDisruption */
         ServiceDisruption: {
             /** Service Id */
@@ -1394,6 +1804,19 @@ export interface components {
             initiating_asset_name: string | null;
             /** Effect */
             effect: ("loss_of_control" | "loss_of_visibility" | "data_integrity" | "unavailability") | null;
+        };
+        /** ServiceShare */
+        ServiceShare: {
+            /** Service Id */
+            service_id: string;
+            /** Service Name */
+            service_name: string;
+            /** Vendor Assets */
+            vendor_assets: number;
+            /** Service Assets */
+            service_assets: number;
+            /** Disruption */
+            disruption: number | null;
         };
         /** SimulationProgress */
         SimulationProgress: {
@@ -1489,6 +1912,88 @@ export interface components {
              * @enum {string}
              */
             action_type: "patch_prioritization" | "network_segmentation" | "access_control" | "enhanced_monitoring" | "incident_response_plan";
+        };
+        /** TrendPoint */
+        TrendPoint: {
+            /**
+             * As Of
+             * Format: date
+             */
+            as_of: string;
+            /** City Index */
+            city_index: number | null;
+            /** Category */
+            category: ("low" | "medium" | "high" | "critical") | null;
+            /** Critical */
+            critical: number;
+            /** High */
+            high: number;
+            /** Medium */
+            medium: number;
+            /** Low */
+            low: number;
+            /** Unscored */
+            unscored: number;
+            /** Held Out */
+            held_out: boolean;
+            /** Top Asset Ids */
+            top_asset_ids: string[];
+        };
+        /** VendorReport */
+        VendorReport: {
+            /** Scenario Id */
+            scenario_id: string;
+            /** Snapshot Id */
+            snapshot_id: string;
+            /**
+             * State
+             * @default current
+             * @constant
+             */
+            state: "current";
+            /** Vendors */
+            vendors: components["schemas"]["VendorRisk"][];
+            /** Concentration */
+            concentration: components["schemas"]["ServiceConcentration"][];
+            /** Kev Available */
+            kev_available: boolean;
+            /** Assumptions */
+            assumptions: string[];
+            /** Engine Version */
+            engine_version: string;
+            /**
+             * Calculated At
+             * Format: date-time
+             */
+            calculated_at: string;
+            provenance: components["schemas"]["Provenance"];
+        };
+        /** VendorRisk */
+        VendorRisk: {
+            /** Vendor */
+            vendor: string;
+            /** Assets */
+            assets: string[];
+            /** Sectors */
+            sectors: components["schemas"]["Sector"][];
+            /** Essential Assets */
+            essential_assets: number;
+            /** Kev Entries Total */
+            kev_entries_total: number;
+            /** Kev Entries Last 24 Months */
+            kev_entries_last_24_months: number;
+            /** Kev Match Rule */
+            kev_match_rule: string;
+            /** Assumed Effects */
+            assumed_effects: {
+                [key: string]: "loss_of_control" | "loss_of_visibility" | "data_integrity" | "unavailability";
+            };
+            /** Assets Lost */
+            assets_lost: number;
+            /** Worst Disruption */
+            worst_disruption: number | null;
+            /** Services */
+            services: components["schemas"]["ServiceShare"][];
         };
         /** WhatIfRequest */
         WhatIfRequest: {
@@ -2629,6 +3134,367 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["RemediationPlan"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Unprocessable Content */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    activity_api_v1_activity_get: {
+        parameters: {
+            query?: {
+                scenario_id?: string;
+                snapshot_id?: string | null;
+                as_of?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ActivityReport"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Unprocessable Content */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    asset_activity_api_v1_activity_assets__asset_id__get: {
+        parameters: {
+            query?: {
+                scenario_id?: string;
+                snapshot_id?: string | null;
+                as_of?: string | null;
+            };
+            header?: never;
+            path: {
+                asset_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssetActivitySeries"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Unprocessable Content */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    vendors_api_v1_resilience_vendors_get: {
+        parameters: {
+            query?: {
+                scenario_id?: string;
+                snapshot_id?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VendorReport"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Unprocessable Content */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    chokepoints_api_v1_resilience_chokepoints_get: {
+        parameters: {
+            query?: {
+                scenario_id?: string;
+                snapshot_id?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ChokepointReport"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Unprocessable Content */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    trend_api_v1_simulation_trend_get: {
+        parameters: {
+            query?: {
+                scenario_id?: string;
+                snapshot_id?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PostureTrend"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Unprocessable Content */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    risk_brief_api_v1_reports_brief_get: {
+        parameters: {
+            query?: {
+                scenario_id?: string;
+                snapshot_id?: string | null;
+                format?: "json" | "md" | "html";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RiskBrief"];
+                    "text/markdown": unknown;
+                    "text/html": unknown;
                 };
             };
             /** @description Not Found */

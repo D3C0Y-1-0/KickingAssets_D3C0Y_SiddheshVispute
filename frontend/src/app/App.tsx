@@ -9,14 +9,18 @@ import {
   ChevronLeft,
   ChevronRight,
   CircleHelp,
+  ClipboardCheck,
   FlaskConical,
   Grid2X2,
   Layers,
   ListChecks,
   Menu,
   Network,
+  PlayCircle,
+  Radar,
   Search,
   Shield,
+  Waypoints,
   X,
 } from 'lucide-react'
 import { NavLink, Route, Routes, Link, useLocation, useNavigate } from 'react-router-dom'
@@ -35,12 +39,17 @@ const WhatIf = lazy(() => import('../features/whatif/WhatIf'))
 const Remediation = lazy(() => import('../features/remediation/Remediation'))
 const Methodology = lazy(() => import('../features/methodology/Methodology'))
 const MlLab = lazy(() => import('../features/ml/MlLab'))
+const Posture = lazy(() => import('../features/posture/Posture'))
+const Resilience = lazy(() => import('../features/resilience/Resilience'))
+const Coverage = lazy(() => import('../features/coverage/Coverage'))
+const LiveSimulation = lazy(() => import('../features/live/LiveSimulation'))
 type NavEntry = { path: string; name: string; icon: typeof Grid2X2 }
 const navGroups: { label: string; items: NavEntry[] }[] = [
   {
     label: 'Monitor',
     items: [
-      { path: '/', name: 'Command Overview', icon: Grid2X2 },
+      { path: '/', name: 'Overview', icon: Grid2X2 },
+      { path: '/live', name: 'Live Simulation', icon: PlayCircle },
       { path: '/infrastructure', name: 'Infrastructure Map', icon: Network },
       { path: '/digital-twins', name: 'Digital Twins', icon: Building2 },
     ],
@@ -48,17 +57,23 @@ const navGroups: { label: string; items: NavEntry[] }[] = [
   {
     label: 'Assess',
     items: [
-      { path: '/assets', name: 'Asset & Risk Register', icon: Layers },
-      { path: '/intelligence', name: 'Risk Intelligence', icon: Activity },
-      { path: '/ml', name: 'ML Lab', icon: BrainCircuit },
+      { path: '/assets', name: 'Assets & Risk', icon: Layers },
+      { path: '/intelligence', name: 'Risk Ranking', icon: Activity },
+      { path: '/ml', name: 'AI Model', icon: BrainCircuit },
+      { path: '/posture', name: 'Trends & Activity', icon: Radar },
+      { path: '/resilience', name: 'Weak Points', icon: Waypoints },
     ],
   },
   {
     label: 'Act',
     items: [
-      { path: '/what-if', name: 'What-If Lab', icon: FlaskConical },
-      { path: '/remediation', name: 'Remediation Plan', icon: ListChecks },
+      { path: '/what-if', name: 'What-If', icon: FlaskConical },
+      { path: '/remediation', name: 'Fix Plan', icon: ListChecks },
     ],
+  },
+  {
+    label: 'Evidence',
+    items: [{ path: '/coverage', name: 'Challenge Coverage', icon: ClipboardCheck }],
   },
 ]
 const navigation = navGroups.flatMap((g) => g.items)
@@ -275,6 +290,10 @@ export default function App() {
                 <Route path="/ml" element={<MlLab />} />
                 <Route path="/what-if" element={<WhatIf />} />
                 <Route path="/remediation" element={<Remediation />} />
+                <Route path="/posture" element={<Posture />} />
+                <Route path="/resilience" element={<Resilience />} />
+                <Route path="/coverage" element={<Coverage />} />
+                <Route path="/live" element={<LiveSimulation />} />
                 <Route path="/methodology" element={<Methodology />} />
                 <Route
                   path="*"

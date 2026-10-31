@@ -544,4 +544,10 @@ button.twin-risk-chip:hover {
   border-color: #ccff00;
 }
 
-.ts-center{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+.ts-center {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
