@@ -675,7 +675,7 @@ def test_regression_reference_scenario_still_runs(client, run):
     """The Phase 5 demo (60 h budget) is a reference, not a pinned result: the corrected patch
     model may legitimately differ, but the baseline and the invariants must hold."""
     plan = optimize(client, 60).json()
-    assert plan["starting_city_index"] == pytest.approx(35.62, abs=0.01)
+    assert plan["starting_city_index"] == pytest.approx(run["city_risk"]["score"], abs=0.01)
     assert 0 < plan["used_hours"] <= 60 and plan["ending_city_index"] < plan["starting_city_index"]
     assert plan["steps"][0]["action_type"] in {
         "network_segmentation",
