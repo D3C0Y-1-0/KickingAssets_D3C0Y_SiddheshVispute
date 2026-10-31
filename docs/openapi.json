@@ -788,6 +788,195 @@
         }
       }
     },
+    "/api/v1/simulation/snapshots": {
+      "get": {
+        "tags": [
+          "Simulation"
+        ],
+        "summary": "Snapshots",
+        "description": "Dates the simulation can be run as of, with whether the model saw that period.",
+        "operationId": "snapshots_api_v1_simulation_snapshots_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/SnapshotOption"
+                  },
+                  "type": "array",
+                  "title": "Response Snapshots Api V1 Simulation Snapshots Get"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Content",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service Unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/simulation/products": {
+      "get": {
+        "tags": [
+          "Simulation"
+        ],
+        "summary": "Products",
+        "description": "The real product and version each fictional asset is assumed to run.",
+        "operationId": "products_api_v1_simulation_products_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductMap"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Content",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service Unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/simulation/backtest": {
+      "get": {
+        "tags": [
+          "Simulation"
+        ],
+        "summary": "Pooled Backtest",
+        "operationId": "pooled_backtest_api_v1_simulation_backtest_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PooledBacktest"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Content",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service Unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/simulation/run": {
       "post": {
         "tags": [
@@ -820,6 +1009,23 @@
                 }
               ],
               "title": "Snapshot Id"
+            }
+          },
+          {
+            "name": "as_of",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "As Of"
             }
           }
         ],
@@ -1637,6 +1843,78 @@
         ],
         "title": "AssetDetail"
       },
+      "AssetHistory": {
+        "properties": {
+          "by_year": {
+            "items": {
+              "$ref": "#/components/schemas/YearHistory"
+            },
+            "type": "array",
+            "title": "By Year"
+          },
+          "product_cves_total": {
+            "type": "integer",
+            "title": "Product Cves Total"
+          },
+          "product_kev_listed": {
+            "type": "integer",
+            "title": "Product Kev Listed"
+          },
+          "vendor_kev_total": {
+            "type": "integer",
+            "title": "Vendor Kev Total"
+          },
+          "vendor_kev_last_90d": {
+            "type": "integer",
+            "title": "Vendor Kev Last 90D"
+          },
+          "vendor_cve_total": {
+            "type": "integer",
+            "title": "Vendor Cve Total"
+          },
+          "product_kev_total": {
+            "type": "integer",
+            "title": "Product Kev Total"
+          },
+          "first_kev_added": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "First Kev Added"
+          },
+          "last_kev_added": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Kev Added"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "by_year",
+          "product_cves_total",
+          "product_kev_listed",
+          "vendor_kev_total",
+          "vendor_kev_last_90d",
+          "vendor_cve_total",
+          "product_kev_total"
+        ],
+        "title": "AssetHistory",
+        "description": "Real vulnerability history of the assumed product family up to the snapshot."
+      },
       "AssetSimulation": {
         "properties": {
           "asset_id": {
@@ -1661,8 +1939,14 @@
             "type": "string",
             "title": "Criticality"
           },
-          "profile": {
-            "$ref": "#/components/schemas/ProfileAssumption"
+          "product": {
+            "$ref": "#/components/schemas/AssumedProduct"
+          },
+          "matching": {
+            "$ref": "#/components/schemas/MatchSummary"
+          },
+          "history": {
+            "$ref": "#/components/schemas/AssetHistory"
           },
           "candidate_count": {
             "type": "integer",
@@ -1726,7 +2010,9 @@
           "sector",
           "asset_type",
           "criticality",
-          "profile",
+          "product",
+          "matching",
+          "history",
           "candidate_count",
           "known_exploited_count",
           "vulnerability_signal",
@@ -1807,6 +2093,210 @@
         ],
         "title": "AssetVulnerability"
       },
+      "AssumedProduct": {
+        "properties": {
+          "asset_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Asset Id"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "vendor": {
+            "type": "string",
+            "title": "Vendor"
+          },
+          "product": {
+            "type": "string",
+            "title": "Product"
+          },
+          "version": {
+            "type": "string",
+            "title": "Version"
+          },
+          "nvd_vendor": {
+            "type": "string",
+            "title": "Nvd Vendor"
+          },
+          "product_filters": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Product Filters"
+          },
+          "role": {
+            "type": "string",
+            "title": "Role"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "asset_id",
+          "label",
+          "vendor",
+          "product",
+          "version",
+          "nvd_vendor",
+          "product_filters",
+          "role"
+        ],
+        "title": "AssumedProduct",
+        "description": "The real product and version a fictional asset is ASSUMED to run (scenario assumption)."
+      },
+      "Backtest": {
+        "properties": {
+          "as_of": {
+            "type": "string",
+            "format": "date",
+            "title": "As Of"
+          },
+          "split": {
+            "type": "string",
+            "title": "Split"
+          },
+          "held_out": {
+            "type": "boolean",
+            "title": "Held Out"
+          },
+          "window_days": {
+            "type": "integer",
+            "title": "Window Days"
+          },
+          "window_closed": {
+            "type": "boolean",
+            "title": "Window Closed"
+          },
+          "cves_evaluated": {
+            "type": "integer",
+            "title": "Cves Evaluated"
+          },
+          "became_kev": {
+            "type": "integer",
+            "title": "Became Kev"
+          },
+          "groups": {
+            "items": {
+              "$ref": "#/components/schemas/BacktestGroup"
+            },
+            "type": "array",
+            "title": "Groups"
+          },
+          "hits": {
+            "items": {
+              "$ref": "#/components/schemas/BacktestHit"
+            },
+            "type": "array",
+            "title": "Hits"
+          },
+          "note": {
+            "type": "string",
+            "title": "Note"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "as_of",
+          "split",
+          "held_out",
+          "window_days",
+          "window_closed",
+          "cves_evaluated",
+          "became_kev",
+          "groups",
+          "hits",
+          "note"
+        ],
+        "title": "Backtest",
+        "description": "What actually happened after the simulated date, from the real KEV catalog."
+      },
+      "BacktestGroup": {
+        "properties": {
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "cves": {
+            "type": "integer",
+            "title": "Cves"
+          },
+          "hits": {
+            "type": "integer",
+            "title": "Hits"
+          },
+          "hit_rate": {
+            "type": "number",
+            "title": "Hit Rate"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "label",
+          "cves",
+          "hits",
+          "hit_rate"
+        ],
+        "title": "BacktestGroup"
+      },
+      "BacktestHit": {
+        "properties": {
+          "cve_id": {
+            "type": "string",
+            "title": "Cve Id"
+          },
+          "assets": {
+            "items": {
+              "type": "string",
+              "maxLength": 100,
+              "minLength": 1,
+              "pattern": "^[a-zA-Z0-9_.-]+$"
+            },
+            "type": "array",
+            "title": "Assets"
+          },
+          "priority_percentile": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Priority Percentile"
+          },
+          "epss_percentile": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 1.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Epss Percentile"
+          },
+          "kev_added": {
+            "type": "string",
+            "format": "date",
+            "title": "Kev Added"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "cve_id",
+          "assets",
+          "priority_percentile",
+          "epss_percentile",
+          "kev_added"
+        ],
+        "title": "BacktestHit"
+      },
       "CandidateCve": {
         "properties": {
           "cve_id": {
@@ -1885,6 +2375,43 @@
               }
             ],
             "title": "Kev Added"
+          },
+          "applicability": {
+            "type": "string",
+            "enum": [
+              "version_confirmed",
+              "version_unknown"
+            ],
+            "title": "Applicability",
+            "default": "version_confirmed"
+          },
+          "outcome": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "added_to_kev",
+                  "not_added_in_window",
+                  "window_open"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Outcome"
+          },
+          "outcome_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Outcome Date"
           },
           "drivers": {
             "items": {
@@ -2471,6 +2998,46 @@
         ],
         "title": "InfrastructureAsset"
       },
+      "MatchSummary": {
+        "properties": {
+          "version_confirmed": {
+            "type": "integer",
+            "title": "Version Confirmed"
+          },
+          "version_unknown": {
+            "type": "integer",
+            "title": "Version Unknown"
+          },
+          "excluded_by_version": {
+            "type": "integer",
+            "title": "Excluded By Version"
+          },
+          "kev_listed": {
+            "type": "integer",
+            "title": "Kev Listed"
+          },
+          "scored": {
+            "type": "integer",
+            "title": "Scored"
+          },
+          "product_known": {
+            "type": "boolean",
+            "title": "Product Known"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "version_confirmed",
+          "version_unknown",
+          "excluded_by_version",
+          "kev_listed",
+          "scored",
+          "product_known"
+        ],
+        "title": "MatchSummary",
+        "description": "How NVD affected-version ranges relate to the assumed version."
+      },
       "MlMetricRow": {
         "properties": {
           "name": {
@@ -3027,45 +3594,148 @@
         ],
         "title": "PlanStep"
       },
-      "ProfileAssumption": {
+      "PooledBacktest": {
         "properties": {
-          "key": {
+          "first_snapshot": {
             "type": "string",
-            "title": "Key"
+            "format": "date",
+            "title": "First Snapshot"
           },
-          "label": {
+          "last_snapshot": {
             "type": "string",
-            "title": "Label"
+            "format": "date",
+            "title": "Last Snapshot"
           },
-          "vendors": {
+          "snapshots": {
+            "type": "integer",
+            "title": "Snapshots"
+          },
+          "pairs_evaluated": {
+            "type": "integer",
+            "title": "Pairs Evaluated"
+          },
+          "hit_pairs": {
+            "type": "integer",
+            "title": "Hit Pairs"
+          },
+          "distinct_hit_cves": {
+            "type": "integer",
+            "title": "Distinct Hit Cves"
+          },
+          "groups": {
             "items": {
-              "type": "string"
+              "$ref": "#/components/schemas/BacktestGroup"
             },
             "type": "array",
-            "title": "Vendors"
+            "title": "Groups"
           },
-          "product_filters": {
+          "hits": {
             "items": {
-              "type": "string"
+              "$ref": "#/components/schemas/PooledHit"
             },
             "type": "array",
-            "title": "Product Filters"
+            "title": "Hits"
           },
-          "rationale": {
+          "note": {
             "type": "string",
-            "title": "Rationale"
+            "title": "Note"
           }
         },
         "additionalProperties": false,
         "type": "object",
         "required": [
-          "key",
-          "label",
-          "vendors",
-          "product_filters",
-          "rationale"
+          "first_snapshot",
+          "last_snapshot",
+          "snapshots",
+          "pairs_evaluated",
+          "hit_pairs",
+          "distinct_hit_cves",
+          "groups",
+          "hits",
+          "note"
         ],
-        "title": "ProfileAssumption"
+        "title": "PooledBacktest",
+        "description": "Held-out months pooled: how often this city's applicable CVEs later entered real KEV."
+      },
+      "PooledHit": {
+        "properties": {
+          "cve_id": {
+            "type": "string",
+            "title": "Cve Id"
+          },
+          "assets": {
+            "items": {
+              "type": "string",
+              "maxLength": 100,
+              "minLength": 1,
+              "pattern": "^[a-zA-Z0-9_.-]+$"
+            },
+            "type": "array",
+            "title": "Assets"
+          },
+          "first_flagged": {
+            "type": "string",
+            "format": "date",
+            "title": "First Flagged"
+          },
+          "kev_added": {
+            "type": "string",
+            "format": "date",
+            "title": "Kev Added"
+          },
+          "best_priority_percentile": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Best Priority Percentile"
+          },
+          "epss_percentile": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 1.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Epss Percentile"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "cve_id",
+          "assets",
+          "first_flagged",
+          "kev_added",
+          "best_priority_percentile",
+          "epss_percentile"
+        ],
+        "title": "PooledHit"
+      },
+      "ProductMap": {
+        "properties": {
+          "provenance_note": {
+            "type": "string",
+            "title": "Provenance Note"
+          },
+          "products": {
+            "items": {
+              "$ref": "#/components/schemas/AssumedProduct"
+            },
+            "type": "array",
+            "title": "Products"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "provenance_note",
+          "products"
+        ],
+        "title": "ProductMap"
       },
       "Provenance": {
         "properties": {
@@ -3818,6 +4488,24 @@
             "format": "date",
             "title": "As Of"
           },
+          "as_of_split": {
+            "type": "string",
+            "title": "As Of Split"
+          },
+          "held_out": {
+            "type": "boolean",
+            "title": "Held Out"
+          },
+          "backtest": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Backtest"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "kev_released": {
             "type": "string",
             "format": "date",
@@ -3882,6 +4570,8 @@
           "snapshot_id",
           "id",
           "as_of",
+          "as_of_split",
+          "held_out",
           "kev_released",
           "model_version",
           "created_at",
@@ -3918,6 +4608,36 @@
           "seconds"
         ],
         "title": "SimulationStage"
+      },
+      "SnapshotOption": {
+        "properties": {
+          "as_of": {
+            "type": "string",
+            "format": "date",
+            "title": "As Of"
+          },
+          "split": {
+            "type": "string",
+            "title": "Split"
+          },
+          "held_out": {
+            "type": "boolean",
+            "title": "Held Out"
+          },
+          "outcome_window_closed": {
+            "type": "boolean",
+            "title": "Outcome Window Closed"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "as_of",
+          "split",
+          "held_out",
+          "outcome_window_closed"
+        ],
+        "title": "SnapshotOption"
       },
       "StagedActionRequest": {
         "properties": {
@@ -4143,6 +4863,30 @@
         ],
         "title": "WorstScenario",
         "description": "Worst plausible consequence if an attacker pivots along configured routes.\n\nReachability is a configured route, not a successful compromise; the effect at each target\nis an explicit assumption."
+      },
+      "YearHistory": {
+        "properties": {
+          "year": {
+            "type": "integer",
+            "title": "Year"
+          },
+          "cves_published": {
+            "type": "integer",
+            "title": "Cves Published"
+          },
+          "kev_added": {
+            "type": "integer",
+            "title": "Kev Added"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "year",
+          "cves_published",
+          "kev_added"
+        ],
+        "title": "YearHistory"
       }
     }
   }

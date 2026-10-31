@@ -1,6 +1,7 @@
 """Workflow endpoints: ML section, simulation, and the action stage."""
 
 import threading
+from datetime import date
 
 from fastapi import APIRouter, HTTPException, Request
 
@@ -13,12 +14,15 @@ from app.schemas.simulation import (
     MlOverview,
     MlStatus,
     OptimizeRequest,
+    PooledBacktest,
+    ProductMap,
     RemediationPlan,
     SimulationRun,
+    SnapshotOption,
     WhatIfRequest,
     WhatIfResult,
 )
-from app.services import ml_overview, simulation
+from app.services import backtest, ml_overview, simulation
 from app.services.inventory import Inventory
 from ml import inference
 
@@ -68,15 +72,57 @@ def ml_score(cve_id: str):
     return result
 
 
+@router.get("/simulation/snapshots", response_model=list[SnapshotOption], tags=["Simulation"])
+def snapshots():
+    """Dates the simulation can be run as of, with whether the model saw that period."""
+    try:
+        dates = inference.available_snapshots()
+        closed = inference.load_reference().kev_released
+    except inference.ReferenceUnavailable as exc:
+        raise HTTPException(503, f"ML reference data unavailable: {exc}") from exc
+    return [
+        SnapshotOption(
+            as_of=d,
+            split=inference.split_label(d),
+            held_out=inference.is_held_out(d),
+            outcome_window_closed=(closed - d).days >= inference.OUTCOME_HORIZON_DAYS,
+        )
+        for d in reversed(dates)
+    ]
+
+
+@router.get("/simulation/products", response_model=ProductMap, tags=["Simulation"])
+def products():
+    """The real product and version each fictional asset is assumed to run."""
+    return simulation.product_map()
+
+
+@router.get("/simulation/backtest", response_model=PooledBacktest, tags=["Simulation"])
+def pooled_backtest():
+    try:
+        return backtest.pooled_backtest()
+    except inference.ReferenceUnavailable as exc:
+        raise HTTPException(503, f"ML reference data unavailable: {exc}") from exc
+
+
 @router.post("/simulation/run", response_model=SimulationRun, tags=["Simulation"])
-def run(request: Request, scenario_id: str = SCENARIO_ID, snapshot_id: str | None = None):
+def run(
+    request: Request,
+    scenario_id: str = SCENARIO_ID,
+    snapshot_id: str | None = None,
+    as_of: date | None = None,
+):
     inv = Inventory(request.app.state.db_path)
     scenario_id, snapshot_id = inv.context(scenario_id, snapshot_id)
     with _run_lock:
         try:
-            ctx = simulation.run_simulation(request.app.state.db_path, scenario_id, snapshot_id)
+            ctx = simulation.run_simulation(
+                request.app.state.db_path, scenario_id, snapshot_id, as_of
+            )
         except inference.ReferenceUnavailable as exc:
             raise HTTPException(503, f"ML reference data unavailable: {exc}") from exc
+        except ValueError as exc:
+            raise HTTPException(422, str(exc)) from exc
         request.app.state.simulation = ctx
     return ctx.run
 

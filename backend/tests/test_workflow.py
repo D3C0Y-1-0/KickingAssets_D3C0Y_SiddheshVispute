@@ -125,7 +125,7 @@ def test_simulation_scores_every_asset_from_ml_evidence(run, app_client):
     assert run["city_risk"]["status"] == "computed"
     for asset in run["assets"]:
         signal = asset["vulnerability_signal"]
-        assert asset["profile"]["vendors"] and asset["candidate_count"] > 0
+        assert asset["product"]["nvd_vendor"] and asset["candidate_count"] >= 0
         assert 0 <= signal <= 1
         # The published formula reproduces every score from its three visible components.
         expected = round(100 * signal * asset["exposure_factor"] * asset["impact_factor"], 2)

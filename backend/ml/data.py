@@ -331,3 +331,56 @@ def build_panel(
     panel.to_parquet(cache_path, index=False)
     meta_path.write_text(json.dumps(meta, indent=2))
     return panel, meta
+
+
+AFFECTED_COLUMNS = [
+    "cve_id",
+    "vendor",
+    "product",
+    "version",
+    "less_than",
+    "less_than_or_equal",
+    "version_type",
+]
+
+
+def load_affected(directory: Path | None = None, *, use_cache: bool = True) -> pd.DataFrame:
+    """Affected-version ranges per (CVE, vendor, product) from the NVD records.
+
+    Only entries marked ``affected`` are kept. This is the evidence used to decide whether an
+    assumed product version falls inside a CVE's affected range."""
+    directory = directory or CACHE / "nvd"
+    path = CACHE / "derived" / "nvd_affected.parquet"
+    if use_cache and directory == CACHE / "nvd" and path.exists():
+        return pd.read_parquet(path)
+    rows = []
+    for source in sorted(directory.glob("CVE-*.json.xz")):
+        with lzma.open(source, "rt", encoding="utf-8") as handle:
+            for item in json.load(handle)["cve_items"]:
+                if item.get("vulnStatus") == "Rejected":
+                    continue
+                for block in item.get("affected") or []:
+                    for entry in block.get("affectedData") or []:
+                        vendor = normalize_name(entry.get("vendor"))
+                        product = normalize_name(entry.get("product"))
+                        if not vendor or not product:
+                            continue
+                        for version in entry.get("versions") or []:
+                            if version.get("status") != "affected":
+                                continue
+                            rows.append(
+                                (
+                                    item["id"],
+                                    vendor,
+                                    product,
+                                    str(version.get("version") or ""),
+                                    version.get("lessThan"),
+                                    version.get("lessThanOrEqual"),
+                                    version.get("versionType"),
+                                )
+                            )
+    frame = pd.DataFrame(rows, columns=AFFECTED_COLUMNS).drop_duplicates()
+    if directory == CACHE / "nvd":
+        path.parent.mkdir(parents=True, exist_ok=True)
+        frame.to_parquet(path, index=False)
+    return frame

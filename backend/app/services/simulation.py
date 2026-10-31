@@ -7,13 +7,13 @@ published formula in app.engine.risk.
 
 import time
 from dataclasses import dataclass, field
-from datetime import UTC, datetime
+from datetime import UTC, date, datetime, timedelta
 from pathlib import Path
 
 import pandas as pd
 
 from app.db.store import read_documents
-from app.domain.product_profiles import ProductProfile, profile_for
+from app.domain.product_profiles import AssetProduct, load_product_map, product_for
 from app.engine import risk as risk_engine
 from app.engine.pivot import PivotImpact, WorstCase
 from app.schemas.models import (
@@ -29,13 +29,19 @@ from app.schemas.simulation import (
     ActionType,
     AppliedAction,
     AssetDelta,
+    AssetHistory,
     AssetSimulation,
+    AssumedProduct,
+    Backtest,
+    BacktestGroup,
+    BacktestHit,
     CandidateCve,
     CategoryCount,
     Driver,
+    MatchSummary,
     OptimizeRequest,
     PlanStep,
-    ProfileAssumption,
+    ProductMap,
     RemediationPlan,
     ServiceDisruption,
     ServiceRisk,
@@ -48,7 +54,6 @@ from app.schemas.simulation import (
 from ml import inference
 
 TOP_VULNERABILITIES = 8
-CANDIDATE_WINDOW_DAYS = 730
 PATCH_BATCH = 3
 
 ACTIONS: dict[str, ActionDefinition] = {
@@ -109,10 +114,12 @@ ACTIONS: dict[str, ActionDefinition] = {
 @dataclass
 class AssetEvidence:
     asset: InfrastructureAsset
-    profile: ProductProfile
+    product: AssetProduct
+    match: inference.ProductCandidates
     unlisted: pd.DataFrame
     listed: pd.DataFrame
     top: list[CandidateCve]
+    history: AssetHistory
 
 
 @dataclass
@@ -174,23 +181,29 @@ def load_bundle(db_path: Path, scenario_id: str, snapshot_id: str) -> ScenarioBu
     )
 
 
-def _candidate(row: pd.Series, drivers: list[dict] | None, listed: bool, ref) -> CandidateCve:
+def _candidate(row: pd.Series, *, drivers: list[dict] | None, listed: bool, ref) -> CandidateCve:
     def num(value):
         return None if pd.isna(value) else float(value)
 
-    published = row["published"]
+    kev_added = None
     if listed:
-        added = ref.ctx["added"][ref.positions[row["cve_id"]]]
-        kev_added = pd.Timestamp("1970-01-01") + pd.Timedelta(days=int(added))
+        kev_added = inference.EPOCH + timedelta(
+            days=int(ref.ctx["added"][ref.positions[row["cve_id"]]])
+        )
+    outcome = None if listed else row.get("outcome")
+    outcome_date = None if listed or pd.isna(row.get("outcome_date")) else row["outcome_date"]
     return CandidateCve(
         cve_id=row["cve_id"],
-        published=published,
+        published=row["published"],
         status="kev_listed" if listed else "scored",
         ml_score=None if listed else round(float(row["ml_score"]), 6),
         priority_percentile=None if listed else round(float(row["priority_percentile"]), 6),
         epss_percentile=num(row["epss_percentile"]),
         cvss_score=num(row["cvss_score"]),
-        kev_added=kev_added.date() if listed else None,
+        kev_added=kev_added,
+        applicability=row["applicability"],
+        outcome=outcome,
+        outcome_date=outcome_date,
         drivers=[Driver(**d) for d in drivers or []],
     )
 
@@ -198,7 +211,8 @@ def _candidate(row: pd.Series, drivers: list[dict] | None, listed: bool, ref) ->
 def _signal(evidence: AssetEvidence, patched: set[str]) -> float | None:
     total = len(evidence.unlisted) + len(evidence.listed)
     if total == 0:
-        return None
+        # A known product with no applicable CVE is a real zero; an unknown product is missing.
+        return 0.0 if evidence.match.product_known else None
     unlisted = evidence.unlisted[~evidence.unlisted["cve_id"].isin(patched)]
     listed = evidence.listed[~evidence.listed["cve_id"].isin(patched)]
     if len(unlisted) + len(listed) == 0:
@@ -280,24 +294,31 @@ def _asset_risk(
         "provenance": _provenance(now),
     }
     evidence = ctx.evidence[asset.id]
+    label = evidence.product.label
     if state.score is None:
         return RiskAssessment(
             **base,
             status="unavailable",
-            unavailable_reason=f"No candidate CVEs for the assumed product family "
-            f"({evidence.profile.label}) in the last {CANDIDATE_WINDOW_DAYS} days.",
+            unavailable_reason=f"The NVD data has no records for {label}. No data is not the "
+            "same as no vulnerabilities.",
         )
     top = evidence.top[:3]
     worst = state.worst
+    total = len(evidence.unlisted) + len(evidence.listed)
+    signal_text = (
+        f"{len(evidence.unlisted)} not-yet-listed and {len(evidence.listed)} CISA-KEV-listed CVEs "
+        f"have NVD affected ranges that include {label}; the signal is the highest ML priority "
+        "percentile among them (a KEV-listed CVE sets a floor)."
+        if total
+        else f"No CVE in the NVD data has an affected range that includes {label}, so the "
+        "signal is 0 (the product is known to NVD)."
+    )
     factors = [
         RiskFactor(
             name="ML vulnerability signal",
             contribution=state.signal or 0.0,
             evidence_ids=[c.cve_id for c in top],
-            explanation=(
-                f"Highest ML priority percentile among {len(evidence.unlisted)} candidate CVEs "
-                f"for {evidence.profile.label}; {len(evidence.listed)} already CISA-KEV-listed."
-            ),
+            explanation=signal_text,
         ),
         RiskFactor(
             name="Exposure",
@@ -330,7 +351,127 @@ def _asset_risk(
     )
 
 
-def run_simulation(db_path: Path, scenario_id: str, snapshot_id: str) -> RunContext:
+def _backtest(ref, evidence: dict[str, AssetEvidence]) -> Backtest:
+    """Compare what the model flagged at the simulated date with what really entered KEV."""
+    split = inference.split_label(ref.as_of)
+    held_out = inference.is_held_out(ref.as_of)
+    note = (
+        "These CVEs were scored using only information available at the simulated date; the "
+        "outcomes are the real CISA KEV additions that followed."
+    )
+    if not held_out:
+        note += (
+            " This date lies in a period the model was trained or tuned on, so the result is "
+            "optimistic. Use a held-out date (2025 onward) for an honest check."
+        )
+    if not ref.outcome_window_closed:
+        return Backtest(
+            as_of=ref.as_of,
+            split=split,
+            held_out=held_out,
+            window_days=inference.OUTCOME_HORIZON_DAYS,
+            window_closed=False,
+            cves_evaluated=0,
+            became_kev=0,
+            groups=[],
+            hits=[],
+            note="The 180-day outcome window has not closed yet, so there is nothing to check.",
+        )
+    frames, assets_by_cve = [], {}
+    for asset_id, item in evidence.items():
+        if len(item.unlisted):
+            frames.append(
+                item.unlisted[
+                    ["cve_id", "priority_percentile", "epss_percentile", "outcome", "outcome_date"]
+                ]
+            )
+        for cve in item.unlisted["cve_id"]:
+            assets_by_cve.setdefault(cve, []).append(asset_id)
+    if not frames:
+        return Backtest(
+            as_of=ref.as_of,
+            split=split,
+            held_out=held_out,
+            window_days=inference.OUTCOME_HORIZON_DAYS,
+            window_closed=True,
+            cves_evaluated=0,
+            became_kev=0,
+            groups=[],
+            hits=[],
+            note=note,
+        )
+    table = pd.concat(frames).drop_duplicates("cve_id")
+    table["hit"] = table["outcome"] == "added_to_kev"
+
+    def group(label: str, mask) -> BacktestGroup:
+        part = table[mask]
+        return BacktestGroup(
+            label=label,
+            cves=int(len(part)),
+            hits=int(part["hit"].sum()),
+            hit_rate=round(float(part["hit"].mean()), 4) if len(part) else 0.0,
+        )
+
+    ml_top = table["priority_percentile"] >= 0.9
+    epss_top = table["epss_percentile"].fillna(0) >= 0.9
+    groups = [
+        group("All version-matched candidates", table["hit"].notna()),
+        group("ML top 10%", ml_top),
+        group("ML other 90%", ~ml_top),
+        group("EPSS top 10%", epss_top),
+        group("EPSS other 90%", ~epss_top),
+    ]
+    hits = [
+        BacktestHit(
+            cve_id=row.cve_id,
+            assets=sorted(assets_by_cve[row.cve_id]),
+            priority_percentile=round(float(row.priority_percentile), 4),
+            epss_percentile=None
+            if pd.isna(row.epss_percentile)
+            else round(float(row.epss_percentile), 4),
+            kev_added=row.outcome_date,
+        )
+        for row in table[table["hit"]]
+        .sort_values("priority_percentile", ascending=False)
+        .itertuples()
+    ][:15]
+    return Backtest(
+        as_of=ref.as_of,
+        split=split,
+        held_out=held_out,
+        window_days=inference.OUTCOME_HORIZON_DAYS,
+        window_closed=True,
+        cves_evaluated=int(len(table)),
+        became_kev=int(table["hit"].sum()),
+        groups=groups,
+        hits=hits,
+        note=note,
+    )
+
+
+def product_map() -> ProductMap:
+    products, provenance = load_product_map()
+    return ProductMap(
+        provenance_note=provenance["notes"],
+        products=[
+            AssumedProduct(
+                asset_id=p.asset_id,
+                label=p.label,
+                vendor=p.vendor,
+                product=p.product,
+                version=p.version,
+                nvd_vendor=p.nvd_vendor,
+                product_filters=list(p.nvd_product_contains),
+                role=p.role,
+            )
+            for _, p in sorted(products.items())
+        ],
+    )
+
+
+def run_simulation(
+    db_path: Path, scenario_id: str, snapshot_id: str, as_of: date | None = None
+) -> RunContext:
     stages: list[SimulationStage] = []
     clock = time.perf_counter()
 
@@ -345,50 +486,62 @@ def run_simulation(db_path: Path, scenario_id: str, snapshot_id: str) -> RunCont
         "Load inventory", f"{len(bundle.assets)} fictional assets, {len(bundle.services)} services"
     )
 
-    ref = inference.load_reference()
+    ref = inference.load_reference(as_of)
     stage(
         "Load reference data and model",
         f"KEV, NVD and EPSS as of {ref.as_of}; model {inference.MODEL_VERSION}",
     )
 
+    cache: dict[tuple, tuple] = {}
     evidence: dict[str, AssetEvidence] = {}
-    by_profile: dict[str, tuple[pd.DataFrame, pd.DataFrame]] = {}
-    total_candidates = 0
+    total_candidates = confirmed_total = 0
     for asset in sorted(bundle.assets, key=lambda a: a.id):
-        profile = profile_for(asset.sector.value, asset.asset_type)
-        if profile.key not in by_profile:
-            unlisted_pos, listed_pos = ref.candidates(
-                list(profile.vendors),
-                list(profile.product_contains),
-                list(profile.product_excludes),
-                CANDIDATE_WINDOW_DAYS,
+        product = product_for(asset.id)
+        key = (product.nvd_vendor, product.nvd_product_contains, product.version)
+        if key not in cache:
+            match = ref.match_product(
+                product.nvd_vendor, list(product.nvd_product_contains), product.version
             )
-            by_profile[profile.key] = (
-                ref.score_positions(unlisted_pos),
-                ref.frame(listed_pos),
+            unlisted = ref.score_positions(match.unlisted)
+            unlisted["applicability"] = [match.applicability[c] for c in unlisted["cve_id"]]
+            outcomes = ref.outcomes(match.unlisted)
+            unlisted["outcome"] = [o for o, _ in outcomes]
+            unlisted["outcome_date"] = [d for _, d in outcomes]
+            listed = ref.frame(match.listed)
+            listed["applicability"] = [match.applicability[c] for c in listed["cve_id"]]
+            history = AssetHistory(
+                **ref.history(
+                    product.nvd_vendor, list(product.nvd_product_contains), match.product_positions
+                )
             )
-        unlisted, listed = by_profile[profile.key]
+            cache[key] = (match, unlisted, listed, history)
+        match, unlisted, listed, history = cache[key]
         total_candidates += len(unlisted) + len(listed)
-        evidence[asset.id] = AssetEvidence(asset, profile, unlisted, listed, [])
+        confirmed_total += match.confirmed_total
+        evidence[asset.id] = AssetEvidence(asset, product, match, unlisted, listed, [], history)
     stage(
-        "Fetch candidate CVEs and score with the ML model",
-        f"{len(by_profile)} product families; {total_candidates:,} candidate CVE-asset pairs "
-        "scored live",
+        "Match real products to NVD affected-version ranges and score with the ML model",
+        f"{len(cache)} distinct real product versions; {total_candidates:,} applicable "
+        "CVE-asset pairs scored live",
     )
 
-    top_by_profile: dict[str, list[CandidateCve]] = {}
-    for key, (unlisted, listed) in by_profile.items():
+    top_by_key: dict[tuple, list[CandidateCve]] = {}
+    for key, (_match, unlisted, listed, _history) in cache.items():
         newest_listed = listed.sort_values("published", ascending=False).head(3)
         ranked = unlisted.sort_values("ml_score", ascending=False).head(TOP_VULNERABILITIES)
         drivers = ref.drivers(ranked.reset_index(drop=True), top=3)
-        items = [_candidate(r, None, True, ref) for _, r in newest_listed.iterrows()]
+        items = [
+            _candidate(r, drivers=None, listed=True, ref=ref) for _, r in newest_listed.iterrows()
+        ]
         items += [
-            _candidate(r, d, False, ref)
+            _candidate(r, drivers=d, listed=False, ref=ref)
             for (_, r), d in zip(ranked.iterrows(), drivers, strict=True)
         ]
-        top_by_profile[key] = items[:TOP_VULNERABILITIES]
+        top_by_key[key] = items[:TOP_VULNERABILITIES]
     for item in evidence.values():
-        item.top = top_by_profile[item.profile.key]
+        item.top = top_by_key[
+            (item.product.nvd_vendor, item.product.nvd_product_contains, item.product.version)
+        ]
     stage("Explain top candidates", "Exact TreeSHAP drivers for the highest-ranked CVEs")
 
     pivot = PivotImpact(bundle)
@@ -400,13 +553,23 @@ def run_simulation(db_path: Path, scenario_id: str, snapshot_id: str) -> RunCont
         "what that does to services",
     )
 
+    backtest = _backtest(ref, evidence)
+    stage(
+        "Backtest against real KEV outcomes",
+        f"{backtest.cves_evaluated} CVEs evaluated; {backtest.became_kev} later entered KEV"
+        if backtest.window_closed
+        else "Outcome window not closed for this date",
+    )
+
     now = datetime.now(UTC)
+    names = {a.id: a.name for a in bundle.assets}
+    service_names = {s.id: s.name for s in bundle.services}
     assets_out = []
     for asset in bundle.assets:
         state = states[asset.id]
         worst = state.worst
-        names = {a.id: a.name for a in bundle.assets}
-        service_names = {s.id: s.name for s in bundle.services}
+        item = evidence[asset.id]
+        match = item.match
         assets_out.append(
             AssetSimulation(
                 asset_id=asset.id,
@@ -414,20 +577,29 @@ def run_simulation(db_path: Path, scenario_id: str, snapshot_id: str) -> RunCont
                 sector=asset.sector,
                 asset_type=asset.asset_type,
                 criticality=asset.criticality,
-                profile=ProfileAssumption(
-                    key=evidence[asset.id].profile.key,
-                    label=evidence[asset.id].profile.label,
-                    vendors=list(evidence[asset.id].profile.vendors),
-                    product_filters=[
-                        *evidence[asset.id].profile.product_contains,
-                        *[f"not {x}" for x in evidence[asset.id].profile.product_excludes],
-                    ],
-                    rationale=evidence[asset.id].profile.rationale,
+                product=AssumedProduct(
+                    asset_id=asset.id,
+                    label=item.product.label,
+                    vendor=item.product.vendor,
+                    product=item.product.product,
+                    version=item.product.version,
+                    nvd_vendor=item.product.nvd_vendor,
+                    product_filters=list(item.product.nvd_product_contains),
+                    role=item.product.role,
                 ),
-                candidate_count=len(evidence[asset.id].unlisted) + len(evidence[asset.id].listed),
-                known_exploited_count=len(evidence[asset.id].listed),
+                matching=MatchSummary(
+                    version_confirmed=match.confirmed_total,
+                    version_unknown=match.unknown_total,
+                    excluded_by_version=match.excluded_total,
+                    kev_listed=len(item.listed),
+                    scored=len(item.unlisted),
+                    product_known=match.product_known,
+                ),
+                history=item.history,
+                candidate_count=len(item.unlisted) + len(item.listed),
+                known_exploited_count=len(item.listed),
                 vulnerability_signal=state.signal,
-                top_vulnerabilities=evidence[asset.id].top,
+                top_vulnerabilities=item.top,
                 exposure_factor=state.exposure,
                 impact_factor=risk_engine.impact_factor(state.impact),
                 worst_scenario=None
@@ -450,7 +622,10 @@ def run_simulation(db_path: Path, scenario_id: str, snapshot_id: str) -> RunCont
                 risk=_asset_risk(ctx, asset, state, now),
             )
         )
-    ordered = sorted(assets_out, key=lambda a: (-(a.risk.score or -1.0), a.asset_id))
+    ordered = sorted(
+        assets_out,
+        key=lambda a: (-(a.risk.score if a.risk.score is not None else -1.0), a.asset_id),
+    )
     index = city_index(ctx, states)
     counts = {c: 0 for c in ("critical", "high", "medium", "low")}
     for a in assets_out:
@@ -485,8 +660,11 @@ def run_simulation(db_path: Path, scenario_id: str, snapshot_id: str) -> RunCont
     run = SimulationRun(
         scenario_id=scenario_id,
         snapshot_id=snapshot_id,
-        id=f"run-{now:%Y%m%d-%H%M%S}",
+        id=f"run-{now:%Y%m%d-%H%M%S}-{ref.as_of:%Y%m}",
         as_of=ref.as_of,
+        as_of_split=inference.split_label(ref.as_of),
+        held_out=inference.is_held_out(ref.as_of),
+        backtest=backtest,
         kev_released=ref.kev_released,
         model_version=inference.MODEL_VERSION,
         created_at=now,
@@ -496,15 +674,18 @@ def run_simulation(db_path: Path, scenario_id: str, snapshot_id: str) -> RunCont
         assets=ordered,
         services=_service_risks(ctx, Mods()),
         assumptions=[
-            "Assets are fictional. Each is assumed to run a real product family chosen by sector "
-            "and role (see each asset's profile); real CVEs for that family are candidate "
-            "findings, versions are not matched and nothing is confirmed.",
-            f"Candidates are CVEs published {CANDIDATE_WINDOW_DAYS} to 30 days before "
-            f"{ref.as_of}. CVEs already listed in CISA KEV are shown as known exploited and set "
-            "a floor on the vulnerability signal; the others are scored by the ML model.",
-            "The ML score is a KEV-prioritisation signal (resemblance to CVEs later added to "
-            "KEV), converted to a percentile against all unlisted CVEs at the snapshot. It is "
-            "not the probability that an asset is attacked.",
+            "Assets are fictional. Each is ASSUMED to run a specific real product and version "
+            "(see the product map); that assumption is not a scan result.",
+            "A CVE applies when the NVD affected-version ranges include the assumed version "
+            "(version_confirmed) or the product matches but no range can be evaluated "
+            "(version_unknown, lower confidence). CVEs whose ranges exclude the version are not "
+            f"counted. Candidates are CVEs published at least 30 days before {ref.as_of}.",
+            "CVEs already listed in CISA KEV at that date are shown as known exploited and set a "
+            "floor on the vulnerability signal; the others are scored by the ML model using "
+            "only information available at that date.",
+            "The ML score is a KEV-prioritisation signal converted to a percentile against all "
+            "not-yet-listed CVEs at the snapshot. It is not the probability that an asset is "
+            "attacked.",
             "Impact is conditional: reachability gives configured routes, not compromise; the "
             "effect at each target is an explicit assumption; results are an upper bound with "
             "respect to backups.",

@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { useMutation } from '@tanstack/react-query'
-import { BrainCircuit, CircleAlert, Search } from 'lucide-react'
+import { BrainCircuit, CircleAlert, LoaderCircle, Search } from 'lucide-react'
 import { api } from '../../api/client'
-import { useMlOverview } from '../../hooks/queries'
+import { useMlOverview, usePooledBacktest } from '../../hooks/queries'
 import { EmptyState, PageHeading, Panel, QueryState } from '../../components/ui'
 import { percent } from '../../lib/risk'
 
@@ -96,6 +96,74 @@ function CveScorer() {
               </>
             )}
           </div>
+        )}
+      </div>
+    </Panel>
+  )
+}
+
+function PooledBacktestPanel() {
+  const query = usePooledBacktest()
+  const b = query.data
+  return (
+    <Panel
+      title="Backtest on this city's real products (held-out months)"
+      aside={<span className="badge ok">NEVER USED TO TRAIN OR TUNE</span>}
+      className="spaced-panel"
+    >
+      <div className="panel-padding">
+        {query.isPending && (
+          <p>
+            <LoaderCircle className="spin" size={16} /> Scoring every month from January 2025 with
+            only the information available then (about 20 seconds the first time)…
+          </p>
+        )}
+        {query.isError && <p className="run-error">{query.error.message}</p>}
+        {b && (
+          <>
+            <p>
+              For {b.snapshots} monthly snapshots ({b.first_snapshot} to {b.last_snapshot}), every
+              CVE that applies to the assumed product versions was scored using only what was known
+              that month. Of {b.pairs_evaluated.toLocaleString()} (CVE, month) pairs,{' '}
+              <strong>{b.hit_pairs}</strong> later entered CISA KEV within 180 days, from{' '}
+              <strong>{b.distinct_hit_cves}</strong> distinct CVEs.
+            </p>
+            <div className="table-scroll">
+              <table className="metric-table">
+                <thead>
+                  <tr>
+                    <th>GROUP</th>
+                    <th>PAIRS</th>
+                    <th>LATER IN KEV</th>
+                    <th>RATE</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {b.groups.map((g) => (
+                    <tr key={g.label}>
+                      <td>{g.label}</td>
+                      <td className="mono">{g.cves.toLocaleString()}</td>
+                      <td className="mono">{g.hits}</td>
+                      <td className="mono">{percent(g.hit_rate, 3)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <ul className="list-plain">
+              {b.hits.map((h) => (
+                <li key={h.cve_id}>
+                  <span className="mono">{h.cve_id}</span> on {h.assets.join(', ')}: first flagged{' '}
+                  {h.first_flagged} (model top {(100 - h.best_priority_percentile * 100).toFixed(1)}
+                  %), entered KEV {h.kev_added}
+                </li>
+              ))}
+            </ul>
+            <div className="callout warn">
+              <strong>Read with care.</strong> Only {b.distinct_hit_cves} distinct CVEs are
+              involved, so this is an anecdote, not a statistical proof. {b.note}
+            </div>
+          </>
         )}
       </div>
     </Panel>
@@ -340,6 +408,7 @@ export default function MlLab() {
           </div>
         </Panel>
       </div>
+      <PooledBacktestPanel />
       <CveScorer />
       {features.length === 0 && <EmptyState title="No model card found">Run training.</EmptyState>}
     </>

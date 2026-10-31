@@ -1,14 +1,17 @@
 import type { ReactNode } from 'react'
 import { CircleAlert, LoaderCircle, Play, RotateCw } from 'lucide-react'
-import { useRunSimulation } from '../hooks/queries'
+import { useRunSimulation, useSimulationDates } from '../hooks/queries'
+import type { SimulationRun } from '../api/client'
 import { EmptyState } from './ui'
 
 export function RunSimulationButton({
   label,
   variant = 'primary',
+  asOf,
 }: {
   label?: string
   variant?: 'primary' | 'secondary'
+  asOf?: string
 }) {
   const run = useRunSimulation()
   return (
@@ -16,7 +19,7 @@ export function RunSimulationButton({
       <button
         className={`button ${variant} simulation-run`}
         disabled={run.isPending}
-        onClick={() => run.mutate()}
+        onClick={() => run.mutate(asOf)}
       >
         {run.isPending ? (
           <LoaderCircle className="spin" size={16} />
@@ -56,9 +59,49 @@ export function ProvenanceNotice() {
       <CircleAlert size={16} />
       <span>
         Assets and their configuration are fictional scenario assumptions. CVEs, EPSS and KEV data
-        are real; each asset is assumed to run a real product family, so CVEs are candidate
-        findings, not confirmed. The risk index is relative, not a probability of an incident.
+        are real. Each asset is assumed to run a specific real product and version; NVD
+        affected-version ranges decide which CVEs apply. Nothing is a scan result, and the risk
+        index is relative, not a probability of an incident.
       </span>
+    </div>
+  )
+}
+
+/** Pick the date to simulate as of. Past dates are a time-travel backtest. */
+export function AsOfSelect({
+  value,
+  onChange,
+}: {
+  value: string
+  onChange: (value: string) => void
+}) {
+  const dates = useSimulationDates()
+  return (
+    <label className="asof-select">
+      <span className="subtle-label">AS OF</span>
+      <select
+        aria-label="Simulate as of date"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        disabled={!dates.data}
+      >
+        <option value="">Latest data</option>
+        {dates.data?.map((d) => (
+          <option key={d.as_of} value={d.as_of}>
+            {d.as_of} · {d.held_out ? 'held-out' : 'not held-out'}
+          </option>
+        ))}
+      </select>
+    </label>
+  )
+}
+
+export function AsOfBanner({ run }: { run: SimulationRun }) {
+  return (
+    <div className={`callout ${run.held_out ? '' : 'warn'}`}>
+      <strong>Simulated as of {run.as_of}.</strong> Only information available on that date is used:
+      CVEs published since did not exist, and KEV additions after it are unknown to the model.{' '}
+      {run.as_of_split.charAt(0).toUpperCase() + run.as_of_split.slice(1)}.
     </div>
   )
 }

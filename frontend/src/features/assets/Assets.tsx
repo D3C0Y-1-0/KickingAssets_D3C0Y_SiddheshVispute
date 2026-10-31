@@ -8,7 +8,7 @@ import {
   SlidersHorizontal,
 } from 'lucide-react'
 import { useSearchParams } from 'react-router-dom'
-import { useAssets, useLatestRun } from '../../hooks/queries'
+import { useAssets, useLatestRun, useProducts } from '../../hooks/queries'
 import { AssetDrawer } from '../../components/AssetDrawer'
 import {
   EmptyState,
@@ -25,6 +25,8 @@ type SortKey = 'name' | 'sector' | 'asset_type' | 'criticality' | 'exposure'
 export default function Assets() {
   const query = useAssets()
   const latest = useLatestRun()
+  const products = useProducts()
+  const productById = new Map((products.data?.products ?? []).map((p) => [p.asset_id, p]))
   const riskById = new Map((latest.data?.assets ?? []).map((a) => [a.asset_id, a.risk]))
   const [params, setParams] = useSearchParams()
   const search = params.get('q') ?? ''
@@ -139,6 +141,7 @@ export default function Assets() {
                     {header('name', 'ASSET / PRODUCT')}
                     {header('sector', 'SECTOR')}
                     {header('asset_type', 'TYPE')}
+                    <th>ASSUMED REAL PRODUCT</th>
                     {header('criticality', 'CRITICALITY')}
                     {header('exposure', 'EXPOSURE')}
                     <th>ASSESSMENT</th>
@@ -162,6 +165,10 @@ export default function Assets() {
                         <SectorBadge sector={a.sector} />
                       </td>
                       <td className="capitalize">{a.asset_type}</td>
+                      <td className="small">
+                        {productById.get(a.id)?.label ?? '—'}
+                        <small className="muted">{productById.get(a.id)?.role}</small>
+                      </td>
                       <td>
                         <span className={`criticality ${a.criticality}`}>{a.criticality}</span>
                       </td>

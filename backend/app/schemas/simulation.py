@@ -26,12 +26,48 @@ class Driver(Contract):
     contribution: float
 
 
-class ProfileAssumption(Contract):
-    key: str
+class AssumedProduct(Contract):
+    """The real product and version a fictional asset is ASSUMED to run (scenario assumption)."""
+
+    asset_id: Id
     label: str
-    vendors: list[str]
+    vendor: str
+    product: str
+    version: str
+    nvd_vendor: str
     product_filters: list[str]
-    rationale: str
+    role: str
+
+
+class MatchSummary(Contract):
+    """How NVD affected-version ranges relate to the assumed version."""
+
+    version_confirmed: int
+    version_unknown: int
+    excluded_by_version: int
+    kev_listed: int
+    scored: int
+    product_known: bool
+
+
+class YearHistory(Contract):
+    year: int
+    cves_published: int
+    kev_added: int
+
+
+class AssetHistory(Contract):
+    """Real vulnerability history of the assumed product family up to the snapshot."""
+
+    by_year: list[YearHistory]
+    product_cves_total: int
+    product_kev_listed: int
+    vendor_kev_total: int
+    vendor_kev_last_90d: int
+    vendor_cve_total: int
+    product_kev_total: int
+    first_kev_added: date | None = None
+    last_kev_added: date | None = None
 
 
 class CandidateCve(Contract):
@@ -43,6 +79,9 @@ class CandidateCve(Contract):
     epss_percentile: Fraction | None = None
     cvss_score: float | None = None
     kev_added: date | None = None
+    applicability: Literal["version_confirmed", "version_unknown"] = "version_confirmed"
+    outcome: Literal["added_to_kev", "not_added_in_window", "window_open"] | None = None
+    outcome_date: date | None = None
     drivers: list[Driver] = Field(default_factory=list)
 
 
@@ -72,7 +111,9 @@ class AssetSimulation(Contract):
     sector: Sector
     asset_type: str
     criticality: str
-    profile: ProfileAssumption
+    product: AssumedProduct
+    matching: MatchSummary
+    history: AssetHistory
     candidate_count: int
     known_exploited_count: int
     vulnerability_signal: Fraction | None
@@ -104,10 +145,50 @@ class CategoryCount(Contract):
     count: int
 
 
+class BacktestGroup(Contract):
+    label: str
+    cves: int
+    hits: int
+    hit_rate: float
+
+
+class BacktestHit(Contract):
+    cve_id: str
+    assets: list[Id]
+    priority_percentile: Fraction
+    epss_percentile: Fraction | None
+    kev_added: date
+
+
+class Backtest(Contract):
+    """What actually happened after the simulated date, from the real KEV catalog."""
+
+    as_of: date
+    split: str
+    held_out: bool
+    window_days: int
+    window_closed: bool
+    cves_evaluated: int
+    became_kev: int
+    groups: list[BacktestGroup]
+    hits: list[BacktestHit]
+    note: str
+
+
+class SnapshotOption(Contract):
+    as_of: date
+    split: str
+    held_out: bool
+    outcome_window_closed: bool
+
+
 class SimulationRun(Context):
     id: str
     state: Literal["current"] = "current"
     as_of: date
+    as_of_split: str
+    held_out: bool
+    backtest: Backtest | None = None
     kev_released: date
     model_version: str
     created_at: AwareDatetime
@@ -285,3 +366,31 @@ class CveScore(Contract):
     cvss_score: float | None = None
     kev_added: date | None = None
     drivers: list[Driver] = Field(default_factory=list)
+
+
+class ProductMap(Contract):
+    provenance_note: str
+    products: list[AssumedProduct]
+
+
+class PooledHit(Contract):
+    cve_id: str
+    assets: list[Id]
+    first_flagged: date
+    kev_added: date
+    best_priority_percentile: Fraction
+    epss_percentile: Fraction | None
+
+
+class PooledBacktest(Contract):
+    """Held-out months pooled: how often this city's applicable CVEs later entered real KEV."""
+
+    first_snapshot: date
+    last_snapshot: date
+    snapshots: int
+    pairs_evaluated: int
+    hit_pairs: int
+    distinct_hit_cves: int
+    groups: list[BacktestGroup]
+    hits: list[PooledHit]
+    note: str

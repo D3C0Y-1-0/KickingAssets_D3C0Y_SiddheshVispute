@@ -77,7 +77,13 @@ export const api = {
   mlOverview: (signal?: AbortSignal) => get<Models['MlOverview']>('/ml/overview', {}, signal),
   mlScore: (cve_id: string) => get<Models['CveScore']>('/ml/score', { cve_id }),
 
-  runSimulation: (context: Context) => post<SimulationRun>('/simulation/run', undefined, context),
+  runSimulation: (context: Context, asOf?: string) =>
+    post<SimulationRun>('/simulation/run', undefined, { ...context, as_of: asOf }),
+  simulationDates: (signal?: AbortSignal) =>
+    get<Models['SnapshotOption'][]>('/simulation/snapshots', {}, signal),
+  products: (signal?: AbortSignal) => get<Models['ProductMap']>('/simulation/products', {}, signal),
+  pooledBacktest: (signal?: AbortSignal) =>
+    get<Models['PooledBacktest']>('/simulation/backtest', {}, signal),
   latestRun: async (signal?: AbortSignal): Promise<SimulationRun | null> => {
     try {
       return await get<SimulationRun>('/simulation/latest', {}, signal)

@@ -174,6 +174,63 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/simulation/snapshots": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Snapshots
+         * @description Dates the simulation can be run as of, with whether the model saw that period.
+         */
+        get: operations["snapshots_api_v1_simulation_snapshots_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/simulation/products": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Products
+         * @description The real product and version each fictional asset is assumed to run.
+         */
+        get: operations["products_api_v1_simulation_products_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/simulation/backtest": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Pooled Backtest */
+        get: operations["pooled_backtest_api_v1_simulation_backtest_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/simulation/run": {
         parameters: {
             query?: never;
@@ -423,6 +480,30 @@ export interface components {
             observations: components["schemas"]["SecurityObservation"][];
             risk: components["schemas"]["RiskAssessment"];
         };
+        /**
+         * AssetHistory
+         * @description Real vulnerability history of the assumed product family up to the snapshot.
+         */
+        AssetHistory: {
+            /** By Year */
+            by_year: components["schemas"]["YearHistory"][];
+            /** Product Cves Total */
+            product_cves_total: number;
+            /** Product Kev Listed */
+            product_kev_listed: number;
+            /** Vendor Kev Total */
+            vendor_kev_total: number;
+            /** Vendor Kev Last 90D */
+            vendor_kev_last_90d: number;
+            /** Vendor Cve Total */
+            vendor_cve_total: number;
+            /** Product Kev Total */
+            product_kev_total: number;
+            /** First Kev Added */
+            first_kev_added?: string | null;
+            /** Last Kev Added */
+            last_kev_added?: string | null;
+        };
         /** AssetSimulation */
         AssetSimulation: {
             /** Asset Id */
@@ -434,7 +515,9 @@ export interface components {
             asset_type: string;
             /** Criticality */
             criticality: string;
-            profile: components["schemas"]["ProfileAssumption"];
+            product: components["schemas"]["AssumedProduct"];
+            matching: components["schemas"]["MatchSummary"];
+            history: components["schemas"]["AssetHistory"];
             /** Candidate Count */
             candidate_count: number;
             /** Known Exploited Count */
@@ -471,6 +554,84 @@ export interface components {
             rationale: string;
             provenance: components["schemas"]["Provenance"];
         };
+        /**
+         * AssumedProduct
+         * @description The real product and version a fictional asset is ASSUMED to run (scenario assumption).
+         */
+        AssumedProduct: {
+            /** Asset Id */
+            asset_id: string;
+            /** Label */
+            label: string;
+            /** Vendor */
+            vendor: string;
+            /** Product */
+            product: string;
+            /** Version */
+            version: string;
+            /** Nvd Vendor */
+            nvd_vendor: string;
+            /** Product Filters */
+            product_filters: string[];
+            /** Role */
+            role: string;
+        };
+        /**
+         * Backtest
+         * @description What actually happened after the simulated date, from the real KEV catalog.
+         */
+        Backtest: {
+            /**
+             * As Of
+             * Format: date
+             */
+            as_of: string;
+            /** Split */
+            split: string;
+            /** Held Out */
+            held_out: boolean;
+            /** Window Days */
+            window_days: number;
+            /** Window Closed */
+            window_closed: boolean;
+            /** Cves Evaluated */
+            cves_evaluated: number;
+            /** Became Kev */
+            became_kev: number;
+            /** Groups */
+            groups: components["schemas"]["BacktestGroup"][];
+            /** Hits */
+            hits: components["schemas"]["BacktestHit"][];
+            /** Note */
+            note: string;
+        };
+        /** BacktestGroup */
+        BacktestGroup: {
+            /** Label */
+            label: string;
+            /** Cves */
+            cves: number;
+            /** Hits */
+            hits: number;
+            /** Hit Rate */
+            hit_rate: number;
+        };
+        /** BacktestHit */
+        BacktestHit: {
+            /** Cve Id */
+            cve_id: string;
+            /** Assets */
+            assets: string[];
+            /** Priority Percentile */
+            priority_percentile: number;
+            /** Epss Percentile */
+            epss_percentile: number | null;
+            /**
+             * Kev Added
+             * Format: date
+             */
+            kev_added: string;
+        };
         /** CandidateCve */
         CandidateCve: {
             /** Cve Id */
@@ -495,6 +656,16 @@ export interface components {
             cvss_score?: number | null;
             /** Kev Added */
             kev_added?: string | null;
+            /**
+             * Applicability
+             * @default version_confirmed
+             * @enum {string}
+             */
+            applicability: "version_confirmed" | "version_unknown";
+            /** Outcome */
+            outcome?: ("added_to_kev" | "not_added_in_window" | "window_open") | null;
+            /** Outcome Date */
+            outcome_date?: string | null;
             /** Drivers */
             drivers?: components["schemas"]["Driver"][];
         };
@@ -692,6 +863,24 @@ export interface components {
             description: string;
             security: components["schemas"]["SecurityConfiguration"];
             provenance: components["schemas"]["Provenance"];
+        };
+        /**
+         * MatchSummary
+         * @description How NVD affected-version ranges relate to the assumed version.
+         */
+        MatchSummary: {
+            /** Version Confirmed */
+            version_confirmed: number;
+            /** Version Unknown */
+            version_unknown: number;
+            /** Excluded By Version */
+            excluded_by_version: number;
+            /** Kev Listed */
+            kev_listed: number;
+            /** Scored */
+            scored: number;
+            /** Product Known */
+            product_known: boolean;
         };
         /** MlMetricRow */
         MlMetricRow: {
@@ -891,18 +1080,63 @@ export interface components {
             /** Operational Disruption */
             operational_disruption: string;
         };
-        /** ProfileAssumption */
-        ProfileAssumption: {
-            /** Key */
-            key: string;
-            /** Label */
-            label: string;
-            /** Vendors */
-            vendors: string[];
-            /** Product Filters */
-            product_filters: string[];
-            /** Rationale */
-            rationale: string;
+        /**
+         * PooledBacktest
+         * @description Held-out months pooled: how often this city's applicable CVEs later entered real KEV.
+         */
+        PooledBacktest: {
+            /**
+             * First Snapshot
+             * Format: date
+             */
+            first_snapshot: string;
+            /**
+             * Last Snapshot
+             * Format: date
+             */
+            last_snapshot: string;
+            /** Snapshots */
+            snapshots: number;
+            /** Pairs Evaluated */
+            pairs_evaluated: number;
+            /** Hit Pairs */
+            hit_pairs: number;
+            /** Distinct Hit Cves */
+            distinct_hit_cves: number;
+            /** Groups */
+            groups: components["schemas"]["BacktestGroup"][];
+            /** Hits */
+            hits: components["schemas"]["PooledHit"][];
+            /** Note */
+            note: string;
+        };
+        /** PooledHit */
+        PooledHit: {
+            /** Cve Id */
+            cve_id: string;
+            /** Assets */
+            assets: string[];
+            /**
+             * First Flagged
+             * Format: date
+             */
+            first_flagged: string;
+            /**
+             * Kev Added
+             * Format: date
+             */
+            kev_added: string;
+            /** Best Priority Percentile */
+            best_priority_percentile: number;
+            /** Epss Percentile */
+            epss_percentile: number | null;
+        };
+        /** ProductMap */
+        ProductMap: {
+            /** Provenance Note */
+            provenance_note: string;
+            /** Products */
+            products: components["schemas"]["AssumedProduct"][];
         };
         /** Provenance */
         Provenance: {
@@ -1149,6 +1383,11 @@ export interface components {
              * Format: date
              */
             as_of: string;
+            /** As Of Split */
+            as_of_split: string;
+            /** Held Out */
+            held_out: boolean;
+            backtest?: components["schemas"]["Backtest"] | null;
             /**
              * Kev Released
              * Format: date
@@ -1183,6 +1422,20 @@ export interface components {
             detail: string;
             /** Seconds */
             seconds: number;
+        };
+        /** SnapshotOption */
+        SnapshotOption: {
+            /**
+             * As Of
+             * Format: date
+             */
+            as_of: string;
+            /** Split */
+            split: string;
+            /** Held Out */
+            held_out: boolean;
+            /** Outcome Window Closed */
+            outcome_window_closed: boolean;
         };
         /** StagedActionRequest */
         StagedActionRequest: {
@@ -1263,6 +1516,15 @@ export interface components {
             max_disruption_fraction: number;
             /** Services */
             services: components["schemas"]["ServiceDisruption"][];
+        };
+        /** YearHistory */
+        YearHistory: {
+            /** Year */
+            year: number;
+            /** Cves Published */
+            cves_published: number;
+            /** Kev Added */
+            kev_added: number;
         };
     };
     responses: never;
@@ -1792,11 +2054,180 @@ export interface operations {
             };
         };
     };
+    snapshots_api_v1_simulation_snapshots_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SnapshotOption"][];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Unprocessable Content */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    products_api_v1_simulation_products_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProductMap"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Unprocessable Content */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    pooled_backtest_api_v1_simulation_backtest_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PooledBacktest"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Unprocessable Content */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
     run_api_v1_simulation_run_post: {
         parameters: {
             query?: {
                 scenario_id?: string;
                 snapshot_id?: string | null;
+                as_of?: string | null;
             };
             header?: never;
             path?: never;

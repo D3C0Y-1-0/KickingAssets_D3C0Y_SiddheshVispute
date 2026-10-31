@@ -21,3 +21,11 @@ cd backend; ..\.venv\Scripts\python.exe -m uvicorn app.main:app --host 127.0.0.1
 - The model is statistically tied with the EPSS baseline (see the ML Lab).
 - The simulation result is held in memory for the running server process.
 - Effort hours per action are planning assumptions.
+
+## Real-data link (prototype v0.3)
+
+- **Real product per asset.** `data/scenarios/aurora-product-map.json` assumes a specific real product and version for each of the 30 fictional assets (for example Fortinet FortiOS 7.0.12, Siemens S7-1500 firmware 2.9.2, Windows Server 2019 build 10.0.17763.5936). It is a labelled scenario assumption, not a scan result, and the protected fixture is untouched.
+- **Version-aware CVE matching.** NVD affected-version ranges (`ml/matching.py`, cached as `nvd_affected.parquet`) decide which CVEs apply: `version_confirmed`, `version_unknown` (product matches, range not evaluable) or excluded. A known product with no applicable CVE scores 0; a product absent from NVD is unavailable, never zero.
+- **Real vulnerability history.** Each asset shows its product's CVEs per year, KEV additions and the vendor/product counts that are the model's own history features.
+- **Time travel.** `POST /api/v1/simulation/run?as_of=YYYY-MM-01` runs the whole workflow as of any past EPSS snapshot using only information available then. Dates are labelled held-out (2025 onward) or not.
+- **Backtest.** For past dates the real KEV additions in the next 180 days are shown per CVE and per run. `GET /api/v1/simulation/backtest` pools the held-out months (about 40,000 CVE-month pairs, 4 distinct CVEs later entered KEV, so it is an anecdote, not proof).

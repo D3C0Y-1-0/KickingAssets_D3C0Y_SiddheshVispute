@@ -2598,3 +2598,43 @@ tbody tr:hover {
     grid-template-columns: 140px 1fr 60px;
   }
 }
+
+.asof-select {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.asof-select select {
+  min-width: 210px;
+}
+.badge.ok {
+  border-color: var(--accent-border);
+  color: var(--accent);
+}
+.mini-bars {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 8px;
+  align-items: end;
+  height: 80px;
+  margin: 10px 0 4px;
+}
+.mini-bars div {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  height: 100%;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+.mini-bars i {
+  display: block;
+  width: 100%;
+  background: var(--accent);
+  border-radius: 3px 3px 0 0;
+  min-height: 2px;
+}
+.mini-bars i.kev {
+  background: var(--risk-critical);
+}

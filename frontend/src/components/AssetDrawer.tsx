@@ -112,8 +112,9 @@ export function AssetDrawer({ id, onClose }: { id: string | null; onClose: () =>
             {simulated ? (
               <>
                 <p className="small muted">
-                  Assumed product family: {simulated.profile.label}. {simulated.candidate_count}{' '}
-                  candidate CVEs, {simulated.known_exploited_count} already in CISA KEV.
+                  Assumed real product: {simulated.product.label} ({simulated.product.role}).{' '}
+                  {simulated.candidate_count} candidate CVEs, {simulated.known_exploited_count}{' '}
+                  already in CISA KEV.
                 </p>
                 <ul className="list-plain">
                   {simulated.top_vulnerabilities.slice(0, 5).map((v) => (

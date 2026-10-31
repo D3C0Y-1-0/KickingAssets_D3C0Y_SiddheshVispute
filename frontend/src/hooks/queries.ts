@@ -71,7 +71,7 @@ export function useRunSimulation() {
   const client = useQueryClient()
   const context = useContext()
   return useMutation({
-    mutationFn: () => api.runSimulation(context),
+    mutationFn: (asOf?: string) => api.runSimulation(context, asOf),
     onSuccess: (run) => {
       client.setQueryData(['simulation', 'latest'], run)
       void client.invalidateQueries({ queryKey: ['asset'] })
@@ -95,3 +95,26 @@ export function useOptimize() {
   })
 }
 export { useContext as useScenarioContext }
+
+export function useSimulationDates() {
+  return useQuery({
+    queryKey: ['simulation', 'dates'],
+    queryFn: ({ signal }) => api.simulationDates(signal),
+    staleTime: Infinity,
+  })
+}
+export function useProducts() {
+  return useQuery({
+    queryKey: ['simulation', 'products'],
+    queryFn: ({ signal }) => api.products(signal),
+    staleTime: Infinity,
+  })
+}
+export function usePooledBacktest() {
+  return useQuery({
+    queryKey: ['simulation', 'pooled-backtest'],
+    queryFn: ({ signal }) => api.pooledBacktest(signal),
+    staleTime: Infinity,
+    retry: false,
+  })
+}

@@ -15,7 +15,12 @@ import { Link } from 'react-router-dom'
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts'
 import { useAssets, useLatestRun, useServices } from '../../hooks/queries'
 import { AssetDrawer } from '../../components/AssetDrawer'
-import { ProvenanceNotice, RunSimulationButton } from '../../components/Simulation'
+import {
+  AsOfBanner,
+  AsOfSelect,
+  ProvenanceNotice,
+  RunSimulationButton,
+} from '../../components/Simulation'
 import {
   EmptyState,
   PageHeading,
@@ -38,6 +43,7 @@ export default function Overview() {
   const latest = useLatestRun()
   const [sector, setSector] = useState<Sector>('power')
   const [selected, setSelected] = useState<string | null>(null)
+  const [asOf, setAsOf] = useState('')
   if (assets.isPending || assets.isError)
     return <QueryState pending={assets.isPending} error={assets.error} retry={assets.refetch} />
   const rows = assets.data
@@ -54,7 +60,11 @@ export default function Overview() {
         description="Simulate, assess with the ML model, then act. Every score below is computed from real vulnerability data."
         actions={
           <>
-            <RunSimulationButton label={run ? 'Re-run simulation' : 'Run simulation'} />
+            <AsOfSelect value={asOf} onChange={setAsOf} />
+            <RunSimulationButton
+              asOf={asOf || undefined}
+              label={run ? 'Re-run simulation' : 'Run simulation'}
+            />
             <Link to="/infrastructure" className="button secondary">
               <Network size={16} />
               Explore infrastructure
@@ -63,16 +73,18 @@ export default function Overview() {
           </>
         }
       />
+      {run && <AsOfBanner run={run} />}
       <div className="workflow-steps">
         <section className={`workflow-step ${run ? 'done' : ''}`}>
           <span className="step-number">STEP 1 · SIMULATE</span>
           <h3>Fetch vulnerabilities for every asset</h3>
           <p>
-            Each asset is mapped to a real product family, its recent CVEs are pulled from NVD and
-            scored live by the trained model.
+            Each asset is assumed to run a specific real product version. NVD affected-version
+            ranges decide which CVEs apply, and the trained model scores them live.
           </p>
           <div className="step-actions">
             <RunSimulationButton
+              asOf={asOf || undefined}
               variant={run ? 'secondary' : 'primary'}
               label={run ? 'Re-run' : 'Run simulation'}
             />
