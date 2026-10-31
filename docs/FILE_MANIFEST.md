@@ -231,3 +231,34 @@ frontend/tests/phase6.test.tsx
 scripts/check.ps1
 scripts/verify_demo.py
 ```
+
+
+## Phase 7 preventive resilience optimizer
+
+Exact created/modified files in this backend-focused batch; frontend change is generated contract declarations only.
+
+```text
+README.md
+backend/app/api/preventive.py
+backend/app/engine/preventive_failure.py
+backend/app/engine/preventive_optimizer.py
+backend/app/main.py
+backend/app/schemas/preventive.py
+backend/app/services/preventive.py
+backend/tests/test_preventive_api.py
+backend/tests/test_preventive_failure.py
+backend/tests/test_preventive_optimizer.py
+docs/API_CONTRACT.md
+docs/ARCHITECTURE.md
+docs/DOMAIN_MODELS.md
+docs/FILE_MANIFEST.md
+docs/HANDOFF.md
+docs/IMPLEMENTATION_PLAN.md
+docs/PHASE_7_DEMO.json
+docs/PHASE_7_RESILIENCE_ENGINE.md
+docs/VERIFICATION.md
+docs/openapi.json
+frontend/src/api/schema.d.ts
+scripts/check.ps1
+scripts/demo_resilience.py
+```

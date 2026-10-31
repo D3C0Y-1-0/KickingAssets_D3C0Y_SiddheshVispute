@@ -1,5 +1,7 @@
 # GridSentinel
 
+**Phase 7 backend:** [Preventive Resilience Optimizer](docs/PHASE_7_RESILIENCE_ENGINE.md) adds separate run-bound continuity simulation, a documented intervention catalog, exact bounded service-minute optimization and stress-test APIs. Based on Phase 6 `91f2ab55`; no UI redesign or existing engine/model replacement. Demo: `python scripts/demo_resilience.py --run` using the project virtual environment and a running backend. Full verification is recorded in docs/VERIFICATION.md. This feature branch is local until the owner authorizes a push.
+
 **Phase 6 finalization:** [Final demo runbook](docs/FINAL_DEMO_RUNBOOK.md) and [module audit](docs/PHASE_6_MODULE_AUDIT.md) are the current local launch/demo authority. Adds run-bound inspection of the existing attack-path engine, real brief verification, safer latest-run handling and responsive diagram fitting. Original PS03 objectives and existing engines/model artifacts remain unchanged. Branch `feature/phase-6-finalization`; no merge to main. Older records below are historical.
 
 **Phase 5 final integration:** [integration runbook and measured demonstration](docs/PHASE_5_INTEGRATION.md), branch `integration/phase-5`. The combined frontend/backend now bind What-If and optimization to exact runs/fingerprints, preserve CVE-specific patch evidence and constraints, and support the complete Fix Plan → What-If workflow. Local SQLite remains the launch configuration. Older integration records below are retained as history.

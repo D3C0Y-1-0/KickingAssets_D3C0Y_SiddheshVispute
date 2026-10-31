@@ -279,3 +279,73 @@ uncalibrated relative risk/ML output, conditional worst-plausible service bounds
 and fixed effort/downtime assumptions. No real scanning, compromise, remediation execution,
 production load/concurrency, hosted release, full accessibility audit or physical offline test is
 claimed. Original objectives and all earlier implementation history remain preserved.
+
+
+## Phase 7 preventive resilience verification — 1 November 2026
+
+Branch `feature/phase-7-resilience-optimizer`, from exact Phase 6
+`91f2ab55fc0b32af0b4cca2c88d6ca8bb7784b42`. Backend-only delivery, local commit;
+no push or merge is authorized. Read PHASE_7_RESILIENCE_ENGINE.md for the exact architecture,
+contracts, synthetic assumptions, limitations and reproducible demo command.
+
+- **247 backend tests passed**, no skips, **354.57s**. **57 new tests**: 18 deterministic
+  continuity cases, four exact optimizer cases and 35 real-model/Aurora API/boundary cases.
+  Existing risk/What-If/attack/impact/ML tests remain intact. One non-failing upstream
+  Starlette/httpx deprecation warning remains.
+- **85 frontend tests passed**, three files, **12.01s**. No UI source was changed. The sole
+  frontend diff is generated OpenAPI declarations; no test timeout/assertion was relaxed.
+- Full scripts/check.ps1 exited **0**: strict TypeScript, Ruff lint/format (**85 files**),
+  frontend Prettier and Vite production build (**2602 modules**, **18.55s**).
+- Source-contract audit proved **34 old API paths and 113 old schemas identical** after
+  regeneration. Original impact/attack/risk/pivot/remediation/simulation algorithms, original
+  datasets, ML files and artifacts were compared unchanged against 91f2ab55. No package or
+  dependency version changed. Raw backend OpenAPI and generated declarations are synchronized.
+- **12 live HTTP checks passed**, using scripts/demo_resilience.py against an isolated
+  FastAPI instance on 127.0.0.1:8001 with artifacts/phase7-api-demo.sqlite3. It did not reset
+  the running app's database or in-memory run. Saved real outputs are summarized in
+  PHASE_7_DEMO.json; full responses/logs stay ignored under artifacts/.
+- Real 360-minute PWR-008 power-loss case: **360 -> 90 service-minutes** with prepared
+  recovery; exact search of eight subsets selects recover-PWR-008, **4 planning credits /
+  8h effort / 1h maintenance downtime**. These are synthetic cost/restore assumptions,
+  not observed savings or verified hardware recovery.
+- Fixed backup-extension plan nominal **90** service-minutes; forced backup failure
+  **1080**, half stored energy **360**, additional WTR-008 hardware failure **750**.
+  Cyber-only PWR-004 isolation cuts the explicitly scoped PWR-001->PWR-008 integrity
+  challenge, yielding zero residual service-minutes for that scenario only.
+- Existing Phase 6 results reproduced in tests AND live HTTP: **35.62** baseline,
+  **27.72** original 60h risk plan/What-If, **56h** effort and **15** candidate paths.
+  Latest-run payload equality confirmed new calculations and projections are immutable.
+- Negative tests cover missing/unknown/stale/mismatched run/fingerprint, changed catalog,
+  replacement during calculation even with identical IDs/scores, missing references (503
+  without a result), invalid/duplicate/unknown actions/events/scopes, invalid patch-CVE
+  attribution, unsupported edge effects/exposure, negative/nonfinite/string/boolean numeric
+  values, backup exhaustion, dependency grace/recovery, cycles, capacity limits and exclusions.
+  A hand-calculable synergy case proves the search does not just add standalone reductions.
+
+Progress audit after the intentional interruption: at 04:24:43 IST, backend and frontend suites,
+Ruff, typecheck and Prettier were already finished. The overall check runner was PID 30412;
+its current build TypeScript worker was PID 31732 (started 04:24:42), so it was not stalled.
+The build progressed to Vite rendering and finished; the runner started 04:18:05 and the log's
+last update was 04:25:18, approximately **7m13s** total. No test rerun or source change was needed
+for recovery. The quiet logs establish the latest completed frontend suite and counts but do
+not preserve its exact final individual test name. The final backend test in source collection
+order is test_workflow.py::test_cve_scoring_endpoint; all backend cases passed with no skips.
+
+The isolated QA launcher/server were PIDs 14780/33900. They were used only for the outstanding
+HTTP verification and then stopped after ownership/port checks. The original port-8000 app
+and separate port-8011 teammate instance were left untouched. No UI file was modified during
+this progress-audit continuation, and no already-passed test suite was repeated.
+
+One early new API test requested unavailability on the HLT-001->HLT-007 route; the real graph
+only supports control/visibility there. The API correctly returned unsupported_challenge.
+The test was corrected to use the actual declared loss-of-control effect; fixed-version CVE
+attribution remains an explicitly unverified user scenario assumption, not exploit evidence.
+All final new/full test gates passed afterwards.
+
+Delivery is a deterministic local prototype, not a real resilience guarantee. Exact optimality
+is limited to at most 12 submitted catalog candidates and the declared service-minute objective.
+Energy derating is runtime at nominal full output, not physical power/load-flow simulation.
+Recovery targets, costs, topology/control assumptions, pre-incident downtime and standby
+allocation limitations are documented. No UI, physical recovery, load/concurrency, hosted
+release or security penetration test is claimed. Credential-pattern and scope review precedes
+commit; environments/databases/cache/build output/QA logs remain ignored.

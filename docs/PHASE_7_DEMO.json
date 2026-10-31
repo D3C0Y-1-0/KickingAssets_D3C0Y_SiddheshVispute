@@ -1,0 +1,29 @@
+{
+  "verified_at": "2026-10-31T22:56:09.060407+00:00",
+  "api_checks": 12,
+  "run_id": "run-20261031-225553-202610",
+  "baseline_fingerprint": "fd5c651c1885ec6b207192bf985490fb",
+  "catalog_fingerprint": "edd2ec3039ff21498dda204254d47b7442b74e8d8e36b51f7258dfc8262fe239",
+  "horizon_minutes": 360,
+  "baseline_service_minutes": 360,
+  "recovery_service_minutes": 90,
+  "best_interventions": [
+    "recover-PWR-008"
+  ],
+  "cost_credits": 4,
+  "effort_hours": 8.0,
+  "downtime_hours": 1.0,
+  "stress_nominal_minutes": 90,
+  "stress_projected_minutes": {
+    "backup-failed": 1080,
+    "half-energy": 360,
+    "extra-water-failure": 750
+  },
+  "segmented_service_minutes": 0,
+  "phase6_city_index": 35.62,
+  "phase6_plan_city_index": 27.72,
+  "phase6_paths": 15,
+  "baseline_unchanged": true,
+  "state": "projected",
+  "verification": "not_verified"
+}

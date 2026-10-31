@@ -2,9 +2,9 @@ $ErrorActionPreference = 'Stop'
 $projectRoot = Split-Path -Parent $PSScriptRoot
 Push-Location $projectRoot
 try {
-    & '.\.venv\Scripts\python.exe' -m ruff check backend scripts/export_openapi.py scripts/verify_demo.py
+    & '.\.venv\Scripts\python.exe' -m ruff check backend scripts/export_openapi.py scripts/verify_demo.py scripts/demo_resilience.py
     if ($LASTEXITCODE -ne 0) { throw 'Python lint failed.' }
-    & '.\.venv\Scripts\python.exe' -m ruff format --check backend scripts/export_openapi.py scripts/verify_demo.py
+    & '.\.venv\Scripts\python.exe' -m ruff format --check backend scripts/export_openapi.py scripts/verify_demo.py scripts/demo_resilience.py
     if ($LASTEXITCODE -ne 0) { throw 'Python formatting failed.' }
     & '.\.venv\Scripts\python.exe' -m pytest backend/tests -q
     if ($LASTEXITCODE -ne 0) { throw 'Backend tests failed.' }
