@@ -1,0 +1,51 @@
+:root {
+  --background: #080b10;
+  --sidebar: #0b1017;
+  --surface: #101720;
+  --surface-raised: #151e2a;
+  --surface-inset: #0d141d;
+  --surface-hover: #141e29;
+  --surface-warm: #181b21;
+  --border: #273142;
+  --border-soft: #1c2633;
+  --text: #edf2f8;
+  --text-secondary: #94a3b8;
+  --text-muted: #78899e;
+  --accent: #35d0c2;
+  --accent-hover: #65e2d7;
+  --accent-soft: #102b2c;
+  --accent-border: #20504e;
+  --accent-shadow: #35d0c20c;
+  --ink: #082c2a;
+  --sample: #d8b16c;
+  --sample-soft: #2c261d;
+  --sample-border: #53442c;
+  --notice-background: #12171c;
+  --risk-low: #66bfa1;
+  --risk-medium: #d6b26c;
+  --risk-high: #e69a69;
+  --risk-critical: #e87880;
+  --critical-soft: #312028;
+  --critical-border: #633540;
+  --high-soft: #30251f;
+  --high-border: #604332;
+  --sector-power: #d7b674;
+  --sector-water: #7daed1;
+  --sector-healthcare: #af9ccb;
+  --track: #26303c;
+  --grid-dot: #26323d;
+  --graph-edge: #344657;
+  --graph-arrow: #688294;
+  --shadow: #00000066;
+  --overlay: #03070dbb;
+  --sidebar-width: 235px;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-accent: var(--accent);
+  --color-foreground: var(--text);
+  --color-muted: var(--text-secondary);
+  --font-sans: 'Inter', 'Segoe UI', sans-serif;
+}

@@ -1,0 +1,2684 @@
+{
+  "scenario": {
+    "id": "aurora-city",
+    "name": "Aurora City",
+    "description": "Fictional three-sector critical infrastructure demonstrator.",
+    "current_snapshot_id": "aurora-baseline-v1",
+    "is_sample": true,
+    "seed_version": "1.0.0",
+    "created_at": "2026-10-01T09:00:00Z",
+    "provenance": {
+      "kind": "scenario_assumption",
+      "source": "Aurora City fixture v1",
+      "recorded_at": "2026-10-01T09:00:00Z",
+      "evidence_uri": null,
+      "notes": "Fictional scenario. No live infrastructure or scans."
+    }
+  },
+  "snapshot": {
+    "scenario_id": "aurora-city",
+    "snapshot_id": "aurora-baseline-v1",
+    "name": "Baseline \u00b7 01 Oct 2026",
+    "created_at": "2026-10-01T09:00:00Z",
+    "state": "current",
+    "parent_snapshot_id": null,
+    "assessment_status": "unavailable",
+    "scoring_version": null,
+    "model_version": null,
+    "provenance": {
+      "kind": "scenario_assumption",
+      "source": "Aurora City fixture v1",
+      "recorded_at": "2026-10-01T09:00:00Z",
+      "evidence_uri": null,
+      "notes": "Fictional scenario. No live infrastructure or scans."
+    }
+  },
+  "assets": [
+    {
+      "scenario_id": "aurora-city",
+      "snapshot_id": "aurora-baseline-v1",
+      "id": "PWR-001",
+      "name": "North Grid Gateway",
+      "sector": "power",
+      "asset_type": "gateway",
+      "site": "North Energy Campus",
+      "product": "Sentinel Gateway Series",
+      "vendor": "Aurora Systems (fictional)",
+      "version": "3.1.0",
+      "criticality": "important",
+      "exposure": "external",
+      "description": "Fictional power gateway supporting north grid gateway. Product and version are simulation assumptions; no CVE applicability is claimed.",
+      "security": {
+        "network_zone": "DMZ",
+        "mfa_enabled": false,
+        "internet_exposed": true,
+        "remote_access": true,
+        "patch_status": "review_required",
+        "backup_mode": "online",
+        "notes": [
+          "Configuration supplied by scenario author; not independently verified."
+        ],
+        "provenance": {
+          "kind": "scenario_assumption",
+          "source": "Aurora City fixture v1",
+          "recorded_at": "2026-10-01T09:00:00Z",
+          "evidence_uri": null,
+          "notes": "Fictional scenario. No live infrastructure or scans."
+        }
+      },
+      "provenance": {
+        "kind": "scenario_assumption",
+        "source": "Aurora City fixture v1",
+        "recorded_at": "2026-10-01T09:00:00Z",
+        "evidence_uri": null,
+        "notes": "Fictional scenario. No live infrastructure or scans."
+      }
+    },
+    {
+      "scenario_id": "aurora-city",
+      "snapshot_id": "aurora-baseline-v1",
+      "id": "PWR-002",
+      "name": "North Substation PLC",
+      "sector": "power",
+      "asset_type": "controller",
+      "site": "North Energy Campus",
+      "product": "Sentinel Controller Series",
+      "vendor": "Aurora Systems (fictional)",
+      "version": "4.2.0",
+      "criticality": "essential",
+      "exposure": "internal",
+      "description": "Fictional power controller supporting north substation plc. Product and version are simulation assumptions; no CVE applicability is claimed.",
+      "security": {
+        "network_zone": "OT control",
+        "mfa_enabled": true,
+        "internet_exposed": false,
+        "remote_access": false,
+        "patch_status": "review_required",
+        "backup_mode": "online",
+        "notes": [
+          "Configuration supplied by scenario author; not independently verified."
+        ],
+        "provenance": {
+          "kind": "scenario_assumption",
+          "source": "Aurora City fixture v1",
+          "recorded_at": "2026-10-01T09:00:00Z",
+          "evidence_uri": null,
+          "notes": "Fictional scenario. No live infrastructure or scans."
+        }
+      },
+      "provenance": {
+        "kind": "scenario_assumption",
+        "source": "Aurora City fixture v1",
+        "recorded_at": "2026-10-01T09:00:00Z",
+        "evidence_uri": null,
+        "notes": "Fictional scenario. No live infrastructure or scans."
+      }
+    },
+    {
+      "scenario_id": "aurora-city",
+      "snapshot_id": "aurora-baseline-v1",
+      "id": "PWR-003",
+      "name": "South Substation PLC",
+      "sector": "power",
+      "asset_type": "controller",
+      "site": "North Energy Campus",
+      "product": "Sentinel Controller Series",
+      "vendor": "Aurora Systems (fictional)",
+      "version": "2.3.0",
+      "criticality": "essential",
+      "exposure": "internal",
+      "description": "Fictional power controller supporting south substation plc. Product and version are simulation assumptions; no CVE applicability is claimed.",
+      "security": {
+        "network_zone": "OT control",
+        "mfa_enabled": true,
+        "internet_exposed": false,
+        "remote_access": false,
+        "patch_status": "current",
+        "backup_mode": "online",
+        "notes": [
+          "Configuration supplied by scenario author; not independently verified."
+        ],
+        "provenance": {
+          "kind": "scenario_assumption",
+          "source": "Aurora City fixture v1",
+          "recorded_at": "2026-10-01T09:00:00Z",
+          "evidence_uri": null,
+          "notes": "Fictional scenario. No live infrastructure or scans."
+        }
+      },
+      "provenance": {
+        "kind": "scenario_assumption",
+        "source": "Aurora City fixture v1",
+        "recorded_at": "2026-10-01T09:00:00Z",
+        "evidence_uri": null,
+        "notes": "Fictional scenario. No live infrastructure or scans."
+      }
+    },
+    {
+      "scenario_id": "aurora-city",
+      "snapshot_id": "aurora-baseline-v1",
+      "id": "PWR-004",
+      "name": "Grid Operator Workstation",
+      "sector": "power",
+      "asset_type": "workstation",
+      "site": "North Energy Campus",
+      "product": "Sentinel Workstation Series",
+      "vendor": "Aurora Systems (fictional)",
+      "version": "3.0.0",
+      "criticality": "supporting",
+      "exposure": "internal",
+      "description": "Fictional power workstation supporting grid operator workstation. Product and version are simulation assumptions; no CVE applicability is claimed.",
+      "security": {
+        "network_zone": "Operations IT",
+        "mfa_enabled": false,
+        "internet_exposed": false,
+        "remote_access": true,
+        "patch_status": "review_required",
+        "backup_mode": "online",
+        "notes": [
+          "Configuration supplied by scenario author; not independently verified."
+        ],
+        "provenance": {
+          "kind": "scenario_assumption",
+          "source": "Aurora City fixture v1",
+          "recorded_at": "2026-10-01T09:00:00Z",
+          "evidence_uri": null,
+          "notes": "Fictional scenario. No live infrastructure or scans."
+        }
+      },
+      "provenance": {
+        "kind": "scenario_assumption",
+        "source": "Aurora City fixture v1",
+        "recorded_at": "2026-10-01T09:00:00Z",
+        "evidence_uri": null,
+        "notes": "Fictional scenario. No live infrastructure or scans."
+      }
+    },
+    {
+      "scenario_id": "aurora-city",
+      "snapshot_id": "aurora-baseline-v1",
+      "id": "PWR-005",
+      "name": "Energy Historian",
+      "sector": "power",
+      "asset_type": "server",
+      "site": "North Energy Campus",
+      "product": "Sentinel Server Series",
+      "vendor": "Aurora Systems (fictional)",
+      "version": "4.1.0",
+      "criticality": "important",
+      "exposure": "internal",
+      "description": "Fictional power server supporting energy historian. Product and version are simulation assumptions; no CVE applicability is claimed.",
+      "security": {
+        "network_zone": "Operations IT",
+        "mfa_enabled": true,
+        "internet_exposed": false,
+        "remote_access": false,
+        "patch_status": "current",
+        "backup_mode": "online",
+        "notes": [
+          "Configuration supplied by scenario author; not independently verified."
+        ],
+        "provenance": {
+          "kind": "scenario_assumption",
+          "source": "Aurora City fixture v1",
+          "recorded_at": "2026-10-01T09:00:00Z",
+          "evidence_uri": null,
+          "notes": "Fictional scenario. No live infrastructure or scans."
+        }
+      },
+      "provenance": {
+        "kind": "scenario_assumption",
+        "source": "Aurora City fixture v1",
+        "recorded_at": "2026-10-01T09:00:00Z",
+        "evidence_uri": null,
+        "notes": "Fictional scenario. No live infrastructure or scans."
+      }
+    },
+    {
+      "scenario_id": "aurora-city",
+      "snapshot_id": "aurora-baseline-v1",
+      "id": "PWR-006",
+      "name": "Transformer Sensor Array",
+      "sector": "power",
+      "asset_type": "sensor",
+      "site": "North Energy Campus",
+      "product": "Sentinel Sensor Series",
+      "vendor": "Aurora Systems (fictional)",
+      "version": "2.2.0",
+      "criticality": "supporting",
+      "exposure": "internal",
+      "description": "Fictional power sensor supporting transformer sensor array. Product and version are simulation assumptions; no CVE applicability is claimed.",
+      "security": {
+        "network_zone": "OT control",
+        "mfa_enabled": true,
+        "internet_exposed": false,
+        "remote_access": false,
+        "patch_status": "unknown",
+        "backup_mode": "online",
+        "notes": [
+          "Configuration supplied by scenario author; not independently verified."
+        ],
+        "provenance": {
+          "kind": "scenario_assumption",
+          "source": "Aurora City fixture v1",
+          "recorded_at": "2026-10-01T09:00:00Z",
+          "evidence_uri": null,
+          "notes": "Fictional scenario. No live infrastructure or scans."
+        }
+      },
+      "provenance": {
+        "kind": "scenario_assumption",
+        "source": "Aurora City fixture v1",
+        "recorded_at": "2026-10-01T09:00:00Z",
+        "evidence_uri": null,
+        "notes": "Fictional scenario. No live infrastructure or scans."
+      }
+    },
+    {
+      "scenario_id": "aurora-city",
+      "snapshot_id": "aurora-baseline-v1",
+      "id": "PWR-007",
+      "name": "Feeder Protection Relay",
+      "sector": "power",
+      "asset_type": "controller",
+      "site": "North Energy Campus",
+      "product": "Sentinel Controller Series",
+      "vendor": "Aurora Systems (fictional)",
+      "version": "3.3.0",
+      "criticality": "essential",
+      "exposure": "internal",
+      "description": "Fictional power controller supporting feeder protection relay. Product and version are simulation assumptions; no CVE applicability is claimed.",
+      "security": {
+        "network_zone": "OT control",
+        "mfa_enabled": true,
+        "internet_exposed": false,
+        "remote_access": false,
+        "patch_status": "current",
+        "backup_mode": "online",
+        "notes": [
+          "Configuration supplied by scenario author; not independently verified."
+        ],
+        "provenance": {
+          "kind": "scenario_assumption",
+          "source": "Aurora City fixture v1",
+          "recorded_at": "2026-10-01T09:00:00Z",
+          "evidence_uri": null,
+          "notes": "Fictional scenario. No live infrastructure or scans."
+        }
+      },
+      "provenance": {
+        "kind": "scenario_assumption",
+        "source": "Aurora City fixture v1",
+        "recorded_at": "2026-10-01T09:00:00Z",
+        "evidence_uri": null,
+        "notes": "Fictional scenario. No live infrastructure or scans."
+      }
+    },
+    {
+      "scenario_id": "aurora-city",
+      "snapshot_id": "aurora-baseline-v1",
+      "id": "PWR-008",
+      "name": "Dispatch Control Server",
+      "sector": "power",
+      "asset_type": "server",
+      "site": "North Energy Campus",
+      "product": "Sentinel Server Series",
+      "vendor": "Aurora Systems (fictional)",
+      "version": "4.0.0",
+      "criticality": "essential",
+      "exposure": "internal",
+      "description": "Fictional power server supporting dispatch control server. Product and version are simulation assumptions; no CVE applicability is claimed.",
+      "security": {
+        "network_zone": "Operations IT",
+        "mfa_enabled": true,
+        "internet_exposed": false,
+        "remote_access": true,
+        "patch_status": "current",
+        "backup_mode": "offline",
+        "notes": [
+          "Configuration supplied by scenario author; not independently verified."
+        ],
+        "provenance": {
+          "kind": "scenario_assumption",
+          "source": "Aurora City fixture v1",
+          "recorded_at": "2026-10-01T09:00:00Z",
+          "evidence_uri": null,
+          "notes": "Fictional scenario. No live infrastructure or scans."
+        }
+      },
+      "provenance": {
+        "kind": "scenario_assumption",
+        "source": "Aurora City fixture v1",
+        "recorded_at": "2026-10-01T09:00:00Z",
+        "evidence_uri": null,
+        "notes": "Fictional scenario. No live infrastructure or scans."
+      }
+    },
+    {
+      "scenario_id": "aurora-city",
+      "snapshot_id": "aurora-baseline-v1",
+      "id": "PWR-009",
+      "name": "Microgrid Controller",
+      "sector": "power",
+      "asset_type": "controller",
+      "site": "North Energy Campus",
+      "product": "Sentinel Controller Series",
+      "vendor": "Aurora Systems (fictional)",
+      "version": "2.1.0",
+      "criticality": "essential",
+      "exposure": "internal",
+      "description": "Fictional power controller supporting microgrid controller. Product and version are simulation assumptions; no CVE applicability is claimed.",
+      "security": {
+        "network_zone": "OT control",
+        "mfa_enabled": true,
+        "internet_exposed": false,
+        "remote_access": false,
+        "patch_status": "current",
+        "backup_mode": "online",
+        "notes": [
+          "Configuration supplied by scenario author; not independently verified."
+        ],
+        "provenance": {
+          "kind": "scenario_assumption",
+          "source": "Aurora City fixture v1",
+          "recorded_at": "2026-10-01T09:00:00Z",
+          "evidence_uri": null,
+          "notes": "Fictional scenario. No live infrastructure or scans."
+        }
+      },
+      "provenance": {
+        "kind": "scenario_assumption",
+        "source": "Aurora City fixture v1",
+        "recorded_at": "2026-10-01T09:00:00Z",
+        "evidence_uri": null,
+        "notes": "Fictional scenario. No live infrastructure or scans."
+      }
+    },
+    {
+      "scenario_id": "aurora-city",
+      "snapshot_id": "aurora-baseline-v1",
+      "id": "PWR-010",
+      "name": "Emergency Power Backup",
+      "sector": "power",
+      "asset_type": "backup",
+      "site": "North Energy Campus",
+      "product": "Sentinel Backup Series",
+      "vendor": "Aurora Systems (fictional)",
+      "version": "3.2.0",
+      "criticality": "important",
+      "exposure": "isolated",
+      "description": "Fictional power backup supporting emergency power backup. Product and version are simulation assumptions; no CVE applicability is claimed.",
+      "security": {
+        "network_zone": "Recovery",
+        "mfa_enabled": true,
+        "internet_exposed": false,
+        "remote_access": false,
+        "patch_status": "current",
+        "backup_mode": "offline",
+        "notes": [
+          "Configuration supplied by scenario author; not independently verified."
+        ],
+        "provenance": {
+          "kind": "scenario_assumption",
+          "source": "Aurora City fixture v1",
+          "recorded_at": "2026-10-01T09:00:00Z",
+          "evidence_uri": null,
+          "notes": "Fictional scenario. No live infrastructure or scans."
+        }
+      },
+      "provenance": {
+        "kind": "scenario_assumption",
+        "source": "Aurora City fixture v1",
+        "recorded_at": "2026-10-01T09:00:00Z",
+        "evidence_uri": null,
+        "notes": "Fictional scenario. No live infrastructure or scans."
+      }
+    },
+    {
+      "scenario_id": "aurora-city",
+      "snapshot_id": "aurora-baseline-v1",
+      "id": "WTR-001",
+      "name": "Waterworks Access Gateway",
+      "sector": "water",
+      "asset_type": "gateway",
+      "site": "Riverside Waterworks",
+      "product": "Sentinel Gateway Series",
+      "vendor": "Aurora Systems (fictional)",
+      "version": "3.1.0",
+      "criticality": "important",
+      "exposure": "external",
+      "description": "Fictional water gateway supporting waterworks access gateway. Product and version are simulation assumptions; no CVE applicability is claimed.",
+      "security": {
+        "network_zone": "DMZ",
+        "mfa_enabled": false,
+        "internet_exposed": true,
+        "remote_access": true,
+        "patch_status": "review_required",
+        "backup_mode": "online",
+        "notes": [
+          "Configuration supplied by scenario author; not independently verified."
+        ],
+        "provenance": {
+          "kind": "scenario_assumption",
+          "source": "Aurora City fixture v1",
+          "recorded_at": "2026-10-01T09:00:00Z",
+          "evidence_uri": null,
+          "notes": "Fictional scenario. No live infrastructure or scans."
+        }
+      },
+      "provenance": {
+        "kind": "scenario_assumption",
+        "source": "Aurora City fixture v1",
+        "recorded_at": "2026-10-01T09:00:00Z",
+        "evidence_uri": null,
+        "notes": "Fictional scenario. No live infrastructure or scans."
+      }
+    },
+    {
+      "scenario_id": "aurora-city",
+      "snapshot_id": "aurora-baseline-v1",
+      "id": "WTR-002",
+      "name": "River Intake PLC",
+      "sector": "water",
+      "asset_type": "controller",
+      "site": "Riverside Waterworks",
+      "product": "Sentinel Controller Series",
+      "vendor": "Aurora Systems (fictional)",
+      "version": "4.2.0",
+      "criticality": "essential",
+      "exposure": "internal",
+      "description": "Fictional water controller supporting river intake plc. Product and version are simulation assumptions; no CVE applicability is claimed.",
+      "security": {
+        "network_zone": "OT control",
+        "mfa_enabled": true,
+        "internet_exposed": false,
+        "remote_access": false,
+        "patch_status": "review_required",
+        "backup_mode": "online",
+        "notes": [
+          "Configuration supplied by scenario author; not independently verified."
+        ],
+        "provenance": {
+          "kind": "scenario_assumption",
+          "source": "Aurora City fixture v1",
+          "recorded_at": "2026-10-01T09:00:00Z",
+          "evidence_uri": null,
+          "notes": "Fictional scenario. No live infrastructure or scans."
+        }
+      },
+      "provenance": {
+        "kind": "scenario_assumption",
+        "source": "Aurora City fixture v1",
+        "recorded_at": "2026-10-01T09:00:00Z",
+        "evidence_uri": null,
+        "notes": "Fictional scenario. No live infrastructure or scans."
+      }
+    },
+    {
+      "scenario_id": "aurora-city",
+      "snapshot_id": "aurora-baseline-v1",
+      "id": "WTR-003",
+      "name": "Treatment Process PLC",
+      "sector": "water",
+      "asset_type": "controller",
+      "site": "Riverside Waterworks",
+      "product": "Sentinel Controller Series",
+      "vendor": "Aurora Systems (fictional)",
+      "version": "2.3.0",
+      "criticality": "essential",
+      "exposure": "internal",
+      "description": "Fictional water controller supporting treatment process plc. Product and version are simulation assumptions; no CVE applicability is claimed.",
+      "security": {
+        "network_zone": "OT control",
+        "mfa_enabled": true,
+        "internet_exposed": false,
+        "remote_access": false,
+        "patch_status": "current",
+        "backup_mode": "online",
+        "notes": [
+          "Configuration supplied by scenario author; not independently verified."
+        ],
+        "provenance": {
+          "kind": "scenario_assumption",
+          "source": "Aurora City fixture v1",
+          "recorded_at": "2026-10-01T09:00:00Z",
+          "evidence_uri": null,
+          "notes": "Fictional scenario. No live infrastructure or scans."
+        }
+      },
+      "provenance": {
+        "kind": "scenario_assumption",
+        "source": "Aurora City fixture v1",
+        "recorded_at": "2026-10-01T09:00:00Z",
+        "evidence_uri": null,
+        "notes": "Fictional scenario. No live infrastructure or scans."
+      }
+    },
+    {
+      "scenario_id": "aurora-city",
+      "snapshot_id": "aurora-baseline-v1",
+      "id": "WTR-004",
+      "name": "Water Operator Workstation",
+      "sector": "water",
+      "asset_type": "workstation",
+      "site": "Riverside Waterworks",
+      "product": "Sentinel Workstation Series",
+      "vendor": "Aurora Systems (fictional)",
+      "version": "3.0.0",
+      "criticality": "supporting",
+      "exposure": "internal",
+      "description": "Fictional water workstation supporting water operator workstation. Product and version are simulation assumptions; no CVE applicability is claimed.",
+      "security": {
+        "network_zone": "Operations IT",
+        "mfa_enabled": false,
+        "internet_exposed": false,
+        "remote_access": true,
+        "patch_status": "review_required",
+        "backup_mode": "online",
+        "notes": [
+          "Configuration supplied by scenario author; not independently verified."
+        ],
+        "provenance": {
+          "kind": "scenario_assumption",
+          "source": "Aurora City fixture v1",
+          "recorded_at": "2026-10-01T09:00:00Z",
+          "evidence_uri": null,
+          "notes": "Fictional scenario. No live infrastructure or scans."
+        }
+      },
+      "provenance": {
+        "kind": "scenario_assumption",
+        "source": "Aurora City fixture v1",
+        "recorded_at": "2026-10-01T09:00:00Z",
+        "evidence_uri": null,
+        "notes": "Fictional scenario. No live infrastructure or scans."
+      }
+    },
+    {
+      "scenario_id": "aurora-city",
+      "snapshot_id": "aurora-baseline-v1",
+      "id": "WTR-005",
+      "name": "Water Quality Historian",
+      "sector": "water",
+      "asset_type": "server",
+      "site": "Riverside Waterworks",
+      "product": "Sentinel Server Series",
+      "vendor": "Aurora Systems (fictional)",
+      "version": "4.1.0",
+      "criticality": "important",
+      "exposure": "internal",
+      "description": "Fictional water server supporting water quality historian. Product and version are simulation assumptions; no CVE applicability is claimed.",
+      "security": {
+        "network_zone": "Operations IT",
+        "mfa_enabled": true,
+        "internet_exposed": false,
+        "remote_access": false,
+        "patch_status": "current",
+        "backup_mode": "online",
+        "notes": [
+          "Configuration supplied by scenario author; not independently verified."
+        ],
+        "provenance": {
+          "kind": "scenario_assumption",
+          "source": "Aurora City fixture v1",
+          "recorded_at": "2026-10-01T09:00:00Z",
+          "evidence_uri": null,
+          "notes": "Fictional scenario. No live infrastructure or scans."
+        }
+      },
+      "provenance": {
+        "kind": "scenario_assumption",
+        "source": "Aurora City fixture v1",
+        "recorded_at": "2026-10-01T09:00:00Z",
+        "evidence_uri": null,
+        "notes": "Fictional scenario. No live infrastructure or scans."
+      }
+    },
+    {
+      "scenario_id": "aurora-city",
+      "snapshot_id": "aurora-baseline-v1",
+      "id": "WTR-006",
+      "name": "Reservoir Sensor Array",
+      "sector": "water",
+      "asset_type": "sensor",
+      "site": "Riverside Waterworks",
+      "product": "Sentinel Sensor Series",
+      "vendor": "Aurora Systems (fictional)",
+      "version": "2.2.0",
+      "criticality": "supporting",
+      "exposure": "internal",
+      "description": "Fictional water sensor supporting reservoir sensor array. Product and version are simulation assumptions; no CVE applicability is claimed.",
+      "security": {
+        "network_zone": "OT control",
+        "mfa_enabled": true,
+        "internet_exposed": false,
+        "remote_access": false,
+        "patch_status": "unknown",
+        "backup_mode": "online",
+        "notes": [
+          "Configuration supplied by scenario author; not independently verified."
+        ],
+        "provenance": {
+          "kind": "scenario_assumption",
+          "source": "Aurora City fixture v1",
+          "recorded_at": "2026-10-01T09:00:00Z",
+          "evidence_uri": null,
+          "notes": "Fictional scenario. No live infrastructure or scans."
+        }
+      },
+      "provenance": {
+        "kind": "scenario_assumption",
+        "source": "Aurora City fixture v1",
+        "recorded_at": "2026-10-01T09:00:00Z",
+        "evidence_uri": null,
+        "notes": "Fictional scenario. No live infrastructure or scans."
+      }
+    },
+    {
+      "scenario_id": "aurora-city",
+      "snapshot_id": "aurora-baseline-v1",
+      "id": "WTR-007",
+      "name": "Distribution Pump Controller",
+      "sector": "water",
+      "asset_type": "controller",
+      "site": "Riverside Waterworks",
+      "product": "Sentinel Controller Series",
+      "vendor": "Aurora Systems (fictional)",
+      "version": "3.3.0",
+      "criticality": "essential",
+      "exposure": "internal",
+      "description": "Fictional water controller supporting distribution pump controller. Product and version are simulation assumptions; no CVE applicability is claimed.",
+      "security": {
+        "network_zone": "OT control",
+        "mfa_enabled": true,
+        "internet_exposed": false,
+        "remote_access": false,
+        "patch_status": "current",
+        "backup_mode": "online",
+        "notes": [
+          "Configuration supplied by scenario author; not independently verified."
+        ],
+        "provenance": {
+          "kind": "scenario_assumption",
+          "source": "Aurora City fixture v1",
+          "recorded_at": "2026-10-01T09:00:00Z",
+          "evidence_uri": null,
+          "notes": "Fictional scenario. No live infrastructure or scans."
+        }
+      },
+      "provenance": {
+        "kind": "scenario_assumption",
+        "source": "Aurora City fixture v1",
+        "recorded_at": "2026-10-01T09:00:00Z",
+        "evidence_uri": null,
+        "notes": "Fictional scenario. No live infrastructure or scans."
+      }
+    },
+    {
+      "scenario_id": "aurora-city",
+      "snapshot_id": "aurora-baseline-v1",
+      "id": "WTR-008",
+      "name": "Waterworks Control Server",
+      "sector": "water",
+      "asset_type": "server",
+      "site": "Riverside Waterworks",
+      "product": "Sentinel Server Series",
+      "vendor": "Aurora Systems (fictional)",
+      "version": "4.0.0",
+      "criticality": "essential",
+      "exposure": "internal",
+      "description": "Fictional water server supporting waterworks control server. Product and version are simulation assumptions; no CVE applicability is claimed.",
+      "security": {
+        "network_zone": "Operations IT",
+        "mfa_enabled": true,
+        "internet_exposed": false,
+        "remote_access": true,
+        "patch_status": "current",
+        "backup_mode": "offline",
+        "notes": [
+          "Configuration supplied by scenario author; not independently verified."
+        ],
+        "provenance": {
+          "kind": "scenario_assumption",
+          "source": "Aurora City fixture v1",
+          "recorded_at": "2026-10-01T09:00:00Z",
+          "evidence_uri": null,
+          "notes": "Fictional scenario. No live infrastructure or scans."
+        }
+      },
+      "provenance": {
+        "kind": "scenario_assumption",
+        "source": "Aurora City fixture v1",
+        "recorded_at": "2026-10-01T09:00:00Z",
+        "evidence_uri": null,
+        "notes": "Fictional scenario. No live infrastructure or scans."
+      }
+    },
+    {
+      "scenario_id": "aurora-city",
+      "snapshot_id": "aurora-baseline-v1",
+      "id": "WTR-009",
+      "name": "Pressure Management PLC",
+      "sector": "water",
+      "asset_type": "controller",
+      "site": "Riverside Waterworks",
+      "product": "Sentinel Controller Series",
+      "vendor": "Aurora Systems (fictional)",
+      "version": "2.1.0",
+      "criticality": "essential",
+      "exposure": "internal",
+      "description": "Fictional water controller supporting pressure management plc. Product and version are simulation assumptions; no CVE applicability is claimed.",
+      "security": {
+        "network_zone": "OT control",
+        "mfa_enabled": true,
+        "internet_exposed": false,
+        "remote_access": false,
+        "patch_status": "current",
+        "backup_mode": "online",
+        "notes": [
+          "Configuration supplied by scenario author; not independently verified."
+        ],
+        "provenance": {
+          "kind": "scenario_assumption",
+          "source": "Aurora City fixture v1",
+          "recorded_at": "2026-10-01T09:00:00Z",
+          "evidence_uri": null,
+          "notes": "Fictional scenario. No live infrastructure or scans."
+        }
+      },
+      "provenance": {
+        "kind": "scenario_assumption",
+        "source": "Aurora City fixture v1",
+        "recorded_at": "2026-10-01T09:00:00Z",
+        "evidence_uri": null,
+        "notes": "Fictional scenario. No live infrastructure or scans."
+      }
+    },
+    {
+      "scenario_id": "aurora-city",
+      "snapshot_id": "aurora-baseline-v1",
+      "id": "WTR-010",
+      "name": "Waterworks Backup Controller",
+      "sector": "water",
+      "asset_type": "backup",
+      "site": "Riverside Waterworks",
+      "product": "Sentinel Backup Series",
+      "vendor": "Aurora Systems (fictional)",
+      "version": "3.2.0",
+      "criticality": "important",
+      "exposure": "isolated",
+      "description": "Fictional water backup supporting waterworks backup controller. Product and version are simulation assumptions; no CVE applicability is claimed.",
+      "security": {
+        "network_zone": "Recovery",
+        "mfa_enabled": true,
+        "internet_exposed": false,
+        "remote_access": false,
+        "patch_status": "current",
+        "backup_mode": "offline",
+        "notes": [
+          "Configuration supplied by scenario author; not independently verified."
+        ],
+        "provenance": {
+          "kind": "scenario_assumption",
+          "source": "Aurora City fixture v1",
+          "recorded_at": "2026-10-01T09:00:00Z",
+          "evidence_uri": null,
+          "notes": "Fictional scenario. No live infrastructure or scans."
+        }
+      },
+      "provenance": {
+        "kind": "scenario_assumption",
+        "source": "Aurora City fixture v1",
+        "recorded_at": "2026-10-01T09:00:00Z",
+        "evidence_uri": null,
+        "notes": "Fictional scenario. No live infrastructure or scans."
+      }
+    },
+    {
+      "scenario_id": "aurora-city",
+      "snapshot_id": "aurora-baseline-v1",
+      "id": "HLT-001",
+      "name": "Central Hospital Gateway",
+      "sector": "healthcare",
+      "asset_type": "gateway",
+      "site": "Aurora Central Hospital",
+      "product": "Sentinel Gateway Series",
+      "vendor": "Aurora Systems (fictional)",
+      "version": "3.1.0",
+      "criticality": "important",
+      "exposure": "external",
+      "description": "Fictional healthcare gateway supporting central hospital gateway. Product and version are simulation assumptions; no CVE applicability is claimed.",
+      "security": {
+        "network_zone": "DMZ",
+        "mfa_enabled": false,
+        "internet_exposed": true,
+        "remote_access": true,
+        "patch_status": "review_required",
+        "backup_mode": "online",
+        "notes": [
+          "Configuration supplied by scenario author; not independently verified."
+        ],
+        "provenance": {
+          "kind": "scenario_assumption",
+          "source": "Aurora City fixture v1",
+          "recorded_at": "2026-10-01T09:00:00Z",
+          "evidence_uri": null,
+          "notes": "Fictional scenario. No live infrastructure or scans."
+        }
+      },
+      "provenance": {
+        "kind": "scenario_assumption",
+        "source": "Aurora City fixture v1",
+        "recorded_at": "2026-10-01T09:00:00Z",
+        "evidence_uri": null,
+        "notes": "Fictional scenario. No live infrastructure or scans."
+      }
+    },
+    {
+      "scenario_id": "aurora-city",
+      "snapshot_id": "aurora-baseline-v1",
+      "id": "HLT-002",
+      "name": "Clinical Systems Controller",
+      "sector": "healthcare",
+      "asset_type": "controller",
+      "site": "Aurora Central Hospital",
+      "product": "Sentinel Controller Series",
+      "vendor": "Aurora Systems (fictional)",
+      "version": "4.2.0",
+      "criticality": "essential",
+      "exposure": "internal",
+      "description": "Fictional healthcare controller supporting clinical systems controller. Product and version are simulation assumptions; no CVE applicability is claimed.",
+      "security": {
+        "network_zone": "OT control",
+        "mfa_enabled": true,
+        "internet_exposed": false,
+        "remote_access": false,
+        "patch_status": "review_required",
+        "backup_mode": "online",
+        "notes": [
+          "Configuration supplied by scenario author; not independently verified."
+        ],
+        "provenance": {
+          "kind": "scenario_assumption",
+          "source": "Aurora City fixture v1",
+          "recorded_at": "2026-10-01T09:00:00Z",
+          "evidence_uri": null,
+          "notes": "Fictional scenario. No live infrastructure or scans."
+        }
+      },
+      "provenance": {
+        "kind": "scenario_assumption",
+        "source": "Aurora City fixture v1",
+        "recorded_at": "2026-10-01T09:00:00Z",
+        "evidence_uri": null,
+        "notes": "Fictional scenario. No live infrastructure or scans."
+      }
+    },
+    {
+      "scenario_id": "aurora-city",
+      "snapshot_id": "aurora-baseline-v1",
+      "id": "HLT-003",
+      "name": "HVAC Plant Controller",
+      "sector": "healthcare",
+      "asset_type": "controller",
+      "site": "Aurora Central Hospital",
+      "product": "Sentinel Controller Series",
+      "vendor": "Aurora Systems (fictional)",
+      "version": "2.3.0",
+      "criticality": "essential",
+      "exposure": "internal",
+      "description": "Fictional healthcare controller supporting hvac plant controller. Product and version are simulation assumptions; no CVE applicability is claimed.",
+      "security": {
+        "network_zone": "OT control",
+        "mfa_enabled": true,
+        "internet_exposed": false,
+        "remote_access": false,
+        "patch_status": "current",
+        "backup_mode": "online",
+        "notes": [
+          "Configuration supplied by scenario author; not independently verified."
+        ],
+        "provenance": {
+          "kind": "scenario_assumption",
+          "source": "Aurora City fixture v1",
+          "recorded_at": "2026-10-01T09:00:00Z",
+          "evidence_uri": null,
+          "notes": "Fictional scenario. No live infrastructure or scans."
+        }
+      },
+      "provenance": {
+        "kind": "scenario_assumption",
+        "source": "Aurora City fixture v1",
+        "recorded_at": "2026-10-01T09:00:00Z",
+        "evidence_uri": null,
+        "notes": "Fictional scenario. No live infrastructure or scans."
+      }
+    },
+    {
+      "scenario_id": "aurora-city",
+      "snapshot_id": "aurora-baseline-v1",
+      "id": "HLT-004",
+      "name": "Clinical Engineering Workstation",
+      "sector": "healthcare",
+      "asset_type": "workstation",
+      "site": "Aurora Central Hospital",
+      "product": "Sentinel Workstation Series",
+      "vendor": "Aurora Systems (fictional)",
+      "version": "3.0.0",
+      "criticality": "supporting",
+      "exposure": "internal",
+      "description": "Fictional healthcare workstation supporting clinical engineering workstation. Product and version are simulation assumptions; no CVE applicability is claimed.",
+      "security": {
+        "network_zone": "Operations IT",
+        "mfa_enabled": false,
+        "internet_exposed": false,
+        "remote_access": true,
+        "patch_status": "review_required",
+        "backup_mode": "online",
+        "notes": [
+          "Configuration supplied by scenario author; not independently verified."
+        ],
+        "provenance": {
+          "kind": "scenario_assumption",
+          "source": "Aurora City fixture v1",
+          "recorded_at": "2026-10-01T09:00:00Z",
+          "evidence_uri": null,
+          "notes": "Fictional scenario. No live infrastructure or scans."
+        }
+      },
+      "provenance": {
+        "kind": "scenario_assumption",
+        "source": "Aurora City fixture v1",
+        "recorded_at": "2026-10-01T09:00:00Z",
+        "evidence_uri": null,
+        "notes": "Fictional scenario. No live infrastructure or scans."
+      }
+    },
+    {
+      "scenario_id": "aurora-city",
+      "snapshot_id": "aurora-baseline-v1",
+      "id": "HLT-005",
+      "name": "Patient Systems Server",
+      "sector": "healthcare",
+      "asset_type": "server",
+      "site": "Aurora Central Hospital",
+      "product": "Sentinel Server Series",
+      "vendor": "Aurora Systems (fictional)",
+      "version": "4.1.0",
+      "criticality": "important",
+      "exposure": "internal",
+      "description": "Fictional healthcare server supporting patient systems server. Product and version are simulation assumptions; no CVE applicability is claimed.",
+      "security": {
+        "network_zone": "Operations IT",
+        "mfa_enabled": true,
+        "internet_exposed": false,
+        "remote_access": false,
+        "patch_status": "current",
+        "backup_mode": "online",
+        "notes": [
+          "Configuration supplied by scenario author; not independently verified."
+        ],
+        "provenance": {
+          "kind": "scenario_assumption",
+          "source": "Aurora City fixture v1",
+          "recorded_at": "2026-10-01T09:00:00Z",
+          "evidence_uri": null,
+          "notes": "Fictional scenario. No live infrastructure or scans."
+        }
+      },
+      "provenance": {
+        "kind": "scenario_assumption",
+        "source": "Aurora City fixture v1",
+        "recorded_at": "2026-10-01T09:00:00Z",
+        "evidence_uri": null,
+        "notes": "Fictional scenario. No live infrastructure or scans."
+      }
+    },
+    {
+      "scenario_id": "aurora-city",
+      "snapshot_id": "aurora-baseline-v1",
+      "id": "HLT-006",
+      "name": "Cold Chain Sensor Array",
+      "sector": "healthcare",
+      "asset_type": "sensor",
+      "site": "Aurora Central Hospital",
+      "product": "Sentinel Sensor Series",
+      "vendor": "Aurora Systems (fictional)",
+      "version": "2.2.0",
+      "criticality": "supporting",
+      "exposure": "internal",
+      "description": "Fictional healthcare sensor supporting cold chain sensor array. Product and version are simulation assumptions; no CVE applicability is claimed.",
+      "security": {
+        "network_zone": "OT control",
+        "mfa_enabled": true,
+        "internet_exposed": false,
+        "remote_access": false,
+        "patch_status": "unknown",
+        "backup_mode": "online",
+        "notes": [
+          "Configuration supplied by scenario author; not independently verified."
+        ],
+        "provenance": {
+          "kind": "scenario_assumption",
+          "source": "Aurora City fixture v1",
+          "recorded_at": "2026-10-01T09:00:00Z",
+          "evidence_uri": null,
+          "notes": "Fictional scenario. No live infrastructure or scans."
+        }
+      },
+      "provenance": {
+        "kind": "scenario_assumption",
+        "source": "Aurora City fixture v1",
+        "recorded_at": "2026-10-01T09:00:00Z",
+        "evidence_uri": null,
+        "notes": "Fictional scenario. No live infrastructure or scans."
+      }
+    },
+    {
+      "scenario_id": "aurora-city",
+      "snapshot_id": "aurora-baseline-v1",
+      "id": "HLT-007",
+      "name": "Medical Gas Controller",
+      "sector": "healthcare",
+      "asset_type": "controller",
+      "site": "Aurora Central Hospital",
+      "product": "Sentinel Controller Series",
+      "vendor": "Aurora Systems (fictional)",
+      "version": "3.3.0",
+      "criticality": "essential",
+      "exposure": "internal",
+      "description": "Fictional healthcare controller supporting medical gas controller. Product and version are simulation assumptions; no CVE applicability is claimed.",
+      "security": {
+        "network_zone": "OT control",
+        "mfa_enabled": true,
+        "internet_exposed": false,
+        "remote_access": false,
+        "patch_status": "current",
+        "backup_mode": "online",
+        "notes": [
+          "Configuration supplied by scenario author; not independently verified."
+        ],
+        "provenance": {
+          "kind": "scenario_assumption",
+          "source": "Aurora City fixture v1",
+          "recorded_at": "2026-10-01T09:00:00Z",
+          "evidence_uri": null,
+          "notes": "Fictional scenario. No live infrastructure or scans."
+        }
+      },
+      "provenance": {
+        "kind": "scenario_assumption",
+        "source": "Aurora City fixture v1",
+        "recorded_at": "2026-10-01T09:00:00Z",
+        "evidence_uri": null,
+        "notes": "Fictional scenario. No live infrastructure or scans."
+      }
+    },
+    {
+      "scenario_id": "aurora-city",
+      "snapshot_id": "aurora-baseline-v1",
+      "id": "HLT-008",
+      "name": "Hospital Operations Server",
+      "sector": "healthcare",
+      "asset_type": "server",
+      "site": "Aurora Central Hospital",
+      "product": "Sentinel Server Series",
+      "vendor": "Aurora Systems (fictional)",
+      "version": "4.0.0",
+      "criticality": "essential",
+      "exposure": "internal",
+      "description": "Fictional healthcare server supporting hospital operations server. Product and version are simulation assumptions; no CVE applicability is claimed.",
+      "security": {
+        "network_zone": "Operations IT",
+        "mfa_enabled": true,
+        "internet_exposed": false,
+        "remote_access": true,
+        "patch_status": "current",
+        "backup_mode": "offline",
+        "notes": [
+          "Configuration supplied by scenario author; not independently verified."
+        ],
+        "provenance": {
+          "kind": "scenario_assumption",
+          "source": "Aurora City fixture v1",
+          "recorded_at": "2026-10-01T09:00:00Z",
+          "evidence_uri": null,
+          "notes": "Fictional scenario. No live infrastructure or scans."
+        }
+      },
+      "provenance": {
+        "kind": "scenario_assumption",
+        "source": "Aurora City fixture v1",
+        "recorded_at": "2026-10-01T09:00:00Z",
+        "evidence_uri": null,
+        "notes": "Fictional scenario. No live infrastructure or scans."
+      }
+    },
+    {
+      "scenario_id": "aurora-city",
+      "snapshot_id": "aurora-baseline-v1",
+      "id": "HLT-009",
+      "name": "Emergency Ward Controller",
+      "sector": "healthcare",
+      "asset_type": "controller",
+      "site": "Aurora Central Hospital",
+      "product": "Sentinel Controller Series",
+      "vendor": "Aurora Systems (fictional)",
+      "version": "2.1.0",
+      "criticality": "essential",
+      "exposure": "internal",
+      "description": "Fictional healthcare controller supporting emergency ward controller. Product and version are simulation assumptions; no CVE applicability is claimed.",
+      "security": {
+        "network_zone": "OT control",
+        "mfa_enabled": true,
+        "internet_exposed": false,
+        "remote_access": false,
+        "patch_status": "current",
+        "backup_mode": "online",
+        "notes": [
+          "Configuration supplied by scenario author; not independently verified."
+        ],
+        "provenance": {
+          "kind": "scenario_assumption",
+          "source": "Aurora City fixture v1",
+          "recorded_at": "2026-10-01T09:00:00Z",
+          "evidence_uri": null,
+          "notes": "Fictional scenario. No live infrastructure or scans."
+        }
+      },
+      "provenance": {
+        "kind": "scenario_assumption",
+        "source": "Aurora City fixture v1",
+        "recorded_at": "2026-10-01T09:00:00Z",
+        "evidence_uri": null,
+        "notes": "Fictional scenario. No live infrastructure or scans."
+      }
+    },
+    {
+      "scenario_id": "aurora-city",
+      "snapshot_id": "aurora-baseline-v1",
+      "id": "HLT-010",
+      "name": "Hospital Backup Generator",
+      "sector": "healthcare",
+      "asset_type": "backup",
+      "site": "Aurora Central Hospital",
+      "product": "Sentinel Backup Series",
+      "vendor": "Aurora Systems (fictional)",
+      "version": "3.2.0",
+      "criticality": "important",
+      "exposure": "isolated",
+      "description": "Fictional healthcare backup supporting hospital backup generator. Product and version are simulation assumptions; no CVE applicability is claimed.",
+      "security": {
+        "network_zone": "Recovery",
+        "mfa_enabled": true,
+        "internet_exposed": false,
+        "remote_access": false,
+        "patch_status": "current",
+        "backup_mode": "offline",
+        "notes": [
+          "Configuration supplied by scenario author; not independently verified."
+        ],
+        "provenance": {
+          "kind": "scenario_assumption",
+          "source": "Aurora City fixture v1",
+          "recorded_at": "2026-10-01T09:00:00Z",
+          "evidence_uri": null,
+          "notes": "Fictional scenario. No live infrastructure or scans."
+        }
+      },
+      "provenance": {
+        "kind": "scenario_assumption",
+        "source": "Aurora City fixture v1",
+        "recorded_at": "2026-10-01T09:00:00Z",
+        "evidence_uri": null,
+        "notes": "Fictional scenario. No live infrastructure or scans."
+      }
+    }
+  ],
+  "cyber_edges": [
+    {
+      "scenario_id": "aurora-city",
+      "snapshot_id": "aurora-baseline-v1",
+      "id": "cyber-PWR-1-4",
+      "kind": "cyber",
+      "source_asset_id": "PWR-001",
+      "target_asset_id": "PWR-004",
+      "protocol": "HTTPS",
+      "access": "remote_management",
+      "assumptions": [
+        "Configured directional route and protocol permitted in this fictional scenario.",
+        "Reachability does not establish exploitability or successful compromise."
+      ],
+      "possible_effects": [
+        "data_integrity",
+        "unavailability"
+      ],
+      "provenance": {
+        "kind": "scenario_assumption",
+        "source": "Aurora City fixture v1",
+        "recorded_at": "2026-10-01T09:00:00Z",
+        "evidence_uri": null,
+        "notes": "Fictional scenario. No live infrastructure or scans."
+      }
+    },
+    {
+      "scenario_id": "aurora-city",
+      "snapshot_id": "aurora-baseline-v1",
+      "id": "cyber-PWR-4-8",
+      "kind": "cyber",
+      "source_asset_id": "PWR-004",
+      "target_asset_id": "PWR-008",
+      "protocol": "OPC UA",
+      "access": "remote_management",
+      "assumptions": [
+        "Configured directional route and protocol permitted in this fictional scenario.",
+        "Reachability does not establish exploitability or successful compromise."
+      ],
+      "possible_effects": [
+        "data_integrity",
+        "unavailability"
+      ],
+      "provenance": {
+        "kind": "scenario_assumption",
+        "source": "Aurora City fixture v1",
+        "recorded_at": "2026-10-01T09:00:00Z",
+        "evidence_uri": null,
+        "notes": "Fictional scenario. No live infrastructure or scans."
+      }
+    },
+    {
+      "scenario_id": "aurora-city",
+      "snapshot_id": "aurora-baseline-v1",
+      "id": "cyber-PWR-8-2",
+      "kind": "cyber",
+      "source_asset_id": "PWR-008",
+      "target_asset_id": "PWR-002",
+      "protocol": "OPC UA",
+      "access": "network",
+      "assumptions": [
+        "Configured directional route and protocol permitted in this fictional scenario.",
+        "Reachability does not establish exploitability or successful compromise."
+      ],
+      "possible_effects": [
+        "loss_of_control",
+        "loss_of_visibility"
+      ],
+      "provenance": {
+        "kind": "scenario_assumption",
+        "source": "Aurora City fixture v1",
+        "recorded_at": "2026-10-01T09:00:00Z",
+        "evidence_uri": null,
+        "notes": "Fictional scenario. No live infrastructure or scans."
+      }
+    },
+    {
+      "scenario_id": "aurora-city",
+      "snapshot_id": "aurora-baseline-v1",
+      "id": "cyber-PWR-8-3",
+      "kind": "cyber",
+      "source_asset_id": "PWR-008",
+      "target_asset_id": "PWR-003",
+      "protocol": "OPC UA",
+      "access": "network",
+      "assumptions": [
+        "Configured directional route and protocol permitted in this fictional scenario.",
+        "Reachability does not establish exploitability or successful compromise."
+      ],
+      "possible_effects": [
+        "loss_of_control",
+        "loss_of_visibility"
+      ],
+      "provenance": {
+        "kind": "scenario_assumption",
+        "source": "Aurora City fixture v1",
+        "recorded_at": "2026-10-01T09:00:00Z",
+        "evidence_uri": null,
+        "notes": "Fictional scenario. No live infrastructure or scans."
+      }
+    },
+    {
+      "scenario_id": "aurora-city",
+      "snapshot_id": "aurora-baseline-v1",
+      "id": "cyber-PWR-8-7",
+      "kind": "cyber",
+      "source_asset_id": "PWR-008",
+      "target_asset_id": "PWR-007",
+      "protocol": "OPC UA",
+      "access": "network",
+      "assumptions": [
+        "Configured directional route and protocol permitted in this fictional scenario.",
+        "Reachability does not establish exploitability or successful compromise."
+      ],
+      "possible_effects": [
+        "loss_of_control",
+        "loss_of_visibility"
+      ],
+      "provenance": {
+        "kind": "scenario_assumption",
+        "source": "Aurora City fixture v1",
+        "recorded_at": "2026-10-01T09:00:00Z",
+        "evidence_uri": null,
+        "notes": "Fictional scenario. No live infrastructure or scans."
+      }
+    },
+    {
+      "scenario_id": "aurora-city",
+      "snapshot_id": "aurora-baseline-v1",
+      "id": "cyber-PWR-8-9",
+      "kind": "cyber",
+      "source_asset_id": "PWR-008",
+      "target_asset_id": "PWR-009",
+      "protocol": "OPC UA",
+      "access": "network",
+      "assumptions": [
+        "Configured directional route and protocol permitted in this fictional scenario.",
+        "Reachability does not establish exploitability or successful compromise."
+      ],
+      "possible_effects": [
+        "loss_of_control",
+        "loss_of_visibility"
+      ],
+      "provenance": {
+        "kind": "scenario_assumption",
+        "source": "Aurora City fixture v1",
+        "recorded_at": "2026-10-01T09:00:00Z",
+        "evidence_uri": null,
+        "notes": "Fictional scenario. No live infrastructure or scans."
+      }
+    },
+    {
+      "scenario_id": "aurora-city",
+      "snapshot_id": "aurora-baseline-v1",
+      "id": "cyber-PWR-2-5",
+      "kind": "cyber",
+      "source_asset_id": "PWR-002",
+      "target_asset_id": "PWR-005",
+      "protocol": "OPC UA",
+      "access": "network",
+      "assumptions": [
+        "Configured directional route and protocol permitted in this fictional scenario.",
+        "Reachability does not establish exploitability or successful compromise."
+      ],
+      "possible_effects": [
+        "data_integrity",
+        "unavailability"
+      ],
+      "provenance": {
+        "kind": "scenario_assumption",
+        "source": "Aurora City fixture v1",
+        "recorded_at": "2026-10-01T09:00:00Z",
+        "evidence_uri": null,
+        "notes": "Fictional scenario. No live infrastructure or scans."
+      }
+    },
+    {
+      "scenario_id": "aurora-city",
+      "snapshot_id": "aurora-baseline-v1",
+      "id": "cyber-PWR-3-5",
+      "kind": "cyber",
+      "source_asset_id": "PWR-003",
+      "target_asset_id": "PWR-005",
+      "protocol": "OPC UA",
+      "access": "network",
+      "assumptions": [
+        "Configured directional route and protocol permitted in this fictional scenario.",
+        "Reachability does not establish exploitability or successful compromise."
+      ],
+      "possible_effects": [
+        "data_integrity",
+        "unavailability"
+      ],
+      "provenance": {
+        "kind": "scenario_assumption",
+        "source": "Aurora City fixture v1",
+        "recorded_at": "2026-10-01T09:00:00Z",
+        "evidence_uri": null,
+        "notes": "Fictional scenario. No live infrastructure or scans."
+      }
+    },
+    {
+      "scenario_id": "aurora-city",
+      "snapshot_id": "aurora-baseline-v1",
+      "id": "cyber-PWR-6-5",
+      "kind": "cyber",
+      "source_asset_id": "PWR-006",
+      "target_asset_id": "PWR-005",
+      "protocol": "OPC UA",
+      "access": "network",
+      "assumptions": [
+        "Configured directional route and protocol permitted in this fictional scenario.",
+        "Reachability does not establish exploitability or successful compromise."
+      ],
+      "possible_effects": [
+        "data_integrity",
+        "unavailability"
+      ],
+      "provenance": {
+        "kind": "scenario_assumption",
+        "source": "Aurora City fixture v1",
+        "recorded_at": "2026-10-01T09:00:00Z",
+        "evidence_uri": null,
+        "notes": "Fictional scenario. No live infrastructure or scans."
+      }
+    },
+    {
+      "scenario_id": "aurora-city",
+      "snapshot_id": "aurora-baseline-v1",
+      "id": "cyber-WTR-1-4",
+      "kind": "cyber",
+      "source_asset_id": "WTR-001",
+      "target_asset_id": "WTR-004",
+      "protocol": "HTTPS",
+      "access": "remote_management",
+      "assumptions": [
+        "Configured directional route and protocol permitted in this fictional scenario.",
+        "Reachability does not establish exploitability or successful compromise."
+      ],
+      "possible_effects": [
+        "data_integrity",
+        "unavailability"
+      ],
+      "provenance": {
+        "kind": "scenario_assumption",
+        "source": "Aurora City fixture v1",
+        "recorded_at": "2026-10-01T09:00:00Z",
+        "evidence_uri": null,
+        "notes": "Fictional scenario. No live infrastructure or scans."
+      }
+    },
+    {
+      "scenario_id": "aurora-city",
+      "snapshot_id": "aurora-baseline-v1",
+      "id": "cyber-WTR-4-8",
+      "kind": "cyber",
+      "source_asset_id": "WTR-004",
+      "target_asset_id": "WTR-008",
+      "protocol": "OPC UA",
+      "access": "remote_management",
+      "assumptions": [
+        "Configured directional route and protocol permitted in this fictional scenario.",
+        "Reachability does not establish exploitability or successful compromise."
+      ],
+      "possible_effects": [
+        "data_integrity",
+        "unavailability"
+      ],
+      "provenance": {
+        "kind": "scenario_assumption",
+        "source": "Aurora City fixture v1",
+        "recorded_at": "2026-10-01T09:00:00Z",
+        "evidence_uri": null,
+        "notes": "Fictional scenario. No live infrastructure or scans."
+      }
+    },
+    {
+      "scenario_id": "aurora-city",
+      "snapshot_id": "aurora-baseline-v1",
+      "id": "cyber-WTR-8-2",
+      "kind": "cyber",
+      "source_asset_id": "WTR-008",
+      "target_asset_id": "WTR-002",
+      "protocol": "OPC UA",
+      "access": "network",
+      "assumptions": [
+        "Configured directional route and protocol permitted in this fictional scenario.",
+        "Reachability does not establish exploitability or successful compromise."
+      ],
+      "possible_effects": [
+        "loss_of_control",
+        "loss_of_visibility"
+      ],
+      "provenance": {
+        "kind": "scenario_assumption",
+        "source": "Aurora City fixture v1",
+        "recorded_at": "2026-10-01T09:00:00Z",
+        "evidence_uri": null,
+        "notes": "Fictional scenario. No live infrastructure or scans."
+      }
+    },
+    {
+      "scenario_id": "aurora-city",
+      "snapshot_id": "aurora-baseline-v1",
+      "id": "cyber-WTR-8-3",
+      "kind": "cyber",
+      "source_asset_id": "WTR-008",
+      "target_asset_id": "WTR-003",
+      "protocol": "OPC UA",
+      "access": "network",
+      "assumptions": [
+        "Configured directional route and protocol permitted in this fictional scenario.",
+        "Reachability does not establish exploitability or successful compromise."
+      ],
+      "possible_effects": [
+        "loss_of_control",
+        "loss_of_visibility"
+      ],
+      "provenance": {
+        "kind": "scenario_assumption",
+        "source": "Aurora City fixture v1",
+        "recorded_at": "2026-10-01T09:00:00Z",
+        "evidence_uri": null,
+        "notes": "Fictional scenario. No live infrastructure or scans."
+      }
+    },
+    {
+      "scenario_id": "aurora-city",
+      "snapshot_id": "aurora-baseline-v1",
+      "id": "cyber-WTR-8-7",
+      "kind": "cyber",
+      "source_asset_id": "WTR-008",
+      "target_asset_id": "WTR-007",
+      "protocol": "OPC UA",
+      "access": "network",
+      "assumptions": [
+        "Configured directional route and protocol permitted in this fictional scenario.",
+        "Reachability does not establish exploitability or successful compromise."
+      ],
+      "possible_effects": [
+        "loss_of_control",
+        "loss_of_visibility"
+      ],
+      "provenance": {
+        "kind": "scenario_assumption",
+        "source": "Aurora City fixture v1",
+        "recorded_at": "2026-10-01T09:00:00Z",
+        "evidence_uri": null,
+        "notes": "Fictional scenario. No live infrastructure or scans."
+      }
+    },
+    {
+      "scenario_id": "aurora-city",
+      "snapshot_id": "aurora-baseline-v1",
+      "id": "cyber-WTR-8-9",
+      "kind": "cyber",
+      "source_asset_id": "WTR-008",
+      "target_asset_id": "WTR-009",
+      "protocol": "OPC UA",
+      "access": "network",
+      "assumptions": [
+        "Configured directional route and protocol permitted in this fictional scenario.",
+        "Reachability does not establish exploitability or successful compromise."
+      ],
+      "possible_effects": [
+        "loss_of_control",
+        "loss_of_visibility"
+      ],
+      "provenance": {
+        "kind": "scenario_assumption",
+        "source": "Aurora City fixture v1",
+        "recorded_at": "2026-10-01T09:00:00Z",
+        "evidence_uri": null,
+        "notes": "Fictional scenario. No live infrastructure or scans."
+      }
+    },
+    {
+      "scenario_id": "aurora-city",
+      "snapshot_id": "aurora-baseline-v1",
+      "id": "cyber-WTR-2-5",
+      "kind": "cyber",
+      "source_asset_id": "WTR-002",
+      "target_asset_id": "WTR-005",
+      "protocol": "OPC UA",
+      "access": "network",
+      "assumptions": [
+        "Configured directional route and protocol permitted in this fictional scenario.",
+        "Reachability does not establish exploitability or successful compromise."
+      ],
+      "possible_effects": [
+        "data_integrity",
+        "unavailability"
+      ],
+      "provenance": {
+        "kind": "scenario_assumption",
+        "source": "Aurora City fixture v1",
+        "recorded_at": "2026-10-01T09:00:00Z",
+        "evidence_uri": null,
+        "notes": "Fictional scenario. No live infrastructure or scans."
+      }
+    },
+    {
+      "scenario_id": "aurora-city",
+      "snapshot_id": "aurora-baseline-v1",
+      "id": "cyber-WTR-3-5",
+      "kind": "cyber",
+      "source_asset_id": "WTR-003",
+      "target_asset_id": "WTR-005",
+      "protocol": "OPC UA",
+      "access": "network",
+      "assumptions": [
+        "Configured directional route and protocol permitted in this fictional scenario.",
+        "Reachability does not establish exploitability or successful compromise."
+      ],
+      "possible_effects": [
+        "data_integrity",
+        "unavailability"
+      ],
+      "provenance": {
+        "kind": "scenario_assumption",
+        "source": "Aurora City fixture v1",
+        "recorded_at": "2026-10-01T09:00:00Z",
+        "evidence_uri": null,
+        "notes": "Fictional scenario. No live infrastructure or scans."
+      }
+    },
+    {
+      "scenario_id": "aurora-city",
+      "snapshot_id": "aurora-baseline-v1",
+      "id": "cyber-WTR-6-5",
+      "kind": "cyber",
+      "source_asset_id": "WTR-006",
+      "target_asset_id": "WTR-005",
+      "protocol": "OPC UA",
+      "access": "network",
+      "assumptions": [
+        "Configured directional route and protocol permitted in this fictional scenario.",
+        "Reachability does not establish exploitability or successful compromise."
+      ],
+      "possible_effects": [
+        "data_integrity",
+        "unavailability"
+      ],
+      "provenance": {
+        "kind": "scenario_assumption",
+        "source": "Aurora City fixture v1",
+        "recorded_at": "2026-10-01T09:00:00Z",
+        "evidence_uri": null,
+        "notes": "Fictional scenario. No live infrastructure or scans."
+      }
+    },
+    {
+      "scenario_id": "aurora-city",
+      "snapshot_id": "aurora-baseline-v1",
+      "id": "cyber-HLT-1-4",
+      "kind": "cyber",
+      "source_asset_id": "HLT-001",
+      "target_asset_id": "HLT-004",
+      "protocol": "HTTPS",
+      "access": "remote_management",
+      "assumptions": [
+        "Configured directional route and protocol permitted in this fictional scenario.",
+        "Reachability does not establish exploitability or successful compromise."
+      ],
+      "possible_effects": [
+        "data_integrity",
+        "unavailability"
+      ],
+      "provenance": {
+        "kind": "scenario_assumption",
+        "source": "Aurora City fixture v1",
+        "recorded_at": "2026-10-01T09:00:00Z",
+        "evidence_uri": null,
+        "notes": "Fictional scenario. No live infrastructure or scans."
+      }
+    },
+    {
+      "scenario_id": "aurora-city",
+      "snapshot_id": "aurora-baseline-v1",
+      "id": "cyber-HLT-4-8",
+      "kind": "cyber",
+      "source_asset_id": "HLT-004",
+      "target_asset_id": "HLT-008",
+      "protocol": "OPC UA",
+      "access": "remote_management",
+      "assumptions": [
+        "Configured directional route and protocol permitted in this fictional scenario.",
+        "Reachability does not establish exploitability or successful compromise."
+      ],
+      "possible_effects": [
+        "data_integrity",
+        "unavailability"
+      ],
+      "provenance": {
+        "kind": "scenario_assumption",
+        "source": "Aurora City fixture v1",
+        "recorded_at": "2026-10-01T09:00:00Z",
+        "evidence_uri": null,
+        "notes": "Fictional scenario. No live infrastructure or scans."
+      }
+    },
+    {
+      "scenario_id": "aurora-city",
+      "snapshot_id": "aurora-baseline-v1",
+      "id": "cyber-HLT-8-2",
+      "kind": "cyber",
+      "source_asset_id": "HLT-008",
+      "target_asset_id": "HLT-002",
+      "protocol": "OPC UA",
+      "access": "network",
+      "assumptions": [
+        "Configured directional route and protocol permitted in this fictional scenario.",
+        "Reachability does not establish exploitability or successful compromise."
+      ],
+      "possible_effects": [
+        "loss_of_control",
+        "loss_of_visibility"
+      ],
+      "provenance": {
+        "kind": "scenario_assumption",
+        "source": "Aurora City fixture v1",
+        "recorded_at": "2026-10-01T09:00:00Z",
+        "evidence_uri": null,
+        "notes": "Fictional scenario. No live infrastructure or scans."
+      }
+    },
+    {
+      "scenario_id": "aurora-city",
+      "snapshot_id": "aurora-baseline-v1",
+      "id": "cyber-HLT-8-3",
+      "kind": "cyber",
+      "source_asset_id": "HLT-008",
+      "target_asset_id": "HLT-003",
+      "protocol": "OPC UA",
+      "access": "network",
+      "assumptions": [
+        "Configured directional route and protocol permitted in this fictional scenario.",
+        "Reachability does not establish exploitability or successful compromise."
+      ],
+      "possible_effects": [
+        "loss_of_control",
+        "loss_of_visibility"
+      ],
+      "provenance": {
+        "kind": "scenario_assumption",
+        "source": "Aurora City fixture v1",
+        "recorded_at": "2026-10-01T09:00:00Z",
+        "evidence_uri": null,
+        "notes": "Fictional scenario. No live infrastructure or scans."
+      }
+    },
+    {
+      "scenario_id": "aurora-city",
+      "snapshot_id": "aurora-baseline-v1",
+      "id": "cyber-HLT-8-7",
+      "kind": "cyber",
+      "source_asset_id": "HLT-008",
+      "target_asset_id": "HLT-007",
+      "protocol": "OPC UA",
+      "access": "network",
+      "assumptions": [
+        "Configured directional route and protocol permitted in this fictional scenario.",
+        "Reachability does not establish exploitability or successful compromise."
+      ],
+      "possible_effects": [
+        "loss_of_control",
+        "loss_of_visibility"
+      ],
+      "provenance": {
+        "kind": "scenario_assumption",
+        "source": "Aurora City fixture v1",
+        "recorded_at": "2026-10-01T09:00:00Z",
+        "evidence_uri": null,
+        "notes": "Fictional scenario. No live infrastructure or scans."
+      }
+    },
+    {
+      "scenario_id": "aurora-city",
+      "snapshot_id": "aurora-baseline-v1",
+      "id": "cyber-HLT-8-9",
+      "kind": "cyber",
+      "source_asset_id": "HLT-008",
+      "target_asset_id": "HLT-009",
+      "protocol": "OPC UA",
+      "access": "network",
+      "assumptions": [
+        "Configured directional route and protocol permitted in this fictional scenario.",
+        "Reachability does not establish exploitability or successful compromise."
+      ],
+      "possible_effects": [
+        "loss_of_control",
+        "loss_of_visibility"
+      ],
+      "provenance": {
+        "kind": "scenario_assumption",
+        "source": "Aurora City fixture v1",
+        "recorded_at": "2026-10-01T09:00:00Z",
+        "evidence_uri": null,
+        "notes": "Fictional scenario. No live infrastructure or scans."
+      }
+    },
+    {
+      "scenario_id": "aurora-city",
+      "snapshot_id": "aurora-baseline-v1",
+      "id": "cyber-HLT-2-5",
+      "kind": "cyber",
+      "source_asset_id": "HLT-002",
+      "target_asset_id": "HLT-005",
+      "protocol": "OPC UA",
+      "access": "network",
+      "assumptions": [
+        "Configured directional route and protocol permitted in this fictional scenario.",
+        "Reachability does not establish exploitability or successful compromise."
+      ],
+      "possible_effects": [
+        "data_integrity",
+        "unavailability"
+      ],
+      "provenance": {
+        "kind": "scenario_assumption",
+        "source": "Aurora City fixture v1",
+        "recorded_at": "2026-10-01T09:00:00Z",
+        "evidence_uri": null,
+        "notes": "Fictional scenario. No live infrastructure or scans."
+      }
+    },
+    {
+      "scenario_id": "aurora-city",
+      "snapshot_id": "aurora-baseline-v1",
+      "id": "cyber-HLT-3-5",
+      "kind": "cyber",
+      "source_asset_id": "HLT-003",
+      "target_asset_id": "HLT-005",
+      "protocol": "OPC UA",
+      "access": "network",
+      "assumptions": [
+        "Configured directional route and protocol permitted in this fictional scenario.",
+        "Reachability does not establish exploitability or successful compromise."
+      ],
+      "possible_effects": [
+        "data_integrity",
+        "unavailability"
+      ],
+      "provenance": {
+        "kind": "scenario_assumption",
+        "source": "Aurora City fixture v1",
+        "recorded_at": "2026-10-01T09:00:00Z",
+        "evidence_uri": null,
+        "notes": "Fictional scenario. No live infrastructure or scans."
+      }
+    },
+    {
+      "scenario_id": "aurora-city",
+      "snapshot_id": "aurora-baseline-v1",
+      "id": "cyber-HLT-6-5",
+      "kind": "cyber",
+      "source_asset_id": "HLT-006",
+      "target_asset_id": "HLT-005",
+      "protocol": "OPC UA",
+      "access": "network",
+      "assumptions": [
+        "Configured directional route and protocol permitted in this fictional scenario.",
+        "Reachability does not establish exploitability or successful compromise."
+      ],
+      "possible_effects": [
+        "data_integrity",
+        "unavailability"
+      ],
+      "provenance": {
+        "kind": "scenario_assumption",
+        "source": "Aurora City fixture v1",
+        "recorded_at": "2026-10-01T09:00:00Z",
+        "evidence_uri": null,
+        "notes": "Fictional scenario. No live infrastructure or scans."
+      }
+    }
+  ],
+  "operational_edges": [
+    {
+      "scenario_id": "aurora-city",
+      "snapshot_id": "aurora-baseline-v1",
+      "id": "ops-PWR-2-7",
+      "kind": "operational",
+      "source_asset_id": "PWR-002",
+      "target_asset_id": "PWR-007",
+      "dependency": "control",
+      "requirement": "required",
+      "redundancy_group": null,
+      "minimum_providers": 1,
+      "grace_period_minutes": 0,
+      "assumptions": [
+        "Provider \u2192 dependent direction.",
+        "Backup availability and duration require a future conditional service model."
+      ],
+      "provenance": {
+        "kind": "scenario_assumption",
+        "source": "Aurora City fixture v1",
+        "recorded_at": "2026-10-01T09:00:00Z",
+        "evidence_uri": null,
+        "notes": "Fictional scenario. No live infrastructure or scans."
+      }
+    },
+    {
+      "scenario_id": "aurora-city",
+      "snapshot_id": "aurora-baseline-v1",
+      "id": "ops-PWR-3-9",
+      "kind": "operational",
+      "source_asset_id": "PWR-003",
+      "target_asset_id": "PWR-009",
+      "dependency": "control",
+      "requirement": "required",
+      "redundancy_group": null,
+      "minimum_providers": 1,
+      "grace_period_minutes": 0,
+      "assumptions": [
+        "Provider \u2192 dependent direction.",
+        "Backup availability and duration require a future conditional service model."
+      ],
+      "provenance": {
+        "kind": "scenario_assumption",
+        "source": "Aurora City fixture v1",
+        "recorded_at": "2026-10-01T09:00:00Z",
+        "evidence_uri": null,
+        "notes": "Fictional scenario. No live infrastructure or scans."
+      }
+    },
+    {
+      "scenario_id": "aurora-city",
+      "snapshot_id": "aurora-baseline-v1",
+      "id": "ops-PWR-6-2",
+      "kind": "operational",
+      "source_asset_id": "PWR-006",
+      "target_asset_id": "PWR-002",
+      "dependency": "data",
+      "requirement": "required",
+      "redundancy_group": null,
+      "minimum_providers": 1,
+      "grace_period_minutes": 0,
+      "assumptions": [
+        "Provider \u2192 dependent direction.",
+        "Backup availability and duration require a future conditional service model."
+      ],
+      "provenance": {
+        "kind": "scenario_assumption",
+        "source": "Aurora City fixture v1",
+        "recorded_at": "2026-10-01T09:00:00Z",
+        "evidence_uri": null,
+        "notes": "Fictional scenario. No live infrastructure or scans."
+      }
+    },
+    {
+      "scenario_id": "aurora-city",
+      "snapshot_id": "aurora-baseline-v1",
+      "id": "ops-PWR-8-2",
+      "kind": "operational",
+      "source_asset_id": "PWR-008",
+      "target_asset_id": "PWR-002",
+      "dependency": "control",
+      "requirement": "required",
+      "redundancy_group": null,
+      "minimum_providers": 1,
+      "grace_period_minutes": 0,
+      "assumptions": [
+        "Provider \u2192 dependent direction.",
+        "Backup availability and duration require a future conditional service model."
+      ],
+      "provenance": {
+        "kind": "scenario_assumption",
+        "source": "Aurora City fixture v1",
+        "recorded_at": "2026-10-01T09:00:00Z",
+        "evidence_uri": null,
+        "notes": "Fictional scenario. No live infrastructure or scans."
+      }
+    },
+    {
+      "scenario_id": "aurora-city",
+      "snapshot_id": "aurora-baseline-v1",
+      "id": "ops-PWR-8-3",
+      "kind": "operational",
+      "source_asset_id": "PWR-008",
+      "target_asset_id": "PWR-003",
+      "dependency": "control",
+      "requirement": "required",
+      "redundancy_group": null,
+      "minimum_providers": 1,
+      "grace_period_minutes": 0,
+      "assumptions": [
+        "Provider \u2192 dependent direction.",
+        "Backup availability and duration require a future conditional service model."
+      ],
+      "provenance": {
+        "kind": "scenario_assumption",
+        "source": "Aurora City fixture v1",
+        "recorded_at": "2026-10-01T09:00:00Z",
+        "evidence_uri": null,
+        "notes": "Fictional scenario. No live infrastructure or scans."
+      }
+    },
+    {
+      "scenario_id": "aurora-city",
+      "snapshot_id": "aurora-baseline-v1",
+      "id": "ops-PWR-10-8",
+      "kind": "operational",
+      "source_asset_id": "PWR-010",
+      "target_asset_id": "PWR-008",
+      "dependency": "backup",
+      "requirement": "backup",
+      "redundancy_group": null,
+      "minimum_providers": 1,
+      "grace_period_minutes": 30,
+      "assumptions": [
+        "Provider \u2192 dependent direction.",
+        "Backup availability and duration require a future conditional service model."
+      ],
+      "provenance": {
+        "kind": "scenario_assumption",
+        "source": "Aurora City fixture v1",
+        "recorded_at": "2026-10-01T09:00:00Z",
+        "evidence_uri": null,
+        "notes": "Fictional scenario. No live infrastructure or scans."
+      }
+    },
+    {
+      "scenario_id": "aurora-city",
+      "snapshot_id": "aurora-baseline-v1",
+      "id": "ops-WTR-2-7",
+      "kind": "operational",
+      "source_asset_id": "WTR-002",
+      "target_asset_id": "WTR-007",
+      "dependency": "control",
+      "requirement": "required",
+      "redundancy_group": null,
+      "minimum_providers": 1,
+      "grace_period_minutes": 0,
+      "assumptions": [
+        "Provider \u2192 dependent direction.",
+        "Backup availability and duration require a future conditional service model."
+      ],
+      "provenance": {
+        "kind": "scenario_assumption",
+        "source": "Aurora City fixture v1",
+        "recorded_at": "2026-10-01T09:00:00Z",
+        "evidence_uri": null,
+        "notes": "Fictional scenario. No live infrastructure or scans."
+      }
+    },
+    {
+      "scenario_id": "aurora-city",
+      "snapshot_id": "aurora-baseline-v1",
+      "id": "ops-WTR-3-9",
+      "kind": "operational",
+      "source_asset_id": "WTR-003",
+      "target_asset_id": "WTR-009",
+      "dependency": "control",
+      "requirement": "required",
+      "redundancy_group": null,
+      "minimum_providers": 1,
+      "grace_period_minutes": 0,
+      "assumptions": [
+        "Provider \u2192 dependent direction.",
+        "Backup availability and duration require a future conditional service model."
+      ],
+      "provenance": {
+        "kind": "scenario_assumption",
+        "source": "Aurora City fixture v1",
+        "recorded_at": "2026-10-01T09:00:00Z",
+        "evidence_uri": null,
+        "notes": "Fictional scenario. No live infrastructure or scans."
+      }
+    },
+    {
+      "scenario_id": "aurora-city",
+      "snapshot_id": "aurora-baseline-v1",
+      "id": "ops-WTR-6-2",
+      "kind": "operational",
+      "source_asset_id": "WTR-006",
+      "target_asset_id": "WTR-002",
+      "dependency": "data",
+      "requirement": "required",
+      "redundancy_group": null,
+      "minimum_providers": 1,
+      "grace_period_minutes": 0,
+      "assumptions": [
+        "Provider \u2192 dependent direction.",
+        "Backup availability and duration require a future conditional service model."
+      ],
+      "provenance": {
+        "kind": "scenario_assumption",
+        "source": "Aurora City fixture v1",
+        "recorded_at": "2026-10-01T09:00:00Z",
+        "evidence_uri": null,
+        "notes": "Fictional scenario. No live infrastructure or scans."
+      }
+    },
+    {
+      "scenario_id": "aurora-city",
+      "snapshot_id": "aurora-baseline-v1",
+      "id": "ops-WTR-8-2",
+      "kind": "operational",
+      "source_asset_id": "WTR-008",
+      "target_asset_id": "WTR-002",
+      "dependency": "control",
+      "requirement": "required",
+      "redundancy_group": null,
+      "minimum_providers": 1,
+      "grace_period_minutes": 0,
+      "assumptions": [
+        "Provider \u2192 dependent direction.",
+        "Backup availability and duration require a future conditional service model."
+      ],
+      "provenance": {
+        "kind": "scenario_assumption",
+        "source": "Aurora City fixture v1",
+        "recorded_at": "2026-10-01T09:00:00Z",
+        "evidence_uri": null,
+        "notes": "Fictional scenario. No live infrastructure or scans."
+      }
+    },
+    {
+      "scenario_id": "aurora-city",
+      "snapshot_id": "aurora-baseline-v1",
+      "id": "ops-WTR-8-3",
+      "kind": "operational",
+      "source_asset_id": "WTR-008",
+      "target_asset_id": "WTR-003",
+      "dependency": "control",
+      "requirement": "required",
+      "redundancy_group": null,
+      "minimum_providers": 1,
+      "grace_period_minutes": 0,
+      "assumptions": [
+        "Provider \u2192 dependent direction.",
+        "Backup availability and duration require a future conditional service model."
+      ],
+      "provenance": {
+        "kind": "scenario_assumption",
+        "source": "Aurora City fixture v1",
+        "recorded_at": "2026-10-01T09:00:00Z",
+        "evidence_uri": null,
+        "notes": "Fictional scenario. No live infrastructure or scans."
+      }
+    },
+    {
+      "scenario_id": "aurora-city",
+      "snapshot_id": "aurora-baseline-v1",
+      "id": "ops-WTR-10-8",
+      "kind": "operational",
+      "source_asset_id": "WTR-010",
+      "target_asset_id": "WTR-008",
+      "dependency": "backup",
+      "requirement": "backup",
+      "redundancy_group": null,
+      "minimum_providers": 1,
+      "grace_period_minutes": 30,
+      "assumptions": [
+        "Provider \u2192 dependent direction.",
+        "Backup availability and duration require a future conditional service model."
+      ],
+      "provenance": {
+        "kind": "scenario_assumption",
+        "source": "Aurora City fixture v1",
+        "recorded_at": "2026-10-01T09:00:00Z",
+        "evidence_uri": null,
+        "notes": "Fictional scenario. No live infrastructure or scans."
+      }
+    },
+    {
+      "scenario_id": "aurora-city",
+      "snapshot_id": "aurora-baseline-v1",
+      "id": "ops-HLT-2-7",
+      "kind": "operational",
+      "source_asset_id": "HLT-002",
+      "target_asset_id": "HLT-007",
+      "dependency": "control",
+      "requirement": "required",
+      "redundancy_group": null,
+      "minimum_providers": 1,
+      "grace_period_minutes": 0,
+      "assumptions": [
+        "Provider \u2192 dependent direction.",
+        "Backup availability and duration require a future conditional service model."
+      ],
+      "provenance": {
+        "kind": "scenario_assumption",
+        "source": "Aurora City fixture v1",
+        "recorded_at": "2026-10-01T09:00:00Z",
+        "evidence_uri": null,
+        "notes": "Fictional scenario. No live infrastructure or scans."
+      }
+    },
+    {
+      "scenario_id": "aurora-city",
+      "snapshot_id": "aurora-baseline-v1",
+      "id": "ops-HLT-3-9",
+      "kind": "operational",
+      "source_asset_id": "HLT-003",
+      "target_asset_id": "HLT-009",
+      "dependency": "control",
+      "requirement": "required",
+      "redundancy_group": null,
+      "minimum_providers": 1,
+      "grace_period_minutes": 0,
+      "assumptions": [
+        "Provider \u2192 dependent direction.",
+        "Backup availability and duration require a future conditional service model."
+      ],
+      "provenance": {
+        "kind": "scenario_assumption",
+        "source": "Aurora City fixture v1",
+        "recorded_at": "2026-10-01T09:00:00Z",
+        "evidence_uri": null,
+        "notes": "Fictional scenario. No live infrastructure or scans."
+      }
+    },
+    {
+      "scenario_id": "aurora-city",
+      "snapshot_id": "aurora-baseline-v1",
+      "id": "ops-HLT-6-2",
+      "kind": "operational",
+      "source_asset_id": "HLT-006",
+      "target_asset_id": "HLT-002",
+      "dependency": "data",
+      "requirement": "required",
+      "redundancy_group": null,
+      "minimum_providers": 1,
+      "grace_period_minutes": 0,
+      "assumptions": [
+        "Provider \u2192 dependent direction.",
+        "Backup availability and duration require a future conditional service model."
+      ],
+      "provenance": {
+        "kind": "scenario_assumption",
+        "source": "Aurora City fixture v1",
+        "recorded_at": "2026-10-01T09:00:00Z",
+        "evidence_uri": null,
+        "notes": "Fictional scenario. No live infrastructure or scans."
+      }
+    },
+    {
+      "scenario_id": "aurora-city",
+      "snapshot_id": "aurora-baseline-v1",
+      "id": "ops-HLT-8-2",
+      "kind": "operational",
+      "source_asset_id": "HLT-008",
+      "target_asset_id": "HLT-002",
+      "dependency": "control",
+      "requirement": "required",
+      "redundancy_group": null,
+      "minimum_providers": 1,
+      "grace_period_minutes": 0,
+      "assumptions": [
+        "Provider \u2192 dependent direction.",
+        "Backup availability and duration require a future conditional service model."
+      ],
+      "provenance": {
+        "kind": "scenario_assumption",
+        "source": "Aurora City fixture v1",
+        "recorded_at": "2026-10-01T09:00:00Z",
+        "evidence_uri": null,
+        "notes": "Fictional scenario. No live infrastructure or scans."
+      }
+    },
+    {
+      "scenario_id": "aurora-city",
+      "snapshot_id": "aurora-baseline-v1",
+      "id": "ops-HLT-8-3",
+      "kind": "operational",
+      "source_asset_id": "HLT-008",
+      "target_asset_id": "HLT-003",
+      "dependency": "control",
+      "requirement": "required",
+      "redundancy_group": null,
+      "minimum_providers": 1,
+      "grace_period_minutes": 0,
+      "assumptions": [
+        "Provider \u2192 dependent direction.",
+        "Backup availability and duration require a future conditional service model."
+      ],
+      "provenance": {
+        "kind": "scenario_assumption",
+        "source": "Aurora City fixture v1",
+        "recorded_at": "2026-10-01T09:00:00Z",
+        "evidence_uri": null,
+        "notes": "Fictional scenario. No live infrastructure or scans."
+      }
+    },
+    {
+      "scenario_id": "aurora-city",
+      "snapshot_id": "aurora-baseline-v1",
+      "id": "ops-HLT-10-8",
+      "kind": "operational",
+      "source_asset_id": "HLT-010",
+      "target_asset_id": "HLT-008",
+      "dependency": "backup",
+      "requirement": "backup",
+      "redundancy_group": null,
+      "minimum_providers": 1,
+      "grace_period_minutes": 30,
+      "assumptions": [
+        "Provider \u2192 dependent direction.",
+        "Backup availability and duration require a future conditional service model."
+      ],
+      "provenance": {
+        "kind": "scenario_assumption",
+        "source": "Aurora City fixture v1",
+        "recorded_at": "2026-10-01T09:00:00Z",
+        "evidence_uri": null,
+        "notes": "Fictional scenario. No live infrastructure or scans."
+      }
+    },
+    {
+      "scenario_id": "aurora-city",
+      "snapshot_id": "aurora-baseline-v1",
+      "id": "ops-PWR-007-WTR-007",
+      "kind": "operational",
+      "source_asset_id": "PWR-007",
+      "target_asset_id": "WTR-007",
+      "dependency": "power",
+      "requirement": "redundant",
+      "redundancy_group": "supply-WTR-007",
+      "minimum_providers": 1,
+      "grace_period_minutes": 0,
+      "assumptions": [
+        "Fictional cross-sector service dependency; not a cyber access path."
+      ],
+      "provenance": {
+        "kind": "scenario_assumption",
+        "source": "Aurora City fixture v1",
+        "recorded_at": "2026-10-01T09:00:00Z",
+        "evidence_uri": null,
+        "notes": "Fictional scenario. No live infrastructure or scans."
+      }
+    },
+    {
+      "scenario_id": "aurora-city",
+      "snapshot_id": "aurora-baseline-v1",
+      "id": "ops-PWR-009-WTR-007",
+      "kind": "operational",
+      "source_asset_id": "PWR-009",
+      "target_asset_id": "WTR-007",
+      "dependency": "power",
+      "requirement": "redundant",
+      "redundancy_group": "supply-WTR-007",
+      "minimum_providers": 1,
+      "grace_period_minutes": 0,
+      "assumptions": [
+        "Fictional cross-sector service dependency; not a cyber access path."
+      ],
+      "provenance": {
+        "kind": "scenario_assumption",
+        "source": "Aurora City fixture v1",
+        "recorded_at": "2026-10-01T09:00:00Z",
+        "evidence_uri": null,
+        "notes": "Fictional scenario. No live infrastructure or scans."
+      }
+    },
+    {
+      "scenario_id": "aurora-city",
+      "snapshot_id": "aurora-baseline-v1",
+      "id": "ops-PWR-007-HLT-008",
+      "kind": "operational",
+      "source_asset_id": "PWR-007",
+      "target_asset_id": "HLT-008",
+      "dependency": "power",
+      "requirement": "redundant",
+      "redundancy_group": "supply-HLT-008",
+      "minimum_providers": 1,
+      "grace_period_minutes": 0,
+      "assumptions": [
+        "Fictional cross-sector service dependency; not a cyber access path."
+      ],
+      "provenance": {
+        "kind": "scenario_assumption",
+        "source": "Aurora City fixture v1",
+        "recorded_at": "2026-10-01T09:00:00Z",
+        "evidence_uri": null,
+        "notes": "Fictional scenario. No live infrastructure or scans."
+      }
+    },
+    {
+      "scenario_id": "aurora-city",
+      "snapshot_id": "aurora-baseline-v1",
+      "id": "ops-WTR-007-HLT-003",
+      "kind": "operational",
+      "source_asset_id": "WTR-007",
+      "target_asset_id": "HLT-003",
+      "dependency": "water",
+      "requirement": "required",
+      "redundancy_group": null,
+      "minimum_providers": 1,
+      "grace_period_minutes": 0,
+      "assumptions": [
+        "Fictional cross-sector service dependency; not a cyber access path."
+      ],
+      "provenance": {
+        "kind": "scenario_assumption",
+        "source": "Aurora City fixture v1",
+        "recorded_at": "2026-10-01T09:00:00Z",
+        "evidence_uri": null,
+        "notes": "Fictional scenario. No live infrastructure or scans."
+      }
+    },
+    {
+      "scenario_id": "aurora-city",
+      "snapshot_id": "aurora-baseline-v1",
+      "id": "ops-PWR-009-HLT-008",
+      "kind": "operational",
+      "source_asset_id": "PWR-009",
+      "target_asset_id": "HLT-008",
+      "dependency": "power",
+      "requirement": "redundant",
+      "redundancy_group": "supply-HLT-008",
+      "minimum_providers": 1,
+      "grace_period_minutes": 0,
+      "assumptions": [
+        "Fictional cross-sector service dependency; not a cyber access path."
+      ],
+      "provenance": {
+        "kind": "scenario_assumption",
+        "source": "Aurora City fixture v1",
+        "recorded_at": "2026-10-01T09:00:00Z",
+        "evidence_uri": null,
+        "notes": "Fictional scenario. No live infrastructure or scans."
+      }
+    }
+  ],
+  "services": [
+    {
+      "scenario_id": "aurora-city",
+      "snapshot_id": "aurora-baseline-v1",
+      "id": "svc-power",
+      "name": "Electricity distribution",
+      "sector": "power",
+      "description": "Dispatch and distribution to Aurora City's essential sites.",
+      "requirements": [
+        {
+          "id": "req-power-control",
+          "asset_ids": [
+            "PWR-008"
+          ],
+          "minimum_available": 1,
+          "role": "primary",
+          "backup_duration_minutes": null,
+          "activation_delay_minutes": 0,
+          "substitutes_requirement_id": null,
+          "activation_condition": null
+        },
+        {
+          "id": "req-power-supply",
+          "asset_ids": [
+            "PWR-007",
+            "PWR-009"
+          ],
+          "minimum_available": 1,
+          "role": "primary",
+          "backup_duration_minutes": null,
+          "activation_delay_minutes": 0,
+          "substitutes_requirement_id": null,
+          "activation_condition": null
+        },
+        {
+          "id": "req-power-backup",
+          "asset_ids": [
+            "PWR-010"
+          ],
+          "minimum_available": 1,
+          "role": "backup",
+          "backup_duration_minutes": 240,
+          "activation_delay_minutes": 5,
+          "substitutes_requirement_id": "req-power-control",
+          "activation_condition": "Local power interruption only; does not replace a compromised controller or server."
+        }
+      ],
+      "assumptions": [
+        "All primary requirement groups must be satisfied; members of each group use k-of-n availability.",
+        "Each backup conditionally substitutes only its named primary requirement; activation delay and duration must be evaluated.",
+        "Backup power cannot repair compromised controls or corrupted data.",
+        "No live service status or disruption estimate is available."
+      ],
+      "provenance": {
+        "kind": "scenario_assumption",
+        "source": "Aurora City fixture v1",
+        "recorded_at": "2026-10-01T09:00:00Z",
+        "evidence_uri": null,
+        "notes": "Fictional scenario. No live infrastructure or scans."
+      }
+    },
+    {
+      "scenario_id": "aurora-city",
+      "snapshot_id": "aurora-baseline-v1",
+      "id": "svc-water",
+      "name": "Clean water supply",
+      "sector": "water",
+      "description": "Treatment and distribution of potable water.",
+      "requirements": [
+        {
+          "id": "req-water-control",
+          "asset_ids": [
+            "WTR-008"
+          ],
+          "minimum_available": 1,
+          "role": "primary",
+          "backup_duration_minutes": null,
+          "activation_delay_minutes": 0,
+          "substitutes_requirement_id": null,
+          "activation_condition": null
+        },
+        {
+          "id": "req-water-supply",
+          "asset_ids": [
+            "WTR-007",
+            "WTR-009"
+          ],
+          "minimum_available": 1,
+          "role": "primary",
+          "backup_duration_minutes": null,
+          "activation_delay_minutes": 0,
+          "substitutes_requirement_id": null,
+          "activation_condition": null
+        },
+        {
+          "id": "req-water-power",
+          "asset_ids": [
+            "PWR-007",
+            "PWR-009"
+          ],
+          "minimum_available": 1,
+          "role": "primary",
+          "backup_duration_minutes": null,
+          "activation_delay_minutes": 0,
+          "substitutes_requirement_id": null,
+          "activation_condition": null
+        },
+        {
+          "id": "req-water-backup",
+          "asset_ids": [
+            "WTR-010"
+          ],
+          "minimum_available": 1,
+          "role": "backup",
+          "backup_duration_minutes": 240,
+          "activation_delay_minutes": 5,
+          "substitutes_requirement_id": "req-water-control",
+          "activation_condition": "Control-server unavailability only, assuming a clean, isolated spare and validated configuration."
+        }
+      ],
+      "assumptions": [
+        "All primary requirement groups must be satisfied; members of each group use k-of-n availability.",
+        "Each backup conditionally substitutes only its named primary requirement; activation delay and duration must be evaluated.",
+        "Backup power cannot repair compromised controls or corrupted data.",
+        "No live service status or disruption estimate is available."
+      ],
+      "provenance": {
+        "kind": "scenario_assumption",
+        "source": "Aurora City fixture v1",
+        "recorded_at": "2026-10-01T09:00:00Z",
+        "evidence_uri": null,
+        "notes": "Fictional scenario. No live infrastructure or scans."
+      }
+    },
+    {
+      "scenario_id": "aurora-city",
+      "snapshot_id": "aurora-baseline-v1",
+      "id": "svc-healthcare",
+      "name": "Emergency healthcare",
+      "sector": "healthcare",
+      "description": "Clinical operations and essential hospital facilities.",
+      "requirements": [
+        {
+          "id": "req-healthcare-control",
+          "asset_ids": [
+            "HLT-008"
+          ],
+          "minimum_available": 1,
+          "role": "primary",
+          "backup_duration_minutes": null,
+          "activation_delay_minutes": 0,
+          "substitutes_requirement_id": null,
+          "activation_condition": null
+        },
+        {
+          "id": "req-healthcare-supply",
+          "asset_ids": [
+            "HLT-007",
+            "HLT-009"
+          ],
+          "minimum_available": 2,
+          "role": "primary",
+          "backup_duration_minutes": null,
+          "activation_delay_minutes": 0,
+          "substitutes_requirement_id": null,
+          "activation_condition": null
+        },
+        {
+          "id": "req-healthcare-power",
+          "asset_ids": [
+            "PWR-007",
+            "PWR-009"
+          ],
+          "minimum_available": 1,
+          "role": "primary",
+          "backup_duration_minutes": null,
+          "activation_delay_minutes": 0,
+          "substitutes_requirement_id": null,
+          "activation_condition": null
+        },
+        {
+          "id": "req-healthcare-water",
+          "asset_ids": [
+            "WTR-007"
+          ],
+          "minimum_available": 1,
+          "role": "primary",
+          "backup_duration_minutes": null,
+          "activation_delay_minutes": 0,
+          "substitutes_requirement_id": null,
+          "activation_condition": null
+        },
+        {
+          "id": "req-healthcare-backup",
+          "asset_ids": [
+            "HLT-010"
+          ],
+          "minimum_available": 1,
+          "role": "backup",
+          "backup_duration_minutes": 480,
+          "activation_delay_minutes": 5,
+          "substitutes_requirement_id": "req-healthcare-power",
+          "activation_condition": "Local power interruption only; does not replace a compromised controller or server."
+        }
+      ],
+      "assumptions": [
+        "All primary requirement groups must be satisfied; members of each group use k-of-n availability.",
+        "Each backup conditionally substitutes only its named primary requirement; activation delay and duration must be evaluated.",
+        "Backup power cannot repair compromised controls or corrupted data.",
+        "No live service status or disruption estimate is available."
+      ],
+      "provenance": {
+        "kind": "scenario_assumption",
+        "source": "Aurora City fixture v1",
+        "recorded_at": "2026-10-01T09:00:00Z",
+        "evidence_uri": null,
+        "notes": "Fictional scenario. No live infrastructure or scans."
+      }
+    }
+  ]
+}

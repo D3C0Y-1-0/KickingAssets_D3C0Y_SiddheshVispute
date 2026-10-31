@@ -1,0 +1,124 @@
+.station {
+  --anatomy-paper: #111a22;
+  --anatomy-face: #192a34;
+  --anatomy-top: #26333e;
+  --anatomy-shade-0: #0b1119;
+  --anatomy-shade-1: #131d28;
+  --anatomy-shade-2: #1b2733;
+  --anatomy-shade-3: #202f3b;
+  --anatomy-hi: #63798a;
+  --anatomy-mid: #435b6b;
+  --anatomy-lo: #2d414e;
+  --anatomy-faint: #243440;
+  --anatomy-halo: #03070b;
+  --anatomy-dot: #94a8b5;
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+  position: relative;
+  padding: 22px 8px 18px;
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.station-meta,
+.station figcaption {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 0 18px;
+  color: var(--text-muted);
+  font:
+    6px Consolas,
+    monospace;
+  letter-spacing: 0.9px;
+}
+.station-meta {
+  margin-bottom: -15px;
+  position: relative;
+  z-index: 1;
+}
+.station figcaption {
+  margin-top: -12px;
+  font-size: 5.5px;
+}
+.station .iso-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+.station .iso-svg path,
+.station .iso-svg circle {
+  vector-effect: non-scaling-stroke;
+}
+.station .iso-fill {
+  fill: var(--anatomy-paper);
+  stroke: none;
+}
+.station .iso-shade,
+.station .iso-top {
+  stroke: none;
+}
+.station .iso-shade[data-shade='0'] {
+  fill: var(--anatomy-shade-0);
+}
+.station .iso-shade[data-shade='1'] {
+  fill: var(--anatomy-shade-1);
+}
+.station .iso-shade[data-shade='2'] {
+  fill: var(--anatomy-shade-2);
+}
+.station .iso-shade[data-shade='3'] {
+  fill: var(--anatomy-shade-3);
+}
+.station .iso-top {
+  fill: var(--anatomy-top);
+}
+.station .iso-line {
+  fill: none;
+  stroke: var(--anatomy-lo);
+  stroke-width: 0.55px;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.station .iso-line[data-tone='hi'] {
+  stroke: var(--anatomy-hi);
+}
+.station .iso-line[data-tone='mid'] {
+  stroke: var(--anatomy-mid);
+}
+.station .iso-line[data-tone='faint'] {
+  stroke: var(--anatomy-faint);
+}
+.station .iso-halo {
+  fill: var(--anatomy-halo);
+  filter: blur(9px);
+  opacity: 0.6;
+}
+.station .iso-dots circle {
+  fill: var(--anatomy-dot);
+  opacity: 0.45;
+}
+.station[data-focus='power'] [data-sector='power'],
+.station[data-focus='water'] [data-sector='water'],
+.station[data-focus='healthcare'] [data-sector='healthcare'] {
+  --anatomy-hi: #5aa99f;
+  --anatomy-mid: #42857e;
+  --anatomy-lo: #315e5c;
+  --anatomy-top: #25403f;
+  --anatomy-shade-2: #1a3031;
+  --anatomy-shade-3: #203b3b;
+}
+@media (max-width: 760px) {
+  .station {
+    max-width: 420px;
+    margin: -5px auto 0;
+    padding: 22px 17px 24px;
+  }
+  .station-meta,
+  .station figcaption {
+    font-size: 6px;
+  }
+}

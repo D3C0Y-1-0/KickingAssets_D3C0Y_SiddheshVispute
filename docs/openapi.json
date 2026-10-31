@@ -1,0 +1,2624 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "GridSentinel",
+    "description": "Phase 1: deterministic fictional inventory and two distinct graphs. Intelligence engines are unavailable.",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/api/v1/health": {
+      "get": {
+        "tags": [
+          "Foundation"
+        ],
+        "summary": "Health",
+        "operationId": "health_api_v1_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Health"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service Unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/scenarios": {
+      "get": {
+        "tags": [
+          "Inventory"
+        ],
+        "summary": "Scenarios",
+        "operationId": "scenarios_api_v1_scenarios_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/Scenario"
+                  },
+                  "type": "array",
+                  "title": "Response Scenarios Api V1 Scenarios Get"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service Unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/snapshots": {
+      "get": {
+        "tags": [
+          "Inventory"
+        ],
+        "summary": "Snapshots",
+        "operationId": "snapshots_api_v1_snapshots_get",
+        "parameters": [
+          {
+            "name": "scenario_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "aurora-city",
+              "title": "Scenario Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AssessmentSnapshot"
+                  },
+                  "title": "Response Snapshots Api V1 Snapshots Get"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        }
+      }
+    },
+    "/api/v1/assets": {
+      "get": {
+        "tags": [
+          "Inventory"
+        ],
+        "summary": "Assets",
+        "operationId": "assets_api_v1_assets_get",
+        "parameters": [
+          {
+            "name": "scenario_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "aurora-city",
+              "title": "Scenario Id"
+            }
+          },
+          {
+            "name": "snapshot_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Snapshot Id"
+            }
+          },
+          {
+            "name": "sector",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "power",
+                    "water",
+                    "healthcare"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Sector"
+            }
+          },
+          {
+            "name": "asset_type",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "gateway",
+                    "controller",
+                    "workstation",
+                    "server",
+                    "sensor",
+                    "backup"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Asset Type"
+            }
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Q"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/InfrastructureAsset"
+                  },
+                  "title": "Response Assets Api V1 Assets Get"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        }
+      }
+    },
+    "/api/v1/assets/{asset_id}": {
+      "get": {
+        "tags": [
+          "Inventory"
+        ],
+        "summary": "Asset Detail",
+        "operationId": "asset_detail_api_v1_assets__asset_id__get",
+        "parameters": [
+          {
+            "name": "asset_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Asset Id"
+            }
+          },
+          {
+            "name": "scenario_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "aurora-city",
+              "title": "Scenario Id"
+            }
+          },
+          {
+            "name": "snapshot_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Snapshot Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssetDetail"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        }
+      }
+    },
+    "/api/v1/graph": {
+      "get": {
+        "tags": [
+          "Graphs"
+        ],
+        "summary": "Graph",
+        "operationId": "graph_api_v1_graph_get",
+        "parameters": [
+          {
+            "name": "type",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "enum": [
+                "cyber",
+                "operational"
+              ],
+              "type": "string",
+              "title": "Type"
+            }
+          },
+          {
+            "name": "scenario_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "aurora-city",
+              "title": "Scenario Id"
+            }
+          },
+          {
+            "name": "snapshot_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Snapshot Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/CyberGraph"
+                    },
+                    {
+                      "$ref": "#/components/schemas/OperationalGraph"
+                    }
+                  ],
+                  "title": "Response Graph Api V1 Graph Get"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        }
+      }
+    },
+    "/api/v1/services": {
+      "get": {
+        "tags": [
+          "Inventory"
+        ],
+        "summary": "Services",
+        "operationId": "services_api_v1_services_get",
+        "parameters": [
+          {
+            "name": "scenario_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "aurora-city",
+              "title": "Scenario Id"
+            }
+          },
+          {
+            "name": "snapshot_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Snapshot Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/EssentialService"
+                  },
+                  "title": "Response Services Api V1 Services Get"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        }
+      }
+    },
+    "/api/v1/assessments": {
+      "post": {
+        "tags": [
+          "Future engines"
+        ],
+        "summary": "Assess",
+        "operationId": "assess_api_v1_assessments_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssessmentRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RiskAssessment"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service Unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "501": {
+            "description": "Not Implemented",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/what-if": {
+      "post": {
+        "tags": [
+          "Future engines"
+        ],
+        "summary": "What If",
+        "operationId": "what_if_api_v1_what_if_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WhatIfRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WhatIfResult"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service Unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "501": {
+            "description": "Not Implemented",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/remediation/optimize": {
+      "post": {
+        "tags": [
+          "Future engines"
+        ],
+        "summary": "Optimize",
+        "operationId": "optimize_api_v1_remediation_optimize_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RemediationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RemediationPlan"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Entity",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service Unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "501": {
+            "description": "Not Implemented",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ApiError": {
+        "properties": {
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "details": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Details"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "code",
+          "message"
+        ],
+        "title": "ApiError"
+      },
+      "AssessmentRequest": {
+        "properties": {
+          "scenario_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Scenario Id"
+          },
+          "snapshot_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Snapshot Id"
+          },
+          "asset_ids": {
+            "items": {
+              "type": "string",
+              "maxLength": 100,
+              "minLength": 1,
+              "pattern": "^[a-zA-Z0-9_.-]+$"
+            },
+            "type": "array",
+            "title": "Asset Ids"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "scenario_id",
+          "snapshot_id"
+        ],
+        "title": "AssessmentRequest"
+      },
+      "AssessmentSnapshot": {
+        "properties": {
+          "scenario_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Scenario Id"
+          },
+          "snapshot_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Snapshot Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "current",
+              "projected",
+              "verified"
+            ],
+            "title": "State"
+          },
+          "parent_snapshot_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100,
+                "minLength": 1,
+                "pattern": "^[a-zA-Z0-9_.-]+$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Parent Snapshot Id"
+          },
+          "assessment_status": {
+            "type": "string",
+            "enum": [
+              "unavailable",
+              "computed"
+            ],
+            "title": "Assessment Status",
+            "default": "unavailable"
+          },
+          "scoring_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scoring Version"
+          },
+          "model_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model Version"
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/Provenance"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "scenario_id",
+          "snapshot_id",
+          "name",
+          "created_at",
+          "state",
+          "provenance"
+        ],
+        "title": "AssessmentSnapshot"
+      },
+      "AssetDetail": {
+        "properties": {
+          "asset": {
+            "$ref": "#/components/schemas/InfrastructureAsset"
+          },
+          "vulnerabilities": {
+            "items": {
+              "$ref": "#/components/schemas/AssetVulnerability"
+            },
+            "type": "array",
+            "title": "Vulnerabilities"
+          },
+          "observations": {
+            "items": {
+              "$ref": "#/components/schemas/SecurityObservation"
+            },
+            "type": "array",
+            "title": "Observations"
+          },
+          "risk": {
+            "$ref": "#/components/schemas/RiskAssessment"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "asset",
+          "vulnerabilities",
+          "observations",
+          "risk"
+        ],
+        "title": "AssetDetail"
+      },
+      "AssetVulnerability": {
+        "properties": {
+          "scenario_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Scenario Id"
+          },
+          "snapshot_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Snapshot Id"
+          },
+          "id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Id"
+          },
+          "asset_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Asset Id"
+          },
+          "vulnerability_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Vulnerability Id"
+          },
+          "applicability": {
+            "type": "string",
+            "enum": [
+              "candidate",
+              "confirmed",
+              "rejected",
+              "unknown"
+            ],
+            "title": "Applicability"
+          },
+          "rationale": {
+            "type": "string",
+            "title": "Rationale"
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/Provenance"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "scenario_id",
+          "snapshot_id",
+          "id",
+          "asset_id",
+          "vulnerability_id",
+          "applicability",
+          "rationale",
+          "provenance"
+        ],
+        "title": "AssetVulnerability"
+      },
+      "CyberGraph": {
+        "properties": {
+          "scenario_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Scenario Id"
+          },
+          "snapshot_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Snapshot Id"
+          },
+          "type": {
+            "type": "string",
+            "const": "cyber",
+            "title": "Type",
+            "default": "cyber"
+          },
+          "nodes": {
+            "items": {
+              "$ref": "#/components/schemas/InfrastructureAsset"
+            },
+            "type": "array",
+            "title": "Nodes"
+          },
+          "edges": {
+            "items": {
+              "$ref": "#/components/schemas/CyberReachabilityEdge"
+            },
+            "type": "array",
+            "title": "Edges"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "scenario_id",
+          "snapshot_id",
+          "nodes",
+          "edges"
+        ],
+        "title": "CyberGraph"
+      },
+      "CyberReachabilityEdge": {
+        "properties": {
+          "scenario_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Scenario Id"
+          },
+          "snapshot_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Snapshot Id"
+          },
+          "id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Id"
+          },
+          "kind": {
+            "type": "string",
+            "const": "cyber",
+            "title": "Kind",
+            "default": "cyber"
+          },
+          "source_asset_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Source Asset Id"
+          },
+          "target_asset_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Target Asset Id"
+          },
+          "protocol": {
+            "type": "string",
+            "title": "Protocol"
+          },
+          "access": {
+            "type": "string",
+            "enum": [
+              "network",
+              "remote_management",
+              "local_trust"
+            ],
+            "title": "Access"
+          },
+          "assumptions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "minItems": 1,
+            "title": "Assumptions"
+          },
+          "possible_effects": {
+            "items": {
+              "type": "string",
+              "enum": [
+                "loss_of_control",
+                "loss_of_visibility",
+                "data_integrity",
+                "unavailability"
+              ]
+            },
+            "type": "array",
+            "title": "Possible Effects"
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/Provenance"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "scenario_id",
+          "snapshot_id",
+          "id",
+          "source_asset_id",
+          "target_asset_id",
+          "protocol",
+          "access",
+          "assumptions",
+          "possible_effects",
+          "provenance"
+        ],
+        "title": "CyberReachabilityEdge"
+      },
+      "ErrorEnvelope": {
+        "properties": {
+          "error": {
+            "$ref": "#/components/schemas/ApiError"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "error"
+        ],
+        "title": "ErrorEnvelope"
+      },
+      "EssentialService": {
+        "properties": {
+          "scenario_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Scenario Id"
+          },
+          "snapshot_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Snapshot Id"
+          },
+          "id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "sector": {
+            "$ref": "#/components/schemas/Sector"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "requirements": {
+            "items": {
+              "$ref": "#/components/schemas/ServiceRequirement"
+            },
+            "type": "array",
+            "title": "Requirements"
+          },
+          "assumptions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Assumptions"
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/Provenance"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "scenario_id",
+          "snapshot_id",
+          "id",
+          "name",
+          "sector",
+          "description",
+          "requirements",
+          "assumptions",
+          "provenance"
+        ],
+        "title": "EssentialService"
+      },
+      "Health": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "ok",
+              "degraded"
+            ],
+            "title": "Status"
+          },
+          "database": {
+            "type": "string",
+            "enum": [
+              "ready",
+              "unavailable"
+            ],
+            "title": "Database"
+          },
+          "application_version": {
+            "type": "string",
+            "title": "Application Version"
+          },
+          "intelligence": {
+            "type": "string",
+            "const": "not_implemented",
+            "title": "Intelligence",
+            "default": "not_implemented"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "status",
+          "database",
+          "application_version"
+        ],
+        "title": "Health"
+      },
+      "ImpactResult": {
+        "properties": {
+          "scenario_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Scenario Id"
+          },
+          "snapshot_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Snapshot Id"
+          },
+          "service_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Service Id"
+          },
+          "initiating_asset_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Initiating Asset Id"
+          },
+          "compromise_effect": {
+            "type": "string",
+            "enum": [
+              "loss_of_control",
+              "loss_of_visibility",
+              "data_integrity",
+              "unavailability"
+            ],
+            "title": "Compromise Effect"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "current",
+              "projected"
+            ],
+            "title": "State"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "unavailable",
+              "computed"
+            ],
+            "title": "Status",
+            "default": "unavailable"
+          },
+          "disruption_fraction": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 1.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Disruption Fraction"
+          },
+          "affected_asset_ids": {
+            "items": {
+              "type": "string",
+              "maxLength": 100,
+              "minLength": 1,
+              "pattern": "^[a-zA-Z0-9_.-]+$"
+            },
+            "type": "array",
+            "title": "Affected Asset Ids"
+          },
+          "assumptions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Assumptions"
+          },
+          "engine_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Engine Version"
+          },
+          "calculated_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Calculated At"
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/Provenance"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "scenario_id",
+          "snapshot_id",
+          "service_id",
+          "initiating_asset_id",
+          "compromise_effect",
+          "state",
+          "assumptions",
+          "provenance"
+        ],
+        "title": "ImpactResult"
+      },
+      "InfrastructureAsset": {
+        "properties": {
+          "scenario_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Scenario Id"
+          },
+          "snapshot_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Snapshot Id"
+          },
+          "id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "sector": {
+            "$ref": "#/components/schemas/Sector"
+          },
+          "asset_type": {
+            "type": "string",
+            "enum": [
+              "gateway",
+              "controller",
+              "workstation",
+              "server",
+              "sensor",
+              "backup"
+            ],
+            "title": "Asset Type"
+          },
+          "site": {
+            "type": "string",
+            "title": "Site"
+          },
+          "product": {
+            "type": "string",
+            "title": "Product"
+          },
+          "vendor": {
+            "type": "string",
+            "title": "Vendor"
+          },
+          "version": {
+            "type": "string",
+            "title": "Version"
+          },
+          "criticality": {
+            "type": "string",
+            "enum": [
+              "essential",
+              "important",
+              "supporting"
+            ],
+            "title": "Criticality"
+          },
+          "exposure": {
+            "type": "string",
+            "enum": [
+              "external",
+              "internal",
+              "isolated",
+              "unknown"
+            ],
+            "title": "Exposure"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "security": {
+            "$ref": "#/components/schemas/SecurityConfiguration"
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/Provenance"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "scenario_id",
+          "snapshot_id",
+          "id",
+          "name",
+          "sector",
+          "asset_type",
+          "site",
+          "product",
+          "vendor",
+          "version",
+          "criticality",
+          "exposure",
+          "description",
+          "security",
+          "provenance"
+        ],
+        "title": "InfrastructureAsset"
+      },
+      "MitigationAction": {
+        "properties": {
+          "scenario_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Scenario Id"
+          },
+          "snapshot_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Snapshot Id"
+          },
+          "id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Id"
+          },
+          "asset_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Asset Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "action_type": {
+            "type": "string",
+            "enum": [
+              "enable_mfa",
+              "restrict_remote_access",
+              "patch_review",
+              "offline_backup"
+            ],
+            "title": "Action Type"
+          },
+          "justification": {
+            "type": "string",
+            "title": "Justification"
+          },
+          "effort_hours": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Effort Hours"
+          },
+          "operational_disruption": {
+            "type": "string",
+            "title": "Operational Disruption"
+          },
+          "preconditions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Preconditions"
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/Provenance"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "scenario_id",
+          "snapshot_id",
+          "id",
+          "asset_id",
+          "name",
+          "action_type",
+          "justification",
+          "operational_disruption",
+          "preconditions",
+          "provenance"
+        ],
+        "title": "MitigationAction"
+      },
+      "OperationalDependencyEdge": {
+        "properties": {
+          "scenario_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Scenario Id"
+          },
+          "snapshot_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Snapshot Id"
+          },
+          "id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Id"
+          },
+          "kind": {
+            "type": "string",
+            "const": "operational",
+            "title": "Kind",
+            "default": "operational"
+          },
+          "source_asset_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Source Asset Id"
+          },
+          "target_asset_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Target Asset Id"
+          },
+          "dependency": {
+            "type": "string",
+            "enum": [
+              "power",
+              "water",
+              "control",
+              "data",
+              "backup"
+            ],
+            "title": "Dependency"
+          },
+          "requirement": {
+            "type": "string",
+            "enum": [
+              "required",
+              "redundant",
+              "backup"
+            ],
+            "title": "Requirement"
+          },
+          "redundancy_group": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Redundancy Group"
+          },
+          "minimum_providers": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Minimum Providers",
+            "default": 1
+          },
+          "grace_period_minutes": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Grace Period Minutes",
+            "default": 0
+          },
+          "assumptions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "minItems": 1,
+            "title": "Assumptions"
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/Provenance"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "scenario_id",
+          "snapshot_id",
+          "id",
+          "source_asset_id",
+          "target_asset_id",
+          "dependency",
+          "requirement",
+          "assumptions",
+          "provenance"
+        ],
+        "title": "OperationalDependencyEdge",
+        "description": "source provider -> target dependent, never an access path."
+      },
+      "OperationalGraph": {
+        "properties": {
+          "scenario_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Scenario Id"
+          },
+          "snapshot_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Snapshot Id"
+          },
+          "type": {
+            "type": "string",
+            "const": "operational",
+            "title": "Type",
+            "default": "operational"
+          },
+          "nodes": {
+            "items": {
+              "$ref": "#/components/schemas/InfrastructureAsset"
+            },
+            "type": "array",
+            "title": "Nodes"
+          },
+          "edges": {
+            "items": {
+              "$ref": "#/components/schemas/OperationalDependencyEdge"
+            },
+            "type": "array",
+            "title": "Edges"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "scenario_id",
+          "snapshot_id",
+          "nodes",
+          "edges"
+        ],
+        "title": "OperationalGraph"
+      },
+      "Provenance": {
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "configured",
+              "observed",
+              "scenario_assumption",
+              "reference",
+              "model",
+              "simulation"
+            ],
+            "title": "Kind"
+          },
+          "source": {
+            "type": "string",
+            "title": "Source"
+          },
+          "recorded_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Recorded At"
+          },
+          "evidence_uri": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Evidence Uri"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notes"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "kind",
+          "source",
+          "recorded_at"
+        ],
+        "title": "Provenance"
+      },
+      "RemediationPlan": {
+        "properties": {
+          "scenario_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Scenario Id"
+          },
+          "snapshot_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Snapshot Id"
+          },
+          "id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Id"
+          },
+          "state": {
+            "type": "string",
+            "const": "projected",
+            "title": "State",
+            "default": "projected"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "unavailable",
+              "computed"
+            ],
+            "title": "Status",
+            "default": "unavailable"
+          },
+          "actions": {
+            "items": {
+              "$ref": "#/components/schemas/MitigationAction"
+            },
+            "type": "array",
+            "title": "Actions"
+          },
+          "marginal_risk_reductions": {
+            "items": {
+              "type": "number",
+              "maximum": 100.0,
+              "minimum": 0.0
+            },
+            "type": "array",
+            "title": "Marginal Risk Reductions"
+          },
+          "effort_budget_hours": {
+            "type": "number",
+            "exclusiveMinimum": 0.0,
+            "title": "Effort Budget Hours"
+          },
+          "optimizer_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Optimizer Version"
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/Provenance"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "scenario_id",
+          "snapshot_id",
+          "id",
+          "effort_budget_hours",
+          "provenance"
+        ],
+        "title": "RemediationPlan"
+      },
+      "RemediationRequest": {
+        "properties": {
+          "scenario_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Scenario Id"
+          },
+          "snapshot_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Snapshot Id"
+          },
+          "effort_budget_hours": {
+            "type": "number",
+            "maximum": 10000.0,
+            "exclusiveMinimum": 0.0,
+            "title": "Effort Budget Hours"
+          },
+          "excluded_asset_ids": {
+            "items": {
+              "type": "string",
+              "maxLength": 100,
+              "minLength": 1,
+              "pattern": "^[a-zA-Z0-9_.-]+$"
+            },
+            "type": "array",
+            "title": "Excluded Asset Ids"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "scenario_id",
+          "snapshot_id",
+          "effort_budget_hours"
+        ],
+        "title": "RemediationRequest"
+      },
+      "RiskAssessment": {
+        "properties": {
+          "scenario_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Scenario Id"
+          },
+          "snapshot_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Snapshot Id"
+          },
+          "asset_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100,
+                "minLength": 1,
+                "pattern": "^[a-zA-Z0-9_.-]+$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Asset Id"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "current",
+              "projected",
+              "verified"
+            ],
+            "title": "State"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "unavailable",
+              "computed"
+            ],
+            "title": "Status",
+            "default": "unavailable"
+          },
+          "score": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 100.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Score"
+          },
+          "category": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "low",
+                  "medium",
+                  "high",
+                  "critical"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Category"
+          },
+          "factors": {
+            "items": {
+              "$ref": "#/components/schemas/RiskFactor"
+            },
+            "type": "array",
+            "title": "Factors"
+          },
+          "unavailable_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unavailable Reason",
+            "default": "Risk engine is not implemented in Phase 1"
+          },
+          "scoring_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scoring Version"
+          },
+          "model_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model Version"
+          },
+          "calculated_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Calculated At"
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/Provenance"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "scenario_id",
+          "snapshot_id",
+          "state",
+          "provenance"
+        ],
+        "title": "RiskAssessment"
+      },
+      "RiskFactor": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "contribution": {
+            "type": "number",
+            "title": "Contribution"
+          },
+          "evidence_ids": {
+            "items": {
+              "type": "string",
+              "maxLength": 100,
+              "minLength": 1,
+              "pattern": "^[a-zA-Z0-9_.-]+$"
+            },
+            "type": "array",
+            "title": "Evidence Ids"
+          },
+          "explanation": {
+            "type": "string",
+            "title": "Explanation"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "name",
+          "contribution",
+          "evidence_ids",
+          "explanation"
+        ],
+        "title": "RiskFactor"
+      },
+      "Scenario": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "current_snapshot_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Current Snapshot Id"
+          },
+          "is_sample": {
+            "type": "boolean",
+            "title": "Is Sample"
+          },
+          "seed_version": {
+            "type": "string",
+            "title": "Seed Version"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/Provenance"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "description",
+          "current_snapshot_id",
+          "is_sample",
+          "seed_version",
+          "created_at",
+          "provenance"
+        ],
+        "title": "Scenario"
+      },
+      "Sector": {
+        "type": "string",
+        "enum": [
+          "power",
+          "water",
+          "healthcare"
+        ],
+        "title": "Sector"
+      },
+      "SecurityConfiguration": {
+        "properties": {
+          "network_zone": {
+            "type": "string",
+            "title": "Network Zone"
+          },
+          "mfa_enabled": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mfa Enabled"
+          },
+          "internet_exposed": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Internet Exposed"
+          },
+          "remote_access": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Remote Access"
+          },
+          "patch_status": {
+            "type": "string",
+            "enum": [
+              "current",
+              "review_required",
+              "unknown"
+            ],
+            "title": "Patch Status",
+            "default": "unknown"
+          },
+          "backup_mode": {
+            "type": "string",
+            "enum": [
+              "offline",
+              "online",
+              "none",
+              "unknown"
+            ],
+            "title": "Backup Mode",
+            "default": "unknown"
+          },
+          "notes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Notes"
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/Provenance"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "network_zone",
+          "provenance"
+        ],
+        "title": "SecurityConfiguration"
+      },
+      "SecurityObservation": {
+        "properties": {
+          "scenario_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Scenario Id"
+          },
+          "snapshot_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Snapshot Id"
+          },
+          "id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Id"
+          },
+          "asset_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Asset Id"
+          },
+          "category": {
+            "type": "string",
+            "title": "Category"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "observed_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Observed At"
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/Provenance"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "scenario_id",
+          "snapshot_id",
+          "id",
+          "asset_id",
+          "category",
+          "description",
+          "observed_at",
+          "provenance"
+        ],
+        "title": "SecurityObservation"
+      },
+      "ServiceRequirement": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Id"
+          },
+          "asset_ids": {
+            "items": {
+              "type": "string",
+              "maxLength": 100,
+              "minLength": 1,
+              "pattern": "^[a-zA-Z0-9_.-]+$"
+            },
+            "type": "array",
+            "minItems": 1,
+            "title": "Asset Ids"
+          },
+          "minimum_available": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Minimum Available"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "primary",
+              "backup"
+            ],
+            "title": "Role"
+          },
+          "backup_duration_minutes": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Backup Duration Minutes"
+          },
+          "activation_delay_minutes": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Activation Delay Minutes",
+            "default": 0
+          },
+          "substitutes_requirement_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 100,
+                "minLength": 1,
+                "pattern": "^[a-zA-Z0-9_.-]+$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Substitutes Requirement Id"
+          },
+          "activation_condition": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Activation Condition"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "asset_ids",
+          "minimum_available",
+          "role"
+        ],
+        "title": "ServiceRequirement"
+      },
+      "StagedAction": {
+        "properties": {
+          "asset_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Asset Id"
+          },
+          "action_type": {
+            "type": "string",
+            "enum": [
+              "enable_mfa",
+              "restrict_remote_access",
+              "patch_review",
+              "offline_backup"
+            ],
+            "title": "Action Type"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "asset_id",
+          "action_type"
+        ],
+        "title": "StagedAction"
+      },
+      "WhatIfRequest": {
+        "properties": {
+          "scenario_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Scenario Id"
+          },
+          "snapshot_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Snapshot Id"
+          },
+          "actions": {
+            "items": {
+              "$ref": "#/components/schemas/StagedAction"
+            },
+            "type": "array",
+            "maxItems": 30,
+            "minItems": 1,
+            "title": "Actions"
+          },
+          "assumptions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Assumptions"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "scenario_id",
+          "snapshot_id",
+          "actions"
+        ],
+        "title": "WhatIfRequest"
+      },
+      "WhatIfResult": {
+        "properties": {
+          "scenario_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Scenario Id"
+          },
+          "snapshot_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Snapshot Id"
+          },
+          "request": {
+            "$ref": "#/components/schemas/WhatIfRequest"
+          },
+          "state": {
+            "type": "string",
+            "const": "projected",
+            "title": "State",
+            "default": "projected"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "unavailable",
+              "computed"
+            ],
+            "title": "Status",
+            "default": "unavailable"
+          },
+          "current": {
+            "$ref": "#/components/schemas/RiskAssessment"
+          },
+          "projected": {
+            "$ref": "#/components/schemas/RiskAssessment"
+          },
+          "action_effects": {
+            "items": {
+              "$ref": "#/components/schemas/RiskFactor"
+            },
+            "type": "array",
+            "title": "Action Effects"
+          },
+          "impacts": {
+            "items": {
+              "$ref": "#/components/schemas/ImpactResult"
+            },
+            "type": "array",
+            "title": "Impacts"
+          },
+          "engine_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Engine Version"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "scenario_id",
+          "snapshot_id",
+          "request",
+          "current",
+          "projected"
+        ],
+        "title": "WhatIfResult"
+      }
+    }
+  }
+}
