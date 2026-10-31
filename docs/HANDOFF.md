@@ -82,3 +82,26 @@ Agree the exact file list and schema owner before concurrent work. Keep the user
 - Added on top: the PostgreSQL-capable repository (`backend/app/db/store.py`, SQLite stays the default; `GRIDSENTINEL_DATABASE_URL` selects Neon), gzip and security-header middleware, and the ML runtime dependencies (pandas, numpy, pyarrow, xgboost, scikit-learn, networkx, psycopg) in `requirements.txt` and the lock.
 - The simulation result is held in `app.state.simulation` (one process). Run a single worker; this app cannot be hosted as stateless serverless without moving that state out of process.
 - The reference data cache (`data/reference/cache`, about 231 MB, git-ignored) must be present at runtime for ML scoring.
+
+## Hosting (31 October 2026)
+
+- Frontend: https://gridsentinel-phi.vercel.app (Vercel project `gridsentinel`, static build of `frontend/`). `vercel.json` proxies `/api/*` to the Azure backend and falls back to `index.html`.
+- Backend: Azure App Service (Linux, B1, Python 3.12) `gridsentinel-api-72420` in Malaysia West, resource group `gridsentinel-rg`. One uvicorn worker, because the latest simulation lives in process memory (`app.state.simulation`), so every visitor shares one simulation state.
+- Database: Neon PostgreSQL 17, Singapore (`GRIDSENTINEL_DATABASE_URL` is an App Service setting; never commit it).
+- Package: a zip with the app, the ML code and models, the Linux wheels in `.python_packages` (CPU `xgboost-cpu`), and the reduced reference data (KEV, EPSS snapshots, derived parquet; raw NVD files are not needed). Oryx build is disabled. Startup command: `cd backend && PYTHONPATH=/home/site/wwwroot/.python_packages/lib/site-packages python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 1`. Do not put an unquoted `*` in the command: the shell expands it.
+- Azure Container Registry Tasks are blocked on the Azure for Students subscription, so container builds are not available.
+- Not on this branch: the read-only `/api/v1/impact` and `/models/kev-signal` endpoints exist only on `codex/deploy`. This branch's own workflow endpoints supersede them.
+
+## Challenge-gap features (codex/innovations)
+
+Plan and status: `docs/PLAN_CHALLENGE_GAPS.md`. All additive; `risk-index-v1` and existing contracts are unchanged.
+
+- **Simulated network activity** (`engine/telemetry.py`, `services/insights.py`, `GET /api/v1/activity`, `/activity/assets/{id}`): seeded daily telemetry per asset plus authored events (`data/scenarios/aurora-telemetry-events.json`), a robust z-score detector (28-day median/MAD baseline, z >= 3.5) and a criticality-scaled noisy-OR city activity index. Everything is labelled `simulation`. Urgency = risk x (1 + 0.5 x anomaly) appears only after a simulation run (otherwise null).
+- **Resilience** (`engine/resilience.py`, `GET /api/v1/resilience/chokepoints`, `/vendors`): single-asset-loss chokepoints and assumed vendor-compromise scenarios, both through the conditional impact engine (joint analysis for vendors); vendor concentration (HHI) per service; CISA KEV counts as context.
+- **Posture trend** (`GET /api/v1/simulation/trend`): served from `data/derived/posture-trend.json`, built by `python -m app.services.trend_build --months 18` (needs the reference cache). Absent file returns `status: unavailable`. It shows the public vulnerability landscape moving against fixed assumed assets.
+- **Risk brief** (`GET /api/v1/reports/brief?format=json|md|html`): from the latest simulation plus the companion reports and a 40 h optimizer plan; 409 without a run. Download links are on the Command Overview after a run.
+- **Pages:** Posture & Activity (`/posture`), Resilience (`/resilience`), PS03 Coverage (`/coverage`).
+- New contract file: `app/schemas/insights.py`; router `app/api/insights.py` registered in `main.py`.
+- Known limits: telemetry is simulated and the detector is exercised on its own authored events; the benign maintenance window is flagged on purpose; chokepoint and vendor figures assume no operator recovery (upper bound); no calibrated likelihood, no new sectors, no modelled monitoring or recovery benefit.
+
+Hosted: the new endpoints and pages are live on https://gridsentinel-phi.vercel.app (Vercel proxies `/api` to the Azure backend). The Azure update was incremental: `az webapp deploy --type zip --clean false` with only `backend/app`, `data/scenarios/aurora-telemetry-events.json` and `data/derived/posture-trend.json`. A full package rebuild is only needed when dependencies or the reference data change.

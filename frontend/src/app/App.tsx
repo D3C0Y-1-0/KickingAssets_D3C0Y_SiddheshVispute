@@ -7,7 +7,9 @@ import {
   BrainCircuit,
   Building2,
   ChevronDown,
+  ChevronRight,
   CircleHelp,
+  ClipboardCheck,
   Command,
   FlaskConical,
   Grid2X2,
@@ -15,15 +17,18 @@ import {
   ListChecks,
   Menu,
   Network,
+  PlayCircle,
+  Radar,
   Search,
   Shield,
   ShieldCheck,
+  Waypoints,
   X,
 } from 'lucide-react'
 import { NavLink, Route, Routes, Link, useLocation, useNavigate } from 'react-router-dom'
 import { api } from '../api/client'
 import { useScenario } from '../hooks/queries'
-import { QueryState } from '../components/ui'
+import { QueryState, SampleBadge } from '../components/ui'
 import Overview from '../features/overview/Overview'
 
 const Infrastructure = lazy(() => import('../features/infrastructure/Infrastructure'))
@@ -35,16 +40,24 @@ const WhatIf = lazy(() => import('../features/whatif/WhatIf'))
 const Remediation = lazy(() => import('../features/remediation/Remediation'))
 const Methodology = lazy(() => import('../features/methodology/Methodology'))
 const MlLab = lazy(() => import('../features/ml/MlLab'))
+const Posture = lazy(() => import('../features/posture/Posture'))
+const Resilience = lazy(() => import('../features/resilience/Resilience'))
+const Coverage = lazy(() => import('../features/coverage/Coverage'))
+const LiveSimulation = lazy(() => import('../features/live/LiveSimulation'))
 const navigation: { path: string; name: string; icon: typeof Grid2X2; tag?: string }[] = [
-  { path: '/', name: 'Command Overview', icon: Grid2X2 },
+  { path: '/', name: 'Overview', icon: Grid2X2 },
+  { path: '/live', name: 'Live Simulation', icon: PlayCircle, tag: 'NEW' },
   { path: '/infrastructure', name: 'Infrastructure Map', icon: Network },
   { path: '/digital-twins', name: 'Digital Twins', icon: Building2, tag: 'ANATOMY' },
-  { path: '/assets', name: 'Asset & Risk Register', icon: Layers },
-  { path: '/intelligence', name: 'Risk Intelligence', icon: Activity },
+  { path: '/assets', name: 'Assets & Risk', icon: Layers },
+  { path: '/intelligence', name: 'Risk Ranking', icon: Activity },
   { path: '/curated-intelligence', name: 'Curated CVE Assessment', icon: ShieldCheck },
-  { path: '/ml', name: 'ML Lab', icon: BrainCircuit },
-  { path: '/what-if', name: 'What-If Lab', icon: FlaskConical },
-  { path: '/remediation', name: 'Remediation Plan', icon: ListChecks },
+  { path: '/ml', name: 'AI Model', icon: BrainCircuit },
+  { path: '/what-if', name: 'What-If', icon: FlaskConical },
+  { path: '/remediation', name: 'Fix Plan', icon: ListChecks },
+  { path: '/posture', name: 'Trends & Activity', icon: Radar },
+  { path: '/resilience', name: 'Weak Points', icon: Waypoints },
+  { path: '/coverage', name: 'Challenge Coverage', icon: ClipboardCheck },
 ]
 
 export default function App() {
@@ -222,6 +235,19 @@ export default function App() {
             </Link>
           </div>
         </header>
+        <div className="environment-bar">
+          <div>
+            <SampleBadge>Sample scenario</SampleBadge>
+            <span>
+              Fictional infrastructure, real vulnerability data. Scores are computed by the ML model
+              after a simulation. No live monitoring.
+            </span>
+          </div>
+          <Link to="/methodology">
+            About this environment
+            <ChevronRight size={13} />
+          </Link>
+        </div>
         <main id="main-content" tabIndex={-1}>
           <Suspense fallback={<QueryState pending error={null} />}>
             {location.pathname === '/digital-twins' ? (
@@ -247,6 +273,10 @@ export default function App() {
                 <Route path="/ml" element={<MlLab />} />
                 <Route path="/what-if" element={<WhatIf />} />
                 <Route path="/remediation" element={<Remediation />} />
+                <Route path="/posture" element={<Posture />} />
+                <Route path="/resilience" element={<Resilience />} />
+                <Route path="/coverage" element={<Coverage />} />
+                <Route path="/live" element={<LiveSimulation />} />
                 <Route path="/methodology" element={<Methodology />} />
                 <Route
                   path="*"

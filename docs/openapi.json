@@ -1916,6 +1916,600 @@
           }
         }
       }
+    },
+    "/api/v1/activity": {
+      "get": {
+        "tags": [
+          "Activity"
+        ],
+        "summary": "Activity",
+        "operationId": "activity_api_v1_activity_get",
+        "parameters": [
+          {
+            "name": "scenario_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "aurora-city",
+              "title": "Scenario Id"
+            }
+          },
+          {
+            "name": "snapshot_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Snapshot Id"
+            }
+          },
+          {
+            "name": "as_of",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "As Of"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ActivityReport"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        }
+      }
+    },
+    "/api/v1/activity/assets/{asset_id}": {
+      "get": {
+        "tags": [
+          "Activity"
+        ],
+        "summary": "Asset Activity",
+        "operationId": "asset_activity_api_v1_activity_assets__asset_id__get",
+        "parameters": [
+          {
+            "name": "asset_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Asset Id"
+            }
+          },
+          {
+            "name": "scenario_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "aurora-city",
+              "title": "Scenario Id"
+            }
+          },
+          {
+            "name": "snapshot_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Snapshot Id"
+            }
+          },
+          {
+            "name": "as_of",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "As Of"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssetActivitySeries"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        }
+      }
+    },
+    "/api/v1/resilience/vendors": {
+      "get": {
+        "tags": [
+          "Resilience"
+        ],
+        "summary": "Vendors",
+        "operationId": "vendors_api_v1_resilience_vendors_get",
+        "parameters": [
+          {
+            "name": "scenario_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "aurora-city",
+              "title": "Scenario Id"
+            }
+          },
+          {
+            "name": "snapshot_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Snapshot Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VendorReport"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        }
+      }
+    },
+    "/api/v1/resilience/chokepoints": {
+      "get": {
+        "tags": [
+          "Resilience"
+        ],
+        "summary": "Chokepoints",
+        "operationId": "chokepoints_api_v1_resilience_chokepoints_get",
+        "parameters": [
+          {
+            "name": "scenario_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "aurora-city",
+              "title": "Scenario Id"
+            }
+          },
+          {
+            "name": "snapshot_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Snapshot Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChokepointReport"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        }
+      }
+    },
+    "/api/v1/simulation/trend": {
+      "get": {
+        "tags": [
+          "Simulation"
+        ],
+        "summary": "Trend",
+        "operationId": "trend_api_v1_simulation_trend_get",
+        "parameters": [
+          {
+            "name": "scenario_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "aurora-city",
+              "title": "Scenario Id"
+            }
+          },
+          {
+            "name": "snapshot_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Snapshot Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PostureTrend"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        }
+      }
+    },
+    "/api/v1/reports/brief": {
+      "get": {
+        "tags": [
+          "Reports"
+        ],
+        "summary": "Risk Brief",
+        "operationId": "risk_brief_api_v1_reports_brief_get",
+        "parameters": [
+          {
+            "name": "scenario_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "aurora-city",
+              "title": "Scenario Id"
+            }
+          },
+          {
+            "name": "snapshot_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Snapshot Id"
+            }
+          },
+          {
+            "name": "format",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "enum": [
+                "json",
+                "md",
+                "html"
+              ],
+              "type": "string",
+              "default": "json",
+              "title": "Format"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RiskBrief"
+                }
+              },
+              "text/markdown": {},
+              "text/html": {}
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Unprocessable Entity"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        }
+      }
     }
   },
   "components": {
@@ -2072,6 +2666,147 @@
           "operational_disruption"
         ],
         "title": "ActionOption"
+      },
+      "ActivityDay": {
+        "properties": {
+          "day": {
+            "type": "string",
+            "format": "date",
+            "title": "Day"
+          },
+          "index": {
+            "type": "number",
+            "maximum": 100.0,
+            "minimum": 0.0,
+            "title": "Index"
+          },
+          "band": {
+            "type": "string",
+            "enum": [
+              "calm",
+              "elevated",
+              "active"
+            ],
+            "title": "Band"
+          },
+          "anomalous_assets": {
+            "type": "integer",
+            "title": "Anomalous Assets"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "day",
+          "index",
+          "band",
+          "anomalous_assets"
+        ],
+        "title": "ActivityDay"
+      },
+      "ActivityReport": {
+        "properties": {
+          "scenario_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Scenario Id"
+          },
+          "snapshot_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Snapshot Id"
+          },
+          "state": {
+            "type": "string",
+            "const": "current",
+            "title": "State",
+            "default": "current"
+          },
+          "as_of": {
+            "type": "string",
+            "format": "date",
+            "title": "As Of"
+          },
+          "window_start": {
+            "type": "string",
+            "format": "date",
+            "title": "Window Start"
+          },
+          "window_end": {
+            "type": "string",
+            "format": "date",
+            "title": "Window End"
+          },
+          "detector_version": {
+            "type": "string",
+            "title": "Detector Version"
+          },
+          "latest": {
+            "$ref": "#/components/schemas/ActivityDay"
+          },
+          "series": {
+            "items": {
+              "$ref": "#/components/schemas/ActivityDay"
+            },
+            "type": "array",
+            "title": "Series"
+          },
+          "assets": {
+            "items": {
+              "$ref": "#/components/schemas/AssetActivity"
+            },
+            "type": "array",
+            "title": "Assets"
+          },
+          "events": {
+            "items": {
+              "$ref": "#/components/schemas/ScenarioEvent"
+            },
+            "type": "array",
+            "title": "Events"
+          },
+          "urgency_available": {
+            "type": "boolean",
+            "title": "Urgency Available"
+          },
+          "urgency_note": {
+            "type": "string",
+            "title": "Urgency Note"
+          },
+          "assumptions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Assumptions"
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/Provenance"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "scenario_id",
+          "snapshot_id",
+          "as_of",
+          "window_start",
+          "window_end",
+          "detector_version",
+          "latest",
+          "series",
+          "assets",
+          "events",
+          "urgency_available",
+          "urgency_note",
+          "assumptions",
+          "provenance"
+        ],
+        "title": "ActivityReport"
       },
       "ApiError": {
         "properties": {
@@ -2318,6 +3053,141 @@
           "provenance"
         ],
         "title": "AssessmentSnapshot"
+      },
+      "AssetActivity": {
+        "properties": {
+          "asset_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Asset Id"
+          },
+          "asset_name": {
+            "type": "string",
+            "title": "Asset Name"
+          },
+          "sector": {
+            "$ref": "#/components/schemas/Sector"
+          },
+          "criticality": {
+            "type": "string",
+            "enum": [
+              "essential",
+              "important",
+              "supporting"
+            ],
+            "title": "Criticality"
+          },
+          "anomaly": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Anomaly"
+          },
+          "consecutive_days": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Consecutive Days"
+          },
+          "reasons": {
+            "items": {
+              "$ref": "#/components/schemas/MetricReading"
+            },
+            "type": "array",
+            "title": "Reasons"
+          },
+          "risk_score": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Risk Score"
+          },
+          "urgency": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Urgency"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "asset_id",
+          "asset_name",
+          "sector",
+          "criticality",
+          "anomaly",
+          "consecutive_days",
+          "reasons"
+        ],
+        "title": "AssetActivity"
+      },
+      "AssetActivitySeries": {
+        "properties": {
+          "scenario_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Scenario Id"
+          },
+          "snapshot_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Snapshot Id"
+          },
+          "asset_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Asset Id"
+          },
+          "asset_name": {
+            "type": "string",
+            "title": "Asset Name"
+          },
+          "as_of": {
+            "type": "string",
+            "format": "date",
+            "title": "As Of"
+          },
+          "series": {
+            "items": {
+              "$ref": "#/components/schemas/MetricSeries"
+            },
+            "type": "array",
+            "title": "Series"
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/Provenance"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "scenario_id",
+          "snapshot_id",
+          "asset_id",
+          "asset_name",
+          "as_of",
+          "series",
+          "provenance"
+        ],
+        "title": "AssetActivitySeries"
       },
       "AssetDelta": {
         "properties": {
@@ -2995,6 +3865,33 @@
         ],
         "title": "BacktestHit"
       },
+      "BriefSection": {
+        "properties": {
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "available": {
+            "type": "boolean",
+            "title": "Available"
+          },
+          "lines": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Lines"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "title",
+          "available",
+          "lines"
+        ],
+        "title": "BriefSection"
+      },
       "CVESignal": {
         "properties": {
           "cve_id": {
@@ -3221,6 +4118,193 @@
           "count"
         ],
         "title": "CategoryCount"
+      },
+      "Chokepoint": {
+        "properties": {
+          "asset_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Asset Id"
+          },
+          "asset_name": {
+            "type": "string",
+            "title": "Asset Name"
+          },
+          "sector": {
+            "$ref": "#/components/schemas/Sector"
+          },
+          "criticality": {
+            "type": "string",
+            "enum": [
+              "essential",
+              "important",
+              "supporting"
+            ],
+            "title": "Criticality"
+          },
+          "direct_dependents": {
+            "type": "integer",
+            "title": "Direct Dependents"
+          },
+          "has_backup_edge": {
+            "type": "boolean",
+            "title": "Has Backup Edge"
+          },
+          "is_chokepoint": {
+            "type": "boolean",
+            "title": "Is Chokepoint"
+          },
+          "worst": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ChokepointScenario"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "scenarios": {
+            "items": {
+              "$ref": "#/components/schemas/ChokepointScenario"
+            },
+            "type": "array",
+            "title": "Scenarios"
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "asset_id",
+          "asset_name",
+          "sector",
+          "criticality",
+          "direct_dependents",
+          "has_backup_edge",
+          "is_chokepoint",
+          "worst",
+          "scenarios",
+          "reason"
+        ],
+        "title": "Chokepoint"
+      },
+      "ChokepointReport": {
+        "properties": {
+          "scenario_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Scenario Id"
+          },
+          "snapshot_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Snapshot Id"
+          },
+          "state": {
+            "type": "string",
+            "const": "current",
+            "title": "State",
+            "default": "current"
+          },
+          "chokepoints": {
+            "items": {
+              "$ref": "#/components/schemas/Chokepoint"
+            },
+            "type": "array",
+            "title": "Chokepoints"
+          },
+          "assumptions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Assumptions"
+          },
+          "engine_version": {
+            "type": "string",
+            "title": "Engine Version"
+          },
+          "calculated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Calculated At"
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/Provenance"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "scenario_id",
+          "snapshot_id",
+          "chokepoints",
+          "assumptions",
+          "engine_version",
+          "calculated_at",
+          "provenance"
+        ],
+        "title": "ChokepointReport"
+      },
+      "ChokepointScenario": {
+        "properties": {
+          "effect": {
+            "type": "string",
+            "enum": [
+              "loss_of_control",
+              "loss_of_visibility",
+              "data_integrity",
+              "unavailability"
+            ],
+            "title": "Effect"
+          },
+          "assets_lost": {
+            "type": "integer",
+            "title": "Assets Lost"
+          },
+          "worst_disruption": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 1.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Worst Disruption"
+          },
+          "services_fully_disrupted": {
+            "items": {
+              "type": "string",
+              "maxLength": 100,
+              "minLength": 1,
+              "pattern": "^[a-zA-Z0-9_.-]+$"
+            },
+            "type": "array",
+            "title": "Services Fully Disrupted"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "effect",
+          "assets_lost",
+          "worst_disruption",
+          "services_fully_disrupted"
+        ],
+        "title": "ChokepointScenario"
       },
       "ConfigurationFinding": {
         "properties": {
@@ -4130,6 +5214,118 @@
         "title": "MatchSummary",
         "description": "How NVD affected-version ranges relate to the assumed version."
       },
+      "MetricPoint": {
+        "properties": {
+          "day": {
+            "type": "string",
+            "format": "date",
+            "title": "Day"
+          },
+          "value": {
+            "type": "number",
+            "title": "Value"
+          },
+          "baseline": {
+            "type": "number",
+            "title": "Baseline"
+          },
+          "z_score": {
+            "type": "number",
+            "title": "Z Score"
+          },
+          "anomalous": {
+            "type": "boolean",
+            "title": "Anomalous"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "day",
+          "value",
+          "baseline",
+          "z_score",
+          "anomalous"
+        ],
+        "title": "MetricPoint"
+      },
+      "MetricReading": {
+        "properties": {
+          "metric": {
+            "type": "string",
+            "enum": [
+              "flows",
+              "bytes_out_mb",
+              "distinct_peers",
+              "failed_logins",
+              "off_hours_share",
+              "ot_writes"
+            ],
+            "title": "Metric"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "observed": {
+            "type": "number",
+            "title": "Observed"
+          },
+          "baseline": {
+            "type": "number",
+            "title": "Baseline"
+          },
+          "z_score": {
+            "type": "number",
+            "title": "Z Score"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "metric",
+          "label",
+          "observed",
+          "baseline",
+          "z_score"
+        ],
+        "title": "MetricReading"
+      },
+      "MetricSeries": {
+        "properties": {
+          "metric": {
+            "type": "string",
+            "enum": [
+              "flows",
+              "bytes_out_mb",
+              "distinct_peers",
+              "failed_logins",
+              "off_hours_share",
+              "ot_writes"
+            ],
+            "title": "Metric"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "points": {
+            "items": {
+              "$ref": "#/components/schemas/MetricPoint"
+            },
+            "type": "array",
+            "title": "Points"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "metric",
+          "label",
+          "points"
+        ],
+        "title": "MetricSeries"
+      },
       "MlMetricRow": {
         "properties": {
           "name": {
@@ -4883,6 +6079,99 @@
         ],
         "title": "PooledHit"
       },
+      "PostureTrend": {
+        "properties": {
+          "scenario_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Scenario Id"
+          },
+          "snapshot_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Snapshot Id"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "computed",
+              "unavailable"
+            ],
+            "title": "Status"
+          },
+          "unavailable_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Unavailable Reason"
+          },
+          "model_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model Version"
+          },
+          "scoring_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scoring Version"
+          },
+          "generated_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Generated At"
+          },
+          "points": {
+            "items": {
+              "$ref": "#/components/schemas/TrendPoint"
+            },
+            "type": "array",
+            "title": "Points"
+          },
+          "assumptions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Assumptions"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "scenario_id",
+          "snapshot_id",
+          "status"
+        ],
+        "title": "PostureTrend"
+      },
       "ProductMap": {
         "properties": {
           "provenance_note": {
@@ -5439,6 +6728,70 @@
         ],
         "title": "RiskAssessment"
       },
+      "RiskBrief": {
+        "properties": {
+          "scenario_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Scenario Id"
+          },
+          "snapshot_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Snapshot Id"
+          },
+          "run_id": {
+            "type": "string",
+            "title": "Run Id"
+          },
+          "as_of": {
+            "type": "string",
+            "format": "date",
+            "title": "As Of"
+          },
+          "model_version": {
+            "type": "string",
+            "title": "Model Version"
+          },
+          "scoring_version": {
+            "type": "string",
+            "title": "Scoring Version"
+          },
+          "generated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Generated At"
+          },
+          "sections": {
+            "items": {
+              "$ref": "#/components/schemas/BriefSection"
+            },
+            "type": "array",
+            "title": "Sections"
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/Provenance"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "scenario_id",
+          "snapshot_id",
+          "run_id",
+          "as_of",
+          "model_version",
+          "scoring_version",
+          "generated_at",
+          "sections",
+          "provenance"
+        ],
+        "title": "RiskBrief"
+      },
       "RiskFactor": {
         "properties": {
           "name": {
@@ -5528,6 +6881,59 @@
           "provenance"
         ],
         "title": "Scenario"
+      },
+      "ScenarioEvent": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Id"
+          },
+          "asset_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Asset Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "start": {
+            "type": "string",
+            "format": "date",
+            "title": "Start"
+          },
+          "end": {
+            "type": "string",
+            "format": "date",
+            "title": "End"
+          },
+          "benign": {
+            "type": "boolean",
+            "title": "Benign"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "asset_id",
+          "title",
+          "start",
+          "end",
+          "benign",
+          "description"
+        ],
+        "title": "ScenarioEvent",
+        "description": "An authored scenario event: part of the simulation, never an observed incident."
       },
       "Sector": {
         "type": "string",
@@ -5677,6 +7083,47 @@
           "provenance"
         ],
         "title": "SecurityObservation"
+      },
+      "ServiceConcentration": {
+        "properties": {
+          "service_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Service Id"
+          },
+          "service_name": {
+            "type": "string",
+            "title": "Service Name"
+          },
+          "hhi": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Hhi"
+          },
+          "top_vendor": {
+            "type": "string",
+            "title": "Top Vendor"
+          },
+          "top_vendor_share": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Top Vendor Share"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "service_id",
+          "service_name",
+          "hhi",
+          "top_vendor",
+          "top_vendor_share"
+        ],
+        "title": "ServiceConcentration"
       },
       "ServiceDisruption": {
         "properties": {
@@ -5871,6 +7318,52 @@
           "effect"
         ],
         "title": "ServiceRisk"
+      },
+      "ServiceShare": {
+        "properties": {
+          "service_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Service Id"
+          },
+          "service_name": {
+            "type": "string",
+            "title": "Service Name"
+          },
+          "vendor_assets": {
+            "type": "integer",
+            "title": "Vendor Assets"
+          },
+          "service_assets": {
+            "type": "integer",
+            "title": "Service Assets"
+          },
+          "disruption": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 1.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Disruption"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "service_id",
+          "service_name",
+          "vendor_assets",
+          "service_assets",
+          "disruption"
+        ],
+        "title": "ServiceShare"
       },
       "SimulationProgress": {
         "properties": {
@@ -6200,6 +7693,92 @@
         ],
         "title": "StagedActionRequest"
       },
+      "TrendPoint": {
+        "properties": {
+          "as_of": {
+            "type": "string",
+            "format": "date",
+            "title": "As Of"
+          },
+          "city_index": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "City Index"
+          },
+          "category": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "low",
+                  "medium",
+                  "high",
+                  "critical"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Category"
+          },
+          "critical": {
+            "type": "integer",
+            "title": "Critical"
+          },
+          "high": {
+            "type": "integer",
+            "title": "High"
+          },
+          "medium": {
+            "type": "integer",
+            "title": "Medium"
+          },
+          "low": {
+            "type": "integer",
+            "title": "Low"
+          },
+          "unscored": {
+            "type": "integer",
+            "title": "Unscored"
+          },
+          "held_out": {
+            "type": "boolean",
+            "title": "Held Out"
+          },
+          "top_asset_ids": {
+            "items": {
+              "type": "string",
+              "maxLength": 100,
+              "minLength": 1,
+              "pattern": "^[a-zA-Z0-9_.-]+$"
+            },
+            "type": "array",
+            "title": "Top Asset Ids"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "as_of",
+          "city_index",
+          "category",
+          "critical",
+          "high",
+          "medium",
+          "low",
+          "unscored",
+          "held_out",
+          "top_asset_ids"
+        ],
+        "title": "TrendPoint"
+      },
       "ValidationError": {
         "properties": {
           "loc": {
@@ -6239,6 +7818,175 @@
           "type"
         ],
         "title": "ValidationError"
+      },
+      "VendorReport": {
+        "properties": {
+          "scenario_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Scenario Id"
+          },
+          "snapshot_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Snapshot Id"
+          },
+          "state": {
+            "type": "string",
+            "const": "current",
+            "title": "State",
+            "default": "current"
+          },
+          "vendors": {
+            "items": {
+              "$ref": "#/components/schemas/VendorRisk"
+            },
+            "type": "array",
+            "title": "Vendors"
+          },
+          "concentration": {
+            "items": {
+              "$ref": "#/components/schemas/ServiceConcentration"
+            },
+            "type": "array",
+            "title": "Concentration"
+          },
+          "kev_available": {
+            "type": "boolean",
+            "title": "Kev Available"
+          },
+          "assumptions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Assumptions"
+          },
+          "engine_version": {
+            "type": "string",
+            "title": "Engine Version"
+          },
+          "calculated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Calculated At"
+          },
+          "provenance": {
+            "$ref": "#/components/schemas/Provenance"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "scenario_id",
+          "snapshot_id",
+          "vendors",
+          "concentration",
+          "kev_available",
+          "assumptions",
+          "engine_version",
+          "calculated_at",
+          "provenance"
+        ],
+        "title": "VendorReport"
+      },
+      "VendorRisk": {
+        "properties": {
+          "vendor": {
+            "type": "string",
+            "title": "Vendor"
+          },
+          "assets": {
+            "items": {
+              "type": "string",
+              "maxLength": 100,
+              "minLength": 1,
+              "pattern": "^[a-zA-Z0-9_.-]+$"
+            },
+            "type": "array",
+            "title": "Assets"
+          },
+          "sectors": {
+            "items": {
+              "$ref": "#/components/schemas/Sector"
+            },
+            "type": "array",
+            "title": "Sectors"
+          },
+          "essential_assets": {
+            "type": "integer",
+            "title": "Essential Assets"
+          },
+          "kev_entries_total": {
+            "type": "integer",
+            "title": "Kev Entries Total"
+          },
+          "kev_entries_last_24_months": {
+            "type": "integer",
+            "title": "Kev Entries Last 24 Months"
+          },
+          "kev_match_rule": {
+            "type": "string",
+            "title": "Kev Match Rule"
+          },
+          "assumed_effects": {
+            "additionalProperties": {
+              "type": "string",
+              "enum": [
+                "loss_of_control",
+                "loss_of_visibility",
+                "data_integrity",
+                "unavailability"
+              ]
+            },
+            "type": "object",
+            "title": "Assumed Effects"
+          },
+          "assets_lost": {
+            "type": "integer",
+            "title": "Assets Lost"
+          },
+          "worst_disruption": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 1.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Worst Disruption"
+          },
+          "services": {
+            "items": {
+              "$ref": "#/components/schemas/ServiceShare"
+            },
+            "type": "array",
+            "title": "Services"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "vendor",
+          "assets",
+          "sectors",
+          "essential_assets",
+          "kev_entries_total",
+          "kev_entries_last_24_months",
+          "kev_match_rule",
+          "assumed_effects",
+          "assets_lost",
+          "worst_disruption",
+          "services"
+        ],
+        "title": "VendorRisk"
       },
       "VulnerabilityAssessment": {
         "properties": {

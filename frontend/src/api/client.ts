@@ -7,6 +7,11 @@ export type GraphMode = 'cyber' | 'operational'
 export type SimulationRun = Models['SimulationRun']
 export type AssetSimulation = Models['AssetSimulation']
 export type ActionType = Models['ActionDefinition']['type']
+export type ActivityReport = Models['ActivityReport']
+export type AssetActivity = Models['AssetActivity']
+export type VendorReport = Models['VendorReport']
+export type ChokepointReport = Models['ChokepointReport']
+export type PostureTrend = Models['PostureTrend']
 type Context = { scenario_id: string; snapshot_id?: string }
 
 export class ApiError extends Error {
@@ -117,4 +122,24 @@ export const api = {
   whatIf: (body: Models['WhatIfRequest']) => post<Models['WhatIfResult']>('/actions/what-if', body),
   optimize: (body: Models['OptimizeRequest']) =>
     post<Models['RemediationPlan']>('/actions/optimize', body),
+
+  activity: (context: Context, signal?: AbortSignal) =>
+    get<ActivityReport>('/activity', context, signal),
+  assetActivity: (id: string, context: Context, signal?: AbortSignal) =>
+    get<Models['AssetActivitySeries']>(
+      `/activity/assets/${encodeURIComponent(id)}`,
+      context,
+      signal,
+    ),
+  vendors: (context: Context, signal?: AbortSignal) =>
+    get<VendorReport>('/resilience/vendors', context, signal),
+  chokepoints: (context: Context, signal?: AbortSignal) =>
+    get<ChokepointReport>('/resilience/chokepoints', context, signal),
+  trend: (context: Context, signal?: AbortSignal) =>
+    get<PostureTrend>('/simulation/trend', context, signal),
+  briefUrl: (format: 'md' | 'html', context: Context) => {
+    const query = new URLSearchParams({ format, scenario_id: context.scenario_id })
+    if (context.snapshot_id) query.set('snapshot_id', context.snapshot_id)
+    return `${base}/reports/brief?${query}`
+  },
 }

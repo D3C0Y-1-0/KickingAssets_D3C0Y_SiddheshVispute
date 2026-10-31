@@ -3,6 +3,7 @@ import {
   ArrowRight,
   ArrowUpRight,
   Clock3,
+  Download,
   Database,
   Droplets,
   HeartPulse,
@@ -13,7 +14,8 @@ import {
 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts'
-import { useAssets, useLatestRun, useServices, useIntelligence } from '../../hooks/queries'
+import { api } from '../../api/client'
+import { useAssets, useIntelligence, useLatestRun, useScenarioContext, useServices } from '../../hooks/queries'
 import { AssetDrawer } from '../../components/AssetDrawer'
 import {
   AsOfBanner,
@@ -71,6 +73,7 @@ export default function Overview() {
               Explore infrastructure
               <ArrowUpRight size={14} />
             </Link>
+            {run && <BriefLinks />}
           </>
         }
       />
@@ -135,23 +138,9 @@ export default function Overview() {
           </div>
         </section>
       </div>
-      <Panel
-        title="Curated CVE assessment"
-        aside={
-          <Link to="/curated-intelligence" className="text-link">
-            Explain curated priorities →
-          </Link>
-        }
-      >
+      <Panel title="Curated CVE assessment" aside={<Link to="/curated-intelligence" className="text-link">Explain curated priorities →</Link>}>
         <QueryState pending={curated.isPending} error={curated.error} retry={curated.refetch} />
-        {!curated.isError && curated.data && (
-          <p>
-            {curated.data.assessed_count} / {curated.data.assets.length} assets assessed ·
-            covered-asset mean {curated.data.covered_asset_mean?.toFixed(2) ?? 'Unavailable'} / 100
-            · {curated.data.unavailable_count} unavailable. A separate Apache overlay and formula;
-            not comparable to workflow scores or an incident probability.
-          </p>
-        )}
+        {!curated.isError && curated.data && <p>{curated.data.assessed_count} / {curated.data.assets.length} assets assessed · covered-asset mean {curated.data.covered_asset_mean?.toFixed(2) ?? 'Unavailable'} / 100 · {curated.data.unavailable_count} unavailable. A separate Apache overlay and formula; not comparable to workflow scores or an incident probability.</p>}
       </Panel>
       <div className="metric-grid">
         <section className="metric-card city-risk">
@@ -495,5 +484,31 @@ export default function Overview() {
       <ProvenanceNotice />
       <AssetDrawer id={selected} onClose={() => setSelected(null)} />
     </>
+  )
+}
+
+function BriefLinks() {
+  const context = useScenarioContext()
+  return (
+    <span className="ins-brief">
+      <a
+        className="button secondary"
+        href={api.briefUrl('html', context)}
+        download
+        title="Download the risk brief as a web page"
+      >
+        <Download size={16} />
+        Brief (HTML)
+      </a>
+      <a
+        className="button secondary"
+        href={api.briefUrl('md', context)}
+        download
+        title="Download the risk brief as Markdown"
+      >
+        <Download size={16} />
+        Markdown
+      </a>
+    </span>
   )
 }
