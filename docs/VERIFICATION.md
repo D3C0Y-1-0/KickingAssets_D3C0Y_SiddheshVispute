@@ -1,5 +1,19 @@
 # Phase 1 verification record
 
+## Phase 5B frontend verification — 31 October 2026
+
+Source branch `feature/phase-5-frontend`, exact base `8ea1689b81ecd2144219d4446bd1fcb79564379e`. See [PHASE_5_FRONTEND.md](PHASE_5_FRONTEND.md) for contract coordination, scope and reproduction. Backend/ML/generated contracts were unchanged.
+
+- Frontend `npm test`: 36 passed (26 new workflow tests plus the existing 10 boundary tests). Covered stale budgets/exclusions/baselines, in-flight changes, exclusion search/removal/validation, empty/error/retry states, single/full/subset routed handoff, unsupported actions and actual typed request keys.
+- `npm run typecheck`, `npm run format:check` and `npm run build` passed. There is no separate ESLint task; Prettier is the configured source style check. Test dependencies use a jsdom version compatible with the documented Node.js 22.20 minimum. Tests/build were run on Node 24.20.0.
+- Actual desktop browser: Live Simulation completed all seven stages; actual simulation 9.2s, baseline city 35.62, nine critical assets. HLT-001 opened the filtered register with calculated workflow risk and separate curated assessment, without API-route-not-found errors.
+- Actual Fix Plan: searched/selected two exclusions, removed one, generated 60h plan with WTR-002 excluded. Three actions used 56h: HLT-009 patch, HLT-008 segmentation, PWR-008 segmentation. Backend projection 35.62 → 26.30. Editing the budget immediately marked it OUTDATED and hid old comparisons/transfer controls. Restoring the exact old inputs allowed their matching plan to be reviewed again.
+- Full-plan handoff staged all three actions without automatic calculation. Explicit What-If calculation reproduced 26.30 (9.32 points / 26.17% reduction), seven changed assets and real service values (100% → 100% worst plausible disruption for each service; no verified recovery claimed).
+- Mobile 390×844: What-If and Fix Plan document client/scroll widths both 375, with inner table overflow contained. On mobile, an 8h plan excluding WTR-002 transferred HLT-009 patch alone; explicit calculation returned 35.62 → 33.59 (2.03 points / 5.70%, 8h). Desktop viewport override was reset afterward. Audit tab captured no warning/error logs.
+- Local ignored screenshots: `artifacts/screenshots/phase5b-outdated.jpg`, `phase5b-comparison-desktop.jpg`, `phase5b-whatif-mobile.jpg`, `phase5b-plan-mobile.jpg`, `phase5b-final-comparison.jpg`. The final desktop comparison was visually inspected.
+
+Limits: full backend/model evaluation was not rerun for this frontend-only change. No unfinished hardening branch was merged. Atomic server binding, patch/fixed-version verification and maintenance constraints await the backend contract; best-effort client baseline checks do not eliminate server races. No durable saved plans or actual remediation was introduced.
+
 ## Final late-push synchronization
 
 The user's all-branches instruction also covered new pushes discovered in the final refresh: readable Live UI `7f09433`, attack-path analysis `ce13015`, and combined/force-graph history `3983920`. [REMOTE_BRANCH_SNAPSHOT.json](REMOTE_BRANCH_SNAPSHOT.json) records the exact fetched heads. Final full backend run: **141 passed**, one existing Starlette/httpx warning. Frontend: **10 passed**, typecheck, Prettier and production build passed. The D3 graph chunk configuration was updated from the obsolete Cytoscape entry, removing the empty-chunk build warning.
