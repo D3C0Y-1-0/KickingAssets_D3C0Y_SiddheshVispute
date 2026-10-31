@@ -1364,7 +1364,7 @@ tbody tr:hover {
   display: flex;
   align-items: center;
   gap: 7px;
-  font-size: 11px;
+  font-size: 13px;
   padding: 9px 15px;
   border: 1px solid transparent;
   border-radius: 4px;
@@ -1391,6 +1391,142 @@ tbody tr:hover {
   background-size: 20px 20px;
   background-color: var(--surface-inset);
 }
+.graph-canvas {
+  position: relative;
+  overflow: hidden;
+}
+.fg-host,
+.fg-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.fg-host {
+  cursor: grab;
+  touch-action: none;
+}
+.fg-host:active {
+  cursor: grabbing;
+}
+.fg-link {
+  stroke: var(--graph-edge);
+  stroke-width: 1.3;
+  opacity: 0.9;
+  transition:
+    opacity 0.18s,
+    stroke 0.18s;
+}
+.fg-link.operational {
+  stroke-dasharray: 5 4;
+}
+.fg-link.is-hot {
+  stroke: var(--accent);
+  stroke-width: 1.9;
+  opacity: 1;
+}
+.fg-link.operational.is-hot {
+  animation: fg-flow 0.9s linear infinite;
+}
+.fg-link.cyber.is-hot {
+  stroke-dasharray: 8 6;
+  animation: fg-flow 0.9s linear infinite;
+}
+.fg-link.is-dim {
+  opacity: 0.08;
+}
+@keyframes fg-flow {
+  to {
+    stroke-dashoffset: -18;
+  }
+}
+.fg-node {
+  cursor: pointer;
+  outline: none;
+  transition: opacity 0.18s;
+}
+.fg-node.is-dim {
+  opacity: 0.18;
+}
+.fg-halo {
+  opacity: 0;
+  filter: blur(7px);
+  transition: opacity 0.2s;
+}
+.fg-node:hover .fg-halo,
+.fg-node:focus-visible .fg-halo {
+  opacity: 0.35;
+}
+.fg-node.is-selected .fg-halo {
+  opacity: 0.55;
+}
+.fg-body {
+  fill-opacity: 0.16;
+  stroke-width: 1.8;
+  transition:
+    fill-opacity 0.2s,
+    stroke-width 0.2s;
+}
+.fg-node:hover .fg-body {
+  fill-opacity: 0.32;
+}
+.fg-node.is-selected .fg-body {
+  fill-opacity: 0.45;
+  stroke: var(--text);
+  stroke-width: 2.6;
+}
+.fg-node:focus-visible .fg-body {
+  stroke: var(--accent);
+  stroke-width: 3;
+}
+.fg-ring {
+  fill: none;
+  stroke-width: 1;
+  stroke-dasharray: 2 3;
+  opacity: 0.7;
+  pointer-events: none;
+}
+.fg-id {
+  fill: var(--text);
+  font:
+    600 8px 'Segoe UI',
+    sans-serif;
+  pointer-events: none;
+  user-select: none;
+}
+.fg-label {
+  font-family: 'Segoe UI', sans-serif;
+  fill: var(--text-secondary);
+  pointer-events: none;
+  user-select: none;
+  paint-order: stroke;
+  stroke: var(--surface-inset);
+  stroke-width: 3px;
+  stroke-linejoin: round;
+}
+.fg-label-id {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
+.fg-label-name {
+  font-size: 11.5px;
+  fill: var(--text-muted);
+}
+.fg-node.is-selected .fg-label,
+.fg-node:hover .fg-label {
+  fill: var(--text);
+}
+@media (prefers-reduced-motion: reduce) {
+  .fg-link.is-hot {
+    animation: none;
+  }
+  .fg-link,
+  .fg-node,
+  .fg-halo,
+  .fg-body {
+    transition: none;
+  }
+}
 .graph-controls {
   position: absolute;
   bottom: 98px;
@@ -1402,7 +1538,7 @@ tbody tr:hover {
   background: var(--surface);
   border-radius: 5px;
   padding: 3px;
-  font-size: 9px;
+  font-size: 12px;
   color: var(--text-secondary);
 }
 .graph-controls > span {
@@ -1416,7 +1552,7 @@ tbody tr:hover {
   gap: 16px;
   padding: 13px 17px;
   border-top: 1px solid var(--border-soft);
-  font-size: 9px;
+  font-size: 12px;
   color: var(--text-secondary);
 }
 .graph-legend > span {
