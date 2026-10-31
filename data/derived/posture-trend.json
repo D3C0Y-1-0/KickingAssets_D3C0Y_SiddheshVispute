@@ -1,0 +1,305 @@
+{
+  "scenario_id": "aurora-city",
+  "snapshot_id": "aurora-baseline-v1",
+  "status": "computed",
+  "unavailable_reason": null,
+  "model_version": "kev-signal-v1",
+  "scoring_version": "risk-index-v1",
+  "generated_at": "2026-10-31T15:01:24.179514Z",
+  "points": [
+    {
+      "as_of": "2025-05-01",
+      "city_index": 33.62,
+      "category": "medium",
+      "critical": 6,
+      "high": 7,
+      "medium": 3,
+      "low": 14,
+      "unscored": 0,
+      "held_out": true,
+      "top_asset_ids": [
+        "HLT-001",
+        "PWR-001",
+        "WTR-001"
+      ]
+    },
+    {
+      "as_of": "2025-06-01",
+      "city_index": 33.96,
+      "category": "medium",
+      "critical": 6,
+      "high": 7,
+      "medium": 3,
+      "low": 14,
+      "unscored": 0,
+      "held_out": true,
+      "top_asset_ids": [
+        "HLT-001",
+        "PWR-001",
+        "WTR-001"
+      ]
+    },
+    {
+      "as_of": "2025-07-01",
+      "city_index": 34.33,
+      "category": "medium",
+      "critical": 6,
+      "high": 8,
+      "medium": 2,
+      "low": 14,
+      "unscored": 0,
+      "held_out": true,
+      "top_asset_ids": [
+        "HLT-001",
+        "PWR-001",
+        "WTR-001"
+      ]
+    },
+    {
+      "as_of": "2025-08-01",
+      "city_index": 34.27,
+      "category": "medium",
+      "critical": 6,
+      "high": 7,
+      "medium": 3,
+      "low": 14,
+      "unscored": 0,
+      "held_out": true,
+      "top_asset_ids": [
+        "HLT-001",
+        "PWR-001",
+        "WTR-001"
+      ]
+    },
+    {
+      "as_of": "2025-09-01",
+      "city_index": 33.75,
+      "category": "medium",
+      "critical": 6,
+      "high": 6,
+      "medium": 4,
+      "low": 14,
+      "unscored": 0,
+      "held_out": true,
+      "top_asset_ids": [
+        "HLT-001",
+        "PWR-001",
+        "WTR-001"
+      ]
+    },
+    {
+      "as_of": "2025-10-01",
+      "city_index": 33.81,
+      "category": "medium",
+      "critical": 6,
+      "high": 6,
+      "medium": 4,
+      "low": 14,
+      "unscored": 0,
+      "held_out": true,
+      "top_asset_ids": [
+        "HLT-001",
+        "PWR-001",
+        "WTR-001"
+      ]
+    },
+    {
+      "as_of": "2025-11-01",
+      "city_index": 33.87,
+      "category": "medium",
+      "critical": 6,
+      "high": 6,
+      "medium": 4,
+      "low": 14,
+      "unscored": 0,
+      "held_out": true,
+      "top_asset_ids": [
+        "HLT-001",
+        "PWR-001",
+        "WTR-001"
+      ]
+    },
+    {
+      "as_of": "2025-12-01",
+      "city_index": 33.96,
+      "category": "medium",
+      "critical": 6,
+      "high": 6,
+      "medium": 4,
+      "low": 14,
+      "unscored": 0,
+      "held_out": true,
+      "top_asset_ids": [
+        "HLT-001",
+        "PWR-001",
+        "WTR-001"
+      ]
+    },
+    {
+      "as_of": "2026-01-01",
+      "city_index": 34.07,
+      "category": "medium",
+      "critical": 6,
+      "high": 7,
+      "medium": 3,
+      "low": 14,
+      "unscored": 0,
+      "held_out": true,
+      "top_asset_ids": [
+        "HLT-001",
+        "PWR-001",
+        "WTR-001"
+      ]
+    },
+    {
+      "as_of": "2026-02-01",
+      "city_index": 34.11,
+      "category": "medium",
+      "critical": 6,
+      "high": 7,
+      "medium": 3,
+      "low": 14,
+      "unscored": 0,
+      "held_out": true,
+      "top_asset_ids": [
+        "HLT-001",
+        "PWR-001",
+        "WTR-001"
+      ]
+    },
+    {
+      "as_of": "2026-03-01",
+      "city_index": 33.97,
+      "category": "medium",
+      "critical": 6,
+      "high": 7,
+      "medium": 3,
+      "low": 14,
+      "unscored": 0,
+      "held_out": true,
+      "top_asset_ids": [
+        "HLT-001",
+        "PWR-001",
+        "WTR-001"
+      ]
+    },
+    {
+      "as_of": "2026-04-01",
+      "city_index": 33.85,
+      "category": "medium",
+      "critical": 6,
+      "high": 7,
+      "medium": 3,
+      "low": 14,
+      "unscored": 0,
+      "held_out": true,
+      "top_asset_ids": [
+        "HLT-001",
+        "PWR-001",
+        "WTR-001"
+      ]
+    },
+    {
+      "as_of": "2026-05-01",
+      "city_index": 33.86,
+      "category": "medium",
+      "critical": 6,
+      "high": 7,
+      "medium": 3,
+      "low": 14,
+      "unscored": 0,
+      "held_out": true,
+      "top_asset_ids": [
+        "HLT-001",
+        "PWR-001",
+        "WTR-001"
+      ]
+    },
+    {
+      "as_of": "2026-06-01",
+      "city_index": 33.85,
+      "category": "medium",
+      "critical": 6,
+      "high": 7,
+      "medium": 3,
+      "low": 14,
+      "unscored": 0,
+      "held_out": true,
+      "top_asset_ids": [
+        "HLT-001",
+        "PWR-001",
+        "WTR-001"
+      ]
+    },
+    {
+      "as_of": "2026-07-01",
+      "city_index": 35.65,
+      "category": "medium",
+      "critical": 6,
+      "high": 9,
+      "medium": 1,
+      "low": 14,
+      "unscored": 0,
+      "held_out": true,
+      "top_asset_ids": [
+        "HLT-001",
+        "WTR-001",
+        "PWR-001"
+      ]
+    },
+    {
+      "as_of": "2026-08-01",
+      "city_index": 35.64,
+      "category": "medium",
+      "critical": 6,
+      "high": 9,
+      "medium": 1,
+      "low": 14,
+      "unscored": 0,
+      "held_out": true,
+      "top_asset_ids": [
+        "HLT-001",
+        "WTR-001",
+        "PWR-001"
+      ]
+    },
+    {
+      "as_of": "2026-09-01",
+      "city_index": 35.5,
+      "category": "medium",
+      "critical": 9,
+      "high": 5,
+      "medium": 2,
+      "low": 14,
+      "unscored": 0,
+      "held_out": true,
+      "top_asset_ids": [
+        "HLT-001",
+        "WTR-001",
+        "PWR-001"
+      ]
+    },
+    {
+      "as_of": "2026-10-01",
+      "city_index": 35.62,
+      "category": "medium",
+      "critical": 9,
+      "high": 5,
+      "medium": 2,
+      "low": 14,
+      "unscored": 0,
+      "held_out": true,
+      "top_asset_ids": [
+        "HLT-001",
+        "PWR-001",
+        "WTR-001"
+      ]
+    }
+  ],
+  "assumptions": [
+    "Each point replays the whole workflow as of that month using only information available then: CVEs published, KEV additions and EPSS scores up to that date.",
+    "Assets, assumed products, versions and configuration are held fixed, so the trend shows how the public vulnerability landscape moves against this estate, not changes to the estate.",
+    "Points from 2025 onward are in the held-out test period of the model.",
+    "The index is relative and uncalibrated; it is not an incident probability."
+  ]
+}

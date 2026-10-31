@@ -78,3 +78,13 @@ skills-lock.json
 ```
 
 Local-only generated state is excluded: .venv/, frontend/node_modules/, frontend/dist/, SQLite database files, Python/test caches, .review/, artifacts/ and the installed .agents/skills/anatomy/ tooling. skills-lock.json records the reviewed upstream skill fingerprint; the application ships generated SVG paths rather than a third-party example app.
+
+## Hosting additions (codex/innovations)
+
+Created: `render.yaml`, `scripts/render-build.sh` (Render blueprint, not used by the current hosting), `vercel.json`, `.vercelignore`.
+Modified: `backend/app/db/store.py`, `backend/app/main.py`, `backend/requirements.txt`, `backend/requirements-lock.txt`, `frontend/src/features/infrastructure/Infrastructure.tsx` (merge resolution), `.gitignore`.
+
+## Challenge-gap features
+
+Created: `docs/PLAN_CHALLENGE_GAPS.md`, `backend/app/schemas/insights.py`, `backend/app/engine/telemetry.py`, `backend/app/engine/resilience.py`, `backend/app/services/insights.py`, `backend/app/services/brief.py`, `backend/app/services/trend_build.py`, `backend/app/api/insights.py`, `backend/tests/test_telemetry.py`, `backend/tests/test_resilience.py`, `backend/tests/test_insights_api.py`, `data/scenarios/aurora-telemetry-events.json`, `data/derived/posture-trend.json`, `frontend/src/features/posture/Posture.tsx`, `frontend/src/features/resilience/Resilience.tsx`, `frontend/src/features/coverage/Coverage.tsx`, `frontend/src/features/insights/insights.css`.
+Modified: `backend/app/main.py`, `docs/openapi.json`, `frontend/src/api/schema.d.ts`, `frontend/src/api/client.ts`, `frontend/src/hooks/queries.ts`, `frontend/src/app/App.tsx`, `frontend/src/features/overview/Overview.tsx`.

@@ -1,0 +1,13 @@
+.venv
+.env
+.env.*
+/backend
+/data
+/docs
+/scripts
+.agents
+.review
+/artifacts
+/Dockerfile
+/.dockerignore
+/render.yaml
