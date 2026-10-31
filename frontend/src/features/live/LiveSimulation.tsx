@@ -39,6 +39,17 @@ export default function LiveSimulation() {
           </button>
         }
       />
+      <p className="small muted">
+        Demonstration: run the simulation, inspect{' '}
+        <Link className="text-link" to="/assets">
+          Assets &amp; Risk
+        </Link>
+        , then open{' '}
+        <Link className="text-link" to="/remediation">
+          Fix Plan
+        </Link>{' '}
+        and simulate selected actions in What-If.
+      </p>
       <div className="live-grid">
         <Panel title="What is happening" aside={<SampleBadge>Simulated city</SampleBadge>}>
           <ol className="live-steps" aria-live="polite">
@@ -84,7 +95,7 @@ export default function LiveSimulation() {
             <ul className="live-list">
               {topAssets.map((a) => (
                 <li key={a.asset_id}>
-                  <Link className="text-link" to="/assets">
+                  <Link className="text-link" to={`/assets?q=${encodeURIComponent(a.asset_id)}`}>
                     {a.asset_id}
                   </Link>
                   <span className="mono">{a.risk.score?.toFixed(1)}</span>

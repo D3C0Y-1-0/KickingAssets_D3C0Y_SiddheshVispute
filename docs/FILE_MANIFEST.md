@@ -1,5 +1,11 @@
 # Phase 1 file manifest
 
+## Phase 5B frontend
+
+Created: `docs/PHASE_5_FRONTEND.md`, `frontend/src/features/actions/workflow.ts`, `frontend/src/features/actions/useActionWorkflow.ts`, `frontend/src/features/actions/WorkflowUI.tsx`, `frontend/src/features/actions/workflow.css`, `frontend/tests/workflow.test.tsx`.
+
+Modified: `frontend/src/features/remediation/Remediation.tsx`, `frontend/src/features/whatif/WhatIf.tsx`, `frontend/src/features/assets/Assets.tsx`, `frontend/src/features/live/LiveSimulation.tsx`, `frontend/package.json`, `frontend/package-lock.json`, `docs/HANDOFF.md`, `docs/FILE_MANIFEST.md`, `docs/VERIFICATION.md`. Test dependencies add jsdom and Testing Library. No backend, ML, risk/optimizer algorithms or generated schema edits. See PHASE_5_FRONTEND.md for contract boundaries.
+
 ## Phase 3A and repository synchronization
 
 The exact final change inventory relative to the Phase 2 integration is [PHASE_3_FILES.txt](PHASE_3_FILES.txt). Imported branch histories and module responsibilities are recorded in [PHASE_3_INTEGRATION.md](PHASE_3_INTEGRATION.md). New coordinator-owned modules: `api/intelligence.py`, `schemas/intelligence.py`, `services/intelligence.py`, `services/model_signal.py`, `tests/test_intelligence.py`, `CuratedIntelligence.tsx`, `RiskEvidence.tsx`, `intelligence.css`, `scripts/evaluate_model.py`, `scripts/build_inference_inputs.py`, the attributed `risk-v1`/`risk-inference.json` inputs and `ml-reevaluation.json` record. Existing vulnerability modules and impact tests were preserved. Shared impact schemas/Protocol and original Aurora fixture were not rewritten. Optional PostgreSQL SQL compatibility, SQLite launch switches, generated contracts, UI integration, tests and documentation were coordinated locally. The 34 imported twin/design files received project formatting without behavioral changes.
