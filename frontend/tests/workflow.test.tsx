@@ -43,6 +43,9 @@ const run = {
 const steps: Models['PlanStep'][] = [
   {
     rank: 1,
+    kind: 'selected',
+    downtime_hours: 2,
+    reduction_per_effort_hour: 1,
     asset_id: 'A',
     asset_name: 'Test gateway',
     action_type: 'patch_prioritization',
@@ -56,6 +59,9 @@ const steps: Models['PlanStep'][] = [
   },
   {
     rank: 2,
+    kind: 'selected',
+    downtime_hours: 0,
+    reduction_per_effort_hour: 0.17,
     asset_id: 'B',
     asset_name: 'Test controller',
     action_type: 'access_control',
@@ -71,10 +77,16 @@ const steps: Models['PlanStep'][] = [
 const plan: Models['RemediationPlan'] = {
   ...context,
   run_id: run.id,
+  baseline_fingerprint: 'fixture',
+  optimality: 'greedy_heuristic',
   state: 'projected',
   verification: 'not_verified',
   effort_budget_hours: 60,
   used_hours: 20,
+  used_downtime_hours: 2,
+  rejected: [],
+  what_if_request: null,
+  limitations: [],
   starting_city_index: 40,
   ending_city_index: 30,
   steps,
@@ -100,6 +112,21 @@ const options: Models['ActionOption'][] = assets.flatMap((asset) =>
 const projection: Models['WhatIfResult'] = {
   ...context,
   run_id: run.id,
+  baseline_fingerprint: 'fixture',
+  summary: {
+    current_city_index: 40,
+    projected_city_index: 30,
+    city_reduction: 10,
+    current_category_counts: [],
+    projected_category_counts: [],
+    overlap_adjustment: 0,
+  },
+  constraint_report: {
+    constraints_supplied: false,
+    total_effort_hours: 20,
+    total_downtime_hours: 2,
+    checks: [],
+  },
   state: 'projected',
   verification: 'not_verified',
   current_city_index: 40,
@@ -112,6 +139,8 @@ const projection: Models['WhatIfResult'] = {
       action_type: 'patch_prioritization',
       name: 'Patch prioritization',
       modelled: true,
+      downtime_hours: 2,
+      outcome: 'reduces_modelled_risk',
       effect: 'Test projected effect',
       effort_hours: 8,
       operational_disruption: 'Assumed',
@@ -298,10 +327,12 @@ describe('typed plan-to-What-If handoff', () => {
     await screen.findByText('Affected assets (1)')
     expect(api.whatIf).toHaveBeenCalledWith({
       ...context,
+      run_id: run.id,
       actions: [{ asset_id: 'A', action_type: 'patch_prioritization' }],
     })
     expect(Object.keys(vi.mocked(api.whatIf).mock.calls[0][0]).sort()).toEqual([
       'actions',
+      'run_id',
       'scenario_id',
       'snapshot_id',
     ])

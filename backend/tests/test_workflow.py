@@ -250,3 +250,27 @@ def test_cve_scoring_endpoint(app_client):
     scored = app_client.get("/api/v1/ml/score", params={"cve_id": cve}).json()
     assert scored["status"] == "scored" and 0 <= scored["priority_percentile"] <= 1
     assert scored["drivers"]
+
+
+@needs_ml
+def test_latest_run_is_rebuilt_after_a_restart(tmp_path):
+    db = tmp_path / "restart.sqlite3"
+    with TestClient(create_app(db, static_dir=tmp_path / "s")) as first:
+        first_run = first.post("/api/v1/simulation/run").json()
+    with TestClient(create_app(db, static_dir=tmp_path / "s")) as second:
+        restored = second.get("/api/v1/simulation/latest")
+        assert restored.status_code == 200
+        body = restored.json()
+        # Same inputs, same baseline: a fresh deterministic rebuild, not a stored result.
+        assert body["fingerprint"] == first_run["fingerprint"]
+        assert body["city_risk"]["score"] == first_run["city_risk"]["score"]
+        # The restored run is the one What-If binds to.
+        what_if = second.post(
+            "/api/v1/actions/what-if",
+            json={
+                **CONTEXT,
+                "run_id": body["id"],
+                "actions": [{"asset_id": "PWR-001", "action_type": "access_control"}],
+            },
+        )
+        assert what_if.status_code == 200, what_if.text

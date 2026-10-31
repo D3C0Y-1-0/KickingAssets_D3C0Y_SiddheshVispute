@@ -258,8 +258,13 @@ export function SmartCityViewer({
     }
   }
 
+  const selectedRisk = selectedComponentId ? risk[selectedComponentId] : undefined
   const readoutText = selectedAsset
-    ? `${selectedAsset.id} · ${selectedAsset.name.toUpperCase()} · [${selectedAsset.status.toUpperCase()}] · CRITICALITY: ${selectedAsset.criticalityScore}/100`
+    ? `${selectedAsset.id} · ${selectedAsset.name.toUpperCase()} · ${
+        selectedRisk
+          ? `ML RISK ${selectedRisk.score.toFixed(1)} · ${selectedRisk.category?.toUpperCase()}`
+          : 'NOT ASSESSED · RUN THE SIMULATION'
+      } · CRITICALITY TIER: ${selectedAsset.criticalityLevel.toUpperCase()}`
     : 'METROPOLITAN DIGITAL TWIN · SELECT ANY FACILITY OR SUBSYSTEM TO INSPECT'
 
   return (
@@ -539,7 +544,9 @@ export function SmartCityViewer({
                         }`}
                       >
                         <div className="flex items-center justify-between text-[9px] font-mono text-slate-400 mb-0.5">
-                          <span className="text-[#ccff00] font-bold">{h.assetId}</span>
+                          <span className="text-[#ccff00] font-bold">
+                            {componentToAssetMap.get(h.id)?.id ?? 'No cyber asset'}
+                          </span>
                           <span
                             className={`font-bold uppercase px-1.5 py-0.2 rounded text-[8px] ${
                               status === 'offline'

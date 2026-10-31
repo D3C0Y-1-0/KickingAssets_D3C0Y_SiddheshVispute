@@ -194,3 +194,19 @@ if __name__ == "__main__":
     initialize(default_db_path(), reset=args.reset)
     close_pools()
     print("Aurora City database ready (30 assets; no model predictions).")
+
+
+def save_last_run(target: Target, params: dict) -> None:
+    """Remember the inputs of the latest simulation run so it can be rebuilt after a restart."""
+    with connection(target) as db:
+        db.execute(
+            "INSERT INTO metadata VALUES ('last_run',?) "
+            "ON CONFLICT(key) DO UPDATE SET value=excluded.value",
+            (json.dumps(params),),
+        )
+
+
+def load_last_run(target: Target) -> dict | None:
+    with connection(target) as db:
+        row = db.execute("SELECT value FROM metadata WHERE key='last_run'").fetchone()
+    return json.loads(row["value"]) if row else None

@@ -119,7 +119,12 @@ function WhatIfWorkspace({
     whatIf.mutate({
       baseline: run,
       inputKey,
-      body: { scenario_id: run.scenario_id, snapshot_id: run.snapshot_id, actions: staged },
+      body: {
+        scenario_id: run.scenario_id,
+        snapshot_id: run.snapshot_id,
+        run_id: run.id,
+        actions: staged,
+      },
     })
   }
   const changedAssets =

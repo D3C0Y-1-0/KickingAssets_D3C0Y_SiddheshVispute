@@ -9,6 +9,10 @@ export type TwinRisk = {
   score: number
   category: AssetSimulation['risk']['category']
   linked: number
+  /** 0 = highest-risk part in this run. Drives the order radars pop in. */
+  rank: number
+  /** Changes with every run so reveal animations replay. */
+  runId: string
 }
 
 /** Risk per twin part from the latest computed run: the highest-scoring linked asset wins. */
@@ -34,8 +38,13 @@ export function useTwinRisk(): {
         score: top.risk.score ?? 0,
         category: top.risk.category,
         linked: linked.length,
+        rank: 0,
+        runId: run.id,
       }
     }
+    Object.values(out)
+      .sort((a, b) => b.score - a.score || a.assetId.localeCompare(b.assetId))
+      .forEach((entry, index) => (entry.rank = index))
     return out
   }, [run])
   return { run, risk }

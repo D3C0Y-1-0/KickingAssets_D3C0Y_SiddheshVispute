@@ -238,14 +238,17 @@ export function SubstationViewer({
         return `SIMULATION: [CASCADING RISK] ${activeAsset.name}`
       }
     }
-    if (activeAsset && activeAsset.telemetry) {
-      return `${activeAsset.name.toUpperCase()} · ${activeAsset.telemetry.metricName}: ${activeAsset.telemetry.value} ${activeAsset.telemetry.unit}`
-    }
     if (activeAsset) {
-      return `${activeAsset.name.toUpperCase()} · 33/11kV SYSTEM NOMINAL`
+      const part = activeAsset.substationComponentId
+      const scored = part ? risk[part] : undefined
+      return `${activeAsset.id} · ${activeAsset.name.toUpperCase()} · ${
+        scored
+          ? `ML RISK ${scored.score.toFixed(1)} · ${scored.category?.toUpperCase()}`
+          : 'NOT ASSESSED · RUN THE SIMULATION'
+      }`
     }
     return 'SUBSTATION ATLAS · ALL SYSTEMS 33kV OPERATIONAL'
-  }, [activeAsset, isSimulationActive, failedAssetIds, affectedAssetIds])
+  }, [activeAsset, isSimulationActive, failedAssetIds, affectedAssetIds, risk])
 
   return (
     <div

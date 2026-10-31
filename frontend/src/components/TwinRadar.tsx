@@ -4,7 +4,12 @@ import type { TwinRisk } from '../hooks/twinRisk'
 export function RadarPing({ risk }: { risk?: TwinRisk }) {
   if (!risk || (risk.category !== 'critical' && risk.category !== 'high')) return null
   return (
-    <span className={`twin-radar ${risk.category}`} aria-hidden>
+    <span
+      key={risk.runId}
+      className={`twin-radar twin-radar-pop ${risk.category}`}
+      style={{ ['--pop-delay' as string]: `${Math.min(risk.rank, 14) * 150}ms` }}
+      aria-hidden
+    >
       <i />
       <i />
       <i />

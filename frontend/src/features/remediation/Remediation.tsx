@@ -86,6 +86,7 @@ function PlanWorkspace({ run, assets }: { run: SimulationRun; assets: Asset[] })
       body: {
         scenario_id: run.scenario_id,
         snapshot_id: run.snapshot_id,
+        run_id: run.id,
         effort_budget_hours: Number(budget),
         excluded_asset_ids: excluded,
       },

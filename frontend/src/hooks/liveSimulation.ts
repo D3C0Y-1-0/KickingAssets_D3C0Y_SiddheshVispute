@@ -154,6 +154,7 @@ export function useLiveSimulation() {
         const plan = await api.optimize({
           scenario_id: context.scenario_id,
           snapshot_id: context.snapshot_id ?? '',
+          run_id: out.run?.id ?? '',
           effort_budget_hours: 40,
         })
         out.plan = plan

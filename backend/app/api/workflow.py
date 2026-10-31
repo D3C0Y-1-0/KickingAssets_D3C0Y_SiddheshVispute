@@ -6,6 +6,7 @@ from typing import Annotated
 
 from fastapi import APIRouter, HTTPException, Query, Request
 
+from app.db.store import load_last_run, save_last_run
 from app.domain.seed import SCENARIO_ID
 from app.engine.attack_path import (
     AnalysisConfig,
@@ -51,8 +52,35 @@ _run_lock = threading.Lock()
 RUN_HISTORY_LIMIT = 100
 
 
+def restore_latest(app) -> simulation.RunContext | None:
+    """Rebuild the last run after a restart from its saved inputs.
+
+    The run itself is held in memory only. What is saved is the scenario, snapshot and as-of date, so
+    the rebuild is a fresh deterministic computation with a new run id, not a stored result.
+    """
+    with _run_lock:
+        ctx = getattr(app.state, "simulation", None)
+        if ctx is not None:
+            return ctx
+        saved = load_last_run(app.state.db_path)
+        if not saved:
+            return None
+        try:
+            as_of = date.fromisoformat(saved["as_of"]) if saved.get("as_of") else None
+            ctx = simulation.run_simulation(
+                app.state.db_path, saved["scenario_id"], saved["snapshot_id"], as_of
+            )
+        except (inference.ReferenceUnavailable, ValueError, KeyError, HTTPException):
+            return None
+        app.state.simulation = ctx
+        if not hasattr(app.state, "run_history"):
+            app.state.run_history = {}
+        app.state.run_history[ctx.run.id] = ctx.run.fingerprint
+        return ctx
+
+
 def _latest(request: Request) -> simulation.RunContext:
-    ctx = getattr(request.app.state, "simulation", None)
+    ctx = getattr(request.app.state, "simulation", None) or restore_latest(request.app)
     if ctx is None:
         raise HTTPException(409, "No simulation has been run yet. Run the simulation first.")
     return ctx
@@ -139,6 +167,14 @@ def run(
         except ValueError as exc:
             raise HTTPException(422, str(exc)) from exc
         request.app.state.simulation = ctx
+        save_last_run(
+            request.app.state.db_path,
+            {
+                "scenario_id": scenario_id,
+                "snapshot_id": snapshot_id,
+                "as_of": as_of.isoformat() if as_of else None,
+            },
+        )
         history = _history(request)
         history[ctx.run.id] = ctx.run.fingerprint
         while len(history) > RUN_HISTORY_LIMIT:

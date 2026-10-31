@@ -1,3 +1,4 @@
+import threading
 from contextlib import asynccontextmanager
 from pathlib import Path
 
@@ -12,6 +13,7 @@ from app.api.insights import router as insights_router
 from app.api.intelligence import router as intelligence_router
 from app.api.routes import router
 from app.api.vulnerability import router as vulnerability_router
+from app.api.workflow import restore_latest
 from app.api.workflow import router as workflow_router
 from app.db.store import STORAGE_ERRORS, Target, close_pools, default_db_path, initialize
 from app.db.vulnerability_store import bootstrap
@@ -26,6 +28,8 @@ def create_app(db_path: Target | None = None, static_dir: Path | None = None) ->
         initialize(application.state.db_path)
         bootstrap(application.state.db_path, ROOT / "data/reference/risk-v1")
         bootstrap_intelligence(application.state.db_path)
+        # Rebuild the last simulation in the background so pages are not empty after a restart.
+        threading.Thread(target=restore_latest, args=(application,), daemon=True).start()
         yield
         close_pools()
 
