@@ -197,6 +197,7 @@ class SnapshotOption(Contract):
 
 class SimulationRun(Context):
     id: str
+    fingerprint: str
     state: Literal["current"] = "current"
     as_of: date
     as_of_split: str
@@ -220,6 +221,7 @@ class ActionDefinition(Contract):
     description: str
     modelled: bool
     effort_hours: float
+    downtime_hours: float
     operational_disruption: str
     assumption: str
 
@@ -239,13 +241,102 @@ class ActionOption(Contract):
     operational_disruption: str
 
 
+CveId = Annotated[str, Field(pattern=r"^CVE-\d{4}-\d{4,}$")]
+Fingerprint = Annotated[str, Field(min_length=8, max_length=64)]
+
+
 class StagedActionRequest(Contract):
     asset_id: Id
     action_type: ActionType
+    cve_ids: list[CveId] | None = Field(
+        default=None,
+        min_length=1,
+        max_length=25,
+        description="patch_prioritization only: the exact CVEs this patch targets. Omit for the "
+        "default batch (highest-priority CVEs with a documented fixed version).",
+    )
+    target_version: str | None = Field(
+        default=None,
+        min_length=1,
+        max_length=64,
+        description="patch_prioritization only: the software version the asset is upgraded to. "
+        "A CVE counts as remediated only if NVD affected ranges exclude this version.",
+    )
 
 
-class WhatIfRequest(Context):
+class ActionPair(Contract):
+    first: ActionType
+    second: ActionType
+
+
+class ActionPrerequisite(Contract):
+    action: ActionType
+    requires: ActionType
+
+
+class OperationalConstraints(Contract):
+    """Deterministic planning limits. Hours are modelled assumptions, not a schedule."""
+
+    max_downtime_per_action_hours: float | None = Field(
+        default=None, gt=0, le=1000, description="Longest single maintenance window available."
+    )
+    max_total_downtime_hours: float | None = Field(default=None, ge=0, le=100000)
+    incompatible: list[ActionPair] = Field(
+        default_factory=list,
+        max_length=20,
+        description="Action types that must not both be applied to the same asset.",
+    )
+    prerequisites: list[ActionPrerequisite] = Field(
+        default_factory=list,
+        max_length=20,
+        description="`action` on an asset requires `requires` on the same asset.",
+    )
+
+
+class BaselineBinding(Context):
+    """Pins a request to the exact simulation run whose results are the baseline."""
+
+    run_id: str = Field(min_length=1, max_length=120)
+    baseline_fingerprint: Fingerprint | None = Field(
+        default=None,
+        description="Optional: fingerprint of the run's results; rejected if it does not match.",
+    )
+
+
+class WhatIfRequest(BaselineBinding):
     actions: list[StagedActionRequest] = Field(min_length=1, max_length=40)
+    constraints: OperationalConstraints | None = None
+
+
+CveStatus = Literal[
+    "remediated",
+    "fix_version_not_documented",
+    "not_resolved_by_target_version",
+    "applicability_unestablished",
+]
+ActionOutcome = Literal[
+    "reduces_modelled_risk",
+    "no_modelled_reduction",
+    "recommendation_only",
+    "increases_modelled_risk",
+]
+
+
+class CveRemediation(Contract):
+    cve_id: str
+    status: CveStatus
+    applicability: Literal["version_confirmed", "version_unknown"]
+    fixed_in: str | None
+    reason: str
+
+
+class PatchOutcome(Contract):
+    """Which CVEs a patch is modelled to remediate, and which it is not."""
+
+    scope: Literal["explicit_cves", "default_batch", "target_version"]
+    target_version: str | None
+    remediated: list[CveRemediation]
+    not_remediated: list[CveRemediation]
 
 
 class AssetDelta(Contract):
@@ -265,16 +356,51 @@ class AppliedAction(Contract):
     modelled: bool
     effect: str
     effort_hours: float
+    downtime_hours: float
     operational_disruption: str
+    outcome: ActionOutcome
+    standalone_city_reduction: float | None = Field(
+        default=None, description="City-index reduction if this were the only action."
+    )
+    marginal_city_reduction: float | None = Field(
+        default=None,
+        description="Added reduction in request order after the earlier actions; these sum to the "
+        "total, so overlapping benefits are counted once.",
+    )
+    patch: PatchOutcome | None = None
+
+
+class ConstraintReport(Contract):
+    constraints_supplied: bool
+    total_effort_hours: float
+    total_downtime_hours: float
+    checks: list[str]
+
+
+class ProjectionSummary(Contract):
+    """Calculated current versus projected metrics (projected = estimate, not verified)."""
+
+    current_city_index: Score
+    projected_city_index: Score
+    city_reduction: float
+    current_category_counts: list[CategoryCount]
+    projected_category_counts: list[CategoryCount]
+    overlap_adjustment: float = Field(
+        description="Sum of standalone reductions minus the joint reduction: the benefit that "
+        "would have been double counted if actions were simply added up."
+    )
 
 
 class WhatIfResult(Context):
     state: Literal["projected"] = "projected"
     verification: Literal["not_verified"] = "not_verified"
     run_id: str
+    baseline_fingerprint: str
     current_city_index: Score
     projected_city_index: Score
     city_reduction: float
+    summary: ProjectionSummary
+    constraint_report: ConstraintReport
     applied: list[AppliedAction]
     asset_deltas: list[AssetDelta]
     services_before: list[ServiceRisk]
@@ -282,36 +408,72 @@ class WhatIfResult(Context):
     notes: list[str]
 
 
-class OptimizeRequest(Context):
+class OptimizeRequest(BaselineBinding):
     effort_budget_hours: Annotated[float, Field(gt=0, le=10000)]
-    excluded_asset_ids: list[Id] = Field(default_factory=list)
+    excluded_asset_ids: list[Id] = Field(default_factory=list, max_length=100)
+    constraints: OperationalConstraints | None = None
 
 
 class PlanStep(Contract):
     rank: int
+    kind: Literal["selected", "prerequisite"] = "selected"
+    prerequisite_for: str | None = None
     asset_id: Id
     asset_name: str
     action_type: ActionType
     name: str
     effort_hours: float
+    downtime_hours: float
     marginal_reduction: float
+    reduction_per_effort_hour: float
     cumulative_reduction: float
     city_index_after: Score
     justification: str
     operational_disruption: str
+    patch: PatchOutcome | None = None
+
+
+class RejectedCandidate(Contract):
+    asset_id: Id
+    action_type: ActionType
+    reason_code: Literal[
+        "asset_excluded",
+        "not_applicable",
+        "no_modelled_reduction",
+        "increases_modelled_risk",
+        "exceeds_effort_budget",
+        "exceeds_maintenance_window",
+        "exceeds_downtime_budget",
+        "incompatible_with_selected",
+        "prerequisite_not_applicable",
+    ]
+    reason: str
+
+
+class PlanHandoffRequest(WhatIfRequest):
+    """Same shape as WhatIfRequest; a separate name keeps request and response schemas distinct."""
 
 
 class RemediationPlan(Context):
     state: Literal["projected"] = "projected"
     verification: Literal["not_verified"] = "not_verified"
     run_id: str
+    baseline_fingerprint: str
+    optimality: Literal["greedy_heuristic"] = "greedy_heuristic"
     effort_budget_hours: float
     used_hours: float
+    used_downtime_hours: float
     starting_city_index: Score
     ending_city_index: Score
     steps: list[PlanStep]
+    rejected: list[RejectedCandidate]
     recommendation_only: list[ActionOption]
+    what_if_request: PlanHandoffRequest | None = Field(
+        description="Ready to POST to /actions/what-if to reproduce this plan's projection. "
+        "Null when the plan has no steps."
+    )
     method: str
+    limitations: list[str]
 
 
 class MlSource(Contract):

@@ -148,3 +148,22 @@ frontend/src/features/methodology/Methodology.tsx
 frontend/src/hooks/vulnerability.ts
 frontend/tests/api.test.ts
 ```
+
+## Phase 5A hardening
+
+```
+backend/app/services/remediation.py
+backend/tests/test_phase5_hardening.py
+docs/PHASE_5A.md
+backend/app/api/insights.py
+backend/app/api/workflow.py
+backend/app/main.py
+backend/app/schemas/models.py
+backend/app/schemas/simulation.py
+backend/app/services/simulation.py
+backend/ml/inference.py
+backend/ml/matching.py
+backend/tests/test_workflow.py
+docs/openapi.json
+frontend/src/api/schema.d.ts
+```

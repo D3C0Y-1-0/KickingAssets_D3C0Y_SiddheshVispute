@@ -611,6 +611,8 @@ export interface components {
             modelled: boolean;
             /** Effort Hours */
             effort_hours: number;
+            /** Downtime Hours */
+            downtime_hours: number;
             /** Operational Disruption */
             operational_disruption: string;
             /** Assumption */
@@ -645,6 +647,32 @@ export interface components {
             justification: string;
             /** Operational Disruption */
             operational_disruption: string;
+        };
+        /** ActionPair */
+        ActionPair: {
+            /**
+             * First
+             * @enum {string}
+             */
+            first: "patch_prioritization" | "network_segmentation" | "access_control" | "enhanced_monitoring" | "incident_response_plan";
+            /**
+             * Second
+             * @enum {string}
+             */
+            second: "patch_prioritization" | "network_segmentation" | "access_control" | "enhanced_monitoring" | "incident_response_plan";
+        };
+        /** ActionPrerequisite */
+        ActionPrerequisite: {
+            /**
+             * Action
+             * @enum {string}
+             */
+            action: "patch_prioritization" | "network_segmentation" | "access_control" | "enhanced_monitoring" | "incident_response_plan";
+            /**
+             * Requires
+             * @enum {string}
+             */
+            requires: "patch_prioritization" | "network_segmentation" | "access_control" | "enhanced_monitoring" | "incident_response_plan";
         };
         /** ActivityDay */
         ActivityDay: {
@@ -715,6 +743,20 @@ export interface components {
             message: string;
             /** Details */
             details?: string[];
+            /** Issues */
+            issues?: components["schemas"]["ApiIssue"][];
+        };
+        /**
+         * ApiIssue
+         * @description One machine-readable problem; `path` points at the offending request field.
+         */
+        ApiIssue: {
+            /** Path */
+            path: string;
+            /** Code */
+            code: string;
+            /** Message */
+            message: string;
         };
         /** ApplicabilityFinding */
         ApplicabilityFinding: {
@@ -761,8 +803,26 @@ export interface components {
             effect: string;
             /** Effort Hours */
             effort_hours: number;
+            /** Downtime Hours */
+            downtime_hours: number;
             /** Operational Disruption */
             operational_disruption: string;
+            /**
+             * Outcome
+             * @enum {string}
+             */
+            outcome: "reduces_modelled_risk" | "no_modelled_reduction" | "recommendation_only" | "increases_modelled_risk";
+            /**
+             * Standalone City Reduction
+             * @description City-index reduction if this were the only action.
+             */
+            standalone_city_reduction?: number | null;
+            /**
+             * Marginal City Reduction
+             * @description Added reduction in request order after the earlier actions; these sum to the total, so overlapping benefits are counted once.
+             */
+            marginal_city_reduction?: number | null;
+            patch?: components["schemas"]["PatchOutcome"] | null;
         };
         /** AssessmentSnapshot */
         AssessmentSnapshot: {
@@ -1286,12 +1346,42 @@ export interface components {
             /** Max Disruption */
             max_disruption: number;
         };
+        /** ConstraintReport */
+        ConstraintReport: {
+            /** Constraints Supplied */
+            constraints_supplied: boolean;
+            /** Total Effort Hours */
+            total_effort_hours: number;
+            /** Total Downtime Hours */
+            total_downtime_hours: number;
+            /** Checks */
+            checks: string[];
+        };
         /** Context */
         Context: {
             /** Scenario Id */
             scenario_id: string;
             /** Snapshot Id */
             snapshot_id: string;
+        };
+        /** CveRemediation */
+        CveRemediation: {
+            /** Cve Id */
+            cve_id: string;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "remediated" | "fix_version_not_documented" | "not_resolved_by_target_version" | "applicability_unestablished";
+            /**
+             * Applicability
+             * @enum {string}
+             */
+            applicability: "version_confirmed" | "version_unknown";
+            /** Fixed In */
+            fixed_in: string | null;
+            /** Reason */
+            reason: string;
         };
         /** CveScore */
         CveScore: {
@@ -1773,6 +1863,29 @@ export interface components {
             evaluation_status: string;
         };
         /**
+         * OperationalConstraints
+         * @description Deterministic planning limits. Hours are modelled assumptions, not a schedule.
+         */
+        OperationalConstraints: {
+            /**
+             * Max Downtime Per Action Hours
+             * @description Longest single maintenance window available.
+             */
+            max_downtime_per_action_hours?: number | null;
+            /** Max Total Downtime Hours */
+            max_total_downtime_hours?: number | null;
+            /**
+             * Incompatible
+             * @description Action types that must not both be applied to the same asset.
+             */
+            incompatible?: components["schemas"]["ActionPair"][];
+            /**
+             * Prerequisites
+             * @description `action` on an asset requires `requires` on the same asset.
+             */
+            prerequisites?: components["schemas"]["ActionPrerequisite"][];
+        };
+        /**
          * OperationalDependencyEdge
          * @description source provider -> target dependent, never an access path.
          */
@@ -1842,15 +1955,68 @@ export interface components {
             scenario_id: string;
             /** Snapshot Id */
             snapshot_id: string;
+            /** Run Id */
+            run_id: string;
+            /**
+             * Baseline Fingerprint
+             * @description Optional: fingerprint of the run's results; rejected if it does not match.
+             */
+            baseline_fingerprint?: string | null;
             /** Effort Budget Hours */
             effort_budget_hours: number;
             /** Excluded Asset Ids */
             excluded_asset_ids?: string[];
+            constraints?: components["schemas"]["OperationalConstraints"] | null;
+        };
+        /**
+         * PatchOutcome
+         * @description Which CVEs a patch is modelled to remediate, and which it is not.
+         */
+        PatchOutcome: {
+            /**
+             * Scope
+             * @enum {string}
+             */
+            scope: "explicit_cves" | "default_batch" | "target_version";
+            /** Target Version */
+            target_version: string | null;
+            /** Remediated */
+            remediated: components["schemas"]["CveRemediation"][];
+            /** Not Remediated */
+            not_remediated: components["schemas"]["CveRemediation"][];
+        };
+        /**
+         * PlanHandoffRequest
+         * @description Same shape as WhatIfRequest; a separate name keeps request and response schemas distinct.
+         */
+        PlanHandoffRequest: {
+            /** Scenario Id */
+            scenario_id: string;
+            /** Snapshot Id */
+            snapshot_id: string;
+            /** Run Id */
+            run_id: string;
+            /**
+             * Baseline Fingerprint
+             * @description Optional: fingerprint of the run's results; rejected if it does not match.
+             */
+            baseline_fingerprint?: string | null;
+            /** Actions */
+            actions: components["schemas"]["StagedActionRequest"][];
+            constraints?: components["schemas"]["OperationalConstraints"] | null;
         };
         /** PlanStep */
         PlanStep: {
             /** Rank */
             rank: number;
+            /**
+             * Kind
+             * @default selected
+             * @enum {string}
+             */
+            kind: "selected" | "prerequisite";
+            /** Prerequisite For */
+            prerequisite_for?: string | null;
             /** Asset Id */
             asset_id: string;
             /** Asset Name */
@@ -1864,8 +2030,12 @@ export interface components {
             name: string;
             /** Effort Hours */
             effort_hours: number;
+            /** Downtime Hours */
+            downtime_hours: number;
             /** Marginal Reduction */
             marginal_reduction: number;
+            /** Reduction Per Effort Hour */
+            reduction_per_effort_hour: number;
             /** Cumulative Reduction */
             cumulative_reduction: number;
             /** City Index After */
@@ -1874,6 +2044,7 @@ export interface components {
             justification: string;
             /** Operational Disruption */
             operational_disruption: string;
+            patch?: components["schemas"]["PatchOutcome"] | null;
         };
         /**
          * PooledBacktest
@@ -1971,6 +2142,27 @@ export interface components {
              */
             status: "pending" | "active" | "done";
         };
+        /**
+         * ProjectionSummary
+         * @description Calculated current versus projected metrics (projected = estimate, not verified).
+         */
+        ProjectionSummary: {
+            /** Current City Index */
+            current_city_index: number;
+            /** Projected City Index */
+            projected_city_index: number;
+            /** City Reduction */
+            city_reduction: number;
+            /** Current Category Counts */
+            current_category_counts: components["schemas"]["CategoryCount"][];
+            /** Projected Category Counts */
+            projected_category_counts: components["schemas"]["CategoryCount"][];
+            /**
+             * Overlap Adjustment
+             * @description Sum of standalone reductions minus the joint reduction: the benefit that would have been double counted if actions were simply added up.
+             */
+            overlap_adjustment: number;
+        };
         /** Provenance */
         Provenance: {
             /**
@@ -2051,6 +2243,23 @@ export interface components {
             /** Source Version */
             source_version: string;
         };
+        /** RejectedCandidate */
+        RejectedCandidate: {
+            /** Asset Id */
+            asset_id: string;
+            /**
+             * Action Type
+             * @enum {string}
+             */
+            action_type: "patch_prioritization" | "network_segmentation" | "access_control" | "enhanced_monitoring" | "incident_response_plan";
+            /**
+             * Reason Code
+             * @enum {string}
+             */
+            reason_code: "asset_excluded" | "not_applicable" | "no_modelled_reduction" | "increases_modelled_risk" | "exceeds_effort_budget" | "exceeds_maintenance_window" | "exceeds_downtime_budget" | "incompatible_with_selected" | "prerequisite_not_applicable";
+            /** Reason */
+            reason: string;
+        };
         /** RemediationPlan */
         RemediationPlan: {
             /** Scenario Id */
@@ -2071,20 +2280,36 @@ export interface components {
             verification: "not_verified";
             /** Run Id */
             run_id: string;
+            /** Baseline Fingerprint */
+            baseline_fingerprint: string;
+            /**
+             * Optimality
+             * @default greedy_heuristic
+             * @constant
+             */
+            optimality: "greedy_heuristic";
             /** Effort Budget Hours */
             effort_budget_hours: number;
             /** Used Hours */
             used_hours: number;
+            /** Used Downtime Hours */
+            used_downtime_hours: number;
             /** Starting City Index */
             starting_city_index: number;
             /** Ending City Index */
             ending_city_index: number;
             /** Steps */
             steps: components["schemas"]["PlanStep"][];
+            /** Rejected */
+            rejected: components["schemas"]["RejectedCandidate"][];
             /** Recommendation Only */
             recommendation_only: components["schemas"]["ActionOption"][];
+            /** @description Ready to POST to /actions/what-if to reproduce this plan's projection. Null when the plan has no steps. */
+            what_if_request: components["schemas"]["PlanHandoffRequest"] | null;
             /** Method */
             method: string;
+            /** Limitations */
+            limitations: string[];
         };
         /** RiskAssessment */
         RiskAssessment: {
@@ -2363,6 +2588,8 @@ export interface components {
             snapshot_id: string;
             /** Id */
             id: string;
+            /** Fingerprint */
+            fingerprint: string;
             /**
              * State
              * @default current
@@ -2460,6 +2687,16 @@ export interface components {
              * @enum {string}
              */
             action_type: "patch_prioritization" | "network_segmentation" | "access_control" | "enhanced_monitoring" | "incident_response_plan";
+            /**
+             * Cve Ids
+             * @description patch_prioritization only: the exact CVEs this patch targets. Omit for the default batch (highest-priority CVEs with a documented fixed version).
+             */
+            cve_ids?: string[] | null;
+            /**
+             * Target Version
+             * @description patch_prioritization only: the software version the asset is upgraded to. A CVE counts as remediated only if NVD affected ranges exclude this version.
+             */
+            target_version?: string | null;
         };
         /** TargetReachability */
         TargetReachability: {
@@ -2626,8 +2863,16 @@ export interface components {
             scenario_id: string;
             /** Snapshot Id */
             snapshot_id: string;
+            /** Run Id */
+            run_id: string;
+            /**
+             * Baseline Fingerprint
+             * @description Optional: fingerprint of the run's results; rejected if it does not match.
+             */
+            baseline_fingerprint?: string | null;
             /** Actions */
             actions: components["schemas"]["StagedActionRequest"][];
+            constraints?: components["schemas"]["OperationalConstraints"] | null;
         };
         /** WhatIfResult */
         WhatIfResult: {
@@ -2649,12 +2894,16 @@ export interface components {
             verification: "not_verified";
             /** Run Id */
             run_id: string;
+            /** Baseline Fingerprint */
+            baseline_fingerprint: string;
             /** Current City Index */
             current_city_index: number;
             /** Projected City Index */
             projected_city_index: number;
             /** City Reduction */
             city_reduction: number;
+            summary: components["schemas"]["ProjectionSummary"];
+            constraint_report: components["schemas"]["ConstraintReport"];
             /** Applied */
             applied: components["schemas"]["AppliedAction"][];
             /** Asset Deltas */
@@ -2735,7 +2984,7 @@ export interface operations {
                     "application/json": components["schemas"]["ErrorEnvelope"];
                 };
             };
-            /** @description Unprocessable Entity */
+            /** @description Unprocessable Content */
             422: {
                 headers: {
                     [name: string]: unknown;
@@ -2782,7 +3031,7 @@ export interface operations {
                     "application/json": components["schemas"]["ErrorEnvelope"];
                 };
             };
-            /** @description Unprocessable Entity */
+            /** @description Unprocessable Content */
             422: {
                 headers: {
                     [name: string]: unknown;
@@ -2831,7 +3080,7 @@ export interface operations {
                     "application/json": components["schemas"]["ErrorEnvelope"];
                 };
             };
-            /** @description Unprocessable Entity */
+            /** @description Unprocessable Content */
             422: {
                 headers: {
                     [name: string]: unknown;
@@ -2884,7 +3133,7 @@ export interface operations {
                     "application/json": components["schemas"]["ErrorEnvelope"];
                 };
             };
-            /** @description Unprocessable Entity */
+            /** @description Unprocessable Content */
             422: {
                 headers: {
                     [name: string]: unknown;
@@ -2936,7 +3185,7 @@ export interface operations {
                     "application/json": components["schemas"]["ErrorEnvelope"];
                 };
             };
-            /** @description Unprocessable Entity */
+            /** @description Unprocessable Content */
             422: {
                 headers: {
                     [name: string]: unknown;
@@ -2987,7 +3236,7 @@ export interface operations {
                     "application/json": components["schemas"]["ErrorEnvelope"];
                 };
             };
-            /** @description Unprocessable Entity */
+            /** @description Unprocessable Content */
             422: {
                 headers: {
                     [name: string]: unknown;
@@ -3037,7 +3286,7 @@ export interface operations {
                     "application/json": components["schemas"]["ErrorEnvelope"];
                 };
             };
-            /** @description Unprocessable Entity */
+            /** @description Unprocessable Content */
             422: {
                 headers: {
                     [name: string]: unknown;
@@ -3093,7 +3342,7 @@ export interface operations {
                     "application/json": components["schemas"]["ErrorEnvelope"];
                 };
             };
-            /** @description Unprocessable Entity */
+            /** @description Unprocessable Content */
             422: {
                 headers: {
                     [name: string]: unknown;
@@ -3152,7 +3401,7 @@ export interface operations {
                     "application/json": components["schemas"]["ErrorEnvelope"];
                 };
             };
-            /** @description Unprocessable Entity */
+            /** @description Unprocessable Content */
             422: {
                 headers: {
                     [name: string]: unknown;
@@ -3213,7 +3462,7 @@ export interface operations {
                     "application/json": components["schemas"]["ErrorEnvelope"];
                 };
             };
-            /** @description Unprocessable Entity */
+            /** @description Unprocessable Content */
             422: {
                 headers: {
                     [name: string]: unknown;
@@ -3273,7 +3522,7 @@ export interface operations {
                     "application/json": components["schemas"]["ErrorEnvelope"];
                 };
             };
-            /** @description Unprocessable Entity */
+            /** @description Unprocessable Content */
             422: {
                 headers: {
                     [name: string]: unknown;
@@ -3414,7 +3663,7 @@ export interface operations {
                     "application/json": components["schemas"]["ErrorEnvelope"];
                 };
             };
-            /** @description Unprocessable Entity */
+            /** @description Unprocessable Content */
             422: {
                 headers: {
                     [name: string]: unknown;
@@ -3470,7 +3719,7 @@ export interface operations {
                     "application/json": components["schemas"]["ErrorEnvelope"];
                 };
             };
-            /** @description Unprocessable Entity */
+            /** @description Unprocessable Content */
             422: {
                 headers: {
                     [name: string]: unknown;
@@ -3528,7 +3777,7 @@ export interface operations {
                     "application/json": components["schemas"]["ErrorEnvelope"];
                 };
             };
-            /** @description Unprocessable Entity */
+            /** @description Unprocessable Content */
             422: {
                 headers: {
                     [name: string]: unknown;
@@ -3584,7 +3833,7 @@ export interface operations {
                     "application/json": components["schemas"]["ErrorEnvelope"];
                 };
             };
-            /** @description Unprocessable Entity */
+            /** @description Unprocessable Content */
             422: {
                 headers: {
                     [name: string]: unknown;
@@ -3640,7 +3889,7 @@ export interface operations {
                     "application/json": components["schemas"]["ErrorEnvelope"];
                 };
             };
-            /** @description Unprocessable Entity */
+            /** @description Unprocessable Content */
             422: {
                 headers: {
                     [name: string]: unknown;
@@ -3696,7 +3945,7 @@ export interface operations {
                     "application/json": components["schemas"]["ErrorEnvelope"];
                 };
             };
-            /** @description Unprocessable Entity */
+            /** @description Unprocessable Content */
             422: {
                 headers: {
                     [name: string]: unknown;
@@ -3756,7 +4005,7 @@ export interface operations {
                     "application/json": components["schemas"]["ErrorEnvelope"];
                 };
             };
-            /** @description Unprocessable Entity */
+            /** @description Unprocessable Content */
             422: {
                 headers: {
                     [name: string]: unknown;
@@ -3812,7 +4061,7 @@ export interface operations {
                     "application/json": components["schemas"]["ErrorEnvelope"];
                 };
             };
-            /** @description Unprocessable Entity */
+            /** @description Unprocessable Content */
             422: {
                 headers: {
                     [name: string]: unknown;
@@ -3868,7 +4117,7 @@ export interface operations {
                     "application/json": components["schemas"]["ErrorEnvelope"];
                 };
             };
-            /** @description Unprocessable Entity */
+            /** @description Unprocessable Content */
             422: {
                 headers: {
                     [name: string]: unknown;
@@ -3928,7 +4177,7 @@ export interface operations {
                     "application/json": components["schemas"]["ErrorEnvelope"];
                 };
             };
-            /** @description Unprocessable Entity */
+            /** @description Unprocessable Content */
             422: {
                 headers: {
                     [name: string]: unknown;
@@ -3984,7 +4233,7 @@ export interface operations {
                     "application/json": components["schemas"]["ErrorEnvelope"];
                 };
             };
-            /** @description Unprocessable Entity */
+            /** @description Unprocessable Content */
             422: {
                 headers: {
                     [name: string]: unknown;
@@ -4006,7 +4255,10 @@ export interface operations {
     };
     options_api_v1_actions_options_get: {
         parameters: {
-            query?: never;
+            query?: {
+                /** @description If given, must be the current run; otherwise 409/404 */
+                run_id?: string | null;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -4040,7 +4292,7 @@ export interface operations {
                     "application/json": components["schemas"]["ErrorEnvelope"];
                 };
             };
-            /** @description Unprocessable Entity */
+            /** @description Unprocessable Content */
             422: {
                 headers: {
                     [name: string]: unknown;
@@ -4100,7 +4352,7 @@ export interface operations {
                     "application/json": components["schemas"]["ErrorEnvelope"];
                 };
             };
-            /** @description Unprocessable Entity */
+            /** @description Unprocessable Content */
             422: {
                 headers: {
                     [name: string]: unknown;
@@ -4160,7 +4412,7 @@ export interface operations {
                     "application/json": components["schemas"]["ErrorEnvelope"];
                 };
             };
-            /** @description Unprocessable Entity */
+            /** @description Unprocessable Content */
             422: {
                 headers: {
                     [name: string]: unknown;
@@ -4220,7 +4472,7 @@ export interface operations {
                     "application/json": components["schemas"]["ErrorEnvelope"];
                 };
             };
-            /** @description Unprocessable Entity */
+            /** @description Unprocessable Content */
             422: {
                 headers: {
                     [name: string]: unknown;
@@ -4282,7 +4534,7 @@ export interface operations {
                     "application/json": components["schemas"]["ErrorEnvelope"];
                 };
             };
-            /** @description Unprocessable Entity */
+            /** @description Unprocessable Content */
             422: {
                 headers: {
                     [name: string]: unknown;
@@ -4341,7 +4593,7 @@ export interface operations {
                     "application/json": components["schemas"]["ErrorEnvelope"];
                 };
             };
-            /** @description Unprocessable Entity */
+            /** @description Unprocessable Content */
             422: {
                 headers: {
                     [name: string]: unknown;
@@ -4400,7 +4652,7 @@ export interface operations {
                     "application/json": components["schemas"]["ErrorEnvelope"];
                 };
             };
-            /** @description Unprocessable Entity */
+            /** @description Unprocessable Content */
             422: {
                 headers: {
                     [name: string]: unknown;
@@ -4459,7 +4711,7 @@ export interface operations {
                     "application/json": components["schemas"]["ErrorEnvelope"];
                 };
             };
-            /** @description Unprocessable Entity */
+            /** @description Unprocessable Content */
             422: {
                 headers: {
                     [name: string]: unknown;
@@ -4521,7 +4773,7 @@ export interface operations {
                     "application/json": components["schemas"]["ErrorEnvelope"];
                 };
             };
-            /** @description Unprocessable Entity */
+            /** @description Unprocessable Content */
             422: {
                 headers: {
                     [name: string]: unknown;

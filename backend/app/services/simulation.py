@@ -18,6 +18,7 @@ from app.domain.product_profiles import AssetProduct, load_product_map, product_
 from app.engine import risk as risk_engine
 from app.engine.pivot import PivotImpact, WorstCase
 from app.schemas.models import (
+    ApiIssue,
     InfrastructureAsset,
     Provenance,
     RiskAssessment,
@@ -38,36 +39,57 @@ from app.schemas.simulation import (
     BacktestHit,
     CandidateCve,
     CategoryCount,
+    ConstraintReport,
     Driver,
     MatchSummary,
+    OperationalConstraints,
     OptimizeRequest,
+    PatchOutcome,
+    PlanHandoffRequest,
     PlanStep,
     ProductMap,
+    ProjectionSummary,
+    RejectedCandidate,
     RemediationPlan,
     ServiceDisruption,
     ServiceRisk,
     SimulationRun,
     SimulationStage,
+    StagedActionRequest,
     WhatIfRequest,
     WhatIfResult,
     WorstScenario,
 )
+from app.services.remediation import (
+    PATCH_BATCH,
+    SCORE_EPSILON,
+    PatchResolution,
+    PlannedAction,
+    RemediationError,
+    check_plan,
+    incompatible_with,
+    prerequisites_of,
+    resolve_patch,
+    run_fingerprint,
+    validate_constraints,
+)
 from ml import inference
 
 TOP_VULNERABILITIES = 8
-PATCH_BATCH = 3
 
 ACTIONS: dict[str, ActionDefinition] = {
     "patch_prioritization": ActionDefinition(
         type="patch_prioritization",
         name="Patch prioritization",
-        description="Patch the KEV-listed and highest ML-ranked CVEs for this asset's product "
-        f"family first, up to {PATCH_BATCH} per maintenance window.",
+        description="Patch the KEV-listed and highest ML-ranked CVEs that have a documented fixed "
+        f"version, up to {PATCH_BATCH} per maintenance window.",
         modelled=True,
         effort_hours=8,
+        downtime_hours=2,
         operational_disruption="Restart or maintenance window; validate vendor compatibility "
         "and rollback first.",
-        assumption="Assumes the candidate CVEs apply to the real product and patches exist.",
+        assumption="A CVE is modelled as fixed only where NVD documents a fixed version (or a "
+        "declared target version falls outside its affected ranges). Hours are assumptions.",
     ),
     "network_segmentation": ActionDefinition(
         type="network_segmentation",
@@ -76,6 +98,7 @@ ACTIONS: dict[str, ActionDefinition] = {
         "configured cyber routes in both directions.",
         modelled=True,
         effort_hours=24,
+        downtime_hours=6,
         operational_disruption="May interrupt remote operator access and cross-zone data flows.",
         assumption="Assumes segmentation fully removes the asset's configured routes.",
     ),
@@ -86,6 +109,7 @@ ACTIONS: dict[str, ActionDefinition] = {
         "management for this asset.",
         modelled=True,
         effort_hours=12,
+        downtime_hours=1,
         operational_disruption="Enrollment window; keep an emergency access procedure.",
         assumption="Assumes MFA and a managed access path replace direct remote access.",
     ),
@@ -96,6 +120,7 @@ ACTIONS: dict[str, ActionDefinition] = {
         "compromise.",
         modelled=False,
         effort_hours=40,
+        downtime_hours=0,
         operational_disruption="Sensor placement and tuning; no process interruption expected.",
         assumption="The risk index has no detection-time term, so no reduction is claimed.",
     ),
@@ -106,6 +131,7 @@ ACTIONS: dict[str, ActionDefinition] = {
         "services that depend on it.",
         modelled=False,
         effort_hours=16,
+        downtime_hours=0,
         operational_disruption="Staff time; no process interruption.",
         assumption="The risk index has no recovery-time term, so no reduction is claimed.",
     ),
@@ -148,6 +174,8 @@ class RunContext:
     evidence: dict[str, AssetEvidence]
     run: SimulationRun | None = None
     _worst_cache: dict = field(default_factory=dict)
+    _patch_cache: dict = field(default_factory=dict)
+    _fix_cache: dict = field(default_factory=dict)
 
     def edges(self, mods: Mods):
         if not mods.segmented:
@@ -163,6 +191,45 @@ class RunContext:
         if key not in self._worst_cache:
             self._worst_cache[key] = self.pivot.worst_for(asset_id, self.edges(mods))
         return self._worst_cache[key]
+
+    def resolve_patch(self, asset_id, cve_ids=None, target_version=None, path="actions"):
+        return _resolve_patch(self, asset_id, cve_ids, target_version, path)
+
+    def default_patch(self, asset_id) -> PatchResolution:
+        """The patch an asset gets when no CVEs or version are specified (cached)."""
+        if asset_id not in self._patch_cache:
+            resolution, _ = _resolve_patch(self, asset_id, None, None, "actions")
+            assert resolution is not None
+            self._patch_cache[asset_id] = resolution
+        return self._patch_cache[asset_id]
+
+
+def _reference(ctx: RunContext):
+    assert ctx.run is not None
+    return inference.load_reference(ctx.run.as_of)
+
+
+def _resolve_patch(ctx, asset_id, cve_ids, target_version, path):
+    evidence = ctx.evidence[asset_id]
+    product = evidence.product
+    key = (product.nvd_vendor, product.nvd_product_contains, product.version)
+    ref = _reference(ctx)
+    if key not in ctx._fix_cache:
+        ctx._fix_cache[key] = ref.fixed_versions(
+            product.nvd_vendor, list(product.nvd_product_contains), product.version
+        )
+    return resolve_patch(
+        evidence=evidence,
+        fixed=ctx._fix_cache[key],
+        match_at=lambda v: ref.shared.matcher.match(
+            product.nvd_vendor, list(product.nvd_product_contains), v
+        ),
+        current_version=product.version,
+        cve_ids=cve_ids,
+        target_version=target_version,
+        base_effort=ACTIONS["patch_prioritization"].effort_hours,
+        path=path,
+    )
 
 
 def load_bundle(db_path: Path, scenario_id: str, snapshot_id: str) -> ScenarioBundle:
@@ -221,13 +288,6 @@ def _signal(evidence: AssetEvidence, patched: set[str]) -> float | None:
     return risk_engine.vulnerability_signal(
         unlisted["priority_percentile"].tolist(), len(listed), len(unlisted) + len(listed)
     )
-
-
-def _patch_set(evidence: AssetEvidence) -> set[str]:
-    """KEV-listed CVEs first (newest first), then the highest ML-ranked ones."""
-    listed = evidence.listed.sort_values("published", ascending=False)["cve_id"].tolist()
-    ranked = evidence.unlisted.sort_values("ml_score", ascending=False)["cve_id"].tolist()
-    return set((listed + ranked)[:PATCH_BATCH])
 
 
 def assess(ctx: RunContext, mods: Mods) -> dict[str, AssetState]:
@@ -735,6 +795,15 @@ def _run_simulation(
         scenario_id=scenario_id,
         snapshot_id=snapshot_id,
         id=f"run-{now:%Y%m%d-%H%M%S}-{ref.as_of:%Y%m}",
+        fingerprint=run_fingerprint(
+            scenario_id=scenario_id,
+            snapshot_id=snapshot_id,
+            as_of=ref.as_of.isoformat(),
+            model_version=inference.MODEL_VERSION,
+            scoring_version=risk_engine.SCORING_VERSION,
+            city_score=index,
+            asset_scores=[(a.asset_id, a.risk.score) for a in assets_out],
+        ),
         as_of=ref.as_of,
         as_of_split=inference.split_label(ref.as_of),
         held_out=inference.is_held_out(ref.as_of),
@@ -795,9 +864,16 @@ def _applicable(
     return True, ""
 
 
-def _apply(ctx: RunContext, mods: Mods, asset_id: str, action: ActionType) -> None:
+def _apply(
+    ctx: RunContext,
+    mods: Mods,
+    asset_id: str,
+    action: ActionType,
+    resolution: PatchResolution | None = None,
+) -> None:
     if action == "patch_prioritization":
-        mods.patched.setdefault(asset_id, set()).update(_patch_set(ctx.evidence[asset_id]))
+        resolution = resolution or ctx.default_patch(asset_id)
+        mods.patched.setdefault(asset_id, set()).update(resolution.cves)
     elif action == "network_segmentation":
         mods.segmented.add(asset_id)
         mods.security.setdefault(asset_id, {}).update(internet_exposed=False, remote_access=False)
@@ -805,14 +881,30 @@ def _apply(ctx: RunContext, mods: Mods, asset_id: str, action: ActionType) -> No
         mods.security.setdefault(asset_id, {}).update(mfa_enabled=True, remote_access=False)
 
 
-def _effect_text(ctx: RunContext, asset_id: str, action: ActionType, before, after) -> str:
+def _copy(mods: Mods) -> Mods:
+    return Mods(
+        {k: set(v) for k, v in mods.patched.items()},
+        set(mods.segmented),
+        {k: dict(v) for k, v in mods.security.items()},
+    )
+
+
+def _effect_text(
+    ctx: RunContext, asset_id: str, action: ActionType, before, after, patch: PatchOutcome | None
+) -> str:
     definition = ACTIONS[action]
     if not definition.modelled:
         return "Recommendation only: " + definition.assumption
     b, a = before[asset_id].score, after[asset_id].score
     if b is None or a is None:
         return "No score available to compare."
-    return f"Asset risk {b} -> {a} (projected, not verified)."
+    text = f"Asset risk {b} -> {a} (projected, not verified)."
+    if patch is not None:
+        text += (
+            f" {len(patch.remediated)} CVE(s) modelled as remediated, "
+            f"{len(patch.not_remediated)} not remediated."
+        )
+    return text
 
 
 def options(ctx: RunContext) -> list[ActionOption]:
@@ -834,6 +926,12 @@ def options(ctx: RunContext) -> list[ActionOption]:
                     projected, reduction = a, round(b - a, 2)
                     city_reduction = round(base_city - city_index(ctx, after), 2)
                     justification = f"{definition.description} Projected asset risk {b} -> {a}."
+                    if action == "patch_prioritization":
+                        patch = ctx.default_patch(asset.id)
+                        justification += (
+                            f" {len(patch.remediated)} CVE(s) have a documented fix; "
+                            f"{len(patch.not_remediated)} top-ranked CVE(s) do not."
+                        )
             elif ok:
                 state = base[asset.id]
                 level = risk_engine.category(state.score) if state.score is not None else "n/a"
@@ -857,28 +955,156 @@ def options(ctx: RunContext) -> list[ActionOption]:
     return out
 
 
-def what_if(ctx: RunContext, request: WhatIfRequest) -> WhatIfResult:
-    assert ctx.run is not None
+@dataclass(frozen=True)
+class ResolvedAction:
+    staged: StagedActionRequest
+    asset: InfrastructureAsset
+    path: str
+    patch: PatchResolution | None
+
+    @property
+    def definition(self) -> ActionDefinition:
+        return ACTIONS[self.staged.action_type]
+
+    @property
+    def effort_hours(self) -> float:
+        return self.patch.effort_hours if self.patch else self.definition.effort_hours
+
+    def planned(self) -> PlannedAction:
+        return PlannedAction(
+            self.path,
+            self.asset.id,
+            self.staged.action_type,
+            self.effort_hours,
+            self.definition.downtime_hours,
+        )
+
+
+def _validate_actions(
+    ctx: RunContext, staged: list[StagedActionRequest], constraints: OperationalConstraints | None
+) -> list[ResolvedAction]:
+    """Resolve every staged action or reject the whole request with every problem found."""
     known = {a.id: a for a in ctx.bundle.assets}
-    mods = Mods()
-    applied = []
+    issues = validate_constraints(constraints)
+    resolved: list[ResolvedAction] = []
+    seen: dict[tuple[str, str], int] = {}
+    for i, item in enumerate(staged):
+        path = f"actions[{i}]"
+        asset = known.get(item.asset_id)
+        if asset is None:
+            issues.append(
+                ApiIssue(
+                    path=f"{path}.asset_id",
+                    code="unknown_asset",
+                    message=f"No asset {item.asset_id} in this scenario.",
+                )
+            )
+            continue
+        key = (item.asset_id, item.action_type)
+        if key in seen:
+            issues.append(
+                ApiIssue(
+                    path=path,
+                    code="duplicate_action",
+                    message=f"{item.action_type} on {item.asset_id} is already staged at "
+                    f"actions[{seen[key]}]. List the action once; patch CVEs go in cve_ids.",
+                )
+            )
+            continue
+        seen[key] = i
+        if item.action_type != "patch_prioritization" and (item.cve_ids or item.target_version):
+            issues.append(
+                ApiIssue(
+                    path=path,
+                    code="parameter_not_applicable",
+                    message="cve_ids and target_version apply only to patch_prioritization.",
+                )
+            )
+            continue
+        ok, reason = _applicable(ctx, asset, item.action_type)
+        if not ok:
+            issues.append(
+                ApiIssue(
+                    path=path,
+                    code="action_not_applicable",
+                    message=f"{item.action_type} does not apply to {item.asset_id}: {reason}",
+                )
+            )
+            continue
+        patch = None
+        if item.action_type == "patch_prioritization":
+            patch, problems = ctx.resolve_patch(
+                asset.id, item.cve_ids, item.target_version, path=path
+            )
+            issues.extend(problems)
+            if patch is None:
+                continue
+        resolved.append(ResolvedAction(item, asset, path, patch))
+    if issues:
+        raise RemediationError(
+            422, "invalid_actions", f"{len(issues)} problem(s) in the request.", issues
+        )
+    problems, _ = check_plan([r.planned() for r in resolved], constraints)
+    if problems:
+        raise RemediationError(
+            422,
+            "constraint_violation",
+            "The staged actions do not fit the operational constraints.",
+            problems,
+        )
+    return resolved
+
+
+def _category_counts(ctx: RunContext, states: dict[str, AssetState]) -> list[CategoryCount]:
+    counts = {c: 0 for c in ("critical", "high", "medium", "low")}
+    for state in states.values():
+        if state.score is not None:
+            counts[risk_engine.category(state.score)] += 1  # type: ignore[index]
+    return [CategoryCount(category=k, count=v) for k, v in counts.items()]  # type: ignore[arg-type]
+
+
+def _outcome(modelled: bool, marginal: float) -> str:
+    if not modelled:
+        return "recommendation_only"
+    if marginal > SCORE_EPSILON:
+        return "reduces_modelled_risk"
+    if marginal < -SCORE_EPSILON:
+        return "increases_modelled_risk"
+    return "no_modelled_reduction"
+
+
+def what_if(ctx: RunContext, request: WhatIfRequest) -> WhatIfResult:
+    """Project the staged actions on top of the bound run. The run itself is never modified."""
+    assert ctx.run is not None
+    resolved = _validate_actions(ctx, request.actions, request.constraints)
+    base = assess(ctx, Mods())
+    current = city_index(ctx, base)
+    if ctx.run.city_risk.score is None or abs(current - ctx.run.city_risk.score) > 0.01:
+        raise RemediationError(
+            409,
+            "baseline_inconsistent",
+            "The run's stored city index no longer reproduces from its inputs. Re-run the "
+            "simulation.",
+        )
     notes = [
         "Projected results are estimates from the same model. Nothing was changed; the "
         "current assessment is unchanged and no action is verified.",
     ]
-    base = assess(ctx, Mods())
-    for staged in request.actions:
-        asset = known.get(staged.asset_id)
-        if asset is None:
-            raise KeyError(f"Unknown asset {staged.asset_id}")
-        ok, reason = _applicable(ctx, asset, staged.action_type)
-        if not ok:
-            notes.append(f"{staged.asset_id} {staged.action_type}: skipped. {reason}")
-            continue
-        _apply(ctx, mods, staged.asset_id, staged.action_type)
-        applied.append(staged)
+    mods = Mods()
+    sequence, standalone = [], []
+    running = current
+    for item in resolved:
+        action = item.staged.action_type
+        alone = Mods()
+        _apply(ctx, alone, item.asset.id, action, item.patch)
+        standalone.append(current - city_index(ctx, assess(ctx, alone)))
+        _apply(ctx, mods, item.asset.id, action, item.patch)
+        after_step = city_index(ctx, assess(ctx, mods))
+        sequence.append(running - after_step)
+        running = after_step
     after = assess(ctx, mods)
-    deltas, actions_out = [], []
+    projected = city_index(ctx, after)
+    deltas = []
     for asset in ctx.bundle.assets:
         b, a = base[asset.id].score, after[asset.id].score
         if b is None or a is None:
@@ -893,36 +1119,79 @@ def what_if(ctx: RunContext, request: WhatIfRequest) -> WhatIfResult:
                 projected_category=risk_engine.category(a),  # type: ignore[arg-type]
             )
         )
-    for staged in applied:
-        definition = ACTIONS[staged.action_type]
-        actions_out.append(
+    applied = []
+    for item, marginal, alone in zip(resolved, sequence, standalone, strict=True):
+        definition = item.definition
+        action = item.staged.action_type
+        patch = item.patch.outcome() if item.patch else None
+        outcome = _outcome(definition.modelled, marginal)
+        applied.append(
             AppliedAction(
-                asset_id=staged.asset_id,
-                asset_name=known[staged.asset_id].name,
-                action_type=staged.action_type,
+                asset_id=item.asset.id,
+                asset_name=item.asset.name,
+                action_type=action,
                 name=definition.name,
                 modelled=definition.modelled,
-                effect=_effect_text(ctx, staged.asset_id, staged.action_type, base, after),
-                effort_hours=definition.effort_hours,
+                effect=_effect_text(ctx, item.asset.id, action, base, after, patch),
+                effort_hours=item.effort_hours,
+                downtime_hours=definition.downtime_hours,
                 operational_disruption=definition.operational_disruption,
+                outcome=outcome,  # type: ignore[arg-type]
+                standalone_city_reduction=round(alone, 2) if definition.modelled else None,
+                marginal_city_reduction=round(marginal, 2) if definition.modelled else None,
+                patch=patch,
             )
         )
-    current, projected = city_index(ctx, base), city_index(ctx, after)
-    if any(not ACTIONS[a.action_type].modelled for a in applied):
+        if outcome in ("no_modelled_reduction", "increases_modelled_risk"):
+            notes.append(
+                f"{item.asset.id} {action}: valid, but the modelled city-index change is "
+                f"{-marginal:+.2f}. This is not an error; it means the model finds no benefit "
+                "after the earlier actions."
+            )
+        if patch is not None and patch.not_remediated:
+            notes.append(
+                f"{item.asset.id} patch: {len(patch.not_remediated)} targeted CVE(s) are NOT "
+                "modelled as remediated (see patch.not_remediated)."
+            )
+    if any(not a.modelled for a in applied):
         notes.append(
             "Monitoring and incident-response planning are recommendations: the index has no "
             "detection or recovery term, so they show no modelled reduction."
         )
+    total_effort = round(sum(a.effort_hours for a in applied), 2)
+    total_downtime = round(sum(a.downtime_hours for a in applied), 2)
+    _, checks = check_plan([r.planned() for r in resolved], request.constraints)
+    if total_downtime:
+        notes.append(
+            f"Trade-off: the staged actions need about {total_downtime} h of modelled downtime "
+            "and may interrupt operations (see each action's operational_disruption)."
+        )
+    joint = current - projected
     return WhatIfResult(
         scenario_id=ctx.bundle.scenario.id,
         snapshot_id=ctx.bundle.snapshot.snapshot_id,
         run_id=ctx.run.id,
+        baseline_fingerprint=ctx.run.fingerprint,
         current_city_index=current,
         projected_city_index=projected,
-        city_reduction=round(current - projected, 2),
-        applied=actions_out,
+        city_reduction=round(joint, 2),
+        summary=ProjectionSummary(
+            current_city_index=current,
+            projected_city_index=projected,
+            city_reduction=round(joint, 2),
+            current_category_counts=_category_counts(ctx, base),
+            projected_category_counts=_category_counts(ctx, after),
+            overlap_adjustment=round(sum(standalone) - joint, 2),
+        ),
+        constraint_report=ConstraintReport(
+            constraints_supplied=request.constraints is not None,
+            total_effort_hours=total_effort,
+            total_downtime_hours=total_downtime,
+            checks=checks,
+        ),
+        applied=applied,
         asset_deltas=sorted(
-            deltas, key=lambda d: d.current_score - d.projected_score, reverse=True
+            deltas, key=lambda d: (d.current_score - d.projected_score, d.asset_id), reverse=True
         ),
         services_before=ctx.run.services,
         services_after=_service_risks(ctx, mods),
@@ -930,70 +1199,206 @@ def what_if(ctx: RunContext, request: WhatIfRequest) -> WhatIfResult:
     )
 
 
+PLAN_LIMITATIONS = [
+    "Greedy heuristic: each step takes the best marginal city-index reduction per effort hour. "
+    "It is not proven optimal and can miss a better combination (for example when a large "
+    "action would have beaten several small ones within the budget).",
+    "At most one action of each type per asset; a patch step covers one batch of CVEs with a "
+    "documented fixed version and never a later batch for the same asset.",
+    "Only patching, segmentation and access control have a modelled effect. Monitoring and "
+    "incident response are listed as recommendations with no claimed reduction.",
+    "Effort and downtime hours are fixed modelling assumptions per action type, not estimates "
+    "for a real site. Calendar scheduling, crew availability and rollback are not modelled.",
+    "A CVE counts as remediated only if NVD documents a fixed version; CVEs without one remain "
+    "in the score even when a vendor patch may exist.",
+    "Projections are not verified: the software changes nothing and no state is 'verified' "
+    "until an updated inventory is re-imported.",
+]
+
+
 def optimize(ctx: RunContext, request: OptimizeRequest) -> RemediationPlan:
+    """Greedy marginal-benefit planner. Recomputes the whole score after every pick, so
+    overlapping benefits are counted once. Not claimed to be globally optimal."""
     assert ctx.run is not None
-    """Greedy: repeatedly pick the action with the best marginal city-index reduction per
-    effort hour, recomputing after every pick so overlapping benefits are not double counted."""
+    constraints = request.constraints
+    known = {a.id: a for a in ctx.bundle.assets}
+    issues = validate_constraints(constraints)
+    repeated = sorted(
+        {a for a in request.excluded_asset_ids if request.excluded_asset_ids.count(a) > 1}
+    )
+    for asset_id in repeated:
+        issues.append(
+            ApiIssue(
+                path="excluded_asset_ids",
+                code="duplicate_exclusion",
+                message=f"{asset_id} is excluded more than once.",
+            )
+        )
+    for i, asset_id in enumerate(request.excluded_asset_ids):
+        if asset_id not in known:
+            issues.append(
+                ApiIssue(
+                    path=f"excluded_asset_ids[{i}]",
+                    code="unknown_asset",
+                    message=f"No asset {asset_id} in this scenario, so it cannot be excluded.",
+                )
+            )
+    if issues:
+        raise RemediationError(
+            422, "invalid_request", f"{len(issues)} problem(s) in the request.", issues
+        )
     excluded = set(request.excluded_asset_ids)
-    names = {a.id: a for a in ctx.bundle.assets}
-    candidates = [
-        (a.id, action)
-        for a in ctx.bundle.assets
-        if a.id not in excluded
-        for action, d in ACTIONS.items()
-        if d.modelled and _applicable(ctx, a, action)[0]  # type: ignore[arg-type]
-    ]
+    names = known
+
     mods = Mods()
     state = assess(ctx, mods)
     start = city_index(ctx, state)
+    if ctx.run.city_risk.score is None or abs(start - ctx.run.city_risk.score) > 0.01:
+        raise RemediationError(
+            409,
+            "baseline_inconsistent",
+            "The run's stored city index no longer reproduces from its inputs. Re-run the "
+            "simulation.",
+        )
     current = start
-    remaining = request.effort_budget_hours
+    budget = request.effort_budget_hours
+    used_effort = used_downtime = 0.0
+    chosen: dict[str, set[str]] = {}
     steps: list[PlanStep] = []
-    chosen: set[tuple[str, str]] = set()
+    staged: list[StagedActionRequest] = []
+
+    def cost(asset_id: str, action: str) -> tuple[float, float]:
+        if action == "patch_prioritization":
+            effort = ctx.default_patch(asset_id).effort_hours
+        else:
+            effort = ACTIONS[action].effort_hours
+        return effort, ACTIONS[action].downtime_hours
+
+    def members_for(asset_id: str, action: str) -> list[str]:
+        needed = [
+            p for p in prerequisites_of(action, constraints) if p not in chosen.get(asset_id, ())
+        ]
+        return needed + [action]
+
+    def feasibility(asset_id: str, action: str) -> tuple[str, str] | None:
+        members = members_for(asset_id, action)
+        present = set(chosen.get(asset_id, ())) | set(members)
+        for member in members:
+            ok, reason = _applicable(ctx, known[asset_id], member)  # type: ignore[arg-type]
+            if not ok:
+                return (
+                    "prerequisite_not_applicable" if member != action else "not_applicable",
+                    f"{member} cannot be applied to {asset_id}: {reason}",
+                )
+            clash = incompatible_with(member, present - {member}, constraints)
+            if clash:
+                return (
+                    "incompatible_with_selected",
+                    f"{member} is incompatible with {clash} on {asset_id}.",
+                )
+        costs = [cost(asset_id, m) for m in members]
+        window = constraints.max_downtime_per_action_hours if constraints else None
+        if window is not None and any(d > window for _, d in costs):
+            return (
+                "exceeds_maintenance_window",
+                f"{action} on {asset_id} needs more downtime than the {window} h window.",
+            )
+        limit = constraints.max_total_downtime_hours if constraints else None
+        extra_downtime = sum(d for _, d in costs)
+        if limit is not None and used_downtime + extra_downtime > limit + SCORE_EPSILON:
+            return (
+                "exceeds_downtime_budget",
+                f"{action} on {asset_id} would bring downtime to "
+                f"{round(used_downtime + extra_downtime, 2)} h, over the {limit} h limit.",
+            )
+        extra_effort = sum(e for e, _ in costs)
+        if used_effort + extra_effort > budget + SCORE_EPSILON:
+            return (
+                "exceeds_effort_budget",
+                f"{action} on {asset_id} needs {extra_effort} h; "
+                f"{round(budget - used_effort, 2)} h remain.",
+            )
+        return None
+
+    def trial_for(asset_id: str, action: str):
+        trial = _copy(mods)
+        sequence = []
+        running = current
+        for member in members_for(asset_id, action):
+            _apply(ctx, trial, asset_id, member)  # type: ignore[arg-type]
+            after = assess(ctx, trial)
+            now = city_index(ctx, after)
+            sequence.append((member, running - now, after))
+            running = now
+        return trial, sequence
+
+    universe = [
+        (a.id, action)
+        for a in ctx.bundle.assets
+        if a.id not in excluded
+        for action, definition in ACTIONS.items()
+        if definition.modelled and _applicable(ctx, a, action)[0]  # type: ignore[arg-type]
+    ]
     while True:
         best = None
-        for asset_id, action in candidates:
-            effort = ACTIONS[action].effort_hours
-            if (asset_id, action) in chosen or effort > remaining:
+        for asset_id, action in universe:
+            if action in chosen.get(asset_id, ()) or feasibility(asset_id, action):
                 continue
-            trial = Mods(
-                {k: set(v) for k, v in mods.patched.items()},
-                set(mods.segmented),
-                {k: dict(v) for k, v in mods.security.items()},
-            )
-            _apply(ctx, trial, asset_id, action)  # type: ignore[arg-type]
-            after = assess(ctx, trial)
-            gain = current - city_index(ctx, after)
-            if gain <= 1e-9:
+            trial, sequence = trial_for(asset_id, action)
+            gain = sum(g for _, g, _ in sequence)
+            if gain <= SCORE_EPSILON:
                 continue
-            key = (gain / effort, gain, asset_id, action)
-            if best is None or key > best[0]:
-                best = (key, asset_id, action, trial, after, gain)
+            effort = sum(cost(asset_id, m)[0] for m, _, _ in sequence)
+            ratio = gain / effort
+            key = (-round(ratio, 9), -round(gain, 9), asset_id, action)
+            if best is None or key < best[0]:
+                best = (key, asset_id, action, trial, sequence, gain)
         if best is None:
             break
-        _, asset_id, action, trial, after, gain = best
-        definition = ACTIONS[action]
-        before_score, after_score = state[asset_id].score, after[asset_id].score
-        current -= gain
-        remaining -= definition.effort_hours
-        mods, state = trial, after
-        chosen.add((asset_id, action))
-        steps.append(
-            PlanStep(
-                rank=len(steps) + 1,
-                asset_id=asset_id,
-                asset_name=names[asset_id].name,
-                action_type=action,  # type: ignore[arg-type]
-                name=definition.name,
-                effort_hours=definition.effort_hours,
-                marginal_reduction=round(gain, 2),
-                cumulative_reduction=round(start - current, 2),
-                city_index_after=round(current, 2),
-                justification=f"{definition.description} Asset risk {before_score} -> "
-                f"{after_score} (projected).",
-                operational_disruption=definition.operational_disruption,
+        _, asset_id, action, trial, sequence, gain = best
+        for member, member_gain, after in sequence:
+            definition = ACTIONS[member]
+            effort, downtime = cost(asset_id, member)
+            before_score, after_score = state[asset_id].score, after[asset_id].score
+            current -= member_gain
+            used_effort += effort
+            used_downtime += downtime
+            chosen.setdefault(asset_id, set()).add(member)
+            patch = ctx.default_patch(asset_id) if member == "patch_prioritization" else None
+            state = after
+            steps.append(
+                PlanStep(
+                    rank=len(steps) + 1,
+                    kind="selected" if member == action else "prerequisite",
+                    prerequisite_for=None if member == action else action,
+                    asset_id=asset_id,
+                    asset_name=names[asset_id].name,
+                    action_type=member,  # type: ignore[arg-type]
+                    name=definition.name,
+                    effort_hours=effort,
+                    downtime_hours=downtime,
+                    marginal_reduction=round(member_gain, 2),
+                    reduction_per_effort_hour=round(member_gain / effort, 4),
+                    cumulative_reduction=round(start - current, 2),
+                    city_index_after=round(current, 2),
+                    justification=f"{definition.description} Asset risk {before_score} -> "
+                    f"{after_score} (projected)."
+                    + (f" Prerequisite for {action}." if member != action else ""),
+                    operational_disruption=definition.operational_disruption,
+                    patch=patch.outcome() if patch else None,
+                )
             )
-        )
+            staged.append(
+                StagedActionRequest(
+                    asset_id=asset_id,
+                    action_type=member,  # type: ignore[arg-type]
+                    cve_ids=[r.cve_id for r in patch.remediated]
+                    if patch and patch.remediated
+                    else None,
+                )
+            )
+        mods = trial
+    rejected = _rejected(ctx, excluded, chosen, feasibility, trial_for)
     recommendation_only = [
         o
         for o in options(ctx)
@@ -1003,16 +1408,72 @@ def optimize(ctx: RunContext, request: OptimizeRequest) -> RemediationPlan:
         scenario_id=ctx.bundle.scenario.id,
         snapshot_id=ctx.bundle.snapshot.snapshot_id,
         run_id=ctx.run.id,
-        effort_budget_hours=request.effort_budget_hours,
-        used_hours=round(request.effort_budget_hours - remaining, 2),
+        baseline_fingerprint=ctx.run.fingerprint,
+        effort_budget_hours=budget,
+        used_hours=round(used_effort, 2),
+        used_downtime_hours=round(used_downtime, 2),
         starting_city_index=start,
         ending_city_index=round(current, 2),
         steps=steps,
+        rejected=rejected,
         recommendation_only=recommendation_only,
+        what_if_request=PlanHandoffRequest(
+            scenario_id=ctx.bundle.scenario.id,
+            snapshot_id=ctx.bundle.snapshot.snapshot_id,
+            run_id=ctx.run.id,
+            baseline_fingerprint=ctx.run.fingerprint,
+            actions=staged or [],
+            constraints=constraints,
+        )
+        if staged
+        else None,
         method="Greedy by marginal city-index reduction per effort hour, recomputed after each "
-        "pick. Monitoring and incident-response planning carry no modelled reduction and are "
-        "listed separately for assets rated high or critical.",
+        "pick. Ties break on larger absolute reduction, then asset id, then action name. "
+        "Monitoring and incident-response planning carry no modelled reduction and are listed "
+        "separately for assets rated high or critical.",
+        limitations=PLAN_LIMITATIONS,
     )
+
+
+def _rejected(ctx, excluded, chosen, feasibility, trial_for) -> list[RejectedCandidate]:
+    """Why every modelled action that was not selected was not selected, at the final state."""
+    out: list[RejectedCandidate] = []
+    for asset in ctx.bundle.assets:
+        for action, definition in ACTIONS.items():
+            if not definition.modelled or action in chosen.get(asset.id, ()):
+                continue
+            if asset.id in excluded:
+                code, reason = "asset_excluded", f"{asset.id} was excluded from the plan."
+            else:
+                ok, why = _applicable(ctx, asset, action)  # type: ignore[arg-type]
+                if not ok:
+                    code, reason = "not_applicable", why
+                elif problem := feasibility(asset.id, action):
+                    code, reason = problem
+                else:
+                    _, sequence = trial_for(asset.id, action)
+                    gain = sum(g for _, g, _ in sequence)
+                    if gain < -SCORE_EPSILON:
+                        code, reason = "increases_modelled_risk", f"Modelled change {-gain:+.2f}."
+                    else:
+                        code = "no_modelled_reduction"
+                        reason = "No modelled city-index reduction after the selected actions."
+                        if action == "patch_prioritization":
+                            missing = ctx.default_patch(asset.id).not_remediated
+                            if missing:
+                                reason += (
+                                    f" {len(missing)} top-ranked CVE(s) have no documented fixed "
+                                    "version, so none is modelled as remediated."
+                                )
+            out.append(
+                RejectedCandidate(
+                    asset_id=asset.id,
+                    action_type=action,  # type: ignore[arg-type]
+                    reason_code=code,  # type: ignore[arg-type]
+                    reason=reason,
+                )
+            )
+    return out
 
 
 def _is_priority(ctx: RunContext, asset_id: str) -> bool:

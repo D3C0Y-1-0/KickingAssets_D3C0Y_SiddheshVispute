@@ -19,6 +19,7 @@ from app.schemas.models import ErrorEnvelope
 from app.schemas.simulation import (
     ActionDefinition,
     ActionOption,
+    BaselineBinding,
     CveScore,
     MlOverview,
     MlStatus,
@@ -34,6 +35,7 @@ from app.schemas.simulation import (
 )
 from app.services import backtest, ml_overview, simulation
 from app.services.inventory import Inventory
+from app.services.remediation import bind_baseline
 from ml import inference
 
 router = APIRouter(
@@ -46,6 +48,7 @@ router = APIRouter(
     },
 )
 _run_lock = threading.Lock()
+RUN_HISTORY_LIMIT = 100
 
 
 def _latest(request: Request) -> simulation.RunContext:
@@ -55,9 +58,11 @@ def _latest(request: Request) -> simulation.RunContext:
     return ctx
 
 
-def _check_context(ctx: simulation.RunContext, scenario_id: str, snapshot_id: str) -> None:
-    if (scenario_id, snapshot_id) != (ctx.bundle.scenario.id, ctx.bundle.snapshot.snapshot_id):
-        raise HTTPException(409, "The latest simulation was run for a different snapshot.")
+def _history(request: Request) -> dict[str, str]:
+    """Run id -> fingerprint of every run made in this session (bounded)."""
+    if not hasattr(request.app.state, "run_history"):
+        request.app.state.run_history = {}
+    return request.app.state.run_history
 
 
 @router.get("/ml/status", response_model=MlStatus, tags=["ML"])
@@ -134,6 +139,10 @@ def run(
         except ValueError as exc:
             raise HTTPException(422, str(exc)) from exc
         request.app.state.simulation = ctx
+        history = _history(request)
+        history[ctx.run.id] = ctx.run.fingerprint
+        while len(history) > RUN_HISTORY_LIMIT:
+            history.pop(next(iter(history)))
     return ctx.run
 
 
@@ -177,22 +186,35 @@ def catalog():
 
 
 @router.get("/actions/options", response_model=list[ActionOption], tags=["Actions"])
-def options(request: Request):
-    return simulation.options(_latest(request))
+def options(
+    request: Request,
+    run_id: Annotated[
+        str | None, Query(description="If given, must be the current run; otherwise 409/404")
+    ] = None,
+):
+    ctx = _latest(request)
+    if run_id is not None:
+        bind_baseline(
+            ctx,
+            _history(request),
+            BaselineBinding(
+                scenario_id=ctx.bundle.scenario.id,
+                snapshot_id=ctx.bundle.snapshot.snapshot_id,
+                run_id=run_id,
+            ),
+        )
+    return simulation.options(ctx)
 
 
 @router.post("/actions/what-if", response_model=WhatIfResult, tags=["Actions"])
 def what_if(body: WhatIfRequest, request: Request):
     ctx = _latest(request)
-    _check_context(ctx, body.scenario_id, body.snapshot_id)
-    try:
-        return simulation.what_if(ctx, body)
-    except KeyError as exc:
-        raise HTTPException(404, str(exc.args[0])) from exc
+    bind_baseline(ctx, _history(request), body)
+    return simulation.what_if(ctx, body)
 
 
 @router.post("/actions/optimize", response_model=RemediationPlan, tags=["Actions"])
 def optimize(body: OptimizeRequest, request: Request):
     ctx = _latest(request)
-    _check_context(ctx, body.scenario_id, body.snapshot_id)
+    bind_baseline(ctx, _history(request), body)
     return simulation.optimize(ctx, body)

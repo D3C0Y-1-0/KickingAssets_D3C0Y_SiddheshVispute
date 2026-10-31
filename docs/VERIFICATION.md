@@ -136,3 +136,11 @@ No known Phase 1 functional blocker remains. The test-client deprecation warning
 - Not verified: the new pages on the hosted site (see deployment notes), mobile layout, accessibility audit of the new tables and charts, the brief's HTML rendering in a browser.
 
 Hosted checks (31 October 2026): on Azure, `/activity`, `/activity/assets/PWR-002`, `/resilience/vendors`, `/resilience/chokepoints`, `/simulation/trend` (18 points) returned 200; the brief returned 409 before a run, then 200 after a run (31 s on the B1 plan, 28.7 s through the Vercel proxy); urgency became available after the run (PWR-002: risk 11.56, urgency 17.34). Through Vercel, `/posture`, `/resilience`, `/coverage` and the API endpoints returned 200 and the live Posture page loaded with no console errors. Not verified: the brief under concurrent use, mobile layout.
+
+## Phase 5A hardening verification (31 October 2026)
+
+- `pytest backend/tests`: 180 passed (39 new in `test_phase5_hardening.py`: run binding, duplicates, unknown assets and exclusions, parameter and precondition errors, CVE-specific patches, fixed-version and target-version evidence, constraints, overlap, immutability, budget, determinism, prerequisites, hand-off). Ruff check and format clean; `docs/openapi.json` and `frontend/src/api/schema.d.ts` regenerated.
+- Real HTTP against uvicorn: missing run id (422), unknown run (404), duplicate plus unknown asset (422, two issues), unsupported CVE (422), unknown exclusion (422), valid patch with remediated/not-remediated CVEs (200), downtime limit (422), 60 h plan (200), stale run after a re-run (409).
+- Reference scenario: baseline 35.62 reproduced; plan 35.62 -> 27.72, 3 steps, 56 h (was 25.90, 5 steps). Explanation in `docs/PHASE_5A.md`.
+- Frontend: typecheck fails in `Remediation.tsx` and `hooks/liveSimulation.ts` because `run_id` is now required (Codex-owned, not edited). Build and frontend tests were not run on this branch.
+- Not verified: behaviour against the Postgres store, concurrent runs during a planning request.

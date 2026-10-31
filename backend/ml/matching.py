@@ -103,3 +103,34 @@ class AffectedIndex:
             )
         self._cache[key] = result
         return result
+
+    def fixed_versions(
+        self, vendor: str, product_contains: list[str], version: str
+    ) -> dict[str, str | None]:
+        """Documented fix boundary per CVE that affects `version`.
+
+        The boundary is the NVD `lessThan` bound of the affected range that contains the version,
+        i.e. the first version outside the range. None means the data names no fixed version
+        (only an inclusive upper bound, an open range, or a range that cannot be evaluated), so a
+        fix is not established. With several containing ranges the highest boundary is needed,
+        and any undocumented one makes the whole CVE undocumented.
+        """
+        frame = self._by_vendor.get(vendor)
+        target = parse_version(version)
+        if frame is None or target is None or not product_contains:
+            return {}
+        pattern = "|".join(re.escape(p) for p in product_contains)
+        rows = frame[frame["product"].str.contains(pattern, regex=True)]
+        bounds: dict[str, list[str | None]] = {}
+        for r in rows.itertuples(index=False):
+            if in_range(target, r.version, r.less_than, r.less_than_or_equal) is not True:
+                continue
+            documented = not _unknown(r.less_than) and parse_version(r.less_than) is not None
+            bounds.setdefault(r.cve_id, []).append(str(r.less_than).strip() if documented else None)
+        out: dict[str, str | None] = {}
+        for cve, values in bounds.items():
+            if any(v is None for v in values):
+                out[cve] = None
+            else:
+                out[cve] = max(values, key=lambda v: parse_version(v) or ())  # type: ignore[arg-type]
+        return out
