@@ -118,3 +118,14 @@ export function usePooledBacktest() {
     retry: false,
   })
 }
+
+/** Polls the backend while a run is in flight; each step is reported as the server finishes it. */
+export function useSimulationProgress(active: boolean) {
+  return useQuery({
+    queryKey: ['simulation', 'progress'],
+    queryFn: ({ signal }) => api.simulationProgress(signal),
+    enabled: active,
+    refetchInterval: active ? 100 : false,
+    gcTime: 0,
+  })
+}

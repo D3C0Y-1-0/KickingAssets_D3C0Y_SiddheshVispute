@@ -79,6 +79,8 @@ export const api = {
 
   runSimulation: (context: Context, asOf?: string) =>
     post<SimulationRun>('/simulation/run', undefined, { ...context, as_of: asOf }),
+  simulationProgress: (signal?: AbortSignal) =>
+    get<Models['SimulationProgress']>('/simulation/progress', {}, signal),
   simulationDates: (signal?: AbortSignal) =>
     get<Models['SnapshotOption'][]>('/simulation/snapshots', {}, signal),
   products: (signal?: AbortSignal) => get<Models['ProductMap']>('/simulation/products', {}, signal),

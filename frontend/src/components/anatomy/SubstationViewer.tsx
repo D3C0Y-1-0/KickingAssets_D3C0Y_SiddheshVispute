@@ -17,6 +17,8 @@ import {
   Zap,
   Info,
 } from "lucide-react";
+import { RadarPing } from "../TwinRadar";
+import type { TwinRisk } from "../../hooks/twinRisk";
 import "./substation.css";
 
 interface SubstationViewerProps {
@@ -26,6 +28,7 @@ interface SubstationViewerProps {
   isSimulationActive?: boolean;
   failedAssetIds?: string[];
   affectedAssetIds?: string[];
+  risk?: Record<string, TwinRisk>;
 }
 
 export function SubstationViewer({
@@ -35,6 +38,7 @@ export function SubstationViewer({
   isSimulationActive = false,
   failedAssetIds = [],
   affectedAssetIds = [],
+  risk = {},
 }: SubstationViewerProps) {
   // Canvas View transform state (Pan & Zoom)
   const [zoom, setZoom] = useState<number>(1);
@@ -462,6 +466,7 @@ export function SubstationViewer({
                         onMouseEnter={() => setHoveredComponentId(spot.id)}
                         onMouseLeave={() => setHoveredComponentId(null)}
                       >
+                        <RadarPing risk={risk[spot.id]} />
                         <div
                           className={`flex items-center gap-1.5 px-2 py-0.5 rounded-full border text-[10px] font-mono shadow-sm backdrop-blur-xs transition ${badgeColor} ${
                             isHovered || isSelected ? "scale-105 z-20" : "opacity-90 hover:opacity-100"
@@ -470,6 +475,11 @@ export function SubstationViewer({
                           <span className={`h-1.5 w-1.5 rounded-full ${dotColor}`} />
                           <span className="font-sans font-semibold tracking-tight">
                             {spot.label}
+                            {risk[spot.id] && (
+                              <span className="font-mono ml-1 opacity-80">
+                                {risk[spot.id].score.toFixed(0)}
+                              </span>
+                            )}
                           </span>
                         </div>
                       </div>

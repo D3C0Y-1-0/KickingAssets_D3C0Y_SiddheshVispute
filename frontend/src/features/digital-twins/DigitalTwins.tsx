@@ -10,6 +10,8 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { PageHeading } from "../../components/ui";
+import { RunSimulationButton } from "../../components/Simulation";
+import { useTwinRisk } from "../../hooks/twinRisk";
 
 // 5 Dedicated Anatomy Diagram Viewers
 import { SmartCityViewer } from "../../components/smartcity/SmartCityViewer";
@@ -30,6 +32,17 @@ export default function DigitalTwins() {
   );
 
   const assets = INITIAL_DEMO_ASSETS;
+  const { run, risk } = useTwinRisk();
+  const prefix: Record<TwinMode, string | null> = {
+    smartcity: null,
+    power: "PWR",
+    water: "WTR",
+    transit: "",
+    hospital: "HLT",
+  };
+  const sectorAssets = (run?.assets ?? [])
+    .filter((a) => prefix[activeTab] === null || (prefix[activeTab] && a.asset_id.startsWith(prefix[activeTab] as string)))
+    .filter((a) => a.risk.category === "critical" || a.risk.category === "high");
 
   return (
     <div className="space-y-6">
@@ -113,6 +126,46 @@ export default function DigitalTwins() {
           <span className="flex h-2 w-2 rounded-full bg-[#ccff00] animate-pulse" />
           <span className="font-bold">ANATOMY SVG ENGINE · 100% OPERATIONAL</span>
         </div>
+      </div>
+
+      {/* Live risk from the latest simulation run */}
+      <div className="p-3.5 rounded-xl bg-[#111319] border border-[#202634] text-xs twin-risk-panel">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <div className="font-bold text-slate-100">
+              {run ? `Simulation ${run.id} · as of ${run.as_of}` : "No simulation has run yet"}
+            </div>
+            <p className="text-slate-400 text-[11px] mt-0.5">
+              {run
+                ? "Blinking radar marks twin parts whose attached controller, relay or gateway scores high or critical in the ML risk index. Which asset sits behind which part is a scenario assumption; the KPI cards below remain illustrative demo figures."
+                : "Run the simulation to score every asset with the ML model and light up the twin."}
+            </p>
+          </div>
+          <RunSimulationButton variant={run ? "secondary" : "primary"} label={run ? "Re-run simulation" : "Run simulation"} />
+        </div>
+        {run && (
+          <div className="twin-risk-list">
+            {activeTab === "transit" ? (
+              <span className="text-slate-400">Transit is not part of the scored scenario (power, water, healthcare only).</span>
+            ) : sectorAssets.length === 0 ? (
+              <span className="text-slate-400">No high or critical assets in this view.</span>
+            ) : (
+              sectorAssets.map((a) => (
+                <span key={a.asset_id} className={`twin-risk-chip ${a.risk.category}`}>
+                  <span className={`relative inline-block w-3 h-3`}>
+                    <span className={`twin-radar ${a.risk.category}`} aria-hidden>
+                      <i />
+                      <b />
+                    </span>
+                  </span>
+                  <span className="font-mono">{a.asset_id}</span>
+                  <span>{a.name}</span>
+                  <strong className="font-mono">{a.risk.score?.toFixed(1)}</strong>
+                </span>
+              ))
+            )}
+          </div>
+        )}
       </div>
 
       {/* Sector KPI Summary Cards Styled in Reference Electric Lime Theme */}
@@ -200,6 +253,7 @@ export default function DigitalTwins() {
             assets={assets}
             selectedAsset={selectedAsset}
             onSelectAsset={setSelectedAsset}
+            risk={risk}
           />
         )}
 
@@ -208,14 +262,15 @@ export default function DigitalTwins() {
             assets={assets}
             selectedAsset={selectedAsset}
             onSelectAsset={setSelectedAsset}
+            risk={risk}
           />
         )}
 
-        {activeTab === "water" && <WaterPlantViewer />}
+        {activeTab === "water" && <WaterPlantViewer risk={risk} />}
 
         {activeTab === "transit" && <TransitViewer />}
 
-        {activeTab === "hospital" && <HospitalViewer />}
+        {activeTab === "hospital" && <HospitalViewer risk={risk} />}
       </div>
 
       {/* Engineering Notes & Cross-Reference Card */}

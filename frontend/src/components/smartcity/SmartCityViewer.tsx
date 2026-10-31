@@ -20,6 +20,8 @@ import {
   Train,
   Building,
 } from "lucide-react";
+import { RadarPing, RiskLine } from "../TwinRadar";
+import type { TwinRisk } from "../../hooks/twinRisk";
 import "./smartcity.css";
 
 interface SmartCityViewerProps {
@@ -29,6 +31,7 @@ interface SmartCityViewerProps {
   isSimulationActive?: boolean;
   failedAssetIds?: string[];
   affectedAssetIds?: string[];
+  risk?: Record<string, TwinRisk>;
 }
 
 export function SmartCityViewer({
@@ -38,6 +41,7 @@ export function SmartCityViewer({
   isSimulationActive = false,
   failedAssetIds = [],
   affectedAssetIds = [],
+  risk = {},
 }: SmartCityViewerProps) {
   // Canvas View transform state (Pan & Zoom)
   const [zoom, setZoom] = useState<number>(0.68);
@@ -509,6 +513,7 @@ export function SmartCityViewer({
                       className="group cursor-pointer z-30"
                     >
                       <div className="relative flex items-center justify-center">
+                        <RadarPing risk={risk[h.id]} />
                         {/* Pulsing ring for selected or alert */}
                         {isSelected && (
                           <span className="absolute w-7 h-7 rounded-full bg-cyan-400/30 animate-ping pointer-events-none" />
@@ -546,6 +551,7 @@ export function SmartCityViewer({
                         </div>
                         <div className="text-xs font-bold text-white truncate">{h.label}</div>
                         <div className="text-[10px] text-slate-400 leading-tight">{h.sub}</div>
+                        <RiskLine risk={risk[h.id]} />
                       </div>
                     </div>
                   );

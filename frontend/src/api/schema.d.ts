@@ -248,6 +248,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/simulation/progress": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Progress */
+        get: operations["progress_api_v1_simulation_progress_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/simulation/latest": {
         parameters: {
             query?: never;
@@ -1138,6 +1155,20 @@ export interface components {
             /** Products */
             products: components["schemas"]["AssumedProduct"][];
         };
+        /** ProgressStep */
+        ProgressStep: {
+            /** Name */
+            name: string;
+            /** Detail */
+            detail: string;
+            /** Seconds */
+            seconds: number | null;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "pending" | "active" | "done";
+        };
         /** Provenance */
         Provenance: {
             /**
@@ -1363,6 +1394,18 @@ export interface components {
             initiating_asset_name: string | null;
             /** Effect */
             effect: ("loss_of_control" | "loss_of_visibility" | "data_integrity" | "unavailability") | null;
+        };
+        /** SimulationProgress */
+        SimulationProgress: {
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "idle" | "running" | "done" | "failed";
+            /** Steps */
+            steps: components["schemas"]["ProgressStep"][];
+            /** Note */
+            note: string | null;
         };
         /** SimulationRun */
         SimulationRun: {
@@ -2242,6 +2285,62 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["SimulationRun"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Unprocessable Content */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    progress_api_v1_simulation_progress_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SimulationProgress"];
                 };
             };
             /** @description Not Found */

@@ -14,6 +14,8 @@ import {
   Eye,
   CheckCircle,
 } from "lucide-react";
+import { RadarPing, RiskLine } from "../TwinRadar";
+import type { TwinRisk } from "../../hooks/twinRisk";
 import "./waterplant.css";
 
 interface WaterHotspot {
@@ -84,7 +86,7 @@ const WATER_HOTSPOTS: WaterHotspot[] = [
   },
 ];
 
-export function WaterPlantViewer() {
+export function WaterPlantViewer({ risk = {} }: { risk?: Record<string, TwinRisk> }) {
   const [zoom, setZoom] = useState<number>(0.9);
   const [pan, setPan] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState<boolean>(false);
@@ -302,6 +304,7 @@ export function WaterPlantViewer() {
                       className="group cursor-pointer z-30"
                     >
                       <div className="relative flex items-center justify-center">
+                        <RadarPing risk={risk[h.id]} />
                         {isSel && (
                           <span className="absolute w-7 h-7 rounded-full bg-[#ccff00]/40 animate-ping pointer-events-none" />
                         )}
@@ -319,6 +322,7 @@ export function WaterPlantViewer() {
                         <div className="text-[9px] font-mono text-[#ccff00] font-bold uppercase">{h.metric}: {h.value}</div>
                         <div className="text-xs font-bold text-white truncate">{h.label}</div>
                         <div className="text-[10px] text-slate-400">{h.sub}</div>
+                        <RiskLine risk={risk[h.id]} />
                       </div>
                     </div>
                   );

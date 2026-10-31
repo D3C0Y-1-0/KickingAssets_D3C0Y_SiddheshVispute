@@ -2649,3 +2649,41 @@ tbody tr:hover {
 .mini-bars i.kev {
   background: var(--risk-critical);
 }
+
+.sim-overlay { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; background: rgb(0 0 0 / 0.62); padding: 16px; }
+.sim-panel { width: min(560px, 100%); background: var(--surface, #111319); border: 1px solid var(--border, #202634); border-radius: 12px; padding: 20px; box-shadow: 0 24px 60px rgb(0 0 0 / 0.5); }
+.sim-panel header { display: flex; justify-content: space-between; align-items: start; }
+.sim-panel h2 { margin: 2px 0 12px; font-size: 18px; }
+.sim-bar { height: 4px; background: var(--border, #202634); border-radius: 2px; overflow: hidden; margin-bottom: 14px; }
+.sim-bar i { display: block; height: 100%; background: var(--accent); transition: width 0.3s ease; }
+.sim-bar i.bad { background: var(--risk-critical); }
+.sim-steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+.sim-steps li { display: grid; grid-template-columns: 22px 1fr auto; gap: 10px; align-items: start; padding: 7px 4px; opacity: 0.45; transition: opacity 0.2s; }
+.sim-steps li.active, .sim-steps li.done { opacity: 1; }
+.sim-steps strong { display: block; font-size: 13px; }
+.sim-steps small { display: block; color: var(--text-muted); font-size: 12px; min-height: 1em; }
+.sim-mark { width: 20px; height: 20px; border-radius: 50%; border: 1px solid var(--border-strong, #3a4358); display: grid; place-items: center; }
+.sim-steps li.done .sim-mark { background: var(--accent); border-color: var(--accent); color: #000; }
+.sim-steps li.active .sim-mark { border-color: var(--accent); color: var(--accent); }
+.sim-time { font-size: 12px; color: var(--text-muted); }
+.sim-summary { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border, #202634); font-size: 13px; }
+
+/* Radar ping on digital-twin hotspots */
+.twin-radar { position: absolute; left: 50%; top: 50%; width: 0; height: 0; pointer-events: none; }
+.twin-radar i { position: absolute; left: -22px; top: -22px; width: 44px; height: 44px; border-radius: 50%; border: 2px solid var(--radar, #ff3344); opacity: 0; animation: radar-ping 2s ease-out infinite; }
+.twin-radar i:nth-child(2) { animation-delay: 0.66s; }
+.twin-radar i:nth-child(3) { animation-delay: 1.33s; }
+.twin-radar b { position: absolute; left: -6px; top: -6px; width: 12px; height: 12px; border-radius: 50%; background: var(--radar, #ff3344); box-shadow: 0 0 12px var(--radar, #ff3344); animation: radar-blink 1s steps(2, jump-none) infinite; }
+.twin-radar.high { --radar: #ff9a2e; }
+@keyframes radar-ping { 0% { transform: scale(0.2); opacity: 0.9; } 100% { transform: scale(1.9); opacity: 0; } }
+@keyframes radar-blink { 0% { opacity: 1; } 100% { opacity: 0.25; } }
+@media (prefers-reduced-motion: reduce) {
+  .twin-radar i { animation: none; opacity: 0.7; transform: scale(1); }
+  .twin-radar i:nth-child(n + 2) { display: none; }
+  .twin-radar b { animation: none; }
+}
+.twin-risk-panel { display: grid; gap: 8px; }
+.twin-risk-list { display: flex; flex-wrap: wrap; gap: 8px; }
+.twin-risk-chip { display: inline-flex; align-items: center; gap: 8px; padding: 6px 10px; border: 1px solid var(--border, #202634); border-radius: 8px; font-size: 12px; position: relative; }
+.twin-risk-chip.critical { border-color: var(--risk-critical); }
+.twin-risk-chip.high { border-color: #ff9a2e; }
