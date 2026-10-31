@@ -1,5 +1,7 @@
 # Architecture
 
+**Local Phase 2 integration:** [PHASE_2_INTEGRATION.md](PHASE_2_INTEGRATION.md) records the combined branch. Objective O5 now also has Claude's pure conditional operational-impact engine, available through Python only; O2 retains Phase 2A's reference-backed assessment. No impact API/UI wiring or risk/ML engine was introduced. Historical phase descriptions below remain context, not the current combined implementation inventory.
+
 **Phase 2A implemented:** [PHASE_2A.md](PHASE_2A.md) documents offline reference ingestion, conservative matching/configuration rules, additive v2a_* tables, scoped APIs and the query-backed register. This extends objective O2 within explicit coverage limits. Shared models.py and impact/risk engine files are unchanged. Original Phase 1 descriptions below remain the foundation boundary; no later risk/impact computation is claimed by this branch.
 
 ## System boundary and technology

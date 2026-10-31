@@ -1,5 +1,7 @@
 # GridSentinel
 
+**Local Phase 2 integration:** [Runbook and measured results](docs/PHASE_2_INTEGRATION.md). Branch `integration/phase-2` combines vulnerability assessment with Claude's Python-only conditional impact engine. The register exposes vulnerability evidence; impact calculations currently run from the command line. No ML, risk scoring, What-If calculation or optimizer is enabled.
+
 **See the blast radius before the incident.**
 
 Critical infrastructure cybersecurity risk intelligence for D3COY PS03. This repository implements the **Phase 1 foundation and Phase 2A vulnerability assessment**: a polished shell, deterministic fictional city, typed APIs, independent graphs and real cached NVD/CVSS, EPSS and KEV evidence. It does not calculate asset risk, infer exploit success, monitor live systems or change infrastructure.

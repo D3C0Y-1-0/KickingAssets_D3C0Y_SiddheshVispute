@@ -1,5 +1,24 @@
 # Phase 1 file manifest
 
+## Local Phase 2 integration additions
+
+The Phase 2A file list is retained below. Claude's `95160bc` adds these ten unchanged files:
+
+```text
+backend/app/engine/impact/README.md
+backend/app/engine/impact/__init__.py
+backend/app/engine/impact/cascade.py
+backend/app/engine/impact/engine.py
+backend/app/engine/impact/graph.py
+backend/app/engine/impact/models.py
+backend/app/engine/impact/policy.py
+backend/app/engine/impact/service.py
+backend/tests/impact_support.py
+backend/tests/test_conditional_impact.py
+```
+
+Integration creates `scripts/demo_impact.py` and `docs/PHASE_2_INTEGRATION.md`; modifies `backend/requirements.txt`, `backend/requirements-lock.txt`, `backend/tests/test_foundation.py` (format only), `README.md`, `docs/ARCHITECTURE.md`, `docs/HANDOFF.md`, `docs/VERIFICATION.md`, and this manifest. No shared schemas, API contracts, engine implementations or frontend source files were modified during integration.
+
 The workspace contained no existing application files. All 72 files below were created for Phase 1; no unrelated user files were modified. Generated contracts and illustration geometry are identified by their file headers.
 
 ```text

@@ -1,5 +1,9 @@
 # Phase 1 verification record
 
+## Local Phase 2 integration — 31 October 2026
+
+See [PHASE_2_INTEGRATION.md](PHASE_2_INTEGRATION.md) for exact integrated SHAs, API/browser observations, impact output, dependency fix and launch commands. Combined backend suite: **65 passed**, one existing deprecation warning. Frontend: **8 passed**, typecheck, Prettier and production build passed. Ruff lint/format and pip dependency compatibility passed; the reformatted foundation test file was rerun (**22 passed**). All seven browser routes, separate graph modes, real vulnerability source evidence and both actual impact demonstration commands were exercised. An obsolete running Phase 1 backend caused the register's route error; restarting the confirmed project processes resolved it. No impact API/UI or Phase 3 implementation was added. Historical verification below remains unchanged.
+
 ## Phase 2A verification — 31 October 2026
 
 The historical Phase 1 record below is preserved. Phase 2A was verified on feature/vulnerability-assessment without edits to shared models.py, engine/ or ml/.

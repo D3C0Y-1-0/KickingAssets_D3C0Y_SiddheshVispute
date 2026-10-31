@@ -1,5 +1,7 @@
 # Phase 1 handoff
 
+**Latest local integration:** `integration/phase-2` combines Phase 2A `5b4d82f` and Phase 2B `95160bc` from baseline `4acfd7e`. See [PHASE_2_INTEGRATION.md](PHASE_2_INTEGRATION.md) for compatibility review, measured checks, launch instructions and the actual impact demo command. NetworkX is now locked. Vulnerabilities are visible in the register; conditional impact is Python-only. No ML branch, impact API/UI, risk scoring, What-If calculations or optimizer was added. Existing historical records below remain unchanged.
+
 **Latest: Phase 2A** is implemented on feature/vulnerability-assessment. Read [PHASE_2A.md](PHASE_2A.md) for contracts, source data, CLI, limits and Claude integration boundaries. Checks are appended to VERIFICATION.md. The Phase 1 record below is retained as history. Shared models.py, engine/ML files, base assets and graphs are unchanged. Coordinate the small router/bootstrap and generated-artifact integration points when merging the impact branch; do not replace either feature.
 
 ## Implemented
