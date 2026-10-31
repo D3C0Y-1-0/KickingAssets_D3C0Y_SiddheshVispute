@@ -73,3 +73,10 @@ ML work requires temporal leakage controls and measured evaluation against basel
 ## Integration protocol for both agents
 
 Agree the exact file list and schema owner before concurrent work. Keep the user's and other agent's diffs intact. Integrate one engine through service orchestration, tests, explicit availability states and generated contracts. Run the complete appropriate checks, repeat relevant browser smoke tests, update objective status honestly and record the actual commands/results here. See AGENTS.md for restrictions.
+
+## Backend connected to PostgreSQL (branch codex/innovations, local only, not pushed)
+
+- Base: `origin/feature/real-data-link` at 598c898 (integrated workflow, real-data link, digital twins, lime theme). Source branches are unchanged.
+- Added on top: the PostgreSQL-capable repository (`backend/app/db/store.py`, SQLite stays the default; `GRIDSENTINEL_DATABASE_URL` selects Neon), gzip and security-header middleware, and the ML runtime dependencies (pandas, numpy, pyarrow, xgboost, scikit-learn, networkx, psycopg) in `requirements.txt` and the lock.
+- The simulation result is held in `app.state.simulation` (one process). Run a single worker; this app cannot be hosted as stateless serverless without moving that state out of process.
+- The reference data cache (`data/reference/cache`, about 231 MB, git-ignored) must be present at runtime for ML scoring.

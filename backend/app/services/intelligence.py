@@ -271,7 +271,7 @@ def assess(path: Path, scenario_id: str, snapshot_id: str | None = None) -> Inte
     )
     with connection(path) as db:
         db.execute(
-            "INSERT OR IGNORE INTO v3_reports VALUES (?,?,?,?)",
+            "INSERT INTO v3_reports VALUES (?,?,?,?) ON CONFLICT(id) DO NOTHING",
             (run_id, scenario_id, inputs.snapshot.snapshot_id, result.model_dump_json()),
         )
     return result

@@ -1,9 +1,9 @@
-import sqlite3
 from contextlib import asynccontextmanager
 from pathlib import Path
 
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
+from fastapi.middleware.gzip import GZipMiddleware
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from starlette.exceptions import HTTPException
@@ -12,19 +12,20 @@ from app.api.intelligence import router as intelligence_router
 from app.api.routes import router
 from app.api.vulnerability import router as vulnerability_router
 from app.api.workflow import router as workflow_router
-from app.db.store import default_db_path, initialize
+from app.db.store import STORAGE_ERRORS, Target, close_pools, default_db_path, initialize
 from app.db.vulnerability_store import bootstrap
 from app.domain.seed import ROOT
 from app.services.intelligence import bootstrap as bootstrap_intelligence
 
 
-def create_app(db_path: Path | None = None, static_dir: Path | None = None) -> FastAPI:
+def create_app(db_path: Target | None = None, static_dir: Path | None = None) -> FastAPI:
     @asynccontextmanager
     async def lifespan(application: FastAPI):
         initialize(application.state.db_path)
         bootstrap(application.state.db_path, ROOT / "data/reference/risk-v1")
         bootstrap_intelligence(application.state.db_path)
         yield
+        close_pools()
 
     application = FastAPI(
         title="GridSentinel",
@@ -33,10 +34,19 @@ def create_app(db_path: Path | None = None, static_dir: Path | None = None) -> F
         lifespan=lifespan,
     )
     application.state.db_path = db_path or default_db_path()
+    application.add_middleware(GZipMiddleware, minimum_size=1024)
+
+    @application.middleware("http")
+    async def security_headers(request: Request, call_next):
+        response = await call_next(request)
+        response.headers.setdefault("X-Content-Type-Options", "nosniff")
+        response.headers.setdefault("X-Frame-Options", "DENY")
+        response.headers.setdefault("Referrer-Policy", "no-referrer")
+        return response
 
     @application.exception_handler(HTTPException)
     async def http_error(request: Request, exc: HTTPException):
-        codes = {404: "not_found", 501: "not_implemented", 503: "unavailable"}
+        codes = {404: "not_found", 409: "conflict", 501: "not_implemented", 503: "unavailable"}
         return JSONResponse(
             status_code=exc.status_code,
             content={
@@ -62,8 +72,9 @@ def create_app(db_path: Path | None = None, static_dir: Path | None = None) -> F
             },
         )
 
-    @application.exception_handler(sqlite3.Error)
-    async def storage_error(request: Request, exc: sqlite3.Error):
+    @application.exception_handler(STORAGE_ERRORS[0])
+    @application.exception_handler(STORAGE_ERRORS[1])
+    async def storage_error(request: Request, exc: Exception):
         return JSONResponse(
             status_code=503,
             content={

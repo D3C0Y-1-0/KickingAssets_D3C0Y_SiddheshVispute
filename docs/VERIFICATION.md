@@ -90,3 +90,11 @@ Local, Git-ignored QA images (all visually inspected):
 No physical network disconnection, full accessibility audit, load test, external feed validation, model evaluation, exploit simulation, outage calculation or remediation execution was performed. Offline compatibility is supported by same-origin compiled serving and bundled assets/system fonts; installation still needs package-registry access. Swagger's optional interactive UI uses CDN assets, while the application and raw OpenAPI do not.
 
 No known Phase 1 functional blocker remains. The test-client deprecation warning and absence of later engines are explicitly recorded. See IMPLEMENTATION_PLAN.md for the real validation gates required before claiming those objectives complete.
+
+## codex/innovations: backend connection (31 October 2026)
+
+- `pytest backend/tests`: 75 passed (includes ML and workflow tests); Ruff check and format clean.
+- Against Neon PostgreSQL (Singapore), with the reference cache present: health, ML status, simulation run (8.7 s, process memory about 1.05 GB afterwards), 150 action options, optimizer (1.5 s), ML overview all returned 200. Optimize before a run correctly returns 409.
+- Browser: ran the simulation from the Command Overview against Neon; the run completed and the page reported "Simulated as of 2026-10-01". The console showed two HTTP 409 responses (expected: the API refuses simulation-dependent reads before a run exists) and repeated ERR_CONNECTION_REFUSED entries, probably from an initial navigation made before the server finished starting or from stopping it afterwards; this was not re-checked on a clean load.
+- Frontend: typecheck, build and 7 tests pass. `format:check` reports 33 files from the digital-twins push; those files were not reformatted.
+- Not verified: hosting this backend remotely, concurrent users, other pages beyond the overview.
