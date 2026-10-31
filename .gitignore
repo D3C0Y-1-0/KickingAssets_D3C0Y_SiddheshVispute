@@ -15,4 +15,5 @@ artifacts/
 *.tsbuildinfo
 .agents/skills/anatomy/
 data/reference/cache/
+*.pdf
 .vercel
