@@ -17,7 +17,7 @@ export default function Remediation() {
     return (
       <>
         <PageHeading
-          title="Remediation plan"
+          title="Fix plan"
           description="Make the next action count. Prioritize reduction, effort and operational feasibility."
         />
         <SimulationRequired />
@@ -27,7 +27,7 @@ export default function Remediation() {
   return (
     <>
       <PageHeading
-        title="Remediation plan"
+        title="Fix plan"
         description="A greedy plan: the action with the best city-index reduction per effort hour is picked, then everything is recomputed."
         actions={
           <>
@@ -182,7 +182,7 @@ export default function Remediation() {
       )}
       <div className="centered-action">
         <Link to="/what-if" className="button secondary">
-          Open the What-If lab
+          Open What-If
         </Link>
       </div>
       <ProvenanceNotice />

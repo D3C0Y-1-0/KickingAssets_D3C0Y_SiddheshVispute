@@ -167,3 +167,25 @@ def test_defense_end_to_end_on_the_aurora_run(tmp_path):
     assert reaction["steps"][0]["kind"] == "contain"
     assert reaction["steps"][-1]["kind"] == "recover"
     assert reaction["targets_after_block"] == 0 or not reaction["block_assets"]
+
+
+def test_warm_start_restores_the_simulation_after_a_restart(tmp_path, monkeypatch):
+    import time
+    from types import SimpleNamespace
+
+    from app.services import simulation
+
+    ctx = SimpleNamespace(run=SimpleNamespace(), bundle=None)
+    monkeypatch.setattr(simulation, "run_simulation", lambda *args, **kwargs: ctx)
+    monkeypatch.setenv("GRIDSENTINEL_WARM_START", "1")
+    with client(tmp_path) as c:
+        deadline = time.time() + 10
+        while getattr(c.app.state, "simulation", None) is None and time.time() < deadline:
+            time.sleep(0.05)
+        assert c.app.state.simulation is ctx
+
+
+def test_no_warm_start_unless_enabled(tmp_path, monkeypatch):
+    monkeypatch.delenv("GRIDSENTINEL_WARM_START", raising=False)
+    with client(tmp_path) as c:
+        assert getattr(c.app.state, "simulation", None) is None

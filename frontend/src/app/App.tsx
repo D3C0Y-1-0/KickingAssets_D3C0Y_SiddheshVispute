@@ -79,7 +79,10 @@ const navGroups: { label: string; items: NavEntry[] }[] = [
   },
   {
     label: 'Evidence',
-    items: [{ path: '/coverage', name: 'Challenge Coverage', icon: ClipboardCheck }],
+    items: [
+      { path: '/coverage', name: 'Challenge Coverage', icon: ClipboardCheck },
+      { path: '/methodology', name: 'Methodology', icon: BookOpen },
+    ],
   },
 ]
 const navigation = navGroups.flatMap((g) => g.items)
@@ -115,7 +118,8 @@ export default function App() {
     retry: 1,
   })
   const activeName =
-    navigation.find((x) => x.path === location.pathname)?.name ?? 'Methodology & Evidence'
+    navigation.find((x) => x.path === location.pathname)?.name ??
+    (location.pathname === '/methodology' ? 'Methodology' : 'Page not found')
   useEffect(() => {
     setMenuOpen(false)
     document.title = `${activeName} | Gridinal`

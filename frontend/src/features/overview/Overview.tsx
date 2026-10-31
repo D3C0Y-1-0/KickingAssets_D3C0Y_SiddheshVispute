@@ -492,11 +492,14 @@ export default function Overview() {
           <div className="step-actions">
             {run ? (
               <>
+                <Link className="button secondary" to="/defend">
+                  Attack &amp; defend <ArrowRight size={14} />
+                </Link>
                 <Link className="button secondary" to="/what-if">
                   What-if <ArrowRight size={14} />
                 </Link>
                 <Link className="button secondary" to="/remediation">
-                  Remediation plan <ArrowRight size={14} />
+                  Fix plan <ArrowRight size={14} />
                 </Link>
               </>
             ) : (

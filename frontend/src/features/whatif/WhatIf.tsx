@@ -21,7 +21,7 @@ export default function WhatIf() {
     return (
       <>
         <PageHeading
-          title="What-If lab"
+          title="What-If"
           description="Stage preventive actions and see the projected change in risk."
         />
         <SimulationRequired />
@@ -49,7 +49,7 @@ export default function WhatIf() {
   return (
     <>
       <PageHeading
-        title="What-If lab"
+        title="What-If"
         description="Stage the actions named in the problem statement and recompute the risk. Nothing is changed or verified."
         actions={
           <span className="badge neutral">

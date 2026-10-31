@@ -1,3 +1,4 @@
+import os
 from contextlib import asynccontextmanager
 from pathlib import Path
 
@@ -14,6 +15,7 @@ from app.api.intelligence import router as intelligence_router
 from app.api.routes import router
 from app.api.vulnerability import router as vulnerability_router
 from app.api.workflow import router as workflow_router
+from app.api.workflow import warm_start
 from app.db.store import STORAGE_ERRORS, Target, close_pools, default_db_path, initialize
 from app.db.vulnerability_store import bootstrap
 from app.domain.seed import ROOT
@@ -26,6 +28,8 @@ def create_app(db_path: Target | None = None, static_dir: Path | None = None) ->
         initialize(application.state.db_path)
         bootstrap(application.state.db_path, ROOT / "data/reference/risk-v1")
         bootstrap_intelligence(application.state.db_path)
+        if os.environ.get("GRIDSENTINEL_WARM_START") == "1":
+            warm_start(application)
         yield
         close_pools()
 
