@@ -1,5 +1,11 @@
 # Architecture
 
+**Current combined architecture:** [PHASE_3_INTEGRATION.md](PHASE_3_INTEGRATION.md). Workflow: real product/version mapping → cached historical features → native main-model inference → explicitly conditional pivot/operational analysis → risk-index-v1 → latest UI/action screens. Portable curated path: Phase 2A applicability → native no-history ablation or known KEV evidence → independent operational unavailability → asset-priority-v1.1 → persisted v3_reports and curated UI. Both graph schemas remain separate. SQLite is explicitly selected by `setup.ps1 -SQLite` and `start.ps1 -SQLite`; optional PostgreSQL and deployment support is retained without connecting to a cloud database during this task. Historical phase boundaries below are retained as history.
+
+**Local Phase 2 integration:** [PHASE_2_INTEGRATION.md](PHASE_2_INTEGRATION.md) records the combined branch. Objective O5 now also has Claude's pure conditional operational-impact engine, available through Python only; O2 retains Phase 2A's reference-backed assessment. No impact API/UI wiring or risk/ML engine was introduced. Historical phase descriptions below remain context, not the current combined implementation inventory.
+
+**Phase 2A implemented:** [PHASE_2A.md](PHASE_2A.md) documents offline reference ingestion, conservative matching/configuration rules, additive v2a_* tables, scoped APIs and the query-backed register. This extends objective O2 within explicit coverage limits. Shared models.py and impact/risk engine files are unchanged. Original Phase 1 descriptions below remain the foundation boundary; no later risk/impact computation is claimed by this branch.
+
 ## System boundary and technology
 
 One repository, one React/TypeScript/Vite frontend, one Python/FastAPI backend and one local SQLite database. Tailwind v4 is available alongside semantic CSS tokens, React Router supplies stable URLs, TanStack Query owns server-state caching, Cytoscape renders topology, Recharts renders the preview category chart and Lucide provides icons. No WebGL, external fonts, authentication service or cloud deployment is needed.

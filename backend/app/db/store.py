@@ -54,6 +54,12 @@ class _PostgresConnection:
     def execute(self, sql: str, params=()):
         return self._conn.execute(sql.replace("?", "%s"), params)
 
+    def executescript(self, sql: str):
+        """Execute the repository's static migration statements in the current transaction."""
+        for statement in sql.split(";"):
+            if statement.strip():
+                self._conn.execute(statement)
+
 
 def _pool(url: str) -> ConnectionPool:
     if url not in _pools:

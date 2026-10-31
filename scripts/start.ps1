@@ -1,4 +1,4 @@
-param([switch]$Production)
+param([switch]$Production, [switch]$SQLite)
 $ErrorActionPreference = 'Stop'
 $projectRoot = Split-Path -Parent $PSScriptRoot
 $pythonExe = Join-Path $projectRoot '.venv/Scripts/python.exe'
@@ -13,7 +13,13 @@ Assert-PortAvailable 8000
 if (-not $Production) { Assert-PortAvailable 5173 }
 Push-Location $projectRoot
 $backendProcess = $null
+$previousDatabaseUrl = $env:GRIDSENTINEL_DATABASE_URL
+$previousDatabasePath = $env:GRIDSENTINEL_DB
 try {
+    if ($SQLite) {
+        Remove-Item Env:GRIDSENTINEL_DATABASE_URL -ErrorAction SilentlyContinue
+        $env:GRIDSENTINEL_DB = Join-Path $projectRoot 'data/gridsentinel.sqlite3'
+    }
     if ($Production) {
         Push-Location frontend
         try {
@@ -39,4 +45,8 @@ try {
 } finally {
     if ($null -ne $backendProcess -and -not $backendProcess.HasExited) { Stop-Process -Id $backendProcess.Id }
     Pop-Location
+    if ($SQLite) {
+        $env:GRIDSENTINEL_DATABASE_URL = $previousDatabaseUrl
+        $env:GRIDSENTINEL_DB = $previousDatabasePath
+    }
 }

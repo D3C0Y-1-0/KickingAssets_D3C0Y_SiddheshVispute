@@ -67,6 +67,24 @@ function post<T>(path: string, body?: unknown, params: Record<string, string | u
 }
 
 export const api = {
+  intelligence: (context: Context, signal?: AbortSignal) =>
+    get<Models['IntelligenceReport']>('/intelligence', context, signal),
+  assessIntelligence: async (context: Context) => {
+    const response = await fetch(`${base}/intelligence/assess`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(context),
+    })
+    if (!response.ok) {
+      const payload = await response.json().catch(() => null)
+      throw new ApiError(response.status, payload?.error?.message ?? 'Risk assessment failed')
+    }
+    return response.json() as Promise<Models['IntelligenceReport']>
+  },
+  vulnerabilityAssessment: (context: Context, signal?: AbortSignal) =>
+    get<Models['VulnerabilityAssessment']>('/vulnerabilities/assessment', context, signal),
+  vulnerabilityReferences: (signal?: AbortSignal) =>
+    get<Models['ReferenceDataset']>('/vulnerabilities/references', {}, signal),
   health: (signal?: AbortSignal) => get<Models['Health']>('/health', {}, signal),
   scenarios: (signal?: AbortSignal) => get<Models['Scenario'][]>('/scenarios', {}, signal),
   snapshots: (context: Context, signal?: AbortSignal) =>

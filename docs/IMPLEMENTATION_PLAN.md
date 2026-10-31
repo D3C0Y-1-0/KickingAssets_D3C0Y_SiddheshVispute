@@ -1,5 +1,9 @@
 # Implementation plan
 
+**Delivered integration batch:** [PHASE_3_INTEGRATION.md](PHASE_3_INTEGRATION.md) documents the bounded Phase 3A work and subsequent user-authorized synchronization of all existing branches. ML training/artifacts were inspected and reevaluated, not replaced. Risk UI/API and transparent prioritization now use real inference. Existing workflow, twins, force graph and action implementations were integrated from remote histories; no new later-phase engine was developed. The historical phase numbering below remains the original roadmap.
+
+**Phase 2A delivered:** real offline-capable reference ingestion, conservative applicability to declared simulated components, separate configuration/exposure evidence, persistence, APIs and register integration. [PHASE_2A.md](PHASE_2A.md) records exact coverage and remaining limits. Subsequent ML/risk/What-If/optimizer work remains deferred. Claude's independent impact module must be integrated separately through coordinated entry points; this branch does not implement or modify it.
+
 ## Phase 1 acceptance boundary
 
 Phase 1 implements foundations for the seven official objectives preserved in PROJECT_SPEC.md. It does not claim completion of vulnerability assessment (O2), AI-based prediction (O3), calculated risk prioritization (O4), consequence calculation (O5), predictive evidence/trends (O6) or evidence-backed preventive recommendations (O7).

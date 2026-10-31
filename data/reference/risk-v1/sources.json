@@ -1,0 +1,37 @@
+[
+  {
+    "file": "nvd-CVE-2021-41773.json",
+    "url": "https://services.nvd.nist.gov/rest/json/cves/2.0?cveId=CVE-2021-41773",
+    "retrieved_at": "2026-10-31T12:01:06.764773+00:00",
+    "sha256": "dd1d6347b10496bc3c4f0ef0f21c31d1c7ca61f3d5330fb67014bcdac381500b",
+    "source_version": "2.0"
+  },
+  {
+    "file": "nvd-CVE-2021-42013.json",
+    "url": "https://services.nvd.nist.gov/rest/json/cves/2.0?cveId=CVE-2021-42013",
+    "retrieved_at": "2026-10-31T12:01:16.908435+00:00",
+    "sha256": "d947f7322c26e52c73a02f791fd7786d6047fd38d6c47cfe5da151107fa40e1c",
+    "source_version": "2.0"
+  },
+  {
+    "file": "nvd-CVE-2021-44224.json",
+    "url": "https://services.nvd.nist.gov/rest/json/cves/2.0?cveId=CVE-2021-44224",
+    "retrieved_at": "2026-10-31T12:01:25.565211+00:00",
+    "sha256": "8bac52331619b0d20e540c6a0b5e8bcbc530946ffb2b2940713331cf9e8c6366",
+    "source_version": "2.0"
+  },
+  {
+    "file": "epss.json",
+    "url": "https://api.first.org/data/v1/epss?limit=100&cve=CVE-2021-41773,CVE-2021-42013,CVE-2021-44224",
+    "retrieved_at": "2026-10-31T12:01:33.909479+00:00",
+    "sha256": "5fc8dcc053c03e8b0ebcff4a2cd0dec03ed56f819e4a70c05892d8ca46a32e17",
+    "source_version": "1.0"
+  },
+  {
+    "file": "kev.json",
+    "url": "https://raw.githubusercontent.com/cisagov/kev-data/main/known_exploited_vulnerabilities.json",
+    "retrieved_at": "2026-10-31T12:01:35.991867+00:00",
+    "sha256": "3aa9cf3c01f116362a29d111702979175453c425e3733bde80fc4f6f8e2294e5",
+    "source_version": "2026.10.30"
+  }
+]

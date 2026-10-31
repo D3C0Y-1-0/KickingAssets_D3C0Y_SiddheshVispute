@@ -15,9 +15,20 @@ import {
 import { Link } from 'react-router-dom'
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts'
 import { api } from '../../api/client'
-import { useAssets, useLatestRun, useScenarioContext, useServices } from '../../hooks/queries'
+import {
+  useAssets,
+  useIntelligence,
+  useLatestRun,
+  useScenarioContext,
+  useServices,
+} from '../../hooks/queries'
 import { AssetDrawer } from '../../components/AssetDrawer'
-import { AsOfSelect, ProvenanceNotice, RunSimulationButton } from '../../components/Simulation'
+import {
+  AsOfBanner,
+  AsOfSelect,
+  ProvenanceNotice,
+  RunSimulationButton,
+} from '../../components/Simulation'
 import {
   EmptyState,
   PageHeading,
@@ -38,6 +49,7 @@ export default function Overview() {
   const assets = useAssets()
   const services = useServices()
   const latest = useLatestRun()
+  const curated = useIntelligence()
   const [sector, setSector] = useState<Sector>('power')
   const [selected, setSelected] = useState<string | null>(null)
   const [asOf, setAsOf] = useState('')
@@ -71,6 +83,7 @@ export default function Overview() {
           </>
         }
       />
+      {run && <AsOfBanner run={run} />}
       <div className="workflow-steps">
         <section className={`workflow-step ${run ? 'done' : ''}`}>
           <span className="step-number">STEP 1 · SIMULATE</span>
@@ -131,6 +144,24 @@ export default function Overview() {
           </div>
         </section>
       </div>
+      <Panel
+        title="Curated CVE assessment"
+        aside={
+          <Link to="/curated-intelligence" className="text-link">
+            Explain curated priorities →
+          </Link>
+        }
+      >
+        <QueryState pending={curated.isPending} error={curated.error} retry={curated.refetch} />
+        {!curated.isError && curated.data && (
+          <p>
+            {curated.data.assessed_count} / {curated.data.assets.length} assets assessed ·
+            covered-asset mean {curated.data.covered_asset_mean?.toFixed(2) ?? 'Unavailable'} / 100
+            · {curated.data.unavailable_count} unavailable. A separate Apache overlay and formula;
+            not comparable to workflow scores or an incident probability.
+          </p>
+        )}
+      </Panel>
       <div className="metric-grid">
         <section className="metric-card city-risk">
           <div className="metric-label">

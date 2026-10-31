@@ -18,6 +18,7 @@ import {
   Network,
   PlayCircle,
   Radar,
+  ShieldCheck,
   Search,
   Shield,
   Waypoints,
@@ -26,7 +27,7 @@ import {
 import { NavLink, Route, Routes, Link, useLocation, useNavigate } from 'react-router-dom'
 import { api } from '../api/client'
 import { useScenario } from '../hooks/queries'
-import { QueryState } from '../components/ui'
+import { QueryState, SampleBadge } from '../components/ui'
 import Overview from '../features/overview/Overview'
 import brandMark from '../assets/brand/gridinal-mark.png'
 import brandWord from '../assets/brand/gridinal-wordmark.png'
@@ -35,6 +36,7 @@ const Infrastructure = lazy(() => import('../features/infrastructure/Infrastruct
 const DigitalTwins = lazy(() => import('../features/digital-twins/DigitalTwins'))
 const Assets = lazy(() => import('../features/assets/Assets'))
 const Intelligence = lazy(() => import('../features/intelligence/Intelligence'))
+const CuratedIntelligence = lazy(() => import('../features/intelligence/CuratedIntelligence'))
 const WhatIf = lazy(() => import('../features/whatif/WhatIf'))
 const Remediation = lazy(() => import('../features/remediation/Remediation'))
 const Methodology = lazy(() => import('../features/methodology/Methodology'))
@@ -59,6 +61,7 @@ const navGroups: { label: string; items: NavEntry[] }[] = [
     items: [
       { path: '/assets', name: 'Assets & Risk', icon: Layers },
       { path: '/intelligence', name: 'Risk Ranking', icon: Activity },
+      { path: '/curated-intelligence', name: 'Curated CVE Assessment', icon: ShieldCheck },
       { path: '/ml', name: 'AI Model', icon: BrainCircuit },
       { path: '/posture', name: 'Trends & Activity', icon: Radar },
       { path: '/resilience', name: 'Weak Points', icon: Waypoints },
@@ -253,6 +256,19 @@ export default function App() {
             </Link>
           </div>
         </header>
+        <div className="environment-bar">
+          <div>
+            <SampleBadge>Sample scenario</SampleBadge>
+            <span>
+              Fictional infrastructure, real vulnerability data. Scores are computed by the ML model
+              after a simulation. No live monitoring.
+            </span>
+          </div>
+          <Link to="/methodology">
+            About this environment
+            <ChevronRight size={13} />
+          </Link>
+        </div>
         <main id="main-content" tabIndex={-1}>
           <Suspense fallback={<QueryState pending error={null} />}>
             {location.pathname === '/digital-twins' ? (
@@ -274,6 +290,7 @@ export default function App() {
                 <Route path="/digital-twins" element={<DigitalTwins />} />
                 <Route path="/assets" element={<Assets />} />
                 <Route path="/intelligence" element={<Intelligence />} />
+                <Route path="/curated-intelligence" element={<CuratedIntelligence />} />
                 <Route path="/ml" element={<MlLab />} />
                 <Route path="/what-if" element={<WhatIf />} />
                 <Route path="/remediation" element={<Remediation />} />

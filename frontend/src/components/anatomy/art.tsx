@@ -1,5 +1,5 @@
-import * as React from "react";
-import { Dots, Line, Solid } from "../iso/react/draw";
+import * as React from 'react'
+import { Dots, Line, Solid } from '../iso/react/draw'
 import {
   ARRESTER_ART,
   BREAKER_ART,
@@ -14,14 +14,14 @@ import {
   TRENCH_ART,
   TRANSFORMER_ART,
   YARD_ART,
-} from "./geometry";
+} from './geometry'
 
 interface SubstationArtProps {
-  selectedComponentId?: string;
-  statusMap?: Record<string, "operational" | "degraded" | "offline" | "maintenance">;
-  showJumpers?: boolean;
-  showGroundGrid?: boolean;
-  onSelectComponent?: (componentId: string) => void;
+  selectedComponentId?: string
+  statusMap?: Record<string, 'operational' | 'degraded' | 'offline' | 'maintenance'>
+  showJumpers?: boolean
+  showGroundGrid?: boolean
+  onSelectComponent?: (componentId: string) => void
 }
 
 export function SubstationArt({
@@ -33,48 +33,52 @@ export function SubstationArt({
 }: SubstationArtProps) {
   // Helper to determine styling for each component
   const getComponentHighlight = (componentId: string) => {
-    const isSelected = selectedComponentId === componentId;
-    const status = statusMap[componentId] || "operational";
+    const isSelected = selectedComponentId === componentId
+    const status = statusMap[componentId] || 'operational'
 
-    let tone: "hi" | "mid" | "lo" = "mid";
-    let isLit = false;
-    let customClass = "";
+    let tone: 'hi' | 'mid' | 'lo' = 'mid'
+    let isLit = false
+    let customClass = ''
 
     if (isSelected) {
-      tone = "hi";
-      isLit = true;
-      customClass = "substation-selected-part";
+      tone = 'hi'
+      isLit = true
+      customClass = 'substation-selected-part'
     }
 
-    if (status === "offline") {
-      customClass += " substation-offline-pulse";
-    } else if (status === "degraded") {
-      customClass += " substation-warning-pulse";
+    if (status === 'offline') {
+      customClass += ' substation-offline-pulse'
+    } else if (status === 'degraded') {
+      customClass += ' substation-warning-pulse'
     }
 
-    return { tone, isLit, isSelected, customClass };
-  };
+    return { tone, isLit, isSelected, customClass }
+  }
 
-  const trHighlight = getComponentHighlight("sub-transformer");
-  const radHighlight = getComponentHighlight("sub-radiators");
-  const bushHighlight = getComponentHighlight("sub-bushings");
-  const cbHighlight = getComponentHighlight("sub-circuit-breaker");
-  const dsHighlight = getComponentHighlight("sub-disconnect-switch");
-  const laHighlight = getComponentHighlight("sub-lightning-arrester");
-  const gantryHighlight = getComponentHighlight("sub-busbar-gantry");
-  const cpHighlight = getComponentHighlight("sub-control-cabinet");
-  const gndHighlight = getComponentHighlight("sub-grounding");
-  const trenchHighlight = getComponentHighlight("sub-rtu-cable");
+  const trHighlight = getComponentHighlight('sub-transformer')
+  const radHighlight = getComponentHighlight('sub-radiators')
+  const bushHighlight = getComponentHighlight('sub-bushings')
+  const cbHighlight = getComponentHighlight('sub-circuit-breaker')
+  const dsHighlight = getComponentHighlight('sub-disconnect-switch')
+  const laHighlight = getComponentHighlight('sub-lightning-arrester')
+  const gantryHighlight = getComponentHighlight('sub-busbar-gantry')
+  const cpHighlight = getComponentHighlight('sub-control-cabinet')
+  const gndHighlight = getComponentHighlight('sub-grounding')
+  const trenchHighlight = getComponentHighlight('sub-rtu-cable')
 
   const handleClick = (id: string, e: React.MouseEvent) => {
-    e.stopPropagation();
+    e.stopPropagation()
     if (onSelectComponent) {
-      onSelectComponent(id);
+      onSelectComponent(id)
     }
-  };
+  }
 
   return (
-    <g className="substation-assembly" role="group" aria-label="Electrical Substation Digital Twin Assembly">
+    <g
+      className="substation-assembly"
+      role="group"
+      aria-label="Electrical Substation Digital Twin Assembly"
+    >
       {/* ------------------------------------------------------------- */}
       {/* LAYER 1: FOUNDATION SLAB & GRAVEL YARD */}
       {/* ------------------------------------------------------------- */}
@@ -102,14 +106,29 @@ export function SubstationArt({
         key="cable-trench"
         className={`substation-interactive-group ${trenchHighlight.customClass}`}
         data-component="sub-rtu-cable"
-        onClick={(e) => handleClick("sub-rtu-cable", e)}
-        style={{ cursor: "pointer" }}
+        onClick={(e) => handleClick('sub-rtu-cable', e)}
+        style={{ cursor: 'pointer' }}
       >
-        <Solid paths={TRENCH_ART.slab1} tone={trenchHighlight.tone} lit={trenchHighlight.isLit} crease="faint" />
-        <Solid paths={TRENCH_ART.slab2} tone={trenchHighlight.tone} lit={trenchHighlight.isLit} crease="faint" />
-        <Solid paths={TRENCH_ART.slab3} tone={trenchHighlight.tone} lit={trenchHighlight.isLit} crease="faint" />
-        <Line d={TRENCH_ART.grooves} tone={trenchHighlight.isSelected ? "hi" : "faint"} free />
-        <Line d={TRENCH_ART.joints} tone={trenchHighlight.isSelected ? "lit" : "lo"} free />
+        <Solid
+          paths={TRENCH_ART.slab1}
+          tone={trenchHighlight.tone}
+          lit={trenchHighlight.isLit}
+          crease="faint"
+        />
+        <Solid
+          paths={TRENCH_ART.slab2}
+          tone={trenchHighlight.tone}
+          lit={trenchHighlight.isLit}
+          crease="faint"
+        />
+        <Solid
+          paths={TRENCH_ART.slab3}
+          tone={trenchHighlight.tone}
+          lit={trenchHighlight.isLit}
+          crease="faint"
+        />
+        <Line d={TRENCH_ART.grooves} tone={trenchHighlight.isSelected ? 'hi' : 'faint'} free />
+        <Line d={TRENCH_ART.joints} tone={trenchHighlight.isSelected ? 'lit' : 'lo'} free />
       </g>
 
       {/* ------------------------------------------------------------- */}
@@ -120,26 +139,22 @@ export function SubstationArt({
           key="ground-grid"
           className={`substation-interactive-group ${gndHighlight.customClass}`}
           data-component="sub-grounding"
-          onClick={(e) => handleClick("sub-grounding", e)}
-          style={{ cursor: "pointer" }}
+          onClick={(e) => handleClick('sub-grounding', e)}
+          style={{ cursor: 'pointer' }}
         >
           <Line
             d={GROUND_ART.perimeter}
-            tone={gndHighlight.isSelected ? "lit" : "lo"}
+            tone={gndHighlight.isSelected ? 'lit' : 'lo'}
             dashed
             free
           />
           <Line
             d={GROUND_ART.meshLines}
-            tone={gndHighlight.isSelected ? "lit" : "faint"}
+            tone={gndHighlight.isSelected ? 'lit' : 'faint'}
             dashed
             free
           />
-          <Line
-            d={GROUND_ART.risers}
-            tone={gndHighlight.isSelected ? "lit" : "mid"}
-            free
-          />
+          <Line d={GROUND_ART.risers} tone={gndHighlight.isSelected ? 'lit' : 'mid'} free />
         </g>
       )}
 
@@ -147,8 +162,8 @@ export function SubstationArt({
       {/* LAYER 4: REAR GANTRY STEEL LATTICE TOWERS */}
       {/* ------------------------------------------------------------- */}
       <g key="gantry-structure" className="substation-layer-gantry">
-        <Line d={GANTRY_ART.leftTower} tone={gantryHighlight.isSelected ? "lit" : "lo"} free />
-        <Line d={GANTRY_ART.rightTower} tone={gantryHighlight.isSelected ? "lit" : "lo"} free />
+        <Line d={GANTRY_ART.leftTower} tone={gantryHighlight.isSelected ? 'lit' : 'lo'} free />
+        <Line d={GANTRY_ART.rightTower} tone={gantryHighlight.isSelected ? 'lit' : 'lo'} free />
       </g>
 
       {/* ------------------------------------------------------------- */}
@@ -158,8 +173,8 @@ export function SubstationArt({
         key="transformer-radiators"
         className={`substation-interactive-group ${radHighlight.customClass}`}
         data-component="sub-radiators"
-        onClick={(e) => handleClick("sub-radiators", e)}
-        style={{ cursor: "pointer" }}
+        onClick={(e) => handleClick('sub-radiators', e)}
+        style={{ cursor: 'pointer' }}
       >
         {RADIATOR_ART.fins.map((fin, idx) => (
           <Solid
@@ -175,7 +190,7 @@ export function SubstationArt({
         {RADIATOR_ART.fans.map((fan, idx) => (
           <Solid key={`fan-${idx}`} paths={fan} tone={radHighlight.tone} crease="faint" />
         ))}
-        <Line d={RADIATOR_ART.fanGrilles} tone={radHighlight.isSelected ? "lit" : "lo"} free />
+        <Line d={RADIATOR_ART.fanGrilles} tone={radHighlight.isSelected ? 'lit' : 'lo'} free />
       </g>
 
       {/* ------------------------------------------------------------- */}
@@ -185,8 +200,8 @@ export function SubstationArt({
         key="main-transformer"
         className={`substation-interactive-group ${trHighlight.customClass}`}
         data-component="sub-transformer"
-        onClick={(e) => handleClick("sub-transformer", e)}
-        style={{ cursor: "pointer" }}
+        onClick={(e) => handleClick('sub-transformer', e)}
+        style={{ cursor: 'pointer' }}
       >
         <Solid paths={TRANSFORMER_ART.skidLeft} tone="lo" crease="faint" />
         <Solid paths={TRANSFORMER_ART.skidRight} tone="lo" crease="faint" />
@@ -198,7 +213,7 @@ export function SubstationArt({
         />
         <Solid paths={TRANSFORMER_ART.tankFlange} tone={trHighlight.tone} crease="faint" />
         <Dots points={TRANSFORMER_ART.tankBolts} size={0.5} tone="mid" />
-        <Line d={TRANSFORMER_ART.tankSeams} tone={trHighlight.isSelected ? "lit" : "lo"} free />
+        <Line d={TRANSFORMER_ART.tankSeams} tone={trHighlight.isSelected ? 'lit' : 'lo'} free />
 
         {/* Marshalling terminal box on front face */}
         <Solid paths={TRANSFORMER_ART.marshallingBox} tone="mid" crease="faint" />
@@ -207,7 +222,7 @@ export function SubstationArt({
         {/* Drain valve and oil sight glass */}
         <Solid paths={TRANSFORMER_ART.drainPipe} tone="lo" crease="none" />
         <Line d={TRANSFORMER_ART.drainWheel} tone="hi" free />
-        <Line d={TRANSFORMER_ART.sightGlass} tone={trHighlight.isSelected ? "lit" : "lo"} free />
+        <Line d={TRANSFORMER_ART.sightGlass} tone={trHighlight.isSelected ? 'lit' : 'lo'} free />
         <Line d={TRANSFORMER_ART.sightTicks.minor} tone="faint" free />
         <Line d={TRANSFORMER_ART.sightTicks.major} tone="lo" free />
       </g>
@@ -217,8 +232,13 @@ export function SubstationArt({
       {/* ------------------------------------------------------------- */}
       <g key="conservator-assembly">
         <Line d={CONSERVATOR_ART.brackets} tone="lo" free />
-        <Solid paths={CONSERVATOR_ART.body} tone={trHighlight.tone} lit={trHighlight.isLit} crease="faint" />
-        <Line d={CONSERVATOR_ART.endCap} tone={trHighlight.isSelected ? "lit" : "lo"} free />
+        <Solid
+          paths={CONSERVATOR_ART.body}
+          tone={trHighlight.tone}
+          lit={trHighlight.isLit}
+          crease="faint"
+        />
+        <Line d={CONSERVATOR_ART.endCap} tone={trHighlight.isSelected ? 'lit' : 'lo'} free />
         <Line d={CONSERVATOR_ART.pipeDown} tone="lo" free />
         <Solid paths={CONSERVATOR_ART.buchholz} tone="hi" crease="faint" />
         <Line d={CONSERVATOR_ART.breatherPipe} tone="lo" free />
@@ -233,15 +253,21 @@ export function SubstationArt({
         key="transformer-bushings"
         className={`substation-interactive-group ${bushHighlight.customClass}`}
         data-component="sub-bushings"
-        onClick={(e) => handleClick("sub-bushings", e)}
-        style={{ cursor: "pointer" }}
+        onClick={(e) => handleClick('sub-bushings', e)}
+        style={{ cursor: 'pointer' }}
       >
         {/* HV 33kV Turrets & Columns */}
         {BUSHING_ART.hvTurrets.map((turret, i) => (
           <Solid key={`hv-turret-${i}`} paths={turret} tone="lo" crease="none" />
         ))}
         {BUSHING_ART.hvColumns.map((col, i) => (
-          <Solid key={`hv-col-${i}`} paths={col} tone={bushHighlight.tone} lit={bushHighlight.isLit} crease="none" />
+          <Solid
+            key={`hv-col-${i}`}
+            paths={col}
+            tone={bushHighlight.tone}
+            lit={bushHighlight.isLit}
+            crease="none"
+          />
         ))}
         {/* Stepped Porcelain Shed Skirts */}
         {BUSHING_ART.hvSheds.map((shed, i) => (
@@ -264,8 +290,8 @@ export function SubstationArt({
         key="circuit-breaker"
         className={`substation-interactive-group ${cbHighlight.customClass}`}
         data-component="sub-circuit-breaker"
-        onClick={(e) => handleClick("sub-circuit-breaker", e)}
-        style={{ cursor: "pointer" }}
+        onClick={(e) => handleClick('sub-circuit-breaker', e)}
+        style={{ cursor: 'pointer' }}
       >
         <Line d={BREAKER_ART.legs} tone="lo" free />
         <Solid
@@ -274,15 +300,21 @@ export function SubstationArt({
           lit={cbHighlight.isLit}
           crease="lo"
         />
-        <Line d={BREAKER_ART.gaugeRing} tone={cbHighlight.isSelected ? "lit" : "lo"} free />
+        <Line d={BREAKER_ART.gaugeRing} tone={cbHighlight.isSelected ? 'lit' : 'lo'} free />
         <Line d={BREAKER_ART.gaugePointer} tone="hi" free />
         <Solid paths={BREAKER_ART.manualHandle} tone="hi" crease="none" />
 
         {/* 3 Vertical Phase Interrupter Columns */}
         {BREAKER_ART.poles.map((pole, i) => (
-          <Solid key={`cb-pole-${i}`} paths={pole} tone={cbHighlight.tone} lit={cbHighlight.isLit} crease="none" />
+          <Solid
+            key={`cb-pole-${i}`}
+            paths={pole}
+            tone={cbHighlight.tone}
+            lit={cbHighlight.isLit}
+            crease="none"
+          />
         ))}
-        <Line d={BREAKER_ART.poleShedRings} tone={cbHighlight.isSelected ? "lit" : "lo"} free />
+        <Line d={BREAKER_ART.poleShedRings} tone={cbHighlight.isSelected ? 'lit' : 'lo'} free />
         {BREAKER_ART.heads.map((head, i) => (
           <Solid key={`cb-head-${i}`} paths={head} tone={cbHighlight.tone} crease="faint" />
         ))}
@@ -298,8 +330,8 @@ export function SubstationArt({
         key="disconnect-switch"
         className={`substation-interactive-group ${dsHighlight.customClass}`}
         data-component="sub-disconnect-switch"
-        onClick={(e) => handleClick("sub-disconnect-switch", e)}
-        style={{ cursor: "pointer" }}
+        onClick={(e) => handleClick('sub-disconnect-switch', e)}
+        style={{ cursor: 'pointer' }}
       >
         <Line d={DISCONNECT_ART.legs} tone="lo" free />
         <Solid paths={DISCONNECT_ART.baseBeam} tone={dsHighlight.tone} crease="faint" />
@@ -308,9 +340,15 @@ export function SubstationArt({
 
         {/* 3 Pairs of Rotating Post Insulators */}
         {DISCONNECT_ART.insulators.map((ins, i) => (
-          <Solid key={`ds-ins-${i}`} paths={ins} tone={dsHighlight.tone} lit={dsHighlight.isLit} crease="none" />
+          <Solid
+            key={`ds-ins-${i}`}
+            paths={ins}
+            tone={dsHighlight.tone}
+            lit={dsHighlight.isLit}
+            crease="none"
+          />
         ))}
-        <Line d={DISCONNECT_ART.insulatorRings} tone={dsHighlight.isSelected ? "lit" : "lo"} free />
+        <Line d={DISCONNECT_ART.insulatorRings} tone={dsHighlight.isSelected ? 'lit' : 'lo'} free />
         <Line d={DISCONNECT_ART.blades} tone="hi" free />
         {DISCONNECT_ART.contacts.map((contact, i) => (
           <Solid key={`ds-cont-${i}`} paths={contact} tone="hi" crease="none" />
@@ -324,8 +362,8 @@ export function SubstationArt({
         key="lightning-arresters"
         className={`substation-interactive-group ${laHighlight.customClass}`}
         data-component="sub-lightning-arrester"
-        onClick={(e) => handleClick("sub-lightning-arrester", e)}
-        style={{ cursor: "pointer" }}
+        onClick={(e) => handleClick('sub-lightning-arrester', e)}
+        style={{ cursor: 'pointer' }}
       >
         {ARRESTER_ART.stands.map((st, i) => (
           <Solid key={`la-stand-${i}`} paths={st} tone="lo" crease="none" />
@@ -334,9 +372,15 @@ export function SubstationArt({
           <Solid key={`la-box-${i}`} paths={cb} tone="hi" crease="faint" />
         ))}
         {ARRESTER_ART.columns.map((col, i) => (
-          <Solid key={`la-col-${i}`} paths={col} tone={laHighlight.tone} lit={laHighlight.isLit} crease="none" />
+          <Solid
+            key={`la-col-${i}`}
+            paths={col}
+            tone={laHighlight.tone}
+            lit={laHighlight.isLit}
+            crease="none"
+          />
         ))}
-        <Line d={ARRESTER_ART.shedRings} tone={laHighlight.isSelected ? "lit" : "lo"} free />
+        <Line d={ARRESTER_ART.shedRings} tone={laHighlight.isSelected ? 'lit' : 'lo'} free />
         {ARRESTER_ART.terminals.map((term, i) => (
           <Solid key={`la-term-${i}`} paths={term} tone="hi" crease="none" />
         ))}
@@ -349,8 +393,8 @@ export function SubstationArt({
         key="control-cabinet"
         className={`substation-interactive-group ${cpHighlight.customClass}`}
         data-component="sub-control-cabinet"
-        onClick={(e) => handleClick("sub-control-cabinet", e)}
-        style={{ cursor: "pointer" }}
+        onClick={(e) => handleClick('sub-control-cabinet', e)}
+        style={{ cursor: 'pointer' }}
       >
         <Solid
           paths={CABINET_ART.enclosure}
@@ -359,21 +403,30 @@ export function SubstationArt({
           crease="lo"
         />
         <Solid paths={CABINET_ART.canopy} tone={cpHighlight.tone} crease="faint" />
-        <Line d={CABINET_ART.doorSplit} tone={cpHighlight.isSelected ? "lit" : "lo"} free />
+        <Line d={CABINET_ART.doorSplit} tone={cpHighlight.isSelected ? 'lit' : 'lo'} free />
         <Solid paths={CABINET_ART.leftHandle} tone="hi" crease="none" />
         <Solid paths={CABINET_ART.rightHandle} tone="hi" crease="none" />
         <Line d={CABINET_ART.louvers} tone="faint" free />
 
         {/* Warning Strobe Beacon on top */}
         <Solid paths={CABINET_ART.beaconStem} tone="lo" crease="none" />
-        <Solid paths={CABINET_ART.beaconLens} tone="hi" lit={cpHighlight.isSelected} crease="none" />
+        <Solid
+          paths={CABINET_ART.beaconLens}
+          tone="hi"
+          lit={cpHighlight.isSelected}
+          crease="none"
+        />
 
         {/* Protection Relays displayed on front panel */}
         {CABINET_ART.relays.map((relay, i) => (
           <Solid key={`relay-${i}`} paths={relay} tone="hi" crease="faint" />
         ))}
         <Line d={CABINET_ART.relayScreens} tone="lo" free />
-        <Dots points={CABINET_ART.relayLeds} size={0.4} tone={cpHighlight.isSelected ? "hi" : "mid"} />
+        <Dots
+          points={CABINET_ART.relayLeds}
+          size={0.4}
+          tone={cpHighlight.isSelected ? 'hi' : 'mid'}
+        />
       </g>
 
       {/* ------------------------------------------------------------- */}
@@ -383,17 +436,17 @@ export function SubstationArt({
         key="gantry-busbars"
         className={`substation-interactive-group ${gantryHighlight.customClass}`}
         data-component="sub-busbar-gantry"
-        onClick={(e) => handleClick("sub-busbar-gantry", e)}
-        style={{ cursor: "pointer" }}
+        onClick={(e) => handleClick('sub-busbar-gantry', e)}
+        style={{ cursor: 'pointer' }}
       >
-        <Line d={GANTRY_ART.bridge} tone={gantryHighlight.isSelected ? "lit" : "lo"} free />
+        <Line d={GANTRY_ART.bridge} tone={gantryHighlight.isSelected ? 'lit' : 'lo'} free />
         {GANTRY_ART.insulators.map((ins, i) => (
           <Solid key={`gantry-ins-${i}`} paths={ins} tone={gantryHighlight.tone} crease="none" />
         ))}
         {/* 3 Overhead Rigid Busbars */}
-        <Line d={GANTRY_ART.busbarA} tone={gantryHighlight.isSelected ? "lit" : "hi"} free />
-        <Line d={GANTRY_ART.busbarB} tone={gantryHighlight.isSelected ? "lit" : "hi"} free />
-        <Line d={GANTRY_ART.busbarC} tone={gantryHighlight.isSelected ? "lit" : "hi"} free />
+        <Line d={GANTRY_ART.busbarA} tone={gantryHighlight.isSelected ? 'lit' : 'hi'} free />
+        <Line d={GANTRY_ART.busbarB} tone={gantryHighlight.isSelected ? 'lit' : 'hi'} free />
+        <Line d={GANTRY_ART.busbarC} tone={gantryHighlight.isSelected ? 'lit' : 'hi'} free />
       </g>
 
       {/* ------------------------------------------------------------- */}
@@ -412,5 +465,5 @@ export function SubstationArt({
         </g>
       )}
     </g>
-  );
+  )
 }

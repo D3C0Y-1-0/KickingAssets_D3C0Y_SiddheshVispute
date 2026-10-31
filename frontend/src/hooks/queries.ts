@@ -8,7 +8,7 @@ export function useScenario() {
   })
   return { ...query, scenario: query.data?.[0] }
 }
-function useContext() {
+export function useContext() {
   const { scenario } = useScenario()
   return { scenario_id: scenario?.id ?? '', snapshot_id: scenario?.current_snapshot_id }
 }
@@ -17,6 +17,14 @@ export function useAssets() {
   return useQuery({
     queryKey: ['assets', context],
     queryFn: ({ signal }) => api.assets(context, signal),
+    enabled: !!context.scenario_id,
+  })
+}
+export function useIntelligence() {
+  const context = useContext()
+  return useQuery({
+    queryKey: ['intelligence', context],
+    queryFn: ({ signal }) => api.intelligence(context, signal),
     enabled: !!context.scenario_id,
   })
 }
@@ -76,7 +84,6 @@ export function useRunSimulation() {
       client.setQueryData(['simulation', 'latest'], run)
       void client.invalidateQueries({ queryKey: ['asset'] })
       void client.invalidateQueries({ queryKey: ['actions'] })
-      void client.invalidateQueries({ queryKey: ['activity'] })
     },
   })
 }

@@ -3,6 +3,7 @@ from typing import Literal
 from fastapi import APIRouter, HTTPException, Request
 
 from app.db.store import connection, read_documents
+from app.db.vulnerability_store import report
 from app.domain.seed import SCENARIO_ID
 from app.schemas.models import (
     AssessmentSnapshot,
@@ -96,7 +97,11 @@ def asset_detail(
     if asset is None:
         raise HTTPException(404, "Asset not found in this snapshot")
     ctx = getattr(request.app.state, "simulation", None)
-    simulated = ctx and next((a for a in ctx.run.assets if a.asset_id == asset_id), None)
+    simulated = (
+        ctx
+        and (ctx.run.scenario_id, ctx.run.snapshot_id) == (scenario_id, snapshot_id)
+        and next((a for a in ctx.run.assets if a.asset_id == asset_id), None)
+    )
     risk = (
         simulated.risk
         if simulated
@@ -109,7 +114,20 @@ def asset_detail(
             provenance=asset["provenance"],
         )
     )
-    return AssetDetail(asset=asset, vulnerabilities=[], observations=[], risk=risk)
+    evidence = None
+    try:
+        assessment = report(inv.path, scenario_id, snapshot_id)
+        if not assessment.stale:
+            evidence = next((item for item in assessment.assets if item.asset_id == asset_id), None)
+    except HTTPException as exc:
+        if exc.status_code not in {404, 503}:
+            raise
+    return AssetDetail(
+        asset=asset,
+        vulnerabilities=[f.link for f in evidence.applicability] if evidence else [],
+        observations=[f.observation for f in evidence.configuration] if evidence else [],
+        risk=risk,
+    )
 
 
 @router.get("/graph", response_model=CyberGraph | OperationalGraph, tags=["Graphs"])

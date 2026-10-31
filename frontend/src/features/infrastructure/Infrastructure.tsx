@@ -16,7 +16,7 @@ import {
 import { Link, useSearchParams } from 'react-router-dom'
 import { TWIN_LINKS } from '../../data/twinLinks'
 import { viewOfPart } from '../../data/twinParts'
-import { useGraph, useLatestRun } from '../../hooks/queries'
+import { useGraph, useIntelligence, useLatestRun } from '../../hooks/queries'
 import type { Asset, GraphMode } from '../../api/client'
 import { AssetDrawer } from '../../components/AssetDrawer'
 import {
@@ -51,8 +51,15 @@ export default function Infrastructure() {
   const [search, setSearch] = useState('')
   const [preview, setPreview] = useState(false)
   const latestRun = useLatestRun()
+  const curated = useIntelligence()
+  const [riskSource, setRiskSource] = useState('workflow')
   const runAssets = latestRun.data?.assets
-  const riskOf = (id: string) => runAssets?.find((a) => a.asset_id === id)?.risk
+  const riskOf = (id: string) =>
+    riskSource === 'curated'
+      ? curated.isError
+        ? undefined
+        : curated.data?.assets.find((a) => a.asset_id === id)?.risk
+      : runAssets?.find((a) => a.asset_id === id)?.risk
   const [zoom, setZoom] = useState(100)
   const [fullscreen, setFullscreen] = useState(false)
   const [showInspector, setShowInspector] = useState(false)
@@ -99,11 +106,17 @@ export default function Infrastructure() {
       const root = getComputedStyle(document.documentElement)
       const category = preview ? riskOf(asset.id)?.category : undefined
       return root
-        .getPropertyValue(category ? `--risk-${category}` : `--sector-${asset.sector}`)
+        .getPropertyValue(
+          category
+            ? `--risk-${category}`
+            : preview
+              ? '--text-secondary'
+              : `--sector-${asset.sector}`,
+        )
         .trim()
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [preview, runAssets],
+    [preview, runAssets, riskSource, curated.data, curated.isError],
   )
   const focus = (id: string) => {
     setSelected(id)
@@ -391,19 +404,39 @@ export default function Infrastructure() {
                 </p>
               </div>
             )}
+            <label className="field-label" htmlFor="map-risk-source">
+              Calculated risk source
+            </label>
+            <select
+              id="map-risk-source"
+              value={riskSource}
+              onChange={(e) => setRiskSource(e.target.value)}
+            >
+              <option value="workflow">Workflow product map</option>
+              <option value="curated">Curated Apache overlay</option>
+            </select>
+            {riskSource === 'curated' && (
+              <QueryState
+                pending={curated.isPending}
+                error={curated.error}
+                retry={curated.refetch}
+              />
+            )}
             <label className="checkbox-label">
               <input
                 type="checkbox"
                 checked={preview}
-                disabled={!runAssets}
+                disabled={riskSource === 'workflow' ? !runAssets : !curated.data || curated.isError}
                 onChange={(e) => setPreview(e.target.checked)}
               />
               Color by computed risk
             </label>
             <p className="muted small">
-              {runAssets
-                ? 'Colors come from the latest simulation.'
-                : 'Run the simulation on the overview to color assets by risk.'}
+              {riskSource === 'curated'
+                ? 'Curated overlay priorities: partial coverage. Grey means unavailable. Different software assumptions and policy from the workflow.'
+                : runAssets
+                  ? 'Colors come from the latest simulation.'
+                  : 'Run the simulation on the overview to color assets by risk.'}
             </p>
             {preview && (
               <div className="demo-risk-legend">

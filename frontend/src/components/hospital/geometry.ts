@@ -1,17 +1,5 @@
-import {
-  cylinder,
-  insetPlan,
-  planOutline,
-  segment,
-  slabOf,
-} from "../iso/iso-kit";
-import {
-  P,
-  HOSP_SITE_PLAN,
-  HOSP_SITE_Z0,
-  HOSP_SITE_H,
-  HOSP_SITE_TOP,
-} from "./view";
+import { cylinder, insetPlan, planOutline, segment, slabOf } from '../iso/iso-kit'
+import { P, HOSP_SITE_PLAN, HOSP_SITE_Z0, HOSP_SITE_H, HOSP_SITE_TOP } from './view'
 
 // -------------------------------------------------------------
 // 1. SITE FOUNDATION & EMERGENCY RAMP
@@ -22,15 +10,15 @@ export const SITE_ART = {
   emergencyDrive: [
     segment([-220, 110, HOSP_SITE_TOP + 0.2], [-60, 110, HOSP_SITE_TOP + 0.2], P),
     segment([-220, 150, HOSP_SITE_TOP + 0.2], [-60, 150, HOSP_SITE_TOP + 0.2], P),
-  ].join(""),
-};
+  ].join(''),
+}
 
 // -------------------------------------------------------------
 // 2. MAIN CLINICAL & SURGICAL INPATIENT TOWER
 // -------------------------------------------------------------
-export const TOWER_Z0 = HOSP_SITE_TOP;
-export const TOWER_H = 76;
-export const TOWER_ROOF_Z = TOWER_Z0 + TOWER_H;
+export const TOWER_Z0 = HOSP_SITE_TOP
+export const TOWER_H = 76
+export const TOWER_ROOF_Z = TOWER_Z0 + TOWER_H
 
 export const TOWER_ART = {
   podium: slabOf({ x: -140, y: -140, w: 180, d: 130, r: 6 }, TOWER_Z0, 24, P, 4, 1.2),
@@ -41,33 +29,57 @@ export const TOWER_ART = {
     segment([-115, -24.8, TOWER_Z0 + 46], [15, -24.8, TOWER_Z0 + 46], P),
     segment([-115, -24.8, TOWER_Z0 + 58], [15, -24.8, TOWER_Z0 + 58], P),
     segment([-115, -24.8, TOWER_Z0 + 70], [15, -24.8, TOWER_Z0 + 70], P),
-  ].join(""),
+  ].join(''),
   // Rooftop Bio-Containment HVAC Air Scrubbers
   hvacChillers: [
     slabOf({ x: -105, y: -110, w: 32, d: 24, r: 2 }, TOWER_ROOF_Z, 14, P),
     slabOf({ x: -65, y: -110, w: 32, d: 24, r: 2 }, TOWER_ROOF_Z, 14, P),
   ],
-};
+}
 
 // -------------------------------------------------------------
 // 3. ILLUMINATED ROOFTOP EMERGENCY HELIPAD
 // -------------------------------------------------------------
-export const HELIPAD_CENTER = [-50, -75] as [number, number];
+export const HELIPAD_CENTER = [-50, -75] as [number, number]
 
 export const HELIPAD_ART = {
   deck: cylinder(HELIPAD_CENTER[0], HELIPAD_CENTER[1], 36, TOWER_ROOF_Z, 5, P, 24),
   outerRing: [
-    segment([HELIPAD_CENTER[0] - 28, HELIPAD_CENTER[1], TOWER_ROOF_Z + 5.2], [HELIPAD_CENTER[0] + 28, HELIPAD_CENTER[1], TOWER_ROOF_Z + 5.2], P),
-    segment([HELIPAD_CENTER[0], HELIPAD_CENTER[1] - 28, TOWER_ROOF_Z + 5.2], [HELIPAD_CENTER[0], HELIPAD_CENTER[1] + 28, TOWER_ROOF_Z + 5.2], P),
-  ].join(""),
+    segment(
+      [HELIPAD_CENTER[0] - 28, HELIPAD_CENTER[1], TOWER_ROOF_Z + 5.2],
+      [HELIPAD_CENTER[0] + 28, HELIPAD_CENTER[1], TOWER_ROOF_Z + 5.2],
+      P,
+    ),
+    segment(
+      [HELIPAD_CENTER[0], HELIPAD_CENTER[1] - 28, TOWER_ROOF_Z + 5.2],
+      [HELIPAD_CENTER[0], HELIPAD_CENTER[1] + 28, TOWER_ROOF_Z + 5.2],
+      P,
+    ),
+  ].join(''),
   // "H" Marking
   hMarking: [
-    segment([HELIPAD_CENTER[0] - 10, HELIPAD_CENTER[1] - 12, TOWER_ROOF_Z + 5.3], [HELIPAD_CENTER[0] - 10, HELIPAD_CENTER[1] + 12, TOWER_ROOF_Z + 5.3], P),
-    segment([HELIPAD_CENTER[0] + 10, HELIPAD_CENTER[1] - 12, TOWER_ROOF_Z + 5.3], [HELIPAD_CENTER[0] + 10, HELIPAD_CENTER[1] + 12, TOWER_ROOF_Z + 5.3], P),
-    segment([HELIPAD_CENTER[0] - 10, HELIPAD_CENTER[1], TOWER_ROOF_Z + 5.3], [HELIPAD_CENTER[0] + 10, HELIPAD_CENTER[1], TOWER_ROOF_Z + 5.3], P),
-  ].join(""),
-  beacon: segment([HELIPAD_CENTER[0] + 32, HELIPAD_CENTER[1] - 25, TOWER_ROOF_Z + 5], [HELIPAD_CENTER[0] + 32, HELIPAD_CENTER[1] - 25, TOWER_ROOF_Z + 22], P),
-};
+    segment(
+      [HELIPAD_CENTER[0] - 10, HELIPAD_CENTER[1] - 12, TOWER_ROOF_Z + 5.3],
+      [HELIPAD_CENTER[0] - 10, HELIPAD_CENTER[1] + 12, TOWER_ROOF_Z + 5.3],
+      P,
+    ),
+    segment(
+      [HELIPAD_CENTER[0] + 10, HELIPAD_CENTER[1] - 12, TOWER_ROOF_Z + 5.3],
+      [HELIPAD_CENTER[0] + 10, HELIPAD_CENTER[1] + 12, TOWER_ROOF_Z + 5.3],
+      P,
+    ),
+    segment(
+      [HELIPAD_CENTER[0] - 10, HELIPAD_CENTER[1], TOWER_ROOF_Z + 5.3],
+      [HELIPAD_CENTER[0] + 10, HELIPAD_CENTER[1], TOWER_ROOF_Z + 5.3],
+      P,
+    ),
+  ].join(''),
+  beacon: segment(
+    [HELIPAD_CENTER[0] + 32, HELIPAD_CENTER[1] - 25, TOWER_ROOF_Z + 5],
+    [HELIPAD_CENTER[0] + 32, HELIPAD_CENTER[1] - 25, TOWER_ROOF_Z + 22],
+    P,
+  ),
+}
 
 // -------------------------------------------------------------
 // 4. EMERGENCY TRAUMA RECEPTION & AMBULANCE BAY
@@ -87,8 +99,8 @@ export const TRAUMA_ART = {
   crossLines: [
     segment([-175, -0.1, HOSP_SITE_TOP + 12], [-175, -0.1, HOSP_SITE_TOP + 22], P),
     segment([-180, -0.1, HOSP_SITE_TOP + 17], [-170, -0.1, HOSP_SITE_TOP + 17], P),
-  ].join(""),
-};
+  ].join(''),
+}
 
 // -------------------------------------------------------------
 // 5. CRYOGENIC LIQUID MEDICAL OXYGEN (O2) BULK TANK FARM
@@ -107,8 +119,8 @@ export const OXYGEN_ART = {
     segment([100, -80, HOSP_SITE_TOP + 5], [100, -80, HOSP_SITE_TOP + 32], P),
     segment([108, -80, HOSP_SITE_TOP + 5], [108, -80, HOSP_SITE_TOP + 32], P),
     segment([116, -80, HOSP_SITE_TOP + 5], [116, -80, HOSP_SITE_TOP + 32], P),
-  ].join(""),
-};
+  ].join(''),
+}
 
 // -------------------------------------------------------------
 // 6. EMERGENCY BACKUP DIESEL GENERATION PLANT
@@ -122,4 +134,4 @@ export const GEN_PLANT_ART = {
     cylinder(121, 25, 3, HOSP_SITE_TOP + 27, 24, P, 10),
     cylinder(161, 25, 3, HOSP_SITE_TOP + 27, 24, P, 10),
   ],
-};
+}

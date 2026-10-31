@@ -6,6 +6,13 @@ export default defineConfig({
   plugins: [react(), tailwindcss()],
   server: { port: 5173, strictPort: true, proxy: { '/api': 'http://127.0.0.1:8000' } },
   build: {
-    rollupOptions: { output: { manualChunks: { graph: ['cytoscape'], charts: ['recharts'] } } },
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          graph: ['d3-force', 'd3-selection', 'd3-zoom', 'd3-drag', 'd3-transition'],
+          charts: ['recharts'],
+        },
+      },
+    },
   },
 })

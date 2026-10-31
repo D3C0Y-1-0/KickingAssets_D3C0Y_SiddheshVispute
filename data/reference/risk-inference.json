@@ -1,0 +1,13 @@
+{
+  "feature_date": "2026-10-30",
+  "url": "https://epss.empiricalsecurity.com/epss_scores-2026-10-30.csv.gz",
+  "retrieved_at": "2026-10-31T12:05:19.206067+00:00",
+  "sha256": "534760a350c8c33aa032cf774b2dd7526214c4b9e2492e30a210574f3e9320c0",
+  "population_rows": 398142,
+  "method": "pandas.Series.rank(pct=True); average ties, full snapshot, same as ml.data._read_epss",
+  "ranks": {
+    "CVE-2021-41773": 0.9998543233318765,
+    "CVE-2021-42013": 0.9997538566642052,
+    "CVE-2021-44224": 0.9965866449658665
+  }
+}

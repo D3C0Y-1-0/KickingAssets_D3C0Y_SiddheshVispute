@@ -1,0 +1,82 @@
+.risk-evidence {
+  min-width: 0;
+}
+.twin-scenario-note {
+  margin: 0;
+  padding: 8px 16px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+.asset-drawer .workflow-risk {
+  display: block !important;
+}
+.risk-factors {
+  margin: 16px 0;
+}
+.risk-factors > div {
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border);
+}
+.risk-factors dt {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-weight: 600;
+}
+.risk-factors dd {
+  margin: 8px 0 0;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  font-size: 12px;
+}
+.risk-factors small {
+  display: block;
+  margin-top: 8px;
+  overflow-wrap: anywhere;
+}
+.signal-card {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  margin: 12px 0;
+  padding: 14px;
+  line-height: 1.7;
+  font-size: 12px;
+}
+.signal-card summary {
+  cursor: pointer;
+  color: var(--mint);
+  font-weight: 600;
+}
+.signal-card ul {
+  padding-left: 18px;
+}
+.hash {
+  overflow-wrap: anywhere;
+}
+.model-metrics {
+  width: 100%;
+  font-size: 12px;
+}
+.intelligence-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.intelligence-filters input,
+.intelligence-filters select {
+  min-width: 160px;
+  max-width: 100%;
+}
+.ranking-row.selected {
+  background: var(--surface-raised);
+  outline: 1px solid var(--mint);
+}
+.risk-coverage {
+  padding: 16px;
+  margin: 16px 0;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  line-height: 1.7;
+}

@@ -8,7 +8,8 @@ import {
   SlidersHorizontal,
 } from 'lucide-react'
 import { useSearchParams } from 'react-router-dom'
-import { useAssets, useLatestRun, useProducts } from '../../hooks/queries'
+import { useAssets, useLatestRun, useProducts, useIntelligence } from '../../hooks/queries'
+import { VulnerabilitySummary } from './VulnerabilityEvidence'
 import { AssetDrawer } from '../../components/AssetDrawer'
 import {
   EmptyState,
@@ -21,11 +22,16 @@ import {
 } from '../../components/ui'
 import type { Asset } from '../../api/client'
 
-type SortKey = 'name' | 'sector' | 'asset_type' | 'criticality' | 'exposure'
+type SortKey =
+  'name' | 'sector' | 'asset_type' | 'criticality' | 'exposure' | 'workflow_risk' | 'curated_risk'
 export default function Assets() {
   const query = useAssets()
   const latest = useLatestRun()
   const products = useProducts()
+  const curated = useIntelligence()
+  const curatedById = new Map(
+    (curated.isError ? [] : (curated.data?.assets ?? [])).map((a) => [a.asset_id, a.risk]),
+  )
   const productById = new Map((products.data?.products ?? []).map((p) => [p.asset_id, p]))
   const riskById = new Map((latest.data?.assets ?? []).map((a) => [a.asset_id, a.risk]))
   const [params, setParams] = useSearchParams()
@@ -47,6 +53,14 @@ export default function Assets() {
             ),
         )
         .sort((a, b) => {
+          if (sort === 'workflow_risk' || sort === 'curated_risk') {
+            const source = sort === 'workflow_risk' ? riskById : curatedById
+            const left = source.get(a.id)?.score
+            const right = source.get(b.id)?.score
+            if (left == null) return right == null ? a.id.localeCompare(b.id) : 1
+            if (right == null) return -1
+            return descending ? left - right : right - left
+          }
           const order =
             sort === 'criticality'
               ? { essential: 0, important: 1, supporting: 2 }[a.criticality] -
@@ -54,7 +68,7 @@ export default function Assets() {
               : a[sort].localeCompare(b[sort])
           return descending ? -order : order
         }),
-    [query.data, sector, type, search, sort, descending],
+    [query.data, sector, type, search, sort, descending, latest.data, curated.data],
   )
   const sortColumn = (key: SortKey) => {
     if (sort === key) setDescending(!descending)
@@ -86,6 +100,8 @@ export default function Assets() {
         description="Inspect the infrastructure, configuration and evidence behind each asset."
         actions={<SampleBadge>Scenario inventory</SampleBadge>}
       />
+      <VulnerabilitySummary />
+      <QueryState pending={curated.isPending} error={curated.error} retry={curated.refetch} />
       <Panel
         title="Infrastructure inventory"
         aside={<span className="subtle-label mono">{query.data?.length ?? '—'} TOTAL ASSETS</span>}
@@ -144,7 +160,8 @@ export default function Assets() {
                     <th>ASSUMED REAL PRODUCT</th>
                     {header('criticality', 'CRITICALITY')}
                     {header('exposure', 'EXPOSURE')}
-                    <th>ASSESSMENT</th>
+                    {header('workflow_risk', 'WORKFLOW ASSESSMENT')}
+                    {header('curated_risk', 'CURATED PRIORITY')}
                     <th>
                       <span className="sr-only">Details</span>
                     </th>
@@ -186,6 +203,12 @@ export default function Assets() {
                         )}
                       </td>
                       <td>
+                        <RiskBadge category={curatedById.get(a.id)?.category} />{' '}
+                        <span className="mono">
+                          {curatedById.get(a.id)?.score?.toFixed(2) ?? 'Unavailable'}
+                        </span>
+                      </td>
+                      <td>
                         <button
                           className="icon-button"
                           onClick={() => setSelected(a.id)}
@@ -219,7 +242,8 @@ export default function Assets() {
       <div className="preview-notice">
         <span>
           Scores come from the latest simulation (ML-scored real CVEs, exposure and conditional
-          impact). Before a simulation there is no score, and missing is never shown as zero.
+          impact). The curated-priority column uses a separate Apache software overlay and policy;
+          its scores are not comparable to workflow scores. Missing evidence is unavailable.
         </span>
       </div>
       <AssetDrawer id={selected} onClose={() => setSelected(null)} />

@@ -114,10 +114,10 @@ function TrendPanels() {
             </ResponsiveContainer>
           </div>
           <p className="ins-note">
-            Each month replays the whole workflow using only information available then. Assets,
-            assumed products and configuration are held fixed, so this shows the public
-            vulnerability landscape moving against the estate, not changes to the estate. Model{' '}
-            {data.model_version}; 2025 onward is the model&apos;s held-out period.
+            Each month replays dated KEV/EPSS history with current NVD fields that may include later
+            edits. Assets, assumed products and configuration are held fixed, so this shows the
+            public vulnerability landscape moving against the estate, not changes to the estate.
+            Model {data.model_version}; 2025 onward is the model&apos;s held-out period.
           </p>
         </Panel>
       </div>

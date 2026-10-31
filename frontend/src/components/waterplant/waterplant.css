@@ -3,13 +3,24 @@
   user-select: none;
 }
 
-.waterplant-assembly .iso-fill { fill: #0e202c; }
-.waterplant-assembly .iso-top { fill: #1a394e; }
-.waterplant-assembly .iso-shade { fill: #102634; }
-.waterplant-assembly path.iso-edge { stroke: #475569; stroke-width: 0.85px; }
+.waterplant-assembly .iso-fill {
+  fill: #0e202c;
+}
+.waterplant-assembly .iso-top {
+  fill: #1a394e;
+}
+.waterplant-assembly .iso-shade {
+  fill: #102634;
+}
+.waterplant-assembly path.iso-edge {
+  stroke: #475569;
+  stroke-width: 0.85px;
+}
 
 .water-interactive-group {
-  transition: opacity 0.2s ease, filter 0.2s ease;
+  transition:
+    opacity 0.2s ease,
+    filter 0.2s ease;
 }
 
 .water-interactive-group:hover path.iso-edge {
