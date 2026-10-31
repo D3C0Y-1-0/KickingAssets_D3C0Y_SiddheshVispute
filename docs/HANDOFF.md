@@ -97,3 +97,5 @@ Plan and status: `docs/PLAN_CHALLENGE_GAPS.md`. All additive; `risk-index-v1` an
 - **Pages:** Posture & Activity (`/posture`), Resilience (`/resilience`), PS03 Coverage (`/coverage`).
 - New contract file: `app/schemas/insights.py`; router `app/api/insights.py` registered in `main.py`.
 - Known limits: telemetry is simulated and the detector is exercised on its own authored events; the benign maintenance window is flagged on purpose; chokepoint and vendor figures assume no operator recovery (upper bound); no calibrated likelihood, no new sectors, no modelled monitoring or recovery benefit.
+
+Hosted: the new endpoints and pages are live on https://gridsentinel-phi.vercel.app (Vercel proxies `/api` to the Azure backend). The Azure update was incremental: `az webapp deploy --type zip --clean false` with only `backend/app`, `data/scenarios/aurora-telemetry-events.json` and `data/derived/posture-trend.json`. A full package rebuild is only needed when dependencies or the reference data change.

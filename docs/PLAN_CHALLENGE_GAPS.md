@@ -85,4 +85,4 @@ Time-travel trend needs the reference cache (build-time script, artifact committ
 - [x] F5 risk brief (`/api/v1/reports/brief`, md and html)
 - [x] F6 coverage matrix (`/coverage`)
 - [x] Contracts regenerated, frontend pages, browser verification
-- [ ] Deployed to Azure and Vercel (see HANDOFF.md)
+- [x] Deployed: backend delta to Azure App Service, frontend to Vercel (see HANDOFF.md and VERIFICATION.md)
