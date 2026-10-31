@@ -1,0 +1,37 @@
+/* Scoped Smart Transit & Transportation Digital Twin CSS — Dark Cyber-Physical Theme */
+.transit-assembly {
+  user-select: none;
+}
+
+.transit-assembly .iso-fill { fill: #142026; }
+.transit-assembly .iso-top { fill: #243842; }
+.transit-assembly .iso-shade { fill: #16242b; }
+.transit-assembly path.iso-edge { stroke: #64748b; stroke-width: 0.85px; }
+
+.transit-interactive-group {
+  transition: opacity 0.2s ease, filter 0.2s ease;
+}
+
+.transit-interactive-group:hover path.iso-edge {
+  stroke: #ccff00 !important;
+  stroke-width: 1.4px !important;
+}
+
+.transit-interactive-group:hover path.iso-top {
+  fill: #223806 !important;
+}
+
+/* Selected Component State */
+.transit-selected-part path.iso-edge {
+  stroke: #ccff00 !important;
+  stroke-width: 1.8px !important;
+  filter: drop-shadow(0 0 10px rgba(204, 255, 0, 0.85));
+}
+
+.transit-selected-part path.iso-top {
+  fill: #2d4508 !important;
+}
+
+.transit-selected-part path.iso-shade {
+  fill: #1e3004 !important;
+}

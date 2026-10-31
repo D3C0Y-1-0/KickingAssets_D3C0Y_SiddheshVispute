@@ -1,0 +1,86 @@
+/* Scoped Substation Digital Twin CSS — Dark Cyber-Physical Theme */
+.substation-assembly {
+  user-select: none;
+}
+
+.substation-assembly .iso-fill { fill: #131924; }
+.substation-assembly .iso-top { fill: #253346; }
+.substation-assembly .iso-shade { fill: #151e2c; }
+.substation-assembly path.iso-edge { stroke: #64748b; stroke-width: 0.85px; }
+
+.substation-interactive-group {
+  transition: opacity 0.2s ease, filter 0.2s ease;
+}
+
+.substation-interactive-group:hover path.iso-edge {
+  stroke: #ccff00 !important;
+  stroke-width: 1.4px !important;
+}
+
+.substation-interactive-group:hover path.iso-top {
+  fill: #223806 !important;
+}
+
+.substation-selected-part path.iso-edge {
+  stroke: #ccff00 !important;
+  stroke-width: 1.8px !important;
+  filter: drop-shadow(0 0 10px rgba(204, 255, 0, 0.85));
+}
+
+.substation-selected-part path.iso-top {
+  fill: #2d4508 !important;
+}
+
+.substation-selected-part path.iso-shade {
+  fill: #1e3004 !important;
+}
+
+/* Offline state (Red alert) */
+.substation-offline-pulse path.iso-edge {
+  stroke: #ff3344 !important;
+  stroke-width: 1.8px !important;
+  animation: infra-red-pulse 1.8s infinite;
+}
+
+.substation-offline-pulse path.iso-top {
+  fill: #44141a !important;
+}
+
+/* Warning state (Amber alert) */
+.substation-warning-pulse path.iso-edge {
+  stroke: #f59e0b !important;
+  stroke-width: 1.6px !important;
+  animation: infra-amber-pulse 2s infinite;
+}
+
+.substation-warning-pulse path.iso-top {
+  fill: #422d0c !important;
+}
+
+@keyframes infra-red-pulse {
+  0%, 100% {
+    filter: drop-shadow(0 0 3px rgba(255, 51, 68, 0.4));
+  }
+  50% {
+    filter: drop-shadow(0 0 12px rgba(255, 51, 68, 0.9));
+  }
+}
+
+@keyframes infra-amber-pulse {
+  0%, 100% {
+    filter: drop-shadow(0 0 3px rgba(245, 158, 11, 0.4));
+  }
+  50% {
+    filter: drop-shadow(0 0 10px rgba(245, 158, 11, 0.8));
+  }
+}
+
+/* Hotspot beacon styles */
+.substation-hotspot {
+  transform: translate(-50%, -50%);
+  transition: transform 0.15s ease, background-color 0.15s ease;
+}
+
+.substation-hotspot:hover {
+  transform: translate(-50%, -50%) scale(1.1);
+}
