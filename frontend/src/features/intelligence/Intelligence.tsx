@@ -120,7 +120,7 @@ export default function Intelligence() {
     return (
       <>
         <PageHeading
-          title="Risk intelligence"
+          title="Risk ranking"
           description="Prioritization with a traceable reason behind every result."
         />
         <SimulationRequired />
@@ -131,7 +131,7 @@ export default function Intelligence() {
   return (
     <>
       <PageHeading
-        title="Risk intelligence"
+        title="Risk ranking"
         description="Assets ranked by an ML-driven relative index, with the reason behind every score."
         actions={
           <Link className="button primary" to="/what-if">

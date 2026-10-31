@@ -38,7 +38,7 @@ export default function Intelligence() {
   return (
     <>
       <PageHeading
-        title="Risk intelligence"
+        title="Curated vulnerability check"
         description="Calculated review priorities, real CVE evidence and conditional operational consequences."
         actions={
           <button className="button primary" disabled={run.isPending} onClick={() => run.mutate()}>
