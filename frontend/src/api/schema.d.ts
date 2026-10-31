@@ -174,6 +174,74 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/vulnerabilities/references": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** References */
+        get: operations["references_api_v1_vulnerabilities_references_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/vulnerabilities/assessment": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Assessment */
+        get: operations["assessment_api_v1_vulnerabilities_assessment_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/vulnerabilities/assets/{asset_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Asset Findings */
+        get: operations["asset_findings_api_v1_vulnerabilities_assets__asset_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/vulnerabilities/assess": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Run Assessment */
+        post: operations["run_assessment_api_v1_vulnerabilities_assess_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -186,6 +254,32 @@ export interface components {
             message: string;
             /** Details */
             details?: string[];
+        };
+        /** ApplicabilityFinding */
+        ApplicabilityFinding: {
+            link: components["schemas"]["AssetVulnerability"];
+            /** Component Id */
+            component_id: string;
+            /** Criteria */
+            criteria: string[];
+            /**
+             * Limitation
+             * @default Product/version applicability to a declared simulated component; exploit prerequisites and successful compromise are not established.
+             */
+            limitation: string;
+        };
+        /** ApplicabilityRule */
+        ApplicabilityRule: {
+            /** Criteria */
+            criteria: string;
+            /** Match Id */
+            match_id: string;
+            /** Supported */
+            supported: boolean;
+            /** Bounds */
+            bounds: {
+                [key: string]: string;
+            };
         };
         /** AssessmentRequest */
         AssessmentRequest: {
@@ -237,6 +331,25 @@ export interface components {
             observations: components["schemas"]["SecurityObservation"][];
             risk: components["schemas"]["RiskAssessment"];
         };
+        /** AssetEvidence */
+        AssetEvidence: {
+            /** Scenario Id */
+            scenario_id: string;
+            /** Snapshot Id */
+            snapshot_id: string;
+            /** Asset Id */
+            asset_id: string;
+            /** Components */
+            components: components["schemas"]["SoftwareEvidence"][];
+            /** Applicability */
+            applicability: components["schemas"]["ApplicabilityFinding"][];
+            /** Configuration */
+            configuration: components["schemas"]["ConfigurationFinding"][];
+            /** Unknown Fields */
+            unknown_fields: string[];
+            /** Coverage */
+            coverage: string;
+        };
         /** AssetVulnerability */
         AssetVulnerability: {
             /** Scenario Id */
@@ -257,6 +370,24 @@ export interface components {
             /** Rationale */
             rationale: string;
             provenance: components["schemas"]["Provenance"];
+        };
+        /** ConfigurationFinding */
+        ConfigurationFinding: {
+            observation: components["schemas"]["SecurityObservation"];
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "weakness" | "exposure" | "review";
+            /** Rule Id */
+            rule_id: string;
+        };
+        /** Context */
+        Context: {
+            /** Scenario Id */
+            scenario_id: string;
+            /** Snapshot Id */
+            snapshot_id: string;
         };
         /** CyberGraph */
         CyberGraph: {
@@ -537,6 +668,67 @@ export interface components {
             /** Notes */
             notes?: string | null;
         };
+        /** ReferenceDataset */
+        ReferenceDataset: {
+            /** Id */
+            id: string;
+            /** Normalizer Version */
+            normalizer_version: string;
+            /**
+             * Imported At
+             * Format: date-time
+             */
+            imported_at: string;
+            /** Sources */
+            sources: components["schemas"]["ReferenceSource"][];
+            /** References */
+            references: components["schemas"]["ReferenceRecord"][];
+            /** Scope */
+            scope: string;
+        };
+        /** ReferenceRecord */
+        ReferenceRecord: {
+            reference: components["schemas"]["VulnerabilityReference"];
+            /**
+             * Modified At
+             * Format: date-time
+             */
+            modified_at: string;
+            /** Cvss Vector */
+            cvss_vector: string | null;
+            /** Cvss Version */
+            cvss_version: string | null;
+            /** Cvss Source */
+            cvss_source: string | null;
+            /** Epss Date */
+            epss_date: string | null;
+            /** Epss Percentile */
+            epss_percentile: number | null;
+            /** Kev Added */
+            kev_added: string | null;
+            /** Kev Required Action */
+            kev_required_action: string | null;
+            /** Rules */
+            rules: components["schemas"]["ApplicabilityRule"][];
+            /** Source Ids */
+            source_ids: string[];
+        };
+        /** ReferenceSource */
+        ReferenceSource: {
+            /** Id */
+            id: string;
+            /** Url */
+            url: string;
+            /**
+             * Retrieved At
+             * Format: date-time
+             */
+            retrieved_at: string;
+            /** Sha256 */
+            sha256: string;
+            /** Source Version */
+            source_version: string;
+        };
         /** RemediationPlan */
         RemediationPlan: {
             /** Scenario Id */
@@ -725,6 +917,29 @@ export interface components {
             /** Activation Condition */
             activation_condition?: string | null;
         };
+        /** SoftwareEvidence */
+        SoftwareEvidence: {
+            /** Scenario Id */
+            scenario_id: string;
+            /** Snapshot Id */
+            snapshot_id: string;
+            /** Id */
+            id: string;
+            /** Asset Id */
+            asset_id: string;
+            /**
+             * Part
+             * @enum {string}
+             */
+            part: "a" | "o" | "h";
+            /** Vendor */
+            vendor: string;
+            /** Product */
+            product: string;
+            /** Version */
+            version: string | null;
+            provenance: components["schemas"]["Provenance"];
+        };
         /** StagedAction */
         StagedAction: {
             /** Asset Id */
@@ -734,6 +949,56 @@ export interface components {
              * @enum {string}
              */
             action_type: "enable_mfa" | "restrict_remote_access" | "patch_review" | "offline_backup";
+        };
+        /** VulnerabilityAssessment */
+        VulnerabilityAssessment: {
+            /** Scenario Id */
+            scenario_id: string;
+            /** Snapshot Id */
+            snapshot_id: string;
+            /** Id */
+            id: string;
+            /** Dataset Id */
+            dataset_id: string;
+            /**
+             * Assessed At
+             * Format: date-time
+             */
+            assessed_at: string;
+            /** Rules Version */
+            rules_version: string;
+            /** Inventory Digest */
+            inventory_digest: string;
+            /**
+             * Stale
+             * @default false
+             */
+            stale: boolean;
+            /** Assets */
+            assets: components["schemas"]["AssetEvidence"][];
+        };
+        /** VulnerabilityReference */
+        VulnerabilityReference: {
+            /** Id */
+            id: string;
+            /** Cve Id */
+            cve_id: string;
+            /** Summary */
+            summary: string;
+            /** Cvss */
+            cvss?: number | null;
+            /** Epss */
+            epss?: number | null;
+            /** Kev Listed */
+            kev_listed?: boolean | null;
+            /** Published At */
+            published_at?: string | null;
+            /**
+             * Retrieved At
+             * Format: date-time
+             */
+            retrieved_at: string;
+            provenance: components["schemas"]["Provenance"];
         };
         /** WhatIfRequest */
         WhatIfRequest: {
@@ -1294,6 +1559,242 @@ export interface operations {
             };
             /** @description Not Implemented */
             501: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    references_api_v1_vulnerabilities_references_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReferenceDataset"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    assessment_api_v1_vulnerabilities_assessment_get: {
+        parameters: {
+            query?: {
+                scenario_id?: string;
+                snapshot_id?: string | null;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VulnerabilityAssessment"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    asset_findings_api_v1_vulnerabilities_assets__asset_id__get: {
+        parameters: {
+            query?: {
+                scenario_id?: string;
+                snapshot_id?: string | null;
+            };
+            header?: never;
+            path: {
+                asset_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssetEvidence"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Service Unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    run_assessment_api_v1_vulnerabilities_assess_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["Context"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VulnerabilityAssessment"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Unprocessable Entity */
+            422: {
                 headers: {
                     [name: string]: unknown;
                 };

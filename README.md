@@ -2,7 +2,9 @@
 
 **See the blast radius before the incident.**
 
-Critical infrastructure cybersecurity risk intelligence for D3COY PS03. This repository implements **Phase 1 only**: a polished application shell, a deterministic fictional city, typed contracts, read-only inventory APIs and two independently interactive graphs. It does not calculate risk, infer exploit success, monitor live systems or change infrastructure.
+Critical infrastructure cybersecurity risk intelligence for D3COY PS03. This repository implements the **Phase 1 foundation and Phase 2A vulnerability assessment**: a polished shell, deterministic fictional city, typed APIs, independent graphs and real cached NVD/CVSS, EPSS and KEV evidence. It does not calculate asset risk, infer exploit success, monitor live systems or change infrastructure.
+
+Read [docs/PHASE_2A.md](docs/PHASE_2A.md) for offline/online ingestion, supported matching, APIs, provenance and coverage limits. Four assets have separately declared simulated Apache components; no CVE is inferred from fictional baseline product names. Shared risk/impact schemas and engine files are unchanged.
 
 ## Run on Windows PowerShell
 
@@ -52,7 +54,7 @@ Vite proxies `/api` to FastAPI. Production uses the same origin, so permissive C
 
 ## Scenario and reset
 
-Aurora City contains 30 stable asset IDs: PWR-001…010, WTR-001…010 and HLT-001…010. It has 27 cyber reachability edges, 23 operational dependency edges and three essential services. All products, versions, controls and infrastructure relationships are explicitly fictional assumptions. There are no seeded CVEs, findings, model scores or incident records.
+Aurora City contains 30 stable asset IDs: PWR-001…010, WTR-001…010 and HLT-001…010. It has 27 cyber reachability edges, 23 operational dependency edges and three essential services. Infrastructure, controls and software installations are scenario assumptions. Phase 2A adds real cached CVE references and reproducible applicability/configuration findings. No model scores or incident records are seeded.
 
 The fixed source fixture is `data/scenarios/aurora-city.json`. Startup seeds an absent scenario once and preserves existing records. Reset only the named Aurora scenario with:
 

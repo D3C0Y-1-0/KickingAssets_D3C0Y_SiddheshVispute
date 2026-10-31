@@ -98,9 +98,9 @@ export default function Intelligence() {
           </EmptyState>
         </Panel>
         <Panel title="Vulnerability prioritization">
-          <EmptyState title="No reference data imported">
-            Real NVD, EPSS and KEV data must be ingested and matched before findings can be
-            prioritized.
+          <EmptyState title="Prioritization engine unavailable">
+            Real cached CVE, EPSS and KEV evidence is available in the Asset Register. No ML
+            priority or asset risk score has been calculated.
           </EmptyState>
         </Panel>
         <Panel title="Snapshot comparison">

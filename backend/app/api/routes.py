@@ -3,6 +3,7 @@ from typing import Literal
 from fastapi import APIRouter, HTTPException, Request
 
 from app.db.store import connection, read_documents
+from app.db.vulnerability_store import report
 from app.domain.seed import SCENARIO_ID
 from app.schemas.models import (
     AssessmentRequest,
@@ -101,7 +102,20 @@ def asset_detail(
         state="current",
         provenance=asset["provenance"],
     )
-    return AssetDetail(asset=asset, vulnerabilities=[], observations=[], risk=risk)
+    evidence = None
+    try:
+        assessment = report(inv.path, scenario_id, snapshot_id)
+        if not assessment.stale:
+            evidence = next((item for item in assessment.assets if item.asset_id == asset_id), None)
+    except HTTPException as exc:
+        if exc.status_code not in {404, 503}:
+            raise
+    return AssetDetail(
+        asset=asset,
+        vulnerabilities=[f.link for f in evidence.applicability] if evidence else [],
+        observations=[f.observation for f in evidence.configuration] if evidence else [],
+        risk=risk,
+    )
 
 
 @router.get("/graph", response_model=CyberGraph | OperationalGraph, tags=["Graphs"])

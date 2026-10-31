@@ -6,7 +6,7 @@ const status = [
   { name: 'Typed inventory APIs & asset inspection', done: true },
   { name: 'Independent cyber & operational graphs', done: true },
   { name: 'Local hypothetical action staging', done: true },
-  { name: 'Real CVE ingestion & applicability matching', done: false },
+  { name: 'Curated real CVE ingestion & declared-version matching', done: true },
   { name: 'ML prioritization & model evaluation', done: false },
   { name: 'Risk scoring & conditional impact simulation', done: false },
   { name: 'What-if calculations & remediation optimization', done: false },
@@ -85,7 +85,9 @@ export default function Methodology() {
               <span className="evidence-key reference">REFERENCE</span>
               <p>
                 Real NVD, CVSS, EPSS and KEV records require source attribution, retrieval
-                timestamps and applicability evidence. None are imported yet.
+                timestamps and applicability evidence. Phase 2A imports two curated NVD CVEs with
+                CVSS, dated EPSS and KEV evidence. Inspect the Asset Register for declared software,
+                version matches and uncertain candidates.
               </p>
             </div>
             <div>

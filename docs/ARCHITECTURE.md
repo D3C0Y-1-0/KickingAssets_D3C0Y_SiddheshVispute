@@ -1,5 +1,7 @@
 # Architecture
 
+**Phase 2A implemented:** [PHASE_2A.md](PHASE_2A.md) documents offline reference ingestion, conservative matching/configuration rules, additive v2a_* tables, scoped APIs and the query-backed register. This extends objective O2 within explicit coverage limits. Shared models.py and impact/risk engine files are unchanged. Original Phase 1 descriptions below remain the foundation boundary; no later risk/impact computation is claimed by this branch.
+
 ## System boundary and technology
 
 One repository, one React/TypeScript/Vite frontend, one Python/FastAPI backend and one local SQLite database. Tailwind v4 is available alongside semantic CSS tokens, React Router supplies stable URLs, TanStack Query owns server-state caching, Cytoscape renders topology, Recharts renders the preview category chart and Lucide provides icons. No WebGL, external fonts, authentication service or cloud deployment is needed.

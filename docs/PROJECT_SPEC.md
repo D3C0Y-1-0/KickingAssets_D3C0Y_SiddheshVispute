@@ -1,5 +1,7 @@
 # GridSentinel product specification
 
+**Phase 2A status:** objective O2 now has working offline ingestion, supported product/version applicability and separate configuration/exposure findings within curated coverage. See [PHASE_2A.md](PHASE_2A.md). This does not claim universal CVE matching or completion of objectives requiring ML, risk, impact, What-If or optimization. Original objectives and historical Phase 1 boundaries below are preserved.
+
 Version: 0.1 · Phase 1 · 31 October 2026
 
 ## Purpose and authority

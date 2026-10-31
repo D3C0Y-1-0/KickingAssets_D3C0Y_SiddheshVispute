@@ -1,5 +1,7 @@
 # Implementation plan
 
+**Phase 2A delivered:** real offline-capable reference ingestion, conservative applicability to declared simulated components, separate configuration/exposure evidence, persistence, APIs and register integration. [PHASE_2A.md](PHASE_2A.md) records exact coverage and remaining limits. Subsequent ML/risk/What-If/optimizer work remains deferred. Claude's independent impact module must be integrated separately through coordinated entry points; this branch does not implement or modify it.
+
 ## Phase 1 acceptance boundary
 
 Phase 1 implements foundations for the seven official objectives preserved in PROJECT_SPEC.md. It does not claim completion of vulnerability assessment (O2), AI-based prediction (O3), calculated risk prioritization (O4), consequence calculation (O5), predictive evidence/trends (O6) or evidence-backed preventive recommendations (O7).

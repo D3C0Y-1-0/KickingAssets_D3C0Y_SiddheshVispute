@@ -39,6 +39,10 @@ async function get<T>(
 }
 
 export const api = {
+  vulnerabilityAssessment: (context: Context, signal?: AbortSignal) =>
+    get<Models['VulnerabilityAssessment']>('/vulnerabilities/assessment', context, signal),
+  vulnerabilityReferences: (signal?: AbortSignal) =>
+    get<Models['ReferenceDataset']>('/vulnerabilities/references', {}, signal),
   health: (signal?: AbortSignal) => get<Models['Health']>('/health', {}, signal),
   scenarios: (signal?: AbortSignal) => get<Models['Scenario'][]>('/scenarios', {}, signal),
   snapshots: (context: Context, signal?: AbortSignal) =>

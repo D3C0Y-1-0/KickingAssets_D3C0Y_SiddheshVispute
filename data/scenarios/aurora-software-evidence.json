@@ -1,0 +1,66 @@
+[
+  {
+    "id": "apache-1",
+    "scenario_id": "aurora-city",
+    "snapshot_id": "aurora-baseline-v1",
+    "asset_id": "PWR-001",
+    "part": "a",
+    "vendor": "apache",
+    "product": "http_server",
+    "version": "2.4.49",
+    "provenance": {
+      "kind": "scenario_assumption",
+      "source": "Aurora Phase 2A declared software overlay v1",
+      "recorded_at": "2026-10-31T10:00:00Z",
+      "notes": "Fictional installed components for applicability demonstration, not a discovered software inventory. Apache advisory: https://httpd.apache.org/security/vulnerabilities_24.html"
+    }
+  },
+  {
+    "id": "apache-2",
+    "scenario_id": "aurora-city",
+    "snapshot_id": "aurora-baseline-v1",
+    "asset_id": "WTR-001",
+    "part": "a",
+    "vendor": "apache",
+    "product": "http_server",
+    "version": "2.4.50",
+    "provenance": {
+      "kind": "scenario_assumption",
+      "source": "Aurora Phase 2A declared software overlay v1",
+      "recorded_at": "2026-10-31T10:00:00Z",
+      "notes": "Fictional installed components for applicability demonstration, not a discovered software inventory. Apache advisory: https://httpd.apache.org/security/vulnerabilities_24.html"
+    }
+  },
+  {
+    "id": "apache-3",
+    "scenario_id": "aurora-city",
+    "snapshot_id": "aurora-baseline-v1",
+    "asset_id": "HLT-001",
+    "part": "a",
+    "vendor": "apache",
+    "product": "http_server",
+    "version": "2.4.51",
+    "provenance": {
+      "kind": "scenario_assumption",
+      "source": "Aurora Phase 2A declared software overlay v1",
+      "recorded_at": "2026-10-31T10:00:00Z",
+      "notes": "Fictional installed components for applicability demonstration, not a discovered software inventory. Apache advisory: https://httpd.apache.org/security/vulnerabilities_24.html"
+    }
+  },
+  {
+    "id": "apache-4",
+    "scenario_id": "aurora-city",
+    "snapshot_id": "aurora-baseline-v1",
+    "asset_id": "PWR-008",
+    "part": "a",
+    "vendor": "apache",
+    "product": "http_server",
+    "version": null,
+    "provenance": {
+      "kind": "scenario_assumption",
+      "source": "Aurora Phase 2A declared software overlay v1",
+      "recorded_at": "2026-10-31T10:00:00Z",
+      "notes": "Fictional installed components for applicability demonstration, not a discovered software inventory. Apache advisory: https://httpd.apache.org/security/vulnerabilities_24.html"
+    }
+  }
+]
