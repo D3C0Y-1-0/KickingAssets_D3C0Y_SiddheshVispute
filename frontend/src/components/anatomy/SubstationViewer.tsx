@@ -1,10 +1,10 @@
-"use client";
+'use client'
 
-import React, { useState, useRef, useMemo, useEffect } from "react";
-import { Plate } from "../iso/react/draw";
-import { SubstationArt } from "./art";
-import { WIDTH, HEIGHT, at } from "./view";
-import { InfrastructureAsset } from "../../types/infrastructure";
+import React, { useState, useRef, useMemo, useEffect } from 'react'
+import { Plate } from '../iso/react/draw'
+import { SubstationArt } from './art'
+import { WIDTH, HEIGHT, at } from './view'
+import { InfrastructureAsset } from '../../types/infrastructure'
 import {
   ZoomIn,
   ZoomOut,
@@ -16,19 +16,19 @@ import {
   Eye,
   Zap,
   Info,
-} from "lucide-react";
-import { RadarPing } from "../TwinRadar";
-import type { TwinRisk } from "../../hooks/twinRisk";
-import "./substation.css";
+} from 'lucide-react'
+import { RadarPing } from '../TwinRadar'
+import type { TwinRisk } from '../../hooks/twinRisk'
+import './substation.css'
 
 interface SubstationViewerProps {
-  assets: InfrastructureAsset[];
-  selectedAsset: InfrastructureAsset | null;
-  onSelectAsset: (asset: InfrastructureAsset) => void;
-  isSimulationActive?: boolean;
-  failedAssetIds?: string[];
-  affectedAssetIds?: string[];
-  risk?: Record<string, TwinRisk>;
+  assets: InfrastructureAsset[]
+  selectedAsset: InfrastructureAsset | null
+  onSelectAsset: (asset: InfrastructureAsset) => void
+  isSimulationActive?: boolean
+  failedAssetIds?: string[]
+  affectedAssetIds?: string[]
+  risk?: Record<string, TwinRisk>
 }
 
 export function SubstationViewer({
@@ -41,219 +41,219 @@ export function SubstationViewer({
   risk = {},
 }: SubstationViewerProps) {
   // Canvas View transform state (Pan & Zoom)
-  const [zoom, setZoom] = useState<number>(1);
-  const [pan, setPan] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
-  const [isDragging, setIsDragging] = useState<boolean>(false);
-  const [dragStart, setDragStart] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+  const [zoom, setZoom] = useState<number>(1)
+  const [pan, setPan] = useState<{ x: number; y: number }>({ x: 0, y: 0 })
+  const [isDragging, setIsDragging] = useState<boolean>(false)
+  const [dragStart, setDragStart] = useState<{ x: number; y: number }>({ x: 0, y: 0 })
 
   // Layer toggles
-  const [showJumpers, setShowJumpers] = useState<boolean>(true);
-  const [showGroundGrid, setShowGroundGrid] = useState<boolean>(true);
-  const [showHotspots, setShowHotspots] = useState<boolean>(true);
-  const [showStatusVisuals, setShowStatusVisuals] = useState<boolean>(true);
+  const [showJumpers, setShowJumpers] = useState<boolean>(true)
+  const [showGroundGrid, setShowGroundGrid] = useState<boolean>(true)
+  const [showHotspots, setShowHotspots] = useState<boolean>(true)
+  const [showStatusVisuals, setShowStatusVisuals] = useState<boolean>(true)
 
   // Hover state for interactive readout
-  const [hoveredComponentId, setHoveredComponentId] = useState<string | null>(null);
+  const [hoveredComponentId, setHoveredComponentId] = useState<string | null>(null)
 
   // Full Screen View state
-  const [isFullScreen, setIsFullScreen] = useState<boolean>(false);
+  const [isFullScreen, setIsFullScreen] = useState<boolean>(false)
 
-  const containerRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null)
 
   const toggleFullScreen = () => {
     if (!isFullScreen) {
       if (containerRef.current?.requestFullscreen) {
-        containerRef.current.requestFullscreen().catch(() => {});
+        containerRef.current.requestFullscreen().catch(() => {})
       }
-      setIsFullScreen(true);
+      setIsFullScreen(true)
     } else {
       if (document.fullscreenElement && document.exitFullscreen) {
-        document.exitFullscreen().catch(() => {});
+        document.exitFullscreen().catch(() => {})
       }
-      setIsFullScreen(false);
+      setIsFullScreen(false)
     }
-  };
+  }
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && isFullScreen) {
-        setIsFullScreen(false);
+      if (e.key === 'Escape' && isFullScreen) {
+        setIsFullScreen(false)
       }
-    };
+    }
     const handleFsChange = () => {
       if (!document.fullscreenElement && isFullScreen) {
-        setIsFullScreen(false);
+        setIsFullScreen(false)
       }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    document.addEventListener("fullscreenchange", handleFsChange);
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    document.addEventListener('fullscreenchange', handleFsChange)
     return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-      document.removeEventListener("fullscreenchange", handleFsChange);
-    };
-  }, [isFullScreen]);
+      window.removeEventListener('keydown', handleKeyDown)
+      document.removeEventListener('fullscreenchange', handleFsChange)
+    }
+  }, [isFullScreen])
 
   // Map of componentId -> InfrastructureAsset
   const componentToAssetMap = useMemo(() => {
-    const map = new Map<string, InfrastructureAsset>();
+    const map = new Map<string, InfrastructureAsset>()
     assets.forEach((asset) => {
       if (asset.substationComponentId) {
-        map.set(asset.substationComponentId, asset);
+        map.set(asset.substationComponentId, asset)
       }
-    });
-    return map;
-  }, [assets]);
+    })
+    return map
+  }, [assets])
 
   // Map of componentId -> status
   const statusMap = useMemo(() => {
-    const map: Record<string, "operational" | "degraded" | "offline" | "maintenance"> = {};
-    if (!showStatusVisuals) return map;
+    const map: Record<string, 'operational' | 'degraded' | 'offline' | 'maintenance'> = {}
+    if (!showStatusVisuals) return map
 
     assets.forEach((asset) => {
-      if (!asset.substationComponentId) return;
+      if (!asset.substationComponentId) return
 
       if (isSimulationActive) {
         if (failedAssetIds.includes(asset.id)) {
-          map[asset.substationComponentId] = "offline";
+          map[asset.substationComponentId] = 'offline'
         } else if (affectedAssetIds.includes(asset.id)) {
-          map[asset.substationComponentId] = "degraded";
+          map[asset.substationComponentId] = 'degraded'
         } else {
-          map[asset.substationComponentId] = "operational";
+          map[asset.substationComponentId] = 'operational'
         }
       } else {
-        map[asset.substationComponentId] = asset.status;
+        map[asset.substationComponentId] = asset.status
       }
-    });
+    })
 
-    return map;
-  }, [assets, isSimulationActive, failedAssetIds, affectedAssetIds, showStatusVisuals]);
+    return map
+  }, [assets, isSimulationActive, failedAssetIds, affectedAssetIds, showStatusVisuals])
 
   // Active selected component ID
-  const selectedComponentId = selectedAsset?.substationComponentId;
+  const selectedComponentId = selectedAsset?.substationComponentId
 
   // Hotspots projected 2D coordinates
   const hotspots = useMemo(() => {
     return [
       {
-        id: "sub-transformer",
-        label: "Power Transformer",
+        id: 'sub-transformer',
+        label: 'Power Transformer',
         coord: at([-95, 0, 48]),
-        assetId: "SUB-TR-01",
+        assetId: 'SUB-TR-01',
       },
       {
-        id: "sub-circuit-breaker",
-        label: "SF6 Circuit Breaker",
+        id: 'sub-circuit-breaker',
+        label: 'SF6 Circuit Breaker',
         coord: at([65, -52, 78]),
-        assetId: "SUB-CB-01",
+        assetId: 'SUB-CB-01',
       },
       {
-        id: "sub-disconnect-switch",
-        label: "Disconnect Switch",
+        id: 'sub-disconnect-switch',
+        label: 'Disconnect Switch',
         coord: at([160, -54, 65]),
-        assetId: "SUB-DS-01",
+        assetId: 'SUB-DS-01',
       },
       {
-        id: "sub-busbar-gantry",
-        label: "33kV Busbar Gantry",
+        id: 'sub-busbar-gantry',
+        label: '33kV Busbar Gantry',
         coord: at([0, -24, 126]),
-        assetId: "SUB-BB-01",
+        assetId: 'SUB-BB-01',
       },
       {
-        id: "sub-control-cabinet",
-        label: "Protection & RTU Cabinet",
+        id: 'sub-control-cabinet',
+        label: 'Protection & RTU Cabinet',
         coord: at([-85, 94, 45]),
-        assetId: "SUB-CP-01",
+        assetId: 'SUB-CP-01',
       },
       {
-        id: "sub-radiators",
-        label: "Cooling Radiators",
+        id: 'sub-radiators',
+        label: 'Cooling Radiators',
         coord: at([-102, -42, 38]),
-        assetId: "SUB-RAD-01",
+        assetId: 'SUB-RAD-01',
       },
       {
-        id: "sub-bushings",
-        label: "HV Bushings",
+        id: 'sub-bushings',
+        label: 'HV Bushings',
         coord: at([-94, -18, 96]),
-        assetId: "SUB-BUSH-01",
+        assetId: 'SUB-BUSH-01',
       },
       {
-        id: "sub-lightning-arrester",
-        label: "Lightning Arresters",
+        id: 'sub-lightning-arrester',
+        label: 'Lightning Arresters',
         coord: at([60, 34, 52]),
-        assetId: "SUB-LA-01",
+        assetId: 'SUB-LA-01',
       },
       {
-        id: "sub-grounding",
-        label: "Earthing Grid",
+        id: 'sub-grounding',
+        label: 'Earthing Grid',
         coord: at([0, 0, 4]),
-        assetId: "SUB-GND-01",
+        assetId: 'SUB-GND-01',
       },
-    ];
-  }, []);
+    ]
+  }, [])
 
   // Component Selection Handler
   const handleSelectComponent = (compKey: string) => {
-    const targetAsset = componentToAssetMap.get(compKey);
+    const targetAsset = componentToAssetMap.get(compKey)
     if (targetAsset) {
-      onSelectAsset(targetAsset);
+      onSelectAsset(targetAsset)
     }
-  };
+  }
 
   // Pan / Zoom Controls
-  const handleZoomIn = () => setZoom((z) => Math.min(2.5, Number((z + 0.2).toFixed(1))));
-  const handleZoomOut = () => setZoom((z) => Math.max(0.6, Number((z - 0.2).toFixed(1))));
+  const handleZoomIn = () => setZoom((z) => Math.min(2.5, Number((z + 0.2).toFixed(1))))
+  const handleZoomOut = () => setZoom((z) => Math.max(0.6, Number((z - 0.2).toFixed(1))))
   const handleResetView = () => {
-    setZoom(1);
-    setPan({ x: 0, y: 0 });
-  };
+    setZoom(1)
+    setPan({ x: 0, y: 0 })
+  }
 
   // Mouse drag handlers
   const handleMouseDown = (e: React.MouseEvent) => {
-    if (e.button !== 0) return;
-    setIsDragging(true);
-    setDragStart({ x: e.clientX - pan.x, y: e.clientY - pan.y });
-  };
+    if (e.button !== 0) return
+    setIsDragging(true)
+    setDragStart({ x: e.clientX - pan.x, y: e.clientY - pan.y })
+  }
 
   const handleMouseMove = (e: React.MouseEvent) => {
-    if (!isDragging) return;
+    if (!isDragging) return
     setPan({
       x: e.clientX - dragStart.x,
       y: e.clientY - dragStart.y,
-    });
-  };
+    })
+  }
 
-  const handleMouseUp = () => setIsDragging(false);
+  const handleMouseUp = () => setIsDragging(false)
 
   // Dynamic Live Readout
   const activeAsset = hoveredComponentId
     ? componentToAssetMap.get(hoveredComponentId)
-    : selectedAsset;
+    : selectedAsset
 
   const readoutText = useMemo(() => {
     if (isSimulationActive) {
       if (activeAsset && failedAssetIds.includes(activeAsset.id)) {
-        return `SIMULATION: [TRIPPED OFFLINE] ${activeAsset.name}`;
+        return `SIMULATION: [TRIPPED OFFLINE] ${activeAsset.name}`
       }
       if (activeAsset && affectedAssetIds.includes(activeAsset.id)) {
-        return `SIMULATION: [CASCADING RISK] ${activeAsset.name}`;
+        return `SIMULATION: [CASCADING RISK] ${activeAsset.name}`
       }
     }
     if (activeAsset && activeAsset.telemetry) {
-      return `${activeAsset.name.toUpperCase()} · ${activeAsset.telemetry.metricName}: ${activeAsset.telemetry.value} ${activeAsset.telemetry.unit}`;
+      return `${activeAsset.name.toUpperCase()} · ${activeAsset.telemetry.metricName}: ${activeAsset.telemetry.value} ${activeAsset.telemetry.unit}`
     }
     if (activeAsset) {
-      return `${activeAsset.name.toUpperCase()} · 33/11kV SYSTEM NOMINAL`;
+      return `${activeAsset.name.toUpperCase()} · 33/11kV SYSTEM NOMINAL`
     }
-    return "SUBSTATION ATLAS · ALL SYSTEMS 33kV OPERATIONAL";
-  }, [activeAsset, isSimulationActive, failedAssetIds, affectedAssetIds]);
+    return 'SUBSTATION ATLAS · ALL SYSTEMS 33kV OPERATIONAL'
+  }, [activeAsset, isSimulationActive, failedAssetIds, affectedAssetIds])
 
   return (
     <div
       ref={containerRef}
       className={`select-none flex flex-col bg-[#08090d] overflow-hidden transition-all ${
         isFullScreen
-          ? "fixed inset-0 z-50 w-screen h-screen rounded-none border-0 shadow-2xl"
-          : "relative flex flex-col h-full w-full bg-[#08090d] border border-[#202634] rounded-lg shadow-xl"
+          ? 'fixed inset-0 z-50 w-screen h-screen rounded-none border-0 shadow-2xl'
+          : 'relative flex flex-col h-full w-full bg-[#08090d] border border-[#202634] rounded-lg shadow-xl'
       }`}
     >
       {/* Top Toolbar / Component Quick Selector */}
@@ -276,7 +276,7 @@ export function SubstationViewer({
         <select
           className="twin-select"
           aria-label="Highlight a part of the diagram"
-          value={selectedComponentId ?? ""}
+          value={selectedComponentId ?? ''}
           onChange={(e) => handleSelectComponent(e.target.value)}
         >
           {hotspots.map((h) => (
@@ -293,8 +293,8 @@ export function SubstationViewer({
             title="Toggle Hotspots"
             className={`p-1.5 rounded transition border ${
               showHotspots
-                ? "bg-[#182306] text-[#ccff00] border-[#4d6313]"
-                : "bg-[#161922] text-slate-400 hover:text-white border-transparent"
+                ? 'bg-[#182306] text-[#ccff00] border-[#4d6313]'
+                : 'bg-[#161922] text-slate-400 hover:text-white border-transparent'
             }`}
           >
             <Eye className="w-3.5 h-3.5" />
@@ -304,8 +304,8 @@ export function SubstationViewer({
             title="Toggle Power Feed Cables"
             className={`p-1.5 rounded transition border ${
               showJumpers
-                ? "bg-[#182306] text-[#ccff00] border-[#4d6313]"
-                : "bg-[#161922] text-slate-400 hover:text-white border-transparent"
+                ? 'bg-[#182306] text-[#ccff00] border-[#4d6313]'
+                : 'bg-[#161922] text-slate-400 hover:text-white border-transparent'
             }`}
           >
             <Zap className="w-3.5 h-3.5" />
@@ -315,8 +315,8 @@ export function SubstationViewer({
             title="Toggle Earth Grounding Grid"
             className={`p-1.5 rounded transition border ${
               showGroundGrid
-                ? "bg-[#182306] text-[#ccff00] border-[#4d6313]"
-                : "bg-[#161922] text-slate-400 hover:text-white border-transparent"
+                ? 'bg-[#182306] text-[#ccff00] border-[#4d6313]'
+                : 'bg-[#161922] text-slate-400 hover:text-white border-transparent'
             }`}
           >
             <Layers className="w-3.5 h-3.5" />
@@ -326,8 +326,8 @@ export function SubstationViewer({
             title="Toggle Status Visualizations"
             className={`p-1.5 rounded transition border ${
               showStatusVisuals
-                ? "bg-[#182306] text-[#ccff00] border-[#4d6313]"
-                : "bg-[#161922] text-slate-400 hover:text-white border-transparent"
+                ? 'bg-[#182306] text-[#ccff00] border-[#4d6313]'
+                : 'bg-[#161922] text-slate-400 hover:text-white border-transparent'
             }`}
           >
             <Activity className="w-3.5 h-3.5" />
@@ -363,14 +363,18 @@ export function SubstationViewer({
           {/* Full Screen Toggle */}
           <button
             onClick={toggleFullScreen}
-            title={isFullScreen ? "Exit Full Screen (Esc)" : "Full Screen"}
+            title={isFullScreen ? 'Exit Full Screen (Esc)' : 'Full Screen'}
             className={`p-1.5 rounded border transition ${
               isFullScreen
-                ? "bg-[#ccff00] border-[#ccff00] text-black font-extrabold"
-                : "hover:bg-[#202636] text-slate-400 hover:text-[#ccff00] border-transparent"
+                ? 'bg-[#ccff00] border-[#ccff00] text-black font-extrabold'
+                : 'hover:bg-[#202636] text-slate-400 hover:text-[#ccff00] border-transparent'
             }`}
           >
-            {isFullScreen ? <Minimize2 className="w-3.5 h-3.5 text-black" /> : <Maximize2 className="w-3.5 h-3.5" />}
+            {isFullScreen ? (
+              <Minimize2 className="w-3.5 h-3.5 text-black" />
+            ) : (
+              <Maximize2 className="w-3.5 h-3.5" />
+            )}
           </button>
         </div>
       </div>
@@ -382,9 +386,9 @@ export function SubstationViewer({
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseUp}
         className={`relative flex-1 w-full overflow-hidden bg-[#08090d] ${
-          isDragging ? "cursor-grabbing" : "cursor-grab"
+          isDragging ? 'cursor-grabbing' : 'cursor-grab'
         }`}
-        style={{ minHeight: "440px" }}
+        style={{ minHeight: '440px' }}
       >
         <Plate
           fig="FIG 01"
@@ -392,10 +396,10 @@ export function SubstationViewer({
           hint="DRAG TO PAN · CLICK PART TO INSPECT · HOVER TO PROBE"
           readout={readoutText}
           keys={[
-            { mark: "lit", label: "Selected Active Component" },
-            { mark: "raised", label: "Engineered High-Voltage Solids" },
-            { mark: "edge", label: "33kV Flexible Dropper Jumpers" },
-            { mark: "dotted", label: "Buried Earth Grounding Grid" },
+            { mark: 'lit', label: 'Selected Active Component' },
+            { mark: 'raised', label: 'Engineered High-Voltage Solids' },
+            { mark: 'edge', label: '33kV Flexible Dropper Jumpers' },
+            { mark: 'dotted', label: 'Buried Earth Grounding Grid' },
           ]}
           caption="Detailed isometric digital twin of a critical municipal electrical substation assembly: 25MVA power transformer, forced cooling radiators, SF6 circuit breaker, motorized disconnect switch, surge arresters, overhead gantry busbars, and digital protection cabinet."
         >
@@ -403,7 +407,7 @@ export function SubstationViewer({
             className="w-full h-full flex items-center justify-center transition-transform duration-75"
             style={{
               transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`,
-              transformOrigin: "center center",
+              transformOrigin: 'center center',
             }}
           >
             <div className="relative" style={{ width: `${WIDTH}px`, height: `${HEIGHT}px` }}>
@@ -426,22 +430,22 @@ export function SubstationViewer({
               {showHotspots && (
                 <div className="absolute inset-0 pointer-events-none">
                   {hotspots.map((spot) => {
-                    const isSelected = selectedComponentId === spot.id;
-                    const status = statusMap[spot.id] || "operational";
-                    const isHovered = hoveredComponentId === spot.id;
+                    const isSelected = selectedComponentId === spot.id
+                    const status = statusMap[spot.id] || 'operational'
+                    const isHovered = hoveredComponentId === spot.id
 
-                    let badgeColor = "bg-[#111319]/95 text-slate-200 border-[#283244] shadow-md";
-                    let dotColor = "bg-[#ccff00]";
+                    let badgeColor = 'bg-[#111319]/95 text-slate-200 border-[#283244] shadow-md'
+                    let dotColor = 'bg-[#ccff00]'
 
-                    if (status === "offline") {
-                      badgeColor = "bg-red-950/90 text-red-300 border-red-800 shadow-sm";
-                      dotColor = "bg-red-500 animate-ping";
-                    } else if (status === "degraded") {
-                      badgeColor = "bg-amber-950/90 text-amber-300 border-amber-800 shadow-sm";
-                      dotColor = "bg-amber-500";
+                    if (status === 'offline') {
+                      badgeColor = 'bg-red-950/90 text-red-300 border-red-800 shadow-sm'
+                      dotColor = 'bg-red-500 animate-ping'
+                    } else if (status === 'degraded') {
+                      badgeColor = 'bg-amber-950/90 text-amber-300 border-amber-800 shadow-sm'
+                      dotColor = 'bg-amber-500'
                     } else if (isSelected) {
-                      badgeColor = "bg-[#ccff00] text-black border-[#ccff00] font-black shadow-lg";
-                      dotColor = "bg-black";
+                      badgeColor = 'bg-[#ccff00] text-black border-[#ccff00] font-black shadow-lg'
+                      dotColor = 'bg-black'
                     }
 
                     return (
@@ -459,7 +463,9 @@ export function SubstationViewer({
                         <RadarPing risk={risk[spot.id]} />
                         <div
                           className={`flex items-center gap-1.5 px-2 py-0.5 rounded-full border text-[10px] font-mono shadow-sm backdrop-blur-xs transition ${badgeColor} ${
-                            isHovered || isSelected ? "scale-105 z-20" : "opacity-90 hover:opacity-100"
+                            isHovered || isSelected
+                              ? 'scale-105 z-20'
+                              : 'opacity-90 hover:opacity-100'
                           }`}
                         >
                           <span className={`h-1.5 w-1.5 rounded-full ${dotColor}`} />
@@ -473,7 +479,7 @@ export function SubstationViewer({
                           </span>
                         </div>
                       </div>
-                    );
+                    )
                   })}
                 </div>
               )}
@@ -489,12 +495,12 @@ export function SubstationViewer({
             <Info className="w-3.5 h-3.5 text-[#ccff00]" />
             <span>SELECTED:</span>
             <span className="text-[#ccff00] font-bold">
-              {activeAsset ? activeAsset.name : "None (Substation Overview)"}
+              {activeAsset ? activeAsset.name : 'None (Substation Overview)'}
             </span>
           </span>
           {activeAsset?.telemetry && (
             <span className="hidden sm:inline text-slate-400">
-              {activeAsset.telemetry.metricName}:{" "}
+              {activeAsset.telemetry.metricName}:{' '}
               <span className="text-white font-semibold">
                 {activeAsset.telemetry.value} {activeAsset.telemetry.unit}
               </span>
@@ -523,5 +529,5 @@ export function SubstationViewer({
         </button>
       )}
     </div>
-  );
+  )
 }

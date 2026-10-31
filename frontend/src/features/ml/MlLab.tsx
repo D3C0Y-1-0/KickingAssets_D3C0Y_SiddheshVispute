@@ -115,7 +115,7 @@ function PooledBacktestPanel() {
         {query.isPending && (
           <p>
             <LoaderCircle className="spin" size={16} /> Scoring every month from January 2025 with
-            only the information available then (about 20 seconds the first time)…
+            dated KEV/EPSS history; current NVD fields may contain later edits…
           </p>
         )}
         {query.isError && <p className="run-error">{query.error.message}</p>}
@@ -123,10 +123,10 @@ function PooledBacktestPanel() {
           <>
             <p>
               For {b.snapshots} monthly snapshots ({b.first_snapshot} to {b.last_snapshot}), every
-              CVE that applies to the assumed product versions was scored using only what was known
-              that month. Of {b.pairs_evaluated.toLocaleString()} (CVE, month) pairs,{' '}
-              <strong>{b.hit_pairs}</strong> later entered CISA KEV within 180 days, from{' '}
-              <strong>{b.distinct_hit_cves}</strong> distinct CVEs.
+              CVE that applies to the assumed product versions was scored with that month's KEV/EPSS
+              history and current NVD record fields. Of {b.pairs_evaluated.toLocaleString()} (CVE,
+              month) pairs, <strong>{b.hit_pairs}</strong> later entered CISA KEV within 180 days,
+              from <strong>{b.distinct_hit_cves}</strong> distinct CVEs.
             </p>
             <div className="table-scroll">
               <table className="metric-table">
@@ -393,8 +393,8 @@ export default function MlLab() {
             <div className="callout">
               Shuffled-label audit: a model trained on permuted labels scores AP{' '}
               {shuffled_label_audit.average_precision} on the test set, versus{' '}
-              {deployed?.average_precision} for the real model (prevalence {ml.prevalence}). A
-              no-signal model still lands above raw prevalence because the positives are few.
+              {deployed?.average_precision} for the real model (prevalence {ml.prevalence}). The
+              audit remains above prevalence and does not establish absence of leakage.
             </div>
           </div>
         </Panel>

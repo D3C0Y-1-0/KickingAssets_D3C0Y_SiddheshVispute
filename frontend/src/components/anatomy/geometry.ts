@@ -9,7 +9,7 @@ import {
   sideTicks,
   slabOf,
   type SolidPaths,
-} from "../iso/iso-kit";
+} from '../iso/iso-kit'
 import {
   CB_PLINTH,
   CP_PLINTH,
@@ -25,7 +25,7 @@ import {
   TANK_Z,
   TR_PLINTH,
   YARD_PLAN,
-} from "./view";
+} from './view'
 
 // -------------------------------------------------------------
 // 1. BASE FOUNDATIONS & GROUNDING GRID
@@ -36,7 +36,7 @@ export const YARD_ART = {
   pad: slabOf(PAD_PLAN, -2, 6, P, 6, 0.8),
   padGroove: planOutline(insetPlan(PAD_PLAN, 4), 4, P, 6),
   screws: dotGrid(PAD_PLAN.x + 8, PAD_PLAN.y + 8, 8, 6, 48, 4, P),
-};
+}
 
 export const PLINTH_ART = {
   tr: slabOf(TR_PLINTH, 4, 5, P, 4, 0.6),
@@ -50,7 +50,7 @@ export const PLINTH_ART = {
     slabOf({ x: 162, y: -44, w: 18, d: 18, r: 2 }, 4, 6, P),
     slabOf({ x: 162, y: -16, w: 18, d: 18, r: 2 }, 4, 6, P),
   ],
-};
+}
 
 // Concrete Cable Trench between transformer, breaker and control cabinet
 export const TRENCH_ART = {
@@ -61,14 +61,14 @@ export const TRENCH_ART = {
     planOutline({ x: -108, y: 42, w: 16, d: 28, r: 0 }, 4.5, P),
     planOutline({ x: -48, y: 12, w: 86, d: 12, r: 0 }, 4.5, P),
     planOutline({ x: 57, y: -18, w: 12, d: 26, r: 0 }, 4.5, P),
-  ].join(""),
+  ].join(''),
   joints: [
     segment([-108, 50, 4.5], [-92, 50, 4.5], P),
     segment([-108, 60, 4.5], [-92, 60, 4.5], P),
     segment([-20, 12, 4.5], [-20, 24, 4.5], P),
     segment([10, 12, 4.5], [10, 24, 4.5], P),
-  ].join(""),
-};
+  ].join(''),
+}
 
 // Grounding grid mesh conductors and equipment bonding straps
 export const GROUND_ART = {
@@ -77,13 +77,13 @@ export const GROUND_ART = {
     segment([185, -105, 4.2], [185, 105, 4.2], P),
     segment([185, 105, 4.2], [-185, 105, 4.2], P),
     segment([-185, 105, 4.2], [-185, -105, 4.2], P),
-  ].join(""),
+  ].join(''),
   meshLines: [
     segment([-185, -40, 4.2], [185, -40, 4.2], P),
     segment([-185, 30, 4.2], [185, 30, 4.2], P),
     segment([-60, -105, 4.2], [-60, 105, 4.2], P),
     segment([60, -105, 4.2], [60, 105, 4.2], P),
-  ].join(""),
+  ].join(''),
   risers: [
     // Riser bonding to transformer tank
     segment([-145, -30, 4.2], [-145, -30, 14], P),
@@ -96,8 +96,8 @@ export const GROUND_ART = {
     // Riser bonding to gantry towers
     segment([-168, -35, 4.2], [-168, -35, 16], P),
     segment([168, -35, 4.2], [168, -35, 16], P),
-  ].join(""),
-};
+  ].join(''),
+}
 
 // -------------------------------------------------------------
 // 2. MAIN POWER TRANSFORMER ASSEMBLY
@@ -115,14 +115,14 @@ export const TRANSFORMER_ART = {
   tankSeams: [
     sideArc(TANK_PLAN.x + TANK_PLAN.w / 2, TANK_PLAN.y + TANK_PLAN.d / 2, 38, TANK_Z + 18, P, 24),
     sideArc(TANK_PLAN.x + TANK_PLAN.w / 2, TANK_PLAN.y + TANK_PLAN.d / 2, 38, TANK_Z + 42, P, 24),
-  ].join(""),
+  ].join(''),
 
   // Marshalling / local terminal cabinet on front tank face
   marshallingBox: slabOf({ x: -118, y: 33, w: 32, d: 7, r: 1 }, 18, 28, P, 3, 0.4),
   marshallingDoor: [
     planOutline({ x: -116, y: 39, w: 28, d: 1, r: 0 }, 19, P),
     segment([-102, 39.5, 19], [-102, 39.5, 45], P), // Split doors line
-  ].join(""),
+  ].join(''),
 
   // Drain valve with wheel handle at bottom
   drainPipe: cylinder(-58, 33, 2.2, 12, 6, P, 16),
@@ -132,20 +132,20 @@ export const TRANSFORMER_ART = {
   sightGlass: [
     segment([-50, 10, 24], [-50, 10, 56], P),
     segment([-49, 10, 24], [-49, 10, 56], P),
-  ].join(""),
-  sightTicks: sideTicks(28, 52, 6, 2, 10, 56, [1.5, 3], P, "y"),
-};
+  ].join(''),
+  sightTicks: sideTicks(28, 52, 6, 2, 10, 56, [1.5, 3], P, 'y'),
+}
 
 // Forced-Air Radiator Cooling Bank (10 fins across two banks + 4 cooling fans)
 const createRadiatorFins = (): SolidPaths[] => {
-  const fins: SolidPaths[] = [];
+  const fins: SolidPaths[] = []
   // Left bank (5 fins on -y side)
   for (let i = 0; i < 5; i++) {
-    const yPos = -52 + i * 4.2;
-    fins.push(slabOf({ x: -138, y: yPos, w: 76, d: 2.2, r: 0.6 }, 18, 44, P));
+    const yPos = -52 + i * 4.2
+    fins.push(slabOf({ x: -138, y: yPos, w: 76, d: 2.2, r: 0.6 }, 18, 44, P))
   }
-  return fins;
-};
+  return fins
+}
 
 export const RADIATOR_ART = {
   fins: createRadiatorFins(),
@@ -160,8 +160,8 @@ export const RADIATOR_ART = {
     ring(-122, -42, 5.2, 14, P, 16),
     ring(-102, -42, 5.2, 14, P, 16),
     ring(-82, -42, 5.2, 14, P, 16),
-  ].join(""),
-};
+  ].join(''),
+}
 
 // Conservator Tank, Buchholz Relay and Silica Gel Breather
 export const CONSERVATOR_ART = {
@@ -171,26 +171,24 @@ export const CONSERVATOR_ART = {
     segment([-75, -10, TANK_TOP], [-80, -10, 92], P),
     segment([-120, 10, TANK_TOP], [-115, 10, 92], P),
     segment([-75, 10, TANK_TOP], [-80, 10, 92], P),
-  ].join(""),
+  ].join(''),
 
   // Cylindrical oil expansion vessel (horizontal)
   body: cylinder(-96, -2, 11, 90, 46, P, 28, 0.8),
   endCap: sideArc(-96, -2, 11, 90, P, 24),
 
   // Connecting pipe to main tank with Buchholz relay capsule
-  pipeDown: [
-    segment([-96, 0, 90], [-96, 0, TANK_TOP], P),
-  ].join(""),
+  pipeDown: [segment([-96, 0, 90], [-96, 0, TANK_TOP], P)].join(''),
   buchholz: cylinder(-96, 0, 4.2, 76, 6, P, 16),
 
   // Dehydrating silica gel breather pipe and glass canister
   breatherPipe: [
     segment([-68, -2, 98], [-54, -2, 98], P),
     segment([-54, -2, 98], [-54, -2, 50], P),
-  ].join(""),
+  ].join(''),
   silicaCanister: cylinder(-54, -2, 3.6, 38, 14, P, 16),
   canisterRing: ring(-54, -2, 3.8, 45, P, 16),
-};
+}
 
 // High-Voltage & Low-Voltage Transformer Bushings
 export const BUSHING_ART = {
@@ -236,7 +234,7 @@ export const BUSHING_ART = {
     cylinder(-84, 18, 2.6, TANK_TOP, 14, P, 14),
     cylinder(-64, 18, 2.6, TANK_TOP, 14, P, 14),
   ],
-};
+}
 
 // -------------------------------------------------------------
 // 3. HIGH-VOLTAGE SF6 CIRCUIT BREAKER ASSEMBLY
@@ -254,7 +252,7 @@ export const BREAKER_ART = {
     segment([92, -70, 10], [38, -70, 30], P),
     segment([38, -44, 10], [92, -44, 30], P),
     segment([92, -44, 10], [38, -44, 30], P),
-  ].join(""),
+  ].join(''),
 
   // Operating mechanism cabinet (stainless steel)
   mechanismBox: slabOf({ x: 42, y: -64, w: 46, d: 24, r: 2 }, 32, 22, P, 4, 0.6),
@@ -279,7 +277,7 @@ export const BREAKER_ART = {
     sideArc(80, -52, 4.4, 62, P, 18),
     sideArc(80, -52, 4.4, 72, P, 18),
     sideArc(80, -52, 4.4, 82, P, 18),
-  ].join(""),
+  ].join(''),
 
   // Top horizontal interrupter heads with gas piping
   heads: [
@@ -292,7 +290,7 @@ export const BREAKER_ART = {
     cylinder(65, -52, 2.0, 102, 4, P, 12),
     cylinder(80, -52, 2.0, 102, 4, P, 12),
   ],
-};
+}
 
 // -------------------------------------------------------------
 // 4. MOTORIZED DISCONNECT SWITCH / ISOLATOR
@@ -307,7 +305,7 @@ export const DISCONNECT_ART = {
     segment([180, -44, 9], [180, -44, 42], P),
     segment([140, -70, 20], [180, -70, 20], P),
     segment([140, -44, 20], [180, -44, 20], P),
-  ].join(""),
+  ].join(''),
 
   // Base girder beam
   baseBeam: slabOf({ x: 136, y: -68, w: 48, d: 24, r: 1.5 }, 42, 4, P, 3, 0.4),
@@ -338,20 +336,20 @@ export const DISCONNECT_ART = {
     sideArc(174, -60, 3.4, 62, P, 16),
     sideArc(174, -48, 3.4, 54, P, 16),
     sideArc(174, -48, 3.4, 62, P, 16),
-  ].join(""),
+  ].join(''),
 
   // Articulated Copper Switch Blades & Jaw Contacts
   blades: [
     segment([146, -60, 70], [146, -48, 70], P),
     segment([160, -60, 70], [160, -48, 70], P),
     segment([174, -60, 70], [174, -48, 70], P),
-  ].join(""),
+  ].join(''),
   contacts: [
     cylinder(146, -48, 1.8, 70, 3, P, 12),
     cylinder(160, -48, 1.8, 70, 3, P, 12),
     cylinder(174, -48, 1.8, 70, 3, P, 12),
   ],
-};
+}
 
 // -------------------------------------------------------------
 // 5. SURGE / LIGHTNING ARRESTER BANK
@@ -388,13 +386,13 @@ export const ARRESTER_ART = {
     sideArc(78, 34, 4.4, 45, P, 16),
     sideArc(78, 34, 4.4, 55, P, 16),
     sideArc(78, 34, 4.4, 65, P, 16),
-  ].join(""),
+  ].join(''),
   terminals: [
     cylinder(42, 34, 1.2, 73, 5, P, 10),
     cylinder(60, 34, 1.2, 73, 5, P, 10),
     cylinder(78, 34, 1.2, 73, 5, P, 10),
   ],
-};
+}
 
 // -------------------------------------------------------------
 // 6. STRUCTURAL STEEL GANTRY & 33kV OVERHEAD BUSBARS
@@ -418,7 +416,7 @@ export const GANTRY_ART = {
     segment([-172, -40, 10], [-160, -40, 45], P),
     segment([-160, -40, 45], [-172, -40, 85], P),
     segment([-172, -40, 85], [-160, -40, 125], P),
-  ].join(""),
+  ].join(''),
 
   // Right lattice tower legs and lacing
   rightTower: [
@@ -437,7 +435,7 @@ export const GANTRY_ART = {
     segment([165, -40, 10], [177, -40, 45], P),
     segment([177, -40, 45], [165, -40, 85], P),
     segment([165, -40, 85], [177, -40, 125], P),
-  ].join(""),
+  ].join(''),
 
   // Overhead horizontal cross-arm bridge spanning from left to right
   bridge: [
@@ -452,7 +450,7 @@ export const GANTRY_ART = {
     segment([0, -30, GANTRY_TOP], [40, -30, GANTRY_TOP - 6], P),
     segment([40, -30, GANTRY_TOP - 6], [80, -30, GANTRY_TOP], P),
     segment([80, -30, GANTRY_TOP], [120, -30, GANTRY_TOP - 6], P),
-  ].join(""),
+  ].join(''),
 
   // 3 Strain Insulator Disc Suspension Strings hanging from bridge
   insulators: [
@@ -472,29 +470,29 @@ export const GANTRY_ART = {
     segment([146, -38, GANTRY_BUSBAR_Z], [146, -48, 73], P),
     segment([160, -24, GANTRY_BUSBAR_Z], [160, -48, 73], P),
     segment([174, -10, GANTRY_BUSBAR_Z], [174, -48, 73], P),
-  ].join(""),
+  ].join(''),
 
   // Droppers from Disconnect Switch to Circuit Breaker
   dropperDSToCB: [
     segment([146, -60, 72], [80, -52, 102], P),
     segment([160, -60, 72], [65, -52, 102], P),
     segment([174, -60, 72], [50, -52, 102], P),
-  ].join(""),
+  ].join(''),
 
   // Droppers from Circuit Breaker to Transformer HV Bushings
   dropperCBToTR: [
     segment([50, -52, 106], [-66, -18, TANK_TOP + 35], P),
     segment([65, -52, 106], [-94, -18, TANK_TOP + 35], P),
     segment([80, -52, 106], [-122, -18, TANK_TOP + 35], P),
-  ].join(""),
+  ].join(''),
 
   // Jumpers from Transformer Bushings to Lightning Arresters
   jumperTRToLA: [
     segment([-66, -18, TANK_TOP + 35], [42, 34, 78], P),
     segment([-94, -18, TANK_TOP + 35], [60, 34, 78], P),
     segment([-122, -18, TANK_TOP + 35], [78, 34, 78], P),
-  ].join(""),
-};
+  ].join(''),
+}
 
 // -------------------------------------------------------------
 // 7. SUBSTATION PROTECTION & CONTROL CABINET (RTU & RELAYS)
@@ -515,7 +513,7 @@ export const CABINET_ART = {
     segment([-118.5, 84, 46], [-118.5, 104, 46], P),
     segment([-118.5, 84, 49], [-118.5, 104, 49], P),
     segment([-118.5, 84, 52], [-118.5, 104, 52], P),
-  ].join(""),
+  ].join(''),
 
   // Status Warning Strobe Beacon on top
   beaconStem: cylinder(-85, 94, 1.8, 66, 3, P, 12),
@@ -529,9 +527,6 @@ export const CABINET_ART = {
   relayScreens: [
     planOutline({ x: -108, y: 111.5, w: 10, d: 0.5, r: 0.2 }, 44, P),
     planOutline({ x: -80, y: 111.5, w: 10, d: 0.5, r: 0.2 }, 44, P),
-  ].join(""),
-  relayLeds: [
-    ...dotGrid(-96, 111.5, 2, 4, 2, 44, P),
-    ...dotGrid(-68, 111.5, 2, 4, 2, 44, P),
-  ],
-};
+  ].join(''),
+  relayLeds: [...dotGrid(-96, 111.5, 2, 4, 2, 44, P), ...dotGrid(-68, 111.5, 2, 4, 2, 44, P)],
+}

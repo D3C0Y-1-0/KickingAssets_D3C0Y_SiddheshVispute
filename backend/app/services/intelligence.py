@@ -18,7 +18,7 @@ from app.services import model_signal
 from app.services.inventory import Inventory
 from app.services.vulnerability_ingestion import digest, load_dataset
 
-SCORING_VERSION = "asset-priority-v1"
+SCORING_VERSION = "asset-priority-v1.1"
 INPUTS = ROOT / "data/reference/risk-inference.json"
 RISK_CACHE = ROOT / "data/reference/risk-v1"
 LIMITS = [
@@ -143,7 +143,7 @@ def assess(path: Path, scenario_id: str, snapshot_id: str | None = None) -> Inte
         signals = [
             signal_by_cve[f.link.vulnerability_id]
             for f in item.applicability
-            if f.link.vulnerability_id in signal_by_cve
+            if f.link.vulnerability_id in signal_by_cve and f.link.applicability != "rejected"
         ]
         risk = RiskAssessment(
             scenario_id=scenario_id,

@@ -40,8 +40,8 @@ def test_inventory_filters_and_detail(client):
     assert client.get("/api/v1/assets?q=North%20Grid").json()[0]["id"] == "PWR-001"
     detail = client.get("/api/v1/assets/PWR-001").json()
     assert detail["asset"]["security"]["mfa_enabled"] is False
-    assert 0 <= detail["risk"]["score"] <= 100
-    assert detail["risk"]["status"] == "computed"
+    assert detail["risk"]["score"] is None
+    assert detail["risk"]["status"] == "unavailable"  # workflow risk needs an explicit simulation
     assert (
         len(detail["vulnerabilities"]) == 3
     )  # Phase 3 adds a reference-backed, model-eligible Apache CVE.

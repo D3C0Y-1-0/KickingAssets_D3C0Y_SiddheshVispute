@@ -110,7 +110,7 @@ export function PriorityEvidence({ item }: { item: Models['AssetPriority'] }) {
 
 export function RiskEvidence({ assetId }: { assetId: string }) {
   const query = useIntelligence()
-  const item = query.data?.assets.find((a) => a.asset_id === assetId)
+  const item = query.isError ? undefined : query.data?.assets.find((a) => a.asset_id === assetId)
   return (
     <>
       <QueryState pending={query.isPending} error={query.error} retry={query.refetch} />

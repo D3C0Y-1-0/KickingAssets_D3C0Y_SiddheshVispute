@@ -3,13 +3,24 @@
   user-select: none;
 }
 
-.hospital-assembly .iso-fill { fill: #201622; }
-.hospital-assembly .iso-top { fill: #362438; }
-.hospital-assembly .iso-shade { fill: #241726; }
-.hospital-assembly path.iso-edge { stroke: #64748b; stroke-width: 0.85px; }
+.hospital-assembly .iso-fill {
+  fill: #201622;
+}
+.hospital-assembly .iso-top {
+  fill: #362438;
+}
+.hospital-assembly .iso-shade {
+  fill: #241726;
+}
+.hospital-assembly path.iso-edge {
+  stroke: #64748b;
+  stroke-width: 0.85px;
+}
 
 .hosp-interactive-group {
-  transition: opacity 0.2s ease, filter 0.2s ease;
+  transition:
+    opacity 0.2s ease,
+    filter 0.2s ease;
 }
 
 .hosp-interactive-group:hover path.iso-edge {

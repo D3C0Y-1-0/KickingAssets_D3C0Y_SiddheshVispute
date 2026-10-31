@@ -1,0 +1,49 @@
+{
+  "verified_sources": 95,
+  "test_rows": 147305,
+  "results": {
+    "xgboost_with_epss": {
+      "average_precision": 0.0037,
+      "roc_auc": 0.8789,
+      "precision_at_200_per_month": 0.0119,
+      "recall_at_200_per_month": 0.0532
+    },
+    "xgboost_no_epss": {
+      "average_precision": 0.0006,
+      "roc_auc": 0.799,
+      "precision_at_200_per_month": 0.0015,
+      "recall_at_200_per_month": 0.0065
+    },
+    "xgboost_no_kev_history": {
+      "average_precision": 0.0061,
+      "roc_auc": 0.8864,
+      "precision_at_200_per_month": 0.0079,
+      "recall_at_200_per_month": 0.035
+    },
+    "epss_percentile_baseline": {
+      "average_precision": 0.0044,
+      "roc_auc": 0.729,
+      "precision_at_200_per_month": 0.0133,
+      "recall_at_200_per_month": 0.0597
+    },
+    "cvss_only_baseline": {
+      "average_precision": 0.0004,
+      "roc_auc": 0.7518,
+      "precision_at_200_per_month": 0.0056,
+      "recall_at_200_per_month": 0.0246
+    }
+  },
+  "evaluated_at": "2026-10-31T15:28:50.362194+00:00",
+  "manifest_sha256": "b9cab68861ac853e45154fcec953a84bf13f66e2ce54d4f546b47e8f31c09adc",
+  "model_sha256": {
+    "xgboost_no_epss": "83766da291967cd2c46ab3ff7f49db9eea5ab56c281e2f4922ca633be61e83e5",
+    "xgboost_no_kev_history": "65910c89db40a295fb577eece30b949258b0d16113dcaba919234e4b77014c4f",
+    "xgboost_with_epss": "072c5bee4524da068f9dcd8ec6327f64025999a22cfa03cd08efcf1066eedce7"
+  },
+  "runtime": {
+    "numpy": "2.5.4",
+    "pandas": "3.1.0",
+    "scikit-learn": "1.9.1",
+    "xgboost": "3.4.1"
+  }
+}

@@ -3,13 +3,24 @@
   user-select: none;
 }
 
-.transit-assembly .iso-fill { fill: #142026; }
-.transit-assembly .iso-top { fill: #243842; }
-.transit-assembly .iso-shade { fill: #16242b; }
-.transit-assembly path.iso-edge { stroke: #64748b; stroke-width: 0.85px; }
+.transit-assembly .iso-fill {
+  fill: #142026;
+}
+.transit-assembly .iso-top {
+  fill: #243842;
+}
+.transit-assembly .iso-shade {
+  fill: #16242b;
+}
+.transit-assembly path.iso-edge {
+  stroke: #64748b;
+  stroke-width: 0.85px;
+}
 
 .transit-interactive-group {
-  transition: opacity 0.2s ease, filter 0.2s ease;
+  transition:
+    opacity 0.2s ease,
+    filter 0.2s ease;
 }
 
 .transit-interactive-group:hover path.iso-edge {

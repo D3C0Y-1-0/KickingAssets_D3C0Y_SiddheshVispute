@@ -7,6 +7,8 @@ import sys
 import time
 import urllib.error
 import urllib.request
+from datetime import UTC, datetime
+from importlib.metadata import version
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
@@ -107,6 +109,20 @@ def main():
         "verified_sources": len(manifest["files"]),
         "test_rows": len(test),
         "results": results,
+        "evaluated_at": datetime.now(UTC).isoformat(),
+        "manifest_sha256": hashlib.sha256(
+            (ROOT / "data/reference/manifest.json").read_bytes()
+        ).hexdigest(),
+        "model_sha256": {
+            path.stem.removeprefix(f"{MODEL_VERSION}_"): hashlib.sha256(
+                path.read_bytes()
+            ).hexdigest()
+            for path in ARTIFACTS.glob("*.ubj")
+        },
+        "runtime": {
+            name: version(name)
+            for name in ("numpy", "pandas", "scikit-learn", "xgboost")
+        },
     }
     target = ROOT / "artifacts/ml-reevaluation.json"
     target.parent.mkdir(exist_ok=True)

@@ -1,5 +1,7 @@
 # Domain contracts
 
+**Phase 3 integration:** additive `schemas/intelligence.py` defines CVESignal (computed / known_kev / unavailable), signed FeatureContribution, AssetPriority, ModelEvidence and IntelligenceReport. Native model scores remain separate from relative asset indices. A report preserves scenario/snapshot, assessment/reference IDs, hashes, model variant and scoring/impact versions, partial coverage, explicit projected impacts and unavailable scores. `schemas/simulation.py` owns the independently merged workflow contracts. No existing impact Protocol or fixture identity was changed. See [PHASE_3_INTEGRATION.md](PHASE_3_INTEGRATION.md) for the two explicit assessment contexts.
+
 **Phase 2A extension:** existing shared definitions remain unchanged. Feature-only reference, software-evidence, applicability/configuration and persisted-report response types are in schemas/vulnerability.py; see PHASE_2A.md. Existing VulnerabilityFinding remains reserved for future model priorities. AssetVulnerability and SecurityObservation now carry actual rule-derived evidence, scoped to simulated declarations and retained provenance, without risk calculations.
 
 Authoritative code: `backend/app/schemas/models.py`. All models reject unknown fields. IDs are nonempty stable strings matching letters, numbers, underscores, periods or hyphens. Time fields use timezone-aware Pydantic AwareDatetime. JSON uses snake_case. Optional analysis fields serialize as null, not fabricated values.

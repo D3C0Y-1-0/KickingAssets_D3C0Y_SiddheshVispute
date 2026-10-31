@@ -1,7 +1,7 @@
-import React, { useState, useRef, useMemo, useEffect } from "react";
-import { Plate } from "../iso/react/draw";
-import { TransitArt } from "./art";
-import { WIDTH, HEIGHT, at } from "./view";
+import React, { useState, useRef, useMemo, useEffect } from 'react'
+import { Plate } from '../iso/react/draw'
+import { TransitArt } from './art'
+import { WIDTH, HEIGHT, at } from './view'
 import {
   ZoomIn,
   ZoomOut,
@@ -12,135 +12,135 @@ import {
   Zap,
   Eye,
   CheckCircle,
-} from "lucide-react";
-import "./transit.css";
+} from 'lucide-react'
+import './transit.css'
 
 interface TransitHotspot {
-  id: string;
-  coord: [number, number];
-  label: string;
-  sub: string;
-  metric: string;
-  value: string;
+  id: string
+  coord: [number, number]
+  label: string
+  sub: string
+  metric: string
+  value: string
 }
 
 const TRANSIT_HOTSPOTS: TransitHotspot[] = [
   {
-    id: "transit-terminal",
+    id: 'transit-terminal',
     coord: at([-90, -75, 42]),
-    label: "Central Passenger Concourse",
-    sub: "Ticketing & Inter-Modal Transfers",
-    metric: "Pax Throughput",
-    value: "14,800 pax/hr",
+    label: 'Central Passenger Concourse',
+    sub: 'Ticketing & Inter-Modal Transfers',
+    metric: 'Pax Throughput',
+    value: '14,800 pax/hr',
   },
   {
-    id: "transit-viaduct",
+    id: 'transit-viaduct',
     coord: at([0, 48, 52]),
-    label: "Elevated Sky-Train Viaduct",
-    sub: "Automated Guideway Concrete Piers",
-    metric: "Track Telemetry",
-    value: "Nominal Align",
+    label: 'Elevated Sky-Train Viaduct',
+    sub: 'Automated Guideway Concrete Piers',
+    metric: 'Track Telemetry',
+    value: 'Nominal Align',
   },
   {
-    id: "transit-skytrain",
+    id: 'transit-skytrain',
     coord: at([-55, 49, 72]),
-    label: "Driverless Sky-Train Trainset",
-    sub: "2-Car CBTC Autonomous Electric Unit",
-    metric: "Train Headway",
-    value: "90s / 65 km/h",
+    label: 'Driverless Sky-Train Trainset',
+    sub: '2-Car CBTC Autonomous Electric Unit',
+    metric: 'Train Headway',
+    value: '90s / 65 km/h',
   },
   {
-    id: "transit-ev-depot",
+    id: 'transit-ev-depot',
     coord: at([-150, 135, 24]),
-    label: "Electric Bus Rapid Depot",
-    sub: "Overhead Pantograph & Inductive Bays",
-    metric: "Fleet SOC",
-    value: "88.5% Charged",
+    label: 'Electric Bus Rapid Depot',
+    sub: 'Overhead Pantograph & Inductive Bays',
+    metric: 'Fleet SOC',
+    value: '88.5% Charged',
   },
   {
-    id: "transit-dispatch",
+    id: 'transit-dispatch',
     coord: at([155, -105, 68]),
-    label: "SCADA Rail Dispatch Tower",
-    sub: "Signaling, Switching & Route Control",
-    metric: "Signaling System",
-    value: "CBTC SIL-4 Active",
+    label: 'SCADA Rail Dispatch Tower',
+    sub: 'Signaling, Switching & Route Control',
+    metric: 'Signaling System',
+    value: 'CBTC SIL-4 Active',
   },
-];
+]
 
 export function TransitViewer() {
-  const [zoom, setZoom] = useState<number>(0.9);
-  const [pan, setPan] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
-  const [isDragging, setIsDragging] = useState<boolean>(false);
-  const [dragStart, setDragStart] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+  const [zoom, setZoom] = useState<number>(0.9)
+  const [pan, setPan] = useState<{ x: number; y: number }>({ x: 0, y: 0 })
+  const [isDragging, setIsDragging] = useState<boolean>(false)
+  const [dragStart, setDragStart] = useState<{ x: number; y: number }>({ x: 0, y: 0 })
 
-  const [selectedId, setSelectedId] = useState<string>("transit-skytrain");
-  const [showCatenary, setShowCatenary] = useState<boolean>(true);
-  const [showHotspots, setShowHotspots] = useState<boolean>(true);
-  const [isFullScreen, setIsFullScreen] = useState<boolean>(false);
+  const [selectedId, setSelectedId] = useState<string>('transit-skytrain')
+  const [showCatenary, setShowCatenary] = useState<boolean>(true)
+  const [showHotspots, setShowHotspots] = useState<boolean>(true)
+  const [isFullScreen, setIsFullScreen] = useState<boolean>(false)
 
-  const containerRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null)
 
   const toggleFullScreen = () => {
     if (!isFullScreen) {
       if (containerRef.current?.requestFullscreen) {
-        containerRef.current.requestFullscreen().catch(() => {});
+        containerRef.current.requestFullscreen().catch(() => {})
       }
-      setIsFullScreen(true);
+      setIsFullScreen(true)
     } else {
       if (document.fullscreenElement && document.exitFullscreen) {
-        document.exitFullscreen().catch(() => {});
+        document.exitFullscreen().catch(() => {})
       }
-      setIsFullScreen(false);
+      setIsFullScreen(false)
     }
-  };
+  }
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && isFullScreen) setIsFullScreen(false);
-    };
+      if (e.key === 'Escape' && isFullScreen) setIsFullScreen(false)
+    }
     const handleFsChange = () => {
-      if (!document.fullscreenElement && isFullScreen) setIsFullScreen(false);
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    document.addEventListener("fullscreenchange", handleFsChange);
+      if (!document.fullscreenElement && isFullScreen) setIsFullScreen(false)
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    document.addEventListener('fullscreenchange', handleFsChange)
     return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-      document.removeEventListener("fullscreenchange", handleFsChange);
-    };
-  }, [isFullScreen]);
+      window.removeEventListener('keydown', handleKeyDown)
+      document.removeEventListener('fullscreenchange', handleFsChange)
+    }
+  }, [isFullScreen])
 
   const handleMouseDown = (e: React.MouseEvent) => {
-    if (e.button !== 0) return;
-    setIsDragging(true);
-    setDragStart({ x: e.clientX - pan.x, y: e.clientY - pan.y });
-  };
+    if (e.button !== 0) return
+    setIsDragging(true)
+    setDragStart({ x: e.clientX - pan.x, y: e.clientY - pan.y })
+  }
 
   const handleMouseMove = (e: React.MouseEvent) => {
-    if (!isDragging) return;
-    setPan({ x: e.clientX - dragStart.x, y: e.clientY - dragStart.y });
-  };
+    if (!isDragging) return
+    setPan({ x: e.clientX - dragStart.x, y: e.clientY - dragStart.y })
+  }
 
-  const handleMouseUp = () => setIsDragging(false);
+  const handleMouseUp = () => setIsDragging(false)
 
-  const handleZoomIn = () => setZoom((z) => Math.min(z + 0.15, 2.0));
-  const handleZoomOut = () => setZoom((z) => Math.max(z - 0.15, 0.4));
+  const handleZoomIn = () => setZoom((z) => Math.min(z + 0.15, 2.0))
+  const handleZoomOut = () => setZoom((z) => Math.max(z - 0.15, 0.4))
   const handleResetView = () => {
-    setZoom(0.9);
-    setPan({ x: 0, y: 0 });
-  };
+    setZoom(0.9)
+    setPan({ x: 0, y: 0 })
+  }
 
   const activeHotspot = useMemo(
     () => TRANSIT_HOTSPOTS.find((h) => h.id === selectedId) || TRANSIT_HOTSPOTS[0],
-    [selectedId]
-  );
+    [selectedId],
+  )
 
   return (
     <div
       ref={containerRef}
       className={`select-none flex flex-col bg-[#08090d] overflow-hidden transition-all ${
         isFullScreen
-          ? "fixed inset-0 z-50 w-screen h-screen rounded-none border-0 shadow-2xl"
-          : "relative flex flex-col w-full h-full border border-[#202634] rounded-xl shadow-2xl"
+          ? 'fixed inset-0 z-50 w-screen h-screen rounded-none border-0 shadow-2xl'
+          : 'relative flex flex-col w-full h-full border border-[#202634] rounded-xl shadow-2xl'
       }`}
     >
       {/* Top Header Toolbar */}
@@ -164,7 +164,8 @@ export function TransitViewer() {
               )}
             </div>
             <p className="text-[11px] text-slate-400">
-              Sky-Train AGT Viaduct · Autonomous Bus Depot · 750V DC Overhead Catenary · SCADA Dispatch
+              Sky-Train AGT Viaduct · Autonomous Bus Depot · 750V DC Overhead Catenary · SCADA
+              Dispatch
             </p>
           </div>
         </div>
@@ -196,7 +197,9 @@ export function TransitViewer() {
             onClick={() => setShowCatenary(!showCatenary)}
             title="Toggle Catenary Power Masts"
             className={`p-1.5 rounded transition border ${
-              showCatenary ? "bg-[#182306] text-[#ccff00] border-[#4d6313]" : "bg-[#161922] text-slate-400 border-transparent"
+              showCatenary
+                ? 'bg-[#182306] text-[#ccff00] border-[#4d6313]'
+                : 'bg-[#161922] text-slate-400 border-transparent'
             }`}
           >
             <Zap className="w-3.5 h-3.5" />
@@ -205,30 +208,50 @@ export function TransitViewer() {
             onClick={() => setShowHotspots(!showHotspots)}
             title="Toggle Hotspots"
             className={`p-1.5 rounded transition border ${
-              showHotspots ? "bg-[#182306] text-[#ccff00] border-[#4d6313]" : "bg-[#161922] text-slate-400 border-transparent"
+              showHotspots
+                ? 'bg-[#182306] text-[#ccff00] border-[#4d6313]'
+                : 'bg-[#161922] text-slate-400 border-transparent'
             }`}
           >
             <Eye className="w-3.5 h-3.5" />
           </button>
           <div className="w-px h-4 bg-[#202634] my-auto" />
-          <button onClick={handleZoomIn} className="p-1.5 rounded hover:bg-[#202636] text-slate-400 hover:text-[#ccff00]" title="Zoom In">
+          <button
+            onClick={handleZoomIn}
+            className="p-1.5 rounded hover:bg-[#202636] text-slate-400 hover:text-[#ccff00]"
+            title="Zoom In"
+          >
             <ZoomIn className="w-4 h-4" />
           </button>
-          <button onClick={handleZoomOut} className="p-1.5 rounded hover:bg-[#202636] text-slate-400 hover:text-[#ccff00]" title="Zoom Out">
+          <button
+            onClick={handleZoomOut}
+            className="p-1.5 rounded hover:bg-[#202636] text-slate-400 hover:text-[#ccff00]"
+            title="Zoom Out"
+          >
             <ZoomOut className="w-4 h-4" />
           </button>
-          <button onClick={handleResetView} className="p-1.5 rounded hover:bg-[#202636] text-slate-400 hover:text-[#ccff00]" title="Reset View">
+          <button
+            onClick={handleResetView}
+            className="p-1.5 rounded hover:bg-[#202636] text-slate-400 hover:text-[#ccff00]"
+            title="Reset View"
+          >
             <RotateCcw className="w-4 h-4" />
           </button>
           <div className="w-px h-4 bg-[#202634] my-auto" />
           <button
             onClick={toggleFullScreen}
             className={`p-1.5 rounded transition ${
-              isFullScreen ? "bg-[#ccff00] text-black font-extrabold" : "hover:bg-[#202636] text-slate-400 hover:text-[#ccff00]"
+              isFullScreen
+                ? 'bg-[#ccff00] text-black font-extrabold'
+                : 'hover:bg-[#202636] text-slate-400 hover:text-[#ccff00]'
             }`}
-            title={isFullScreen ? "Exit Full Screen (Esc)" : "Full Screen (Expand View)"}
+            title={isFullScreen ? 'Exit Full Screen (Esc)' : 'Full Screen (Expand View)'}
           >
-            {isFullScreen ? <Minimize2 className="w-4 h-4 text-black" /> : <Maximize2 className="w-4 h-4" />}
+            {isFullScreen ? (
+              <Minimize2 className="w-4 h-4 text-black" />
+            ) : (
+              <Maximize2 className="w-4 h-4" />
+            )}
           </button>
         </div>
       </div>
@@ -246,11 +269,14 @@ export function TransitViewer() {
           title="METROPOLITAN SMART TRANSIT & RAIL TRANSPORTATION NETWORK"
           style={{
             transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`,
-            transformOrigin: "center center",
-            transition: isDragging ? "none" : "transform 0.15s ease-out",
+            transformOrigin: 'center center',
+            transition: isDragging ? 'none' : 'transform 0.15s ease-out',
           }}
         >
-          <div className="relative pointer-events-auto" style={{ width: `${WIDTH}px`, height: `${HEIGHT}px` }}>
+          <div
+            className="relative pointer-events-auto"
+            style={{ width: `${WIDTH}px`, height: `${HEIGHT}px` }}
+          >
             <svg
               viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
               className="w-full h-full iso-svg block"
@@ -268,19 +294,19 @@ export function TransitViewer() {
             {showHotspots && (
               <div className="transit-hotspots-layer">
                 {TRANSIT_HOTSPOTS.map((h) => {
-                  const isSel = selectedId === h.id;
+                  const isSel = selectedId === h.id
                   return (
                     <div
                       key={h.id}
                       onClick={(e) => {
-                        e.stopPropagation();
-                        setSelectedId(h.id);
+                        e.stopPropagation()
+                        setSelectedId(h.id)
                       }}
                       style={{
-                        position: "absolute",
+                        position: 'absolute',
                         left: `${h.coord[0]}px`,
                         top: `${h.coord[1]}px`,
-                        transform: "translate(-50%, -50%)",
+                        transform: 'translate(-50%, -50%)',
                       }}
                       className="group cursor-pointer z-30"
                     >
@@ -290,21 +316,27 @@ export function TransitViewer() {
                         )}
                         <div
                           className={`w-3.5 h-3.5 rounded-full border-2 transition shadow-lg ${
-                            isSel ? "bg-[#ccff00] border-black scale-125 ring-2 ring-[#ccff00]" : "bg-blue-500 border-white"
+                            isSel
+                              ? 'bg-[#ccff00] border-black scale-125 ring-2 ring-[#ccff00]'
+                              : 'bg-blue-500 border-white'
                           }`}
                         />
                       </div>
                       <div
                         className={`absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 p-2.5 rounded-lg bg-[#111319]/98 border border-[#283244] shadow-2xl backdrop-blur-md pointer-events-none transition duration-150 z-50 ${
-                          isSel ? "opacity-100 scale-100" : "opacity-0 group-hover:opacity-100 scale-95"
+                          isSel
+                            ? 'opacity-100 scale-100'
+                            : 'opacity-0 group-hover:opacity-100 scale-95'
                         }`}
                       >
-                        <div className="text-[9px] font-mono text-[#ccff00] font-bold uppercase">{h.metric}: {h.value}</div>
+                        <div className="text-[9px] font-mono text-[#ccff00] font-bold uppercase">
+                          {h.metric}: {h.value}
+                        </div>
                         <div className="text-xs font-bold text-white truncate">{h.label}</div>
                         <div className="text-[10px] text-slate-400">{h.sub}</div>
                       </div>
                     </div>
-                  );
+                  )
                 })}
               </div>
             )}
@@ -345,5 +377,5 @@ export function TransitViewer() {
         </button>
       )}
     </div>
-  );
+  )
 }

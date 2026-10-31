@@ -17,6 +17,29 @@ function response(body: unknown, status = 200) {
 }
 
 describe('snapshot-scoped API integration boundary', () => {
+  it('keeps curated priorities scoped and preserves unavailable as null', async () => {
+    const fetchMock = response({
+      assets: [{ asset_id: 'unmapped', risk: { score: null, status: 'unavailable' } }],
+    })
+    const result = await api.intelligence(context)
+    expect(fetchMock.mock.calls[0][0]).toBe(
+      '/api/v1/intelligence?scenario_id=city-a&snapshot_id=snapshot-b',
+    )
+    expect(result.assets[0].risk.score).toBeNull()
+  })
+  it('posts explicit assessment context and surfaces stale evidence errors', async () => {
+    const fetchMock = response(
+      { error: { code: 'conflict', message: 'Vulnerability assessment is stale', details: [] } },
+      409,
+    )
+    await expect(api.assessIntelligence(context)).rejects.toMatchObject({
+      status: 409,
+      message: 'Vulnerability assessment is stale',
+    })
+    expect(fetchMock.mock.calls[0][0]).toBe('/api/v1/intelligence/assess')
+    expect(JSON.parse(fetchMock.mock.calls[0][1].body)).toEqual(context)
+    expect(fetchMock.mock.calls[0][1].method).toBe('POST')
+  })
   it('keeps vulnerability assessments scoped and preserves source-only CVSS separately from risk', async () => {
     const fetchMock = response({ id: 'run', assets: [], stale: false })
     await api.vulnerabilityAssessment(context)

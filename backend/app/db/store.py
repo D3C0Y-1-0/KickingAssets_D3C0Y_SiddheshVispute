@@ -56,7 +56,7 @@ class _PostgresConnection:
 
     def executescript(self, sql: str):
         """Execute the repository's static migration statements in the current transaction."""
-        for statement in sql.split(';'):
+        for statement in sql.split(";"):
             if statement.strip():
                 self._conn.execute(statement)
 

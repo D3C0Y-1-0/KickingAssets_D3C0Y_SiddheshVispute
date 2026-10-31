@@ -17,7 +17,6 @@ from app.schemas.models import (
     RiskAssessment,
     Scenario,
 )
-from app.services.intelligence import get_report
 from app.services.inventory import Inventory
 from ml import inference
 
@@ -98,7 +97,11 @@ def asset_detail(
     if asset is None:
         raise HTTPException(404, "Asset not found in this snapshot")
     ctx = getattr(request.app.state, "simulation", None)
-    simulated = ctx and (ctx.run.scenario_id, ctx.run.snapshot_id) == (scenario_id, snapshot_id) and next((a for a in ctx.run.assets if a.asset_id == asset_id), None)
+    simulated = (
+        ctx
+        and (ctx.run.scenario_id, ctx.run.snapshot_id) == (scenario_id, snapshot_id)
+        and next((a for a in ctx.run.assets if a.asset_id == asset_id), None)
+    )
     risk = (
         simulated.risk
         if simulated
@@ -111,14 +114,6 @@ def asset_detail(
             provenance=asset["provenance"],
         )
     )
-    if not simulated:
-        try:
-            priority = get_report(inv.path, scenario_id, snapshot_id)
-            risk = next(item.risk for item in priority.assets if item.asset_id == asset_id)
-        except (HTTPException, OSError, ValueError):
-            risk.unavailable_reason = (
-                "Current risk intelligence is unavailable; inspect the intelligence endpoint"
-            )
     evidence = None
     try:
         assessment = report(inv.path, scenario_id, snapshot_id)

@@ -1,5 +1,7 @@
 # API contract v1
 
+**Current integrated contract:** see [PHASE_3_INTEGRATION.md](PHASE_3_INTEGRATION.md) and [WORKFLOW.md](WORKFLOW.md). The combined OpenAPI includes the original vulnerability router, workflow/ML/actions APIs and additive `GET /intelligence`, `POST /intelligence/assess`, `GET /intelligence/model`. All paths are under `/api/v1`. Curated assessments take scenario/snapshot context, preserve hashes and versions, return 409 for stale/missing results and use a distinct formula/product overlay from the workflow. `AssetDetail.risk` is the workflow result and stays unavailable before a simulation. Historical 501 examples below describe the original foundation, not all current APIs.
+
 **Phase 2A:** [PHASE_2A.md](PHASE_2A.md) documents the additive `/api/v1/vulnerabilities` router, explicit assessment POST, coverage/staleness and compatible asset-detail projection. Empty evidence examples below describe the historical Phase 1 baseline. Current PWR-001 responses contain two applicability links and three configuration/exposure/review observations; risk remains unavailable.
 
 Machine-readable authority: `GET /openapi.json`; tracked export: `docs/openapi.json`. Interactive API docs: `/docs`. Generated frontend types: `frontend/src/api/schema.d.ts`. Pydantic's runtime OpenAPI can split input/output schema names when defaults differ; generated names are authoritative.

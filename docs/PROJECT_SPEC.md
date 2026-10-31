@@ -1,5 +1,7 @@
 # GridSentinel product specification
 
+**Current integration status:** [PHASE_3_INTEGRATION.md](PHASE_3_INTEGRATION.md) records evaluated ML, explainable relative prioritization, API/UI wiring and preservation of all fetched branches. O2 now includes reference-backed applicability; O3 has experimental CVE ranking rather than infrastructure incident probabilities; O4/O6 have calculated review priorities within explicit assumptions and coverage; O5 uses the integrated conditional engine; existing O7 simulation/action code is preserved from authorized repository synchronization. The original objectives below remain verbatim and authoritative. No claim of complete real-world prediction, live monitoring or verified remediation is made.
+
 **Phase 2A status:** objective O2 now has working offline ingestion, supported product/version applicability and separate configuration/exposure findings within curated coverage. See [PHASE_2A.md](PHASE_2A.md). This does not claim universal CVE matching or completion of objectives requiring ML, risk, impact, What-If or optimization. Original objectives and historical Phase 1 boundaries below are preserved.
 
 Version: 0.1 · Phase 1 · 31 October 2026

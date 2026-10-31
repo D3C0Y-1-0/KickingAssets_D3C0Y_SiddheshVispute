@@ -28,6 +28,8 @@ def model_bundle():
 
 def evidence() -> ModelEvidence:
     model, card, sha = model_bundle()
+    verification = json.loads((ROOT / "data/reference/ml-reevaluation.json").read_text())
+    matched = verification["model_sha256"].get(VARIANT) == sha
     return ModelEvidence(
         model_version=VERSION,
         variant=VARIANT,
@@ -38,11 +40,16 @@ def evidence() -> ModelEvidence:
         manifest_sha256=hashlib.sha256(
             (ROOT / "data/reference/manifest.json").read_bytes()
         ).hexdigest(),
-        evaluation_status="Committed temporal holdout evaluation; see runbook for local reproduction",
+        evaluation_status=(
+            f"Source-verified reevaluation: {verification['test_rows']} holdout rows, {verification['verified_sources']} pinned sources; saved-model metrics reproduced."
+            if matched
+            else "Model artifact differs from the recorded local reevaluation; reevaluation required"
+        ),
         limitations=[
             *card["not_claimed"],
             *card["limitations"],
-            "The no-KEV-history ablation is used because runtime has no complete NVD vendor/CWE history. No missing history counts are fabricated.",
+            "The portable curated input bundle excludes complete NVD vendor/CWE history, so it uses the evaluated no-KEV-history ablation. The workflow uses the full historical cache and main model. No history counts are fabricated.",
+            "The shuffled-label audit AP is 0.0006 versus weighted prevalence 0.000158; this audit does not establish absence of leakage.",
             "No statistically established improvement over EPSS; experimental model, not an operationally validated predictor.",
         ],
     )

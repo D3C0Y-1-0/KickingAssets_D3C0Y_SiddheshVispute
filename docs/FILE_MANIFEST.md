@@ -1,5 +1,9 @@
 # Phase 1 file manifest
 
+## Phase 3A and repository synchronization
+
+The exact final change inventory relative to the Phase 2 integration is [PHASE_3_FILES.txt](PHASE_3_FILES.txt). Imported branch histories and module responsibilities are recorded in [PHASE_3_INTEGRATION.md](PHASE_3_INTEGRATION.md). New coordinator-owned modules: `api/intelligence.py`, `schemas/intelligence.py`, `services/intelligence.py`, `services/model_signal.py`, `tests/test_intelligence.py`, `CuratedIntelligence.tsx`, `RiskEvidence.tsx`, `intelligence.css`, `scripts/evaluate_model.py`, `scripts/build_inference_inputs.py`, the attributed `risk-v1`/`risk-inference.json` inputs and `ml-reevaluation.json` record. Existing vulnerability modules and impact tests were preserved. Shared impact schemas/Protocol and original Aurora fixture were not rewritten. Optional PostgreSQL SQL compatibility, SQLite launch switches, generated contracts, UI integration, tests and documentation were coordinated locally. The 34 imported twin/design files received project formatting without behavioral changes.
+
 ## Local Phase 2 integration additions
 
 The Phase 2A file list is retained below. Claude's `95160bc` adds these ten unchanged files:

@@ -56,9 +56,8 @@ def test_scoped_actual_pipeline_and_factor_reconciliation(client):
     assert report.assets[0].asset_id == "PWR-001"  # stable ID tie-break
     context = {"scenario_id": SCENARIO_ID, "snapshot_id": SNAPSHOT_ID}
     assert client.post("/api/v1/intelligence/assess", json=context).json() == response.json()
-    assert client.get("/api/v1/assets/PWR-001").json()["risk"] == by_id["PWR-001"].risk.model_dump(
-        mode="json"
-    )
+    # AssetDetail.risk belongs to the workflow product map. Curated scores have their own endpoint.
+    assert client.get("/api/v1/assets/PWR-001").json()["risk"]["score"] is None
     assert client.get("/api/v1/intelligence?scenario_id=missing").status_code == 404
     assert client.get("/api/v1/intelligence?snapshot_id=missing").status_code == 404
     assert client.post("/api/v1/intelligence/assess", json={}).status_code == 422

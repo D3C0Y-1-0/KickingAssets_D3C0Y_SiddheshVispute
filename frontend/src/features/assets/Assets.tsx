@@ -22,7 +22,8 @@ import {
 } from '../../components/ui'
 import type { Asset } from '../../api/client'
 
-type SortKey = 'name' | 'sector' | 'asset_type' | 'criticality' | 'exposure'
+type SortKey =
+  'name' | 'sector' | 'asset_type' | 'criticality' | 'exposure' | 'workflow_risk' | 'curated_risk'
 export default function Assets() {
   const query = useAssets()
   const latest = useLatestRun()
@@ -52,6 +53,14 @@ export default function Assets() {
             ),
         )
         .sort((a, b) => {
+          if (sort === 'workflow_risk' || sort === 'curated_risk') {
+            const source = sort === 'workflow_risk' ? riskById : curatedById
+            const left = source.get(a.id)?.score
+            const right = source.get(b.id)?.score
+            if (left == null) return right == null ? a.id.localeCompare(b.id) : 1
+            if (right == null) return -1
+            return descending ? left - right : right - left
+          }
           const order =
             sort === 'criticality'
               ? { essential: 0, important: 1, supporting: 2 }[a.criticality] -
@@ -59,7 +68,7 @@ export default function Assets() {
               : a[sort].localeCompare(b[sort])
           return descending ? -order : order
         }),
-    [query.data, sector, type, search, sort, descending],
+    [query.data, sector, type, search, sort, descending, latest.data, curated.data],
   )
   const sortColumn = (key: SortKey) => {
     if (sort === key) setDescending(!descending)
@@ -151,8 +160,8 @@ export default function Assets() {
                     <th>ASSUMED REAL PRODUCT</th>
                     {header('criticality', 'CRITICALITY')}
                     {header('exposure', 'EXPOSURE')}
-                    <th>WORKFLOW ASSESSMENT</th>
-                    <th>CURATED PRIORITY</th>
+                    {header('workflow_risk', 'WORKFLOW ASSESSMENT')}
+                    {header('curated_risk', 'CURATED PRIORITY')}
                     <th>
                       <span className="sr-only">Details</span>
                     </th>

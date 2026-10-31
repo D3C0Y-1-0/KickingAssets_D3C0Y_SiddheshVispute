@@ -1,10 +1,10 @@
 # GridSentinel
 
-**Local Phase 2 integration:** [Runbook and measured results](docs/PHASE_2_INTEGRATION.md). Branch `integration/phase-2` combines vulnerability assessment with Claude's Python-only conditional impact engine. The register exposes vulnerability evidence; impact calculations currently run from the command line. No ML, risk scoring, What-If calculation or optimizer is enabled.
+**Latest local integration:** [Phase 3 runbook, metrics and demonstration](docs/PHASE_3_INTEGRATION.md). Branch `integration/phase-3` preserves all fetched repository branches: the ML workflow, version-aware real-data link, force graph, digital twins, existing actions and optional PostgreSQL support, plus the original curated vulnerability/priority assessment. Launch with `-SQLite` for a fully local database. The historical Phase 2 integration record remains in docs/PHASE_2_INTEGRATION.md.
 
 **See the blast radius before the incident.**
 
-Critical infrastructure cybersecurity risk intelligence for D3COY PS03. This repository implements the **Phase 1 foundation and Phase 2A vulnerability assessment**: a polished shell, deterministic fictional city, typed APIs, independent graphs and real cached NVD/CVSS, EPSS and KEV evidence. It does not calculate asset risk, infer exploit success, monitor live systems or change infrastructure.
+Critical infrastructure cybersecurity risk intelligence for D3COY PS03. The application combines simulated infrastructure, independent graphs, real cached NVD/CVSS/EPSS/KEV evidence, actual evaluated ML outputs and explainable relative-priority calculations. It does not estimate calibrated infrastructure-compromise probabilities, monitor live systems or change real infrastructure.
 
 Read [docs/PHASE_2A.md](docs/PHASE_2A.md) for offline/online ingestion, supported matching, APIs, provenance and coverage limits. Four assets have separately declared simulated Apache components; no CVE is inferred from fictional baseline product names. Shared risk/impact schemas and engine files are unchanged.
 
@@ -15,8 +15,8 @@ Requirements: Python 3.12+, Node.js 22.20+ (Node 24 recommended), npm and PowerS
 From the repository root:
 
 ```powershell
-.\scripts\setup.ps1
-.\scripts\start.ps1
+.\scripts\setup.ps1 -SQLite
+.\scripts\start.ps1 -SQLite
 ```
 
 Open http://127.0.0.1:5173. The development script starts FastAPI on port 8000 in a hidden process and Vite in the foreground. Ctrl+C stops the owned backend process. If a required port is occupied, stop your previous GridSentinel session before starting another.
@@ -110,4 +110,4 @@ npm run typecheck
 - `docs/FILE_MANIFEST.md`: exact application and documentation files created.
 - `AGENTS.md`: collaboration and schema-change conventions.
 
-The overview's City Risk Index, seven priority labels and category chart are isolated **illustrative frontend fixtures**, visibly marked as previews. The asset register shows **Not assessed**. Future engine endpoints return HTTP 501; staging actions in What-If is local and temporary. See `docs/THIRD_PARTY_NOTICES.md` for the Anatomy design reference, local skill installation and illustration regeneration.
+The workflow uses calculated results after an explicit simulation. The register separately shows workflow risk and curated-overlay priority; they use different product assumptions and formulas. Unknown evidence remains unavailable. The curated assessment uses three real Apache CVEs, and only three assets have enough evidence for its index. Historical full-data caches are restored with `python scripts/evaluate_model.py --fetch`; committed model artifacts do not need retraining. See the Phase 3 runbook for metrics and limitations and `docs/THIRD_PARTY_NOTICES.md` for illustration notices.

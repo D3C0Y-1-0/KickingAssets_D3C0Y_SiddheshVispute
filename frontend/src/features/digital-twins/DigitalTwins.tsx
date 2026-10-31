@@ -1,40 +1,40 @@
-import { useState } from "react";
-import { RunSimulationButton } from "../../components/Simulation";
-import { useTwinRisk } from "../../hooks/twinRisk";
+import { useState } from 'react'
+import { RunSimulationButton } from '../../components/Simulation'
+import { useTwinRisk } from '../../hooks/twinRisk'
 
 // 5 Dedicated Anatomy Diagram Viewers
-import { SmartCityViewer } from "../../components/smartcity/SmartCityViewer";
-import { SubstationViewer } from "../../components/anatomy/SubstationViewer";
-import { WaterPlantViewer } from "../../components/waterplant/WaterPlantViewer";
-import { TransitViewer } from "../../components/transit/TransitViewer";
-import { HospitalViewer } from "../../components/hospital/HospitalViewer";
+import { SmartCityViewer } from '../../components/smartcity/SmartCityViewer'
+import { SubstationViewer } from '../../components/anatomy/SubstationViewer'
+import { WaterPlantViewer } from '../../components/waterplant/WaterPlantViewer'
+import { TransitViewer } from '../../components/transit/TransitViewer'
+import { HospitalViewer } from '../../components/hospital/HospitalViewer'
 
-import { INITIAL_DEMO_ASSETS } from "../../data/demoAssets";
-import { InfrastructureAsset } from "../../types/infrastructure";
+import { INITIAL_DEMO_ASSETS } from '../../data/demoAssets'
+import { InfrastructureAsset } from '../../types/infrastructure'
 
-type TwinMode = "smartcity" | "power" | "water" | "transit" | "hospital";
+type TwinMode = 'smartcity' | 'power' | 'water' | 'transit' | 'hospital'
 
 const VIEWS: { id: TwinMode; label: string; prefix: string | null }[] = [
-  { id: "smartcity", label: "Smart City (integrated)", prefix: null },
-  { id: "power", label: "Power grid & substation", prefix: "PWR" },
-  { id: "water", label: "Water treatment", prefix: "WTR" },
-  { id: "transit", label: "Transit & rail", prefix: "" },
-  { id: "hospital", label: "Trauma hospital", prefix: "HLT" },
-];
+  { id: 'smartcity', label: 'Smart City (integrated)', prefix: null },
+  { id: 'power', label: 'Power grid & substation', prefix: 'PWR' },
+  { id: 'water', label: 'Water treatment', prefix: 'WTR' },
+  { id: 'transit', label: 'Transit & rail', prefix: '' },
+  { id: 'hospital', label: 'Trauma hospital', prefix: 'HLT' },
+]
 
 export default function DigitalTwins() {
-  const [activeTab, setActiveTab] = useState<TwinMode>("smartcity");
+  const [activeTab, setActiveTab] = useState<TwinMode>('smartcity')
   const [selectedAsset, setSelectedAsset] = useState<InfrastructureAsset | null>(
-    INITIAL_DEMO_ASSETS[0]
-  );
-  const assets = INITIAL_DEMO_ASSETS;
-  const { run, risk } = useTwinRisk();
-  const prefix = VIEWS.find((v) => v.id === activeTab)?.prefix;
+    INITIAL_DEMO_ASSETS[0],
+  )
+  const assets = INITIAL_DEMO_ASSETS
+  const { run, risk } = useTwinRisk()
+  const prefix = VIEWS.find((v) => v.id === activeTab)?.prefix
   const flagged = (run?.assets ?? []).filter(
     (a) =>
       (prefix === null || (prefix && a.asset_id.startsWith(prefix))) &&
-      (a.risk.category === "critical" || a.risk.category === "high")
-  );
+      (a.risk.category === 'critical' || a.risk.category === 'high'),
+  )
 
   return (
     <div className="twin-page">
@@ -56,8 +56,10 @@ export default function DigitalTwins() {
         </label>
         <div className="twin-bar-alerts">
           {!run && <span>Run the simulation to light up the twin</span>}
-          {run && activeTab === "transit" && <span>Transit is not part of the scored scenario</span>}
-          {run && activeTab !== "transit" && flagged.length === 0 && (
+          {run && activeTab === 'transit' && (
+            <span>Transit is not part of the scored scenario</span>
+          )}
+          {run && activeTab !== 'transit' && flagged.length === 0 && (
             <span>No high or critical assets here</span>
           )}
           {flagged.slice(0, 4).map((a) => (
@@ -75,13 +77,18 @@ export default function DigitalTwins() {
           {flagged.length > 4 && <span>+{flagged.length - 4} more</span>}
         </div>
         <RunSimulationButton
-          variant={run ? "secondary" : "primary"}
-          label={run ? "Re-run" : "Run simulation"}
+          variant={run ? 'secondary' : 'primary'}
+          label={run ? 'Re-run' : 'Run simulation'}
         />
       </div>
 
+      <p className="twin-scenario-note">
+        Illustrative diagrams: readings, operational labels and criticality values are static
+        scenario assumptions, not telemetry. Only labelled ML risk badges come from the calculated
+        workflow.
+      </p>
       <div className="twin-stage">
-        {activeTab === "smartcity" && (
+        {activeTab === 'smartcity' && (
           <SmartCityViewer
             assets={assets}
             selectedAsset={selectedAsset}
@@ -89,7 +96,7 @@ export default function DigitalTwins() {
             risk={risk}
           />
         )}
-        {activeTab === "power" && (
+        {activeTab === 'power' && (
           <SubstationViewer
             assets={assets}
             selectedAsset={selectedAsset}
@@ -97,10 +104,10 @@ export default function DigitalTwins() {
             risk={risk}
           />
         )}
-        {activeTab === "water" && <WaterPlantViewer risk={risk} />}
-        {activeTab === "transit" && <TransitViewer />}
-        {activeTab === "hospital" && <HospitalViewer risk={risk} />}
+        {activeTab === 'water' && <WaterPlantViewer risk={risk} />}
+        {activeTab === 'transit' && <TransitViewer />}
+        {activeTab === 'hospital' && <HospitalViewer risk={risk} />}
       </div>
     </div>
-  );
+  )
 }

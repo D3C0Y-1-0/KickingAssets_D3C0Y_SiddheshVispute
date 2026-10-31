@@ -3,13 +3,24 @@
   user-select: none;
 }
 
-.substation-assembly .iso-fill { fill: #131924; }
-.substation-assembly .iso-top { fill: #253346; }
-.substation-assembly .iso-shade { fill: #151e2c; }
-.substation-assembly path.iso-edge { stroke: #64748b; stroke-width: 0.85px; }
+.substation-assembly .iso-fill {
+  fill: #131924;
+}
+.substation-assembly .iso-top {
+  fill: #253346;
+}
+.substation-assembly .iso-shade {
+  fill: #151e2c;
+}
+.substation-assembly path.iso-edge {
+  stroke: #64748b;
+  stroke-width: 0.85px;
+}
 
 .substation-interactive-group {
-  transition: opacity 0.2s ease, filter 0.2s ease;
+  transition:
+    opacity 0.2s ease,
+    filter 0.2s ease;
 }
 
 .substation-interactive-group:hover path.iso-edge {
@@ -58,7 +69,8 @@
 }
 
 @keyframes infra-red-pulse {
-  0%, 100% {
+  0%,
+  100% {
     filter: drop-shadow(0 0 3px rgba(255, 51, 68, 0.4));
   }
   50% {
@@ -67,7 +79,8 @@
 }
 
 @keyframes infra-amber-pulse {
-  0%, 100% {
+  0%,
+  100% {
     filter: drop-shadow(0 0 3px rgba(245, 158, 11, 0.4));
   }
   50% {
@@ -78,7 +91,9 @@
 /* Hotspot beacon styles */
 .substation-hotspot {
   transform: translate(-50%, -50%);
-  transition: transform 0.15s ease, background-color 0.15s ease;
+  transition:
+    transform 0.15s ease,
+    background-color 0.15s ease;
 }
 
 .substation-hotspot:hover {

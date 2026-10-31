@@ -93,7 +93,7 @@ export function AssetDrawer({ id, onClose }: { id: string | null; onClose: () =>
             </div>
             <h3>Risk assessment</h3>
             {detail.risk.status === 'computed' ? (
-              <div className="inset-note">
+              <div className="inset-note workflow-risk">
                 <RiskBadge category={detail.risk.category} /> score{' '}
                 <strong className="mono">{detail.risk.score?.toFixed(1)}</strong> · computed by{' '}
                 {detail.risk.scoring_version} over {detail.risk.model_version}
@@ -106,7 +106,7 @@ export function AssetDrawer({ id, onClose }: { id: string | null; onClose: () =>
                 </ul>
               </div>
             ) : (
-              <div className="inset-note">
+              <div className="inset-note workflow-risk">
                 Unavailable · {detail.risk.unavailable_reason} No score is assigned.
               </div>
             )}
@@ -139,7 +139,10 @@ export function AssetDrawer({ id, onClose }: { id: string | null; onClose: () =>
               </div>
             )}
             <h3>Curated Apache applicability evidence</h3>
-            <p className="small muted">A separate Phase 2A software overlay, assessed against three cached Apache CVEs. These assumptions differ from the workflow product map above.</p>
+            <p className="small muted">
+              A separate Phase 2A software overlay, assessed against three cached Apache CVEs. These
+              assumptions differ from the workflow product map above.
+            </p>
             <VulnerabilityEvidence assetId={detail.asset.id} />
             <h3>Curated review priority</h3>
             <RiskEvidence assetId={detail.asset.id} />

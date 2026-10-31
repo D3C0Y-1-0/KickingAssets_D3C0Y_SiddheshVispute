@@ -26,7 +26,7 @@ export default function Intelligence() {
   const [sector, setSector] = useState('all')
   const [band, setBand] = useState('all')
   const [search, setSearch] = useState('')
-  const report = query.data
+  const report = query.isError ? undefined : query.data
   const rows =
     report?.assets.filter(
       (a) =>
