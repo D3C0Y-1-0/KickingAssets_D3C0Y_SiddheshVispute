@@ -1,11 +1,13 @@
 import { useEffect, useRef } from 'react'
 import { ExternalLink, ShieldCheck, X } from 'lucide-react'
 import { Link } from 'react-router-dom'
-import { useAsset } from '../hooks/queries'
-import { EmptyState, QueryState, SampleBadge, SectorBadge } from './ui'
+import { useAsset, useLatestRun } from '../hooks/queries'
+import { QueryState, RiskBadge, SampleBadge, SectorBadge } from './ui'
 
 export function AssetDrawer({ id, onClose }: { id: string | null; onClose: () => void }) {
   const query = useAsset(id)
+  const latest = useLatestRun()
+  const simulated = latest.data?.assets.find((a) => a.asset_id === id)
   const dialog = useRef<HTMLDialogElement>(null)
   useEffect(() => {
     const el = dialog.current
@@ -87,15 +89,52 @@ export function AssetDrawer({ id, onClose }: { id: string | null; onClose: () =>
             <div className="inset-note">
               Configuration is a scenario assumption, not a verified observation.
             </div>
-            <h3>Vulnerability records</h3>
-            <EmptyState compact title="No vulnerability intelligence imported">
-              No CVEs have been matched. An empty record does not establish that this asset is
-              secure.
-            </EmptyState>
             <h3>Risk assessment</h3>
-            <div className="inset-note">
-              Unavailable · {detail.risk.unavailable_reason}. No score is assigned.
-            </div>
+            {detail.risk.status === 'computed' ? (
+              <div className="inset-note">
+                <RiskBadge category={detail.risk.category} /> score{' '}
+                <strong className="mono">{detail.risk.score?.toFixed(1)}</strong> · computed by{' '}
+                {detail.risk.scoring_version} over {detail.risk.model_version}
+                <ul className="list-plain">
+                  {(detail.risk.factors ?? []).map((f) => (
+                    <li key={f.name}>
+                      <strong>{f.name}</strong>: {f.explanation}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : (
+              <div className="inset-note">
+                Unavailable · {detail.risk.unavailable_reason} No score is assigned.
+              </div>
+            )}
+            <h3>Candidate vulnerabilities</h3>
+            {simulated ? (
+              <>
+                <p className="small muted">
+                  Assumed product family: {simulated.profile.label}. {simulated.candidate_count}{' '}
+                  candidate CVEs, {simulated.known_exploited_count} already in CISA KEV.
+                </p>
+                <ul className="list-plain">
+                  {simulated.top_vulnerabilities.slice(0, 5).map((v) => (
+                    <li key={v.cve_id}>
+                      <span className="mono">{v.cve_id}</span> ·{' '}
+                      {v.status === 'kev_listed'
+                        ? `known exploited (KEV ${v.kev_added})`
+                        : `ML top ${(100 - (v.priority_percentile ?? 0) * 100).toFixed(2)}%`}
+                    </li>
+                  ))}
+                </ul>
+                <Link className="text-link" to="/intelligence" onClick={onClose}>
+                  Full reasoning in Risk Intelligence
+                </Link>
+              </>
+            ) : (
+              <div className="inset-note">
+                Run the simulation to fetch and score candidate CVEs. An empty record does not
+                establish that this asset is secure.
+              </div>
+            )}
             <h3>Source & context</h3>
             <dl className="detail-grid">
               <dt>Provenance</dt>

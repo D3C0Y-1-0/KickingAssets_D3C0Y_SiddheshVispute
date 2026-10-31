@@ -2376,3 +2376,225 @@ tbody tr:hover {
     scroll-behavior: auto !important;
   }
 }
+
+/* Workflow additions */
+.simulation-run {
+  white-space: nowrap;
+}
+.run-error {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--risk-critical);
+  font-size: 12px;
+}
+.empty-action {
+  display: block;
+  margin-top: 14px;
+}
+.workflow-steps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin-bottom: 18px;
+}
+.workflow-step {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.workflow-step.done {
+  border-color: var(--accent-border);
+}
+.workflow-step h3 {
+  margin: 0;
+  font-size: 15px;
+}
+.workflow-step p {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 13px;
+  line-height: 1.5;
+}
+.step-number {
+  font-family: var(--mono, monospace);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: var(--accent);
+}
+.step-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: auto;
+  align-items: center;
+}
+.stage-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+.stage-list li {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+  font-size: 13px;
+  border-bottom: 1px solid var(--border-soft);
+  padding-bottom: 8px;
+}
+.stage-list small {
+  display: block;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+.bar-row {
+  display: grid;
+  grid-template-columns: 220px 1fr 70px;
+  gap: 12px;
+  align-items: center;
+  padding: 6px 0;
+  font-size: 13px;
+}
+.bar-track {
+  height: 8px;
+  background: var(--surface-inset);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.bar-track i {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+}
+.bar-track i.baseline {
+  background: var(--text-muted);
+}
+.metric-table td,
+.metric-table th {
+  white-space: nowrap;
+}
+.metric-table tr.baseline td {
+  color: var(--text-secondary);
+}
+.list-plain {
+  margin: 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+.callout {
+  border: 1px solid var(--accent-border);
+  background: var(--accent-soft);
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-size: 13px;
+  line-height: 1.55;
+}
+.callout.warn {
+  border-color: #6b5a2c;
+  background: #221d10;
+}
+.cve-form {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.cve-form input {
+  flex: 1;
+  min-width: 220px;
+}
+.driver-chip {
+  display: inline-flex;
+  gap: 6px;
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  margin: 2px 4px 2px 0;
+  color: var(--text-secondary);
+}
+.driver-chip.up {
+  border-color: var(--risk-high);
+}
+.split-layout {
+  display: grid;
+  grid-template-columns: minmax(300px, 380px) 1fr;
+  gap: 18px;
+  align-items: start;
+}
+.rank-list {
+  display: grid;
+  gap: 4px;
+  max-height: 70vh;
+  overflow: auto;
+}
+.rank-item {
+  display: grid;
+  grid-template-columns: 28px 1fr auto auto;
+  gap: 10px;
+  align-items: center;
+  text-align: left;
+  padding: 9px 10px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+.rank-item:hover,
+.rank-item.active {
+  background: var(--surface-hover);
+  border-color: var(--border);
+}
+.rank-item small {
+  display: block;
+  color: var(--text-muted);
+}
+.component-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin: 12px 0;
+}
+.component-grid > div {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 12px;
+  background: var(--surface-inset);
+}
+.component-grid strong {
+  display: block;
+  font-size: 20px;
+}
+.component-grid small {
+  color: var(--text-muted);
+}
+.route {
+  font-family: var(--mono, monospace);
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+.delta-down {
+  color: var(--risk-low);
+}
+.delta-up {
+  color: var(--risk-critical);
+}
+@media (max-width: 960px) {
+  .workflow-steps,
+  .component-grid,
+  .split-layout {
+    grid-template-columns: 1fr;
+  }
+  .bar-row {
+    grid-template-columns: 140px 1fr 60px;
+  }
+}

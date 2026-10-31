@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { useQueryClient } from '@tanstack/react-query'
 import {
   ArrowRight,
   ArrowUpRight,
@@ -8,28 +7,26 @@ import {
   Droplets,
   HeartPulse,
   Network,
-  RotateCw,
   ShieldAlert,
   Waypoints,
   Zap,
 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts'
-import { useAssets, useServices, useSnapshots } from '../../hooks/queries'
+import { useAssets, useLatestRun, useServices } from '../../hooks/queries'
 import { AssetDrawer } from '../../components/AssetDrawer'
+import { ProvenanceNotice, RunSimulationButton } from '../../components/Simulation'
 import {
   EmptyState,
   PageHeading,
   Panel,
-  PreviewNotice,
   QueryState,
   RiskBadge,
-  SampleBadge,
   SectorBadge,
   sectorName,
   TextLink,
 } from '../../components/ui'
-import { demoFor, demoRisk, categoryLabels } from '../../fixtures/previews'
+import { categoryLabels } from '../../lib/risk'
 import type { Sector } from '../../api/client'
 import Station from '../../components/illustration/Station'
 
@@ -38,34 +35,27 @@ const sectorIcons = { power: Zap, water: Droplets, healthcare: HeartPulse }
 export default function Overview() {
   const assets = useAssets()
   const services = useServices()
-  const snapshots = useSnapshots()
-  const client = useQueryClient()
+  const latest = useLatestRun()
   const [sector, setSector] = useState<Sector>('power')
   const [selected, setSelected] = useState<string | null>(null)
   if (assets.isPending || assets.isError)
     return <QueryState pending={assets.isPending} error={assets.error} retry={assets.refetch} />
   const rows = assets.data
-  const priority = rows
-    .filter((a) => demoFor(a.id))
-    .sort((a, b) => demoFor(b.id)!.score - demoFor(a.id)!.score)
-  const distribution = categoryLabels.map((name) => ({
-    name,
-    value: priority.filter((a) => demoFor(a.id)?.category === name).length,
-  }))
+  const run = latest.data ?? null
   const sectorCount = new Set(rows.map((a) => a.sector)).size
+  const counts = Object.fromEntries((run?.category_counts ?? []).map((c) => [c.category, c.count]))
+  const distribution = categoryLabels.map((name) => ({ name, value: counts[name] ?? 0 }))
+  const index = run?.city_risk.score ?? null
   return (
     <>
       <PageHeading
         eyebrow="WORKSPACE / COMMAND CENTER"
         title="Command overview"
-        description="A connected view of critical infrastructure. A clearer path to resilience."
+        description="Simulate, assess with the ML model, then act. Every score below is computed from real vulnerability data."
         actions={
           <>
-            <button className="button secondary" onClick={() => void client.invalidateQueries()}>
-              <RotateCw size={14} />
-              Refresh inventory
-            </button>
-            <Link to="/infrastructure" className="button primary">
+            <RunSimulationButton label={run ? 'Re-run simulation' : 'Run simulation'} />
+            <Link to="/infrastructure" className="button secondary">
               <Network size={16} />
               Explore infrastructure
               <ArrowUpRight size={14} />
@@ -73,6 +63,65 @@ export default function Overview() {
           </>
         }
       />
+      <div className="workflow-steps">
+        <section className={`workflow-step ${run ? 'done' : ''}`}>
+          <span className="step-number">STEP 1 · SIMULATE</span>
+          <h3>Fetch vulnerabilities for every asset</h3>
+          <p>
+            Each asset is mapped to a real product family, its recent CVEs are pulled from NVD and
+            scored live by the trained model.
+          </p>
+          <div className="step-actions">
+            <RunSimulationButton
+              variant={run ? 'secondary' : 'primary'}
+              label={run ? 'Re-run' : 'Run simulation'}
+            />
+            {run && <span className="subtle-label mono">{run.id}</span>}
+          </div>
+        </section>
+        <section className={`workflow-step ${run ? 'done' : ''}`}>
+          <span className="step-number">STEP 2 · ASSESS</span>
+          <h3>ML-scored risk and its reasons</h3>
+          <p>
+            Vulnerability signal × exposure × conditional service impact, with the drivers behind
+            every CVE.
+          </p>
+          <div className="step-actions">
+            {run ? (
+              <Link className="button secondary" to="/intelligence">
+                Open risk intelligence <ArrowRight size={14} />
+              </Link>
+            ) : (
+              <span className="subtle-label">Needs step 1</span>
+            )}
+            <Link className="text-link" to="/ml">
+              ML Lab
+            </Link>
+          </div>
+        </section>
+        <section className="workflow-step">
+          <span className="step-number">STEP 3 · ACT</span>
+          <h3>Preventive actions and projected effect</h3>
+          <p>
+            Patch prioritization, segmentation, access control, monitoring and incident-response
+            planning, with a greedy plan.
+          </p>
+          <div className="step-actions">
+            {run ? (
+              <>
+                <Link className="button secondary" to="/what-if">
+                  What-if <ArrowRight size={14} />
+                </Link>
+                <Link className="button secondary" to="/remediation">
+                  Remediation plan <ArrowRight size={14} />
+                </Link>
+              </>
+            ) : (
+              <span className="subtle-label">Needs step 1</span>
+            )}
+          </div>
+        </section>
+      </div>
       <div className="metric-grid">
         <section className="metric-card city-risk">
           <div className="metric-label">
@@ -80,16 +129,25 @@ export default function Overview() {
             <ShieldAlert size={16} />
           </div>
           <div className="metric-value">
-            {demoRisk.cityIndex}
+            {index == null ? '—' : index.toFixed(1)}
             <span>/ 100</span>
-            <span className="risk-badge high">Elevated</span>
+            {run?.city_risk.category && (
+              <span className={`risk-badge ${run.city_risk.category}`}>
+                {run.city_risk.category}
+              </span>
+            )}
           </div>
           <div className="risk-scale">
-            <i />
+            <i style={{ width: `${index ?? 0}%` }} />
           </div>
           <div className="metric-foot">
-            <span className="tiny-demo">DEMO PREVIEW</span>
-            <span>Relative index · not incident probability</span>
+            {run ? (
+              <span>
+                Computed · {run.city_risk.scoring_version} · relative index, not a probability
+              </span>
+            ) : (
+              <span>Not simulated yet</span>
+            )}
           </div>
         </section>
         <section className="metric-card">
@@ -103,7 +161,9 @@ export default function Overview() {
           </div>
           <div className="metric-foot">
             <span className="mint-dot" />
-            Loaded from scenario inventory
+            {run
+              ? `${run.assets.reduce((n, a) => n + a.candidate_count, 0).toLocaleString()} candidate CVE pairs scored`
+              : 'Loaded from scenario inventory'}
           </div>
         </section>
         <section className="metric-card">
@@ -131,7 +191,11 @@ export default function Overview() {
             <span className="metric-unit">defined</span>
           </div>
           <div className="metric-foot">
-            {services.isError ? 'Service API unavailable' : 'Service status not assessed'}
+            {services.isError
+              ? 'Service API unavailable'
+              : run
+                ? `${run.services.filter((s) => s.worst_disruption_fraction > 0).length} with a plausible disruption`
+                : 'Not simulated yet'}
           </div>
         </section>
       </div>
@@ -190,60 +254,60 @@ export default function Overview() {
             <span>Illustration · no telemetry</span>
           </div>
         </Panel>
-        <Panel
-          title="Risk distribution"
-          aside={<SampleBadge>Preview</SampleBadge>}
-          className="distribution-panel"
-        >
-          <div className="risk-donut">
-            <ResponsiveContainer width="100%" height={154}>
-              <PieChart>
-                <Pie
-                  data={distribution}
-                  dataKey="value"
-                  innerRadius={54}
-                  outerRadius={67}
-                  startAngle={90}
-                  endAngle={-270}
-                  paddingAngle={5}
-                  stroke="none"
-                  isAnimationActive={false}
-                >
-                  {distribution.map((d) => (
-                    <Cell key={d.name} fill={`var(--risk-${d.name})`} />
-                  ))}
-                </Pie>
-                <Tooltip
-                  contentStyle={{
-                    background: 'var(--surface-raised)',
-                    border: '1px solid var(--border)',
-                    color: 'var(--text)',
-                  }}
-                  formatter={(v) => [`${v} sample labels`, 'Preview']}
-                />
-              </PieChart>
-            </ResponsiveContainer>
-            <div className="donut-center">
-              <strong>{priority.length}</strong>
-              <small>SAMPLE LABELS</small>
-            </div>
-          </div>
-          <div className="distribution-legend">
-            {distribution.map((d) => (
-              <div key={d.name}>
-                <span>
-                  <i className={`legend-dot ${d.name}`} />
-                  {d.name}
-                </span>
-                <strong className="mono">{d.value.toString().padStart(2, '0')}</strong>
+        <Panel title="Risk distribution" className="distribution-panel">
+          {run ? (
+            <>
+              <div className="risk-donut">
+                <ResponsiveContainer width="100%" height={154}>
+                  <PieChart>
+                    <Pie
+                      data={distribution}
+                      dataKey="value"
+                      innerRadius={54}
+                      outerRadius={67}
+                      startAngle={90}
+                      endAngle={-270}
+                      paddingAngle={5}
+                      stroke="none"
+                      isAnimationActive={false}
+                    >
+                      {distribution.map((d) => (
+                        <Cell key={d.name} fill={`var(--risk-${d.name})`} />
+                      ))}
+                    </Pie>
+                    <Tooltip
+                      contentStyle={{
+                        background: 'var(--surface-raised)',
+                        border: '1px solid var(--border)',
+                        color: 'var(--text)',
+                      }}
+                      formatter={(v) => [`${v} assets`, 'Computed']}
+                    />
+                  </PieChart>
+                </ResponsiveContainer>
+                <div className="donut-center">
+                  <strong>{run.assets.length}</strong>
+                  <small>ASSETS SCORED</small>
+                </div>
               </div>
-            ))}
-          </div>
-          <div className="panel-footnote">
-            {rows.length - priority.length} assets without a preview label.
-            <br />
-            All calculated assessments are unavailable.
-          </div>
+              <div className="distribution-legend">
+                {distribution.map((d) => (
+                  <div key={d.name}>
+                    <span>
+                      <i className={`legend-dot ${d.name}`} />
+                      {d.name}
+                    </span>
+                    <strong className="mono">{d.value.toString().padStart(2, '0')}</strong>
+                  </div>
+                ))}
+              </div>
+              <div className="panel-footnote">Bands: critical ≥ 60, high ≥ 40, medium ≥ 20.</div>
+            </>
+          ) : (
+            <EmptyState compact title="No assessment yet">
+              Run the simulation to score every asset.
+            </EmptyState>
+          )}
         </Panel>
       </div>
       <div className="overview-bottom">
@@ -251,70 +315,82 @@ export default function Overview() {
           title="Priority assets"
           aside={
             <div className="inline-items">
-              <SampleBadge>Illustrative ranking</SampleBadge>
-              <TextLink to="/assets">View register</TextLink>
+              <TextLink to="/intelligence">Risk intelligence</TextLink>
             </div>
           }
           className="priority-panel"
         >
-          <div className="table-scroll">
-            <table>
-              <thead>
-                <tr>
-                  <th>ASSET / IDENTIFIER</th>
-                  <th>SECTOR</th>
-                  <th>DEMO RISK</th>
-                  <th>PREVIEW INDEX</th>
-                  <th>
-                    <span className="sr-only">Inspect</span>
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {priority.slice(0, 4).map((asset) => (
-                  <tr key={asset.id}>
-                    <td>
-                      <button className="asset-name" onClick={() => setSelected(asset.id)}>
-                        {asset.name}
-                      </button>
-                      <small className="mono muted">{asset.id}</small>
-                    </td>
-                    <td>
-                      <SectorBadge sector={asset.sector} />
-                    </td>
-                    <td>
-                      <RiskBadge category={demoFor(asset.id)?.category} />
-                    </td>
-                    <td>
-                      <div className="score-cell">
-                        <span className="mono">{demoFor(asset.id)?.score}</span>
-                        <span className="score-track">
-                          <i
-                            style={{
-                              width: `${demoFor(asset.id)?.score}%`,
-                              background: `var(--risk-${demoFor(asset.id)?.category})`,
-                            }}
-                          />
-                        </span>
-                      </div>
-                    </td>
-                    <td>
-                      <button
-                        className="icon-button"
-                        aria-label={`Inspect ${asset.name}`}
-                        onClick={() => setSelected(asset.id)}
-                      >
-                        <ArrowUpRight size={16} />
-                      </button>
-                    </td>
+          {run ? (
+            <div className="table-scroll">
+              <table>
+                <thead>
+                  <tr>
+                    <th>ASSET / IDENTIFIER</th>
+                    <th>SECTOR</th>
+                    <th>RISK</th>
+                    <th>SCORE</th>
+                    <th>MAIN DRIVER</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-          <div className="panel-footnote">
-            Preview scores demonstrate the interface. They are not outputs of a risk model.
-          </div>
+                </thead>
+                <tbody>
+                  {run.assets.slice(0, 6).map((asset) => {
+                    const category = asset.risk.category
+                    const driver = asset.top_vulnerabilities[0]
+                    return (
+                      <tr key={asset.asset_id}>
+                        <td>
+                          <button
+                            className="asset-name"
+                            onClick={() => setSelected(asset.asset_id)}
+                          >
+                            {asset.name}
+                          </button>
+                          <small className="mono muted">{asset.asset_id}</small>
+                        </td>
+                        <td>
+                          <SectorBadge sector={asset.sector} />
+                        </td>
+                        <td>
+                          <RiskBadge category={category} />
+                        </td>
+                        <td>
+                          <div className="score-cell">
+                            <span className="mono">{asset.risk.score?.toFixed(1)}</span>
+                            <span className="score-track">
+                              <i
+                                style={{
+                                  width: `${asset.risk.score ?? 0}%`,
+                                  background: `var(--risk-${category})`,
+                                }}
+                              />
+                            </span>
+                          </div>
+                        </td>
+                        <td className="small">
+                          {driver ? (
+                            <>
+                              <span className="mono">{driver.cve_id}</span>
+                              <small className="muted">
+                                {driver.status === 'kev_listed'
+                                  ? ' known exploited (CISA KEV)'
+                                  : ` ML top ${(100 - (driver.priority_percentile ?? 0) * 100).toFixed(1)}%`}
+                              </small>
+                            </>
+                          ) : (
+                            '—'
+                          )}
+                        </td>
+                      </tr>
+                    )
+                  })}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <EmptyState compact title="No ranking yet">
+              Assets are ranked by their computed score after a simulation.
+            </EmptyState>
+          )}
         </Panel>
         <Panel
           title="Essential services"
@@ -328,6 +404,7 @@ export default function Overview() {
           <div className="services-list">
             {services.data?.map((service) => {
               const Icon = sectorIcons[service.sector]
+              const risk = run?.services.find((s) => s.service_id === service.id)
               return (
                 <Link
                   className="service-item"
@@ -340,7 +417,9 @@ export default function Overview() {
                   <div>
                     <strong>{service.name}</strong>
                     <small>
-                      {service.requirements.length} requirement groups · Scenario definition
+                      {risk
+                        ? `Worst plausible disruption ${(risk.worst_disruption_fraction * 100).toFixed(0)}% of 24 h (upper bound)`
+                        : `${service.requirements.length} requirement groups · Scenario definition`}
                     </small>
                   </div>
                   <ArrowUpRight size={14} />
@@ -349,56 +428,40 @@ export default function Overview() {
             })}
           </div>
           <div className="inset-note small-note">
-            Dependency definitions include redundancy and backup assumptions. Operational status is
-            not monitored.
+            Conditional on assumed compromise effects, with redundancy and backups applied; not a
+            forecast and not monitored status.
           </div>
         </Panel>
       </div>
       <Panel
-        title="Assessment history"
+        title="Last simulation"
         aside={
           <span className="subtle-label">
             <Clock3 size={13} />
-            SNAPSHOT RECORD
+            {run ? new Date(run.created_at).toLocaleString('en-GB') : 'NOT RUN'}
           </span>
         }
         className="history-panel"
       >
-        <QueryState
-          pending={snapshots.isPending}
-          error={snapshots.error}
-          retry={snapshots.refetch}
-        />
-        {snapshots.data?.map((snapshot) => (
-          <div className="timeline-row" key={snapshot.snapshot_id}>
-            <span className="timeline-node" />
-            <div>
-              <strong>Baseline scenario initialized</strong>
-              <p>30 fictional assets · Three sectors · Two independent relationship graphs</p>
-            </div>
-            <span className="badge neutral">Inventory snapshot</span>
-            <time className="mono" dateTime={snapshot.created_at}>
-              {new Date(snapshot.created_at).toLocaleDateString('en-GB', {
-                day: '2-digit',
-                month: 'short',
-                year: 'numeric',
-                timeZone: 'UTC',
-              })}
-            </time>
-          </div>
-        ))}
-        {snapshots.data?.length === 0 && (
-          <EmptyState compact title="No snapshots yet">
-            Assessment history will appear after a snapshot is stored.
+        {run ? (
+          <ol className="stage-list">
+            {run.stages.map((s) => (
+              <li key={s.name}>
+                <span>
+                  <strong>{s.name}</strong>
+                  <small>{s.detail}</small>
+                </span>
+                <span className="mono muted">{s.seconds.toFixed(2)} s</span>
+              </li>
+            ))}
+          </ol>
+        ) : (
+          <EmptyState compact title="No simulation yet">
+            Press Run simulation. The stages and timings of the run will be listed here.
           </EmptyState>
         )}
-        <div className="timeline-pending">
-          <span className="timeline-node hollow" />
-          <span>Risk assessment history will appear when the scoring engine is connected.</span>
-          <span className="subtle-label">PLANNED</span>
-        </div>
       </Panel>
-      <PreviewNotice />
+      <ProvenanceNotice />
       <AssetDrawer id={selected} onClose={() => setSelected(null)} />
     </>
   )

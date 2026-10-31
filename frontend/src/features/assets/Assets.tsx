@@ -8,13 +8,14 @@ import {
   SlidersHorizontal,
 } from 'lucide-react'
 import { useSearchParams } from 'react-router-dom'
-import { useAssets } from '../../hooks/queries'
+import { useAssets, useLatestRun } from '../../hooks/queries'
 import { AssetDrawer } from '../../components/AssetDrawer'
 import {
   EmptyState,
   PageHeading,
   Panel,
   QueryState,
+  RiskBadge,
   SampleBadge,
   SectorBadge,
 } from '../../components/ui'
@@ -23,6 +24,8 @@ import type { Asset } from '../../api/client'
 type SortKey = 'name' | 'sector' | 'asset_type' | 'criticality' | 'exposure'
 export default function Assets() {
   const query = useAssets()
+  const latest = useLatestRun()
+  const riskById = new Map((latest.data?.assets ?? []).map((a) => [a.asset_id, a.risk]))
   const [params, setParams] = useSearchParams()
   const search = params.get('q') ?? ''
   const [sector, setSector] = useState('all')
@@ -166,7 +169,14 @@ export default function Assets() {
                         <span className={`exposure ${a.exposure}`}>{a.exposure}</span>
                       </td>
                       <td>
-                        <span className="muted">Not assessed</span>
+                        {riskById.get(a.id)?.score != null ? (
+                          <>
+                            <RiskBadge category={riskById.get(a.id)?.category} />{' '}
+                            <span className="mono">{riskById.get(a.id)?.score?.toFixed(1)}</span>
+                          </>
+                        ) : (
+                          <span className="muted">Run the simulation</span>
+                        )}
                       </td>
                       <td>
                         <button
@@ -201,8 +211,8 @@ export default function Assets() {
       </Panel>
       <div className="preview-notice">
         <span>
-          Calculated risk and vulnerability findings will appear here after the relevant engines are
-          implemented. Missing scores are never treated as zero.
+          Scores come from the latest simulation (ML-scored real CVEs, exposure and conditional
+          impact). Before a simulation there is no score, and missing is never shown as zero.
         </span>
       </div>
       <AssetDrawer id={selected} onClose={() => setSelected(null)} />

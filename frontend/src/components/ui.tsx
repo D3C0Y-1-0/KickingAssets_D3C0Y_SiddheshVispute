@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react'
 import { ArrowUpRight, CircleAlert, Database, LoaderCircle, RotateCw } from 'lucide-react'
 import { Link } from 'react-router-dom'
-import type { DemoCategory } from '../fixtures/previews'
+import type { Category } from '../lib/risk'
 import type { Sector } from '../api/client'
 
 export const sectorName: Record<Sector, string> = {
@@ -17,7 +17,7 @@ export function SampleBadge({ children = 'Sample data' }: { children?: ReactNode
     </span>
   )
 }
-export function RiskBadge({ category }: { category?: DemoCategory }) {
+export function RiskBadge({ category }: { category?: Category | null }) {
   return (
     <span className={`risk-badge ${category ?? 'unassessed'}`}>
       <span className="status-dot" />

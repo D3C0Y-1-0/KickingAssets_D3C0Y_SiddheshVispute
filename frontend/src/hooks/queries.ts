@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { api, type GraphMode } from '../api/client'
 
 export function useScenario() {
@@ -52,3 +52,46 @@ export function useSnapshots() {
     enabled: !!context.scenario_id,
   })
 }
+
+export function useMlOverview() {
+  return useQuery({
+    queryKey: ['ml', 'overview'],
+    queryFn: ({ signal }) => api.mlOverview(signal),
+    staleTime: 60_000,
+  })
+}
+export function useLatestRun() {
+  return useQuery({
+    queryKey: ['simulation', 'latest'],
+    queryFn: ({ signal }) => api.latestRun(signal),
+    staleTime: Infinity,
+  })
+}
+export function useRunSimulation() {
+  const client = useQueryClient()
+  const context = useContext()
+  return useMutation({
+    mutationFn: () => api.runSimulation(context),
+    onSuccess: (run) => {
+      client.setQueryData(['simulation', 'latest'], run)
+      void client.invalidateQueries({ queryKey: ['asset'] })
+      void client.invalidateQueries({ queryKey: ['actions'] })
+    },
+  })
+}
+export function useActionOptions(enabled: boolean) {
+  return useQuery({
+    queryKey: ['actions', 'options'],
+    queryFn: ({ signal }) => api.actionOptions(signal),
+    enabled,
+  })
+}
+export function useWhatIf() {
+  return useMutation({ mutationFn: (body: Parameters<typeof api.whatIf>[0]) => api.whatIf(body) })
+}
+export function useOptimize() {
+  return useMutation({
+    mutationFn: (body: Parameters<typeof api.optimize>[0]) => api.optimize(body),
+  })
+}
+export { useContext as useScenarioContext }

@@ -4,6 +4,7 @@ import {
   Activity,
   ArrowUpRight,
   BookOpen,
+  BrainCircuit,
   ChevronDown,
   ChevronRight,
   CircleHelp,
@@ -31,11 +32,13 @@ const Intelligence = lazy(() => import('../features/intelligence/Intelligence'))
 const WhatIf = lazy(() => import('../features/whatif/WhatIf'))
 const Remediation = lazy(() => import('../features/remediation/Remediation'))
 const Methodology = lazy(() => import('../features/methodology/Methodology'))
+const MlLab = lazy(() => import('../features/ml/MlLab'))
 const navigation = [
   { path: '/', name: 'Command Overview', icon: Grid2X2 },
   { path: '/infrastructure', name: 'Infrastructure Map', icon: Network },
   { path: '/assets', name: 'Asset & Risk Register', icon: Layers },
   { path: '/intelligence', name: 'Risk Intelligence', icon: Activity },
+  { path: '/ml', name: 'ML Lab', icon: BrainCircuit },
   { path: '/what-if', name: 'What-If Lab', icon: FlaskConical },
   { path: '/remediation', name: 'Remediation Plan', icon: ListChecks },
 ]
@@ -127,7 +130,7 @@ export default function App() {
             >
               <Icon size={18} />
               <span>{name}</span>
-              {path === '/what-if' && <span className="nav-tag">LAB</span>}
+              {path === '/what-if' && <span className="nav-tag">ACT</span>}
             </NavLink>
           ))}
         </nav>
@@ -142,21 +145,22 @@ export default function App() {
           <div className="foundation-note">
             <div>
               <span className="status-dot" />
-              PHASE 01 · FOUNDATION
+              PROTOTYPE · LIVE WORKFLOW
             </div>
             <p>
-              A clear view of the system.
-              <br />A foundation for what comes next.
+              Simulate, assess with ML,
+              <br />
+              then act.
             </p>
             <Link to="/methodology">
-              View implementation status
+              How it works
               <ArrowUpRight size={13} />
             </Link>
           </div>
           <div className="sidebar-footer">
             <span className="avatar">GS</span>
             <div>
-              Local demonstration<small>Read-only scenario environment</small>
+              Local demonstration<small>Fictional city · real CVE data</small>
             </div>
             <ShieldCheck size={16} />
           </div>
@@ -213,7 +217,10 @@ export default function App() {
         <div className="environment-bar">
           <div>
             <SampleBadge>Sample scenario</SampleBadge>
-            <span>Fictional infrastructure. Illustrative risk previews. No live monitoring.</span>
+            <span>
+              Fictional infrastructure, real vulnerability data. Scores are computed by the ML model
+              after a simulation. No live monitoring.
+            </span>
           </div>
           <Link to="/methodology">
             About this environment
@@ -236,6 +243,7 @@ export default function App() {
                 <Route path="/infrastructure" element={<Infrastructure />} />
                 <Route path="/assets" element={<Assets />} />
                 <Route path="/intelligence" element={<Intelligence />} />
+                <Route path="/ml" element={<MlLab />} />
                 <Route path="/what-if" element={<WhatIf />} />
                 <Route path="/remediation" element={<Remediation />} />
                 <Route path="/methodology" element={<Methodology />} />
@@ -261,7 +269,7 @@ export default function App() {
             before the incident.
           </span>
           <span>
-            PS03 · D3COY <span className="muted">/</span> Foundation v0.1
+            PS03 · D3COY <span className="muted">/</span> Prototype v0.2
           </span>
         </footer>
       </div>

@@ -394,7 +394,7 @@ class Health(Contract):
     status: Literal["ok", "degraded"]
     database: Literal["ready", "unavailable"]
     application_version: str
-    intelligence: Literal["not_implemented"] = "not_implemented"
+    intelligence: Literal["ready", "unavailable", "not_implemented"] = "not_implemented"
 
 
 class ApiError(Contract):

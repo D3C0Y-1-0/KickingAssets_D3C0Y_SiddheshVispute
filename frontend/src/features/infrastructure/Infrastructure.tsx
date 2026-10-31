@@ -3,7 +3,7 @@ import cytoscape from 'cytoscape'
 import type { Core, EventObject, StylesheetJson } from 'cytoscape'
 import { ArrowRight, ArrowUpRight, Focus, Minus, Network, Plus, Search, X } from 'lucide-react'
 import { useSearchParams } from 'react-router-dom'
-import { useGraph } from '../../hooks/queries'
+import { useGraph, useLatestRun } from '../../hooks/queries'
 import type { Asset, GraphMode } from '../../api/client'
 import { AssetDrawer } from '../../components/AssetDrawer'
 import {
@@ -14,7 +14,7 @@ import {
   SampleBadge,
   SectorBadge,
 } from '../../components/ui'
-import { categoryLabels, demoFor } from '../../fixtures/previews'
+import { categoryLabels } from '../../lib/risk'
 
 export default function Infrastructure() {
   const [params, setParams] = useSearchParams()
@@ -31,6 +31,9 @@ export default function Infrastructure() {
   const [detail, setDetail] = useState<string | null>(null)
   const [search, setSearch] = useState('')
   const [preview, setPreview] = useState(false)
+  const latestRun = useLatestRun()
+  const runAssets = latestRun.data?.assets
+  const riskOf = (id: string) => runAssets?.find((a) => a.asset_id === id)?.risk
   const [zoom, setZoom] = useState(100)
   const selection = useRef(selected)
   useEffect(() => {
@@ -121,8 +124,8 @@ export default function Infrastructure() {
     const getColor = (asset: Asset) =>
       colors
         .getPropertyValue(
-          preview && demoFor(asset.id)
-            ? `--risk-${demoFor(asset.id)!.category}`
+          preview && riskOf(asset.id)?.category
+            ? `--risk-${riskOf(asset.id)!.category}`
             : `--sector-${asset.sector}`,
         )
         .trim()
@@ -177,7 +180,7 @@ export default function Infrastructure() {
       c.destroy()
       cy.current = null
     }
-  }, [query.data, nodes, edges, mode, preview, focusId])
+  }, [query.data, nodes, edges, mode, preview, focusId, runAssets])
   useEffect(() => {
     const c = cy.current
     if (!c) return
@@ -374,14 +377,18 @@ export default function Infrastructure() {
                   <dt>Criticality</dt>
                   <dd>{active.criticality}</dd>
                   <dt>Assessment</dt>
-                  <dd>Unavailable</dd>
+                  <dd>
+                    {riskOf(active.id)?.score != null
+                      ? `${riskOf(active.id)!.score!.toFixed(1)} (${riskOf(active.id)!.category})`
+                      : 'Run the simulation'}
+                  </dd>
                   <dt>Relationships</dt>
                   <dd>{selectedEdges.length} in this view</dd>
                 </dl>
-                {preview && demoFor(active.id) && (
+                {riskOf(active.id)?.category && (
                   <div className="inline-items">
-                    <RiskBadge category={demoFor(active.id)!.category} />
-                    <span className="tiny-demo">DEMO ONLY</span>
+                    <RiskBadge category={riskOf(active.id)!.category} />
+                    <span className="subtle-label">COMPUTED</span>
                   </div>
                 )}
                 <button
@@ -420,17 +427,19 @@ export default function Infrastructure() {
               <input
                 type="checkbox"
                 checked={preview}
+                disabled={!runAssets}
                 onChange={(e) => setPreview(e.target.checked)}
               />
-              Show demo risk colors
+              Color by computed risk
             </label>
             <p className="muted small">
-              Preview colors are illustrative, not calculated assessments. Unlabelled assets retain
-              sector colors.
+              {runAssets
+                ? 'Colors come from the latest simulation.'
+                : 'Run the simulation on the overview to color assets by risk.'}
             </p>
             {preview && (
               <div className="demo-risk-legend">
-                <span className="tiny-demo">DEMO LABELS</span>
+                <span className="subtle-label">COMPUTED</span>
                 {categoryLabels.map((category) => (
                   <span key={category}>
                     <i className={`legend-dot ${category}`} />

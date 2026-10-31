@@ -181,7 +181,7 @@ def _snapshots(first: date, last: date) -> list[date]:
     return days
 
 
-def _history_features(
+def history_features(
     snapshot_day: int,
     vendor: str | None,
     product: str | None,
@@ -207,26 +207,12 @@ def _history_features(
     return (v_now, v_cves, v_now / (v_cves + 20), v_recent, p_now, cwe_now, cwe_recent)
 
 
-def build_panel(
-    horizon_days: int = 180,
-    min_age_days: int = 30,
-    negative_rate: float = 0.03,
-    seed: int = 0,
-    *,
-    use_cache: bool = True,
-) -> tuple[pd.DataFrame, dict]:
-    derived = CACHE / "derived"
-    stem = f"panel_h{horizon_days}_age{min_age_days}_r{negative_rate}_s{seed}"
-    cache_path, meta_path = derived / f"{stem}.parquet", derived / f"{stem}.json"
-    if use_cache and cache_path.exists() and meta_path.exists():
-        return pd.read_parquet(cache_path), json.loads(meta_path.read_text())
+def history_context(kev: pd.DataFrame, nvd: pd.DataFrame) -> dict:
+    """Lookup tables and aligned arrays shared by panel building and live scoring.
 
-    kev, released = load_kev()
-    nvd = load_nvd().reset_index(drop=True)
-    cutoff = released - timedelta(days=horizon_days)
+    Everything is indexed by position in ``nvd`` (which must have a clean RangeIndex)."""
     nvd_index = nvd.set_index("cve_id")
     kev_added = {r.cve_id: to_epoch_day(r.added) for r in kev.itertuples()}
-
     vendor_kev: dict[str, list[int]] = defaultdict(list)
     product_kev: dict[str, list[int]] = defaultdict(list)
     cwe_kev: dict[str, list[int]] = defaultdict(list)
@@ -247,20 +233,49 @@ def build_panel(
     for r in nvd[["vendor", "published"]].itertuples():
         if _s(r.vendor):
             vendor_cve[r.vendor].append(to_epoch_day(r.published))
-    tables = {
-        "vendor_kev": _sorted_days(vendor_kev),
-        "product_kev": _sorted_days(product_kev),
-        "cwe_kev": _sorted_days(cwe_kev),
-        "vendor_cve": _sorted_days(vendor_cve),
+    never = np.iinfo(np.int64).max // 4
+    return {
+        "kev_added": kev_added,
+        "tables": {
+            "vendor_kev": _sorted_days(vendor_kev),
+            "product_kev": _sorted_days(product_kev),
+            "cwe_kev": _sorted_days(cwe_kev),
+            "vendor_cve": _sorted_days(vendor_cve),
+        },
+        "published": np.array([to_epoch_day(d) for d in nvd["published"]], dtype=np.int64),
+        "added": np.array([kev_added.get(c, never) for c in nvd["cve_id"]], dtype=np.int64),
+        "vendors": [_s(v) for v in nvd["vendor"]],
+        "products": [_s(p) for p in nvd["product"]],
+        "cwe_lists": nvd["cwes"].tolist(),
+        "static": nvd.drop(columns=["vendor", "product", "cwes"]),
     }
 
-    published = np.array([to_epoch_day(d) for d in nvd["published"]], dtype=np.int64)
-    never = np.iinfo(np.int64).max // 4
-    added = np.array([kev_added.get(c, never) for c in nvd["cve_id"]], dtype=np.int64)
-    vendors = [_s(v) for v in nvd["vendor"]]
-    products = [_s(p) for p in nvd["product"]]
-    cwe_lists = nvd["cwes"].tolist()
-    static = nvd.drop(columns=["vendor", "product", "cwes"])
+
+def build_panel(
+    horizon_days: int = 180,
+    min_age_days: int = 30,
+    negative_rate: float = 0.03,
+    seed: int = 0,
+    *,
+    use_cache: bool = True,
+) -> tuple[pd.DataFrame, dict]:
+    derived = CACHE / "derived"
+    stem = f"panel_h{horizon_days}_age{min_age_days}_r{negative_rate}_s{seed}"
+    cache_path, meta_path = derived / f"{stem}.parquet", derived / f"{stem}.json"
+    if use_cache and cache_path.exists() and meta_path.exists():
+        return pd.read_parquet(cache_path), json.loads(meta_path.read_text())
+
+    kev, released = load_kev()
+    nvd = load_nvd().reset_index(drop=True)
+    cutoff = released - timedelta(days=horizon_days)
+    ctx = history_context(kev, nvd)
+    tables, published, added = ctx["tables"], ctx["published"], ctx["added"]
+    vendors, products, cwe_lists, static = (
+        ctx["vendors"],
+        ctx["products"],
+        ctx["cwe_lists"],
+        ctx["static"],
+    )
 
     rng = np.random.default_rng(seed)
     epss_files = _epss_files(CACHE / "epss")
@@ -273,7 +288,7 @@ def build_panel(
         keep_negative = negative[rng.random(len(negative)) < negative_rate]
         index = np.concatenate([positive, keep_negative])
         history = [
-            _history_features(s_day, vendors[i], products[i], cwe_lists[i], tables) for i in index
+            history_features(s_day, vendors[i], products[i], cwe_lists[i], tables) for i in index
         ]
         frame = static.iloc[index].reset_index(drop=True)
         frame["snapshot"] = snapshot

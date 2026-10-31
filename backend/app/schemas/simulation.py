@@ -1,0 +1,287 @@
+"""Contracts for the simulation, ML section and action stage. Additive to schemas/models.py."""
+
+from datetime import date
+from typing import Annotated, Any, Literal
+
+from pydantic import AwareDatetime, Field
+
+from app.schemas.models import Context, Contract, Id, RiskAssessment, Score, Sector
+
+Effect = Literal["loss_of_control", "loss_of_visibility", "data_integrity", "unavailability"]
+Category = Literal["low", "medium", "high", "critical"]
+ActionType = Literal[
+    "patch_prioritization",
+    "network_segmentation",
+    "access_control",
+    "enhanced_monitoring",
+    "incident_response_plan",
+]
+Fraction = Annotated[float, Field(ge=0, le=1)]
+
+
+class Driver(Contract):
+    feature: str
+    label: str
+    value: float | None
+    contribution: float
+
+
+class ProfileAssumption(Contract):
+    key: str
+    label: str
+    vendors: list[str]
+    product_filters: list[str]
+    rationale: str
+
+
+class CandidateCve(Contract):
+    cve_id: str
+    published: date
+    status: Literal["scored", "kev_listed"]
+    ml_score: float | None = None
+    priority_percentile: Fraction | None = None
+    epss_percentile: Fraction | None = None
+    cvss_score: float | None = None
+    kev_added: date | None = None
+    drivers: list[Driver] = Field(default_factory=list)
+
+
+class ServiceDisruption(Contract):
+    service_id: Id
+    service_name: str
+    disruption_fraction: Fraction
+
+
+class WorstScenario(Contract):
+    """Worst plausible consequence if an attacker pivots along configured routes.
+
+    Reachability is a configured route, not a successful compromise; the effect at each target
+    is an explicit assumption."""
+
+    target_asset_id: Id
+    target_asset_name: str
+    effect: Effect
+    path: list[Id]
+    max_disruption_fraction: Fraction
+    services: list[ServiceDisruption]
+
+
+class AssetSimulation(Contract):
+    asset_id: Id
+    name: str
+    sector: Sector
+    asset_type: str
+    criticality: str
+    profile: ProfileAssumption
+    candidate_count: int
+    known_exploited_count: int
+    vulnerability_signal: Fraction | None
+    top_vulnerabilities: list[CandidateCve]
+    exposure_factor: Fraction
+    impact_factor: Fraction
+    worst_scenario: WorstScenario | None
+    risk: RiskAssessment
+
+
+class ServiceRisk(Contract):
+    service_id: Id
+    name: str
+    sector: Sector
+    worst_disruption_fraction: Fraction
+    initiating_asset_id: Id | None
+    initiating_asset_name: str | None
+    effect: Effect | None
+
+
+class SimulationStage(Contract):
+    name: str
+    detail: str
+    seconds: float
+
+
+class CategoryCount(Contract):
+    category: Category
+    count: int
+
+
+class SimulationRun(Context):
+    id: str
+    state: Literal["current"] = "current"
+    as_of: date
+    kev_released: date
+    model_version: str
+    created_at: AwareDatetime
+    stages: list[SimulationStage]
+    city_risk: RiskAssessment
+    category_counts: list[CategoryCount]
+    assets: list[AssetSimulation]
+    services: list[ServiceRisk]
+    assumptions: list[str]
+    formula: str
+
+
+class ActionDefinition(Contract):
+    type: ActionType
+    name: str
+    description: str
+    modelled: bool
+    effort_hours: float
+    operational_disruption: str
+    assumption: str
+
+
+class ActionOption(Contract):
+    asset_id: Id
+    asset_name: str
+    action_type: ActionType
+    name: str
+    applicable: bool
+    modelled: bool
+    effort_hours: float
+    projected_asset_score: Score | None
+    asset_reduction: float | None
+    city_reduction: float | None
+    justification: str
+    operational_disruption: str
+
+
+class StagedActionRequest(Contract):
+    asset_id: Id
+    action_type: ActionType
+
+
+class WhatIfRequest(Context):
+    actions: list[StagedActionRequest] = Field(min_length=1, max_length=40)
+
+
+class AssetDelta(Contract):
+    asset_id: Id
+    name: str
+    current_score: Score
+    projected_score: Score
+    current_category: Category
+    projected_category: Category
+
+
+class AppliedAction(Contract):
+    asset_id: Id
+    asset_name: str
+    action_type: ActionType
+    name: str
+    modelled: bool
+    effect: str
+    effort_hours: float
+    operational_disruption: str
+
+
+class WhatIfResult(Context):
+    state: Literal["projected"] = "projected"
+    verification: Literal["not_verified"] = "not_verified"
+    run_id: str
+    current_city_index: Score
+    projected_city_index: Score
+    city_reduction: float
+    applied: list[AppliedAction]
+    asset_deltas: list[AssetDelta]
+    services_before: list[ServiceRisk]
+    services_after: list[ServiceRisk]
+    notes: list[str]
+
+
+class OptimizeRequest(Context):
+    effort_budget_hours: Annotated[float, Field(gt=0, le=10000)]
+    excluded_asset_ids: list[Id] = Field(default_factory=list)
+
+
+class PlanStep(Contract):
+    rank: int
+    asset_id: Id
+    asset_name: str
+    action_type: ActionType
+    name: str
+    effort_hours: float
+    marginal_reduction: float
+    cumulative_reduction: float
+    city_index_after: Score
+    justification: str
+    operational_disruption: str
+
+
+class RemediationPlan(Context):
+    state: Literal["projected"] = "projected"
+    verification: Literal["not_verified"] = "not_verified"
+    run_id: str
+    effort_budget_hours: float
+    used_hours: float
+    starting_city_index: Score
+    ending_city_index: Score
+    steps: list[PlanStep]
+    recommendation_only: list[ActionOption]
+    method: str
+
+
+class MlSource(Contract):
+    name: str
+    kind: Literal["real"] = "real"
+    role: str
+    url: str
+    files: int
+    megabytes: float
+    note: str
+
+
+class MlMetricRow(Contract):
+    name: str
+    average_precision: float
+    average_precision_ci95: list[float]
+    roc_auc: float
+    precision_at_50_per_month: float
+    recall_at_50_per_month: float
+    precision_at_200_per_month: float
+    ap_delta_vs_epss_ci95: list[float] | None = None
+    is_baseline: bool
+
+
+class FeatureImportance(Contract):
+    feature: str
+    label: str
+    mean_abs_contribution: float
+
+
+class MlStatus(Contract):
+    ready: bool
+    missing: list[str]
+
+
+class MlOverview(Contract):
+    status: MlStatus
+    model_version: str | None = None
+    task: str | None = None
+    not_claimed: list[str] = Field(default_factory=list)
+    sources: list[MlSource] = Field(default_factory=list)
+    manifest_retrieved_at: str | None = None
+    nvd_release_tag: str | None = None
+    panel: dict[str, Any] = Field(default_factory=dict)
+    design: dict[str, Any] = Field(default_factory=dict)
+    leakage_controls: list[str] = Field(default_factory=list)
+    metrics: list[MlMetricRow] = Field(default_factory=list)
+    prevalence: float | None = None
+    shuffled_label_audit: dict[str, float] = Field(default_factory=dict)
+    importances: list[FeatureImportance] = Field(default_factory=list)
+    ap_by_quarter: dict[str, dict[str, float]] = Field(default_factory=dict)
+    features: list[str] = Field(default_factory=list)
+    limitations: list[str] = Field(default_factory=list)
+
+
+class CveScore(Contract):
+    cve_id: str
+    status: Literal["scored", "already_in_kev", "too_recent"]
+    published: date
+    as_of: date
+    model_version: str
+    ml_score: float | None = None
+    priority_percentile: Fraction | None = None
+    epss_percentile: Fraction | None = None
+    cvss_score: float | None = None
+    kev_added: date | None = None
+    drivers: list[Driver] = Field(default_factory=list)

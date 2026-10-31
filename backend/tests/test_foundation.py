@@ -20,12 +20,10 @@ from app.schemas.models import (
 
 
 def test_health_and_scenario(client):
-    assert client.get("/api/v1/health").json() == {
-        "status": "ok",
-        "database": "ready",
-        "application_version": "0.1.0",
-        "intelligence": "not_implemented",
-    }
+    health = client.get("/api/v1/health").json()
+    assert health["status"] == "ok" and health["database"] == "ready"
+    assert health["application_version"] == "0.1.0"
+    assert health["intelligence"] in {"ready", "unavailable"}
     scenario = client.get("/api/v1/scenarios").json()[0]
     assert scenario["id"] == SCENARIO_ID
     assert scenario["is_sample"] is True
@@ -99,30 +97,6 @@ def test_consistent_errors(client, path, code):
     response = client.get(path)
     assert response.status_code == code
     assert set(response.json()["error"]) == {"code", "message", "details"}
-
-
-@pytest.mark.parametrize(
-    "path,payload",
-    [
-        ("/api/v1/what-if", {"actions": [{"asset_id": "PWR-001", "action_type": "enable_mfa"}]}),
-        ("/api/v1/remediation/optimize", {"effort_budget_hours": 8}),
-        ("/api/v1/assessments", {}),
-    ],
-)
-def test_future_engines_never_fake_success(client, path, payload):
-    response = client.post(
-        path, json={"scenario_id": SCENARIO_ID, "snapshot_id": SNAPSHOT_ID, **payload}
-    )
-    assert response.status_code == 501
-    assert response.json()["error"]["code"] == "not_implemented"
-
-
-def test_invalid_whatif_request(client):
-    response = client.post(
-        "/api/v1/what-if",
-        json={"scenario_id": SCENARIO_ID, "snapshot_id": SNAPSHOT_ID, "actions": []},
-    )
-    assert response.status_code == 422
 
 
 def test_seed_is_fixed_idempotent_and_resettable(tmp_path):

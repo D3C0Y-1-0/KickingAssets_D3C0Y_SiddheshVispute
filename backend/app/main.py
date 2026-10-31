@@ -9,6 +9,7 @@ from fastapi.staticfiles import StaticFiles
 from starlette.exceptions import HTTPException
 
 from app.api.routes import router
+from app.api.workflow import router as workflow_router
 from app.db.store import default_db_path, initialize
 from app.domain.seed import ROOT
 
@@ -22,14 +23,14 @@ def create_app(db_path: Path | None = None, static_dir: Path | None = None) -> F
     application = FastAPI(
         title="GridSentinel",
         version="0.1.0",
-        description="Phase 1: deterministic fictional inventory and two distinct graphs. Intelligence engines are unavailable.",
+        description="Fictional inventory and two graphs, an ML-scored simulation, and an action stage.",
         lifespan=lifespan,
     )
     application.state.db_path = db_path or default_db_path()
 
     @application.exception_handler(HTTPException)
     async def http_error(request: Request, exc: HTTPException):
-        codes = {404: "not_found", 501: "not_implemented", 503: "unavailable"}
+        codes = {404: "not_found", 409: "conflict", 501: "not_implemented", 503: "unavailable"}
         return JSONResponse(
             status_code=exc.status_code,
             content={
@@ -69,6 +70,7 @@ def create_app(db_path: Path | None = None, static_dir: Path | None = None) -> F
         )
 
     application.include_router(router)
+    application.include_router(workflow_router)
     compiled = (static_dir or ROOT / "frontend" / "dist").resolve()
     if (compiled / "assets").is_dir():
         application.mount(
