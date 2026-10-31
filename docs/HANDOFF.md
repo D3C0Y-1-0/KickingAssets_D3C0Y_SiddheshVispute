@@ -105,3 +105,7 @@ Plan and status: `docs/PLAN_CHALLENGE_GAPS.md`. All additive; `risk-index-v1` an
 - Known limits: telemetry is simulated and the detector is exercised on its own authored events; the benign maintenance window is flagged on purpose; chokepoint and vendor figures assume no operator recovery (upper bound); no calibrated likelihood, no new sectors, no modelled monitoring or recovery benefit.
 
 Hosted: the new endpoints and pages are live on https://gridsentinel-phi.vercel.app (Vercel proxies `/api` to the Azure backend). The Azure update was incremental: `az webapp deploy --type zip --clean false` with only `backend/app`, `data/scenarios/aurora-telemetry-events.json` and `data/derived/posture-trend.json`. A full package rebuild is only needed when dependencies or the reference data change.
+
+## Attack & Defend (prevention and reaction)
+
+Added `defense-v1` (see `docs/PLAN_ATTACK_DEFEND.md`): endpoints `/api/v1/defense/attacker`, `/prevention`, `/reaction?asset=`; page `/defend`. Verified: ruff clean, 150 backend tests, 10 frontend tests, typecheck and build. Limits: modelled what-ifs on assumed products; 24 h per segmented asset is an assumption; no recovery time; nothing is applied automatically.

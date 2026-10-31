@@ -12,6 +12,9 @@ export type AssetActivity = Models['AssetActivity']
 export type VendorReport = Models['VendorReport']
 export type ChokepointReport = Models['ChokepointReport']
 export type PostureTrend = Models['PostureTrend']
+export type AttackerView = Models['AttackerView']
+export type CutPlan = Models['CutPlan']
+export type ReactionPlan = Models['ReactionPlan']
 type Context = { scenario_id: string; snapshot_id?: string }
 
 export class ApiError extends Error {
@@ -135,6 +138,10 @@ export const api = {
     get<VendorReport>('/resilience/vendors', context, signal),
   chokepoints: (context: Context, signal?: AbortSignal) =>
     get<ChokepointReport>('/resilience/chokepoints', context, signal),
+  attacker: (signal?: AbortSignal) => get<AttackerView>('/defense/attacker', {}, signal),
+  prevention: (signal?: AbortSignal) => get<CutPlan>('/defense/prevention', {}, signal),
+  reaction: (asset: string, signal?: AbortSignal) =>
+    get<ReactionPlan>('/defense/reaction', { asset }, signal),
   trend: (context: Context, signal?: AbortSignal) =>
     get<PostureTrend>('/simulation/trend', context, signal),
   briefUrl: (format: 'md' | 'html', context: Context) => {

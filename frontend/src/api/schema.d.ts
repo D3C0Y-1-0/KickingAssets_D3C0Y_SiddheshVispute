@@ -592,6 +592,66 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/defense/attacker": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Attacker
+         * @description The best plausible route to each critical asset, and what it does to services step by step.
+         */
+        get: operations["attacker_api_v1_defense_attacker_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/defense/prevention": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Prevention
+         * @description The cheapest set of assets to segment so no plausible route reaches a critical asset.
+         */
+        get: operations["prevention_api_v1_defense_prevention_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/defense/reaction": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Reaction
+         * @description If this asset were taken over: where it could spread, and how to contain it.
+         */
+        get: operations["reaction_api_v1_defense_reaction_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -1050,6 +1110,45 @@ export interface components {
             /** Notes */
             notes: string[];
         };
+        /** AttackerRoute */
+        AttackerRoute: {
+            /** Rank */
+            rank: number;
+            /** Entry Point */
+            entry_point: string;
+            /** Target */
+            target: string;
+            /** Target Name */
+            target_name: string;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "plausible" | "conditional" | "insufficient_evidence";
+            /** Ranking Score */
+            ranking_score: number;
+            /** Nodes */
+            nodes: string[];
+            /** Explanation */
+            explanation: string;
+            /** Frames */
+            frames: components["schemas"]["RouteFrame"][];
+        };
+        /** AttackerView */
+        AttackerView: {
+            /** Method Version */
+            method_version: string;
+            /** Entry Points */
+            entry_points: string[];
+            /** Targets */
+            targets: string[];
+            /** Routes */
+            routes: components["schemas"]["AttackerRoute"][];
+            /** Unreached Targets */
+            unreached_targets: string[];
+            /** Assumptions */
+            assumptions: string[];
+        };
         /**
          * Backtest
          * @description What actually happened after the simulated date, from the real KEV catalog.
@@ -1292,6 +1391,56 @@ export interface components {
             scenario_id: string;
             /** Snapshot Id */
             snapshot_id: string;
+        };
+        /** CutAsset */
+        CutAsset: {
+            /** Asset Id */
+            asset_id: string;
+            /** Name */
+            name: string;
+            /** Sector */
+            sector: string;
+            /** Criticality */
+            criticality: string;
+            /**
+             * Role
+             * @enum {string}
+             */
+            role: "entry" | "pivot" | "target";
+            /** Cost Hours */
+            cost_hours: number;
+            /** Routes Through */
+            routes_through: number;
+        };
+        /** CutPlan */
+        CutPlan: {
+            /** Method Version */
+            method_version: string;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "nothing_to_cut" | "cut_found" | "cannot_cut";
+            /** Assets */
+            assets: components["schemas"]["CutAsset"][];
+            /** Total Hours */
+            total_hours: number;
+            /** Isolate Everything Hours */
+            isolate_everything_hours: number;
+            /** Routes Before */
+            routes_before: number;
+            /** Routes After */
+            routes_after: number;
+            /** Targets Before */
+            targets_before: number;
+            /** Targets After */
+            targets_after: number;
+            /** Protected Targets */
+            protected_targets: string[];
+            /** Verified By */
+            verified_by: string;
+            /** Assumptions */
+            assumptions: string[];
         };
         /** CveScore */
         CveScore: {
@@ -1990,6 +2139,51 @@ export interface components {
             /** Notes */
             notes?: string | null;
         };
+        /** ReactionPlan */
+        ReactionPlan: {
+            /** Method Version */
+            method_version: string;
+            /** Compromised */
+            compromised: string;
+            /** Compromised Name */
+            compromised_name: string;
+            /** Spread */
+            spread: components["schemas"]["SpreadItem"][];
+            /** Targets Reached */
+            targets_reached: string[];
+            /** Isolate Source Disruption */
+            isolate_source_disruption: number | null;
+            /** Isolate Source Services */
+            isolate_source_services: components["schemas"]["ServiceLoss"][];
+            /** Block Assets */
+            block_assets: components["schemas"]["CutAsset"][];
+            /** Block Hours */
+            block_hours: number;
+            /** Targets After Block */
+            targets_after_block: number;
+            /** Steps */
+            steps: components["schemas"]["ReactionStep"][];
+            /** Assumptions */
+            assumptions: string[];
+        };
+        /** ReactionStep */
+        ReactionStep: {
+            /** Order */
+            order: number;
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "contain" | "block" | "watch" | "recover";
+            /** Title */
+            title: string;
+            /** Detail */
+            detail: string;
+            /** Assets */
+            assets: string[];
+            /** Hours */
+            hours: number | null;
+        };
         /** ReferenceDataset */
         ReferenceDataset: {
             /** Id */
@@ -2161,6 +2355,28 @@ export interface components {
             /** Explanation */
             explanation: string;
         };
+        /**
+         * RouteFrame
+         * @description The state of the city after the attacker has reached this step of the route.
+         */
+        RouteFrame: {
+            /** Step */
+            step: number;
+            /** Asset Id */
+            asset_id: string;
+            /** Asset Name */
+            asset_name: string;
+            /** Effect */
+            effect: string;
+            /** Hop Status */
+            hop_status: string | null;
+            /** Note */
+            note: string;
+            /** Services */
+            services: components["schemas"]["ServiceLoss"][];
+            /** Worst */
+            worst: number | null;
+        };
         /** Scenario */
         Scenario: {
             /** Id */
@@ -2288,6 +2504,15 @@ export interface components {
             service_name: string;
             /** Disruption Fraction */
             disruption_fraction: number;
+        };
+        /** ServiceLoss */
+        ServiceLoss: {
+            /** Service Id */
+            service_id: string;
+            /** Service Name */
+            service_name: string;
+            /** Fraction */
+            fraction: number | null;
         };
         /** ServiceRequirement */
         ServiceRequirement: {
@@ -2450,6 +2675,25 @@ export interface components {
             /** Version */
             version: string | null;
             provenance: components["schemas"]["Provenance"];
+        };
+        /** SpreadItem */
+        SpreadItem: {
+            /** Asset Id */
+            asset_id: string;
+            /** Name */
+            name: string;
+            /** Criticality */
+            criticality: string;
+            /** Depth */
+            depth: number;
+            /** Via */
+            via: string;
+            /** Hop Status */
+            hop_status: string;
+            /** Explanation */
+            explanation: string;
+            /** Worst Disruption */
+            worst_disruption: number | null;
         };
         /** StagedActionRequest */
         StagedActionRequest: {
@@ -4537,6 +4781,131 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    attacker_api_v1_defense_attacker_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AttackerView"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    prevention_api_v1_defense_prevention_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CutPlan"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+        };
+    };
+    reaction_api_v1_defense_reaction_get: {
+        parameters: {
+            query: {
+                asset: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReactionPlan"];
+                };
+            };
+            /** @description Not Found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorEnvelope"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };

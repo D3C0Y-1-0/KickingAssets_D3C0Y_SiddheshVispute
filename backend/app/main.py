@@ -8,6 +8,7 @@ from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from starlette.exceptions import HTTPException
 
+from app.api.defense import router as defense_router
 from app.api.insights import router as insights_router
 from app.api.intelligence import router as intelligence_router
 from app.api.routes import router
@@ -92,6 +93,7 @@ def create_app(db_path: Target | None = None, static_dir: Path | None = None) ->
     application.include_router(intelligence_router)
     application.include_router(workflow_router)
     application.include_router(insights_router)
+    application.include_router(defense_router)
     compiled = (static_dir or ROOT / "frontend" / "dist").resolve()
     if (compiled / "assets").is_dir():
         application.mount(

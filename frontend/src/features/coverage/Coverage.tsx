@@ -64,7 +64,7 @@ const objectives: Row[] = [
   {
     item: '7. Preventive recommendations',
     status: 'Partial',
-    how: 'Patch prioritization, segmentation and access control are modelled with projected reductions and a greedy optimizer.',
+    how: 'Patch prioritization, segmentation and access control are modelled with projected reductions and a greedy optimizer. The cheapest set of segmentation cuts that blocks every plausible attacker route is found exactly, and a reaction plan contains a taken-over asset.',
     limit:
       'Monitoring and incident-response planning are recommendations with no modelled reduction.',
     to: '/remediation',
