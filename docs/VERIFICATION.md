@@ -69,3 +69,13 @@ Local, Git-ignored QA images (all visually inspected):
 No physical network disconnection, full accessibility audit, load test, external feed validation, model evaluation, exploit simulation, outage calculation or remediation execution was performed. Offline compatibility is supported by same-origin compiled serving and bundled assets/system fonts; installation still needs package-registry access. Swagger's optional interactive UI uses CDN assets, while the application and raw OpenAPI do not.
 
 No known Phase 1 functional blocker remains. The test-client deprecation warning and absence of later engines are explicitly recorded. See IMPLEMENTATION_PLAN.md for the real validation gates required before claiming those objectives complete.
+
+## Digital twin interaction and connections
+
+Measured: `tsc -b` clean, 7 frontend tests passed, production build succeeded. A scripted browser session against the running app (Edge via DevTools protocol) passed 19 of 19 checks: pin click selects a part, dragging pans without changing selection, wheel and +/0 keys zoom/refit, connection chips select linked parts, Links off / Cyber toggle the overlay, inspector asset button opens the detail drawer, deep links (`?view=&part=`) select a part, a cross-twin chip switches diagram, smart city pins update the inspector, and the infrastructure inspector links to the matching twin part.
+
+Limits: touch pinch and real fullscreen were not exercised; the script drives one desktop viewport. Part-to-part connections are derived from the scenario operational and cyber graphs through TWIN_LINKS; within a single twin few parts have both ends mapped, so many parts correctly show no connection. Design-reference values on the diagrams (flow, occupancy, headway) are illustrative, not telemetry, and are labelled as such. Transit has no scored assets.
+
+## Gridinal rebrand and navigation
+
+Measured: `tsc -b` clean, 7 frontend tests passed, production build succeeded. In a real browser session: title reads "Command Overview | Gridinal", sidebar groups (Monitor / Assess / Act) render, clicking Digital Twins navigates and marks it active, the collapse toggle narrows the rail to 78px and shifts the page margin, the choice persists in localStorage, and the mobile drawer opens with the same grouping. Limits: no screen-reader or keyboard-only audit of the new sidebar beyond visible focus styles; supplied wordmark has rough edge noise visible only when enlarged.

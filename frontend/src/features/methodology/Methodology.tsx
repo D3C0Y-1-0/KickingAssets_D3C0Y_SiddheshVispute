@@ -31,7 +31,7 @@ export default function Methodology() {
           <div className="eyebrow">OUR PURPOSE</div>
           <h2>See the blast radius before the incident.</h2>
           <p>
-            GridSentinel is a critical infrastructure cybersecurity risk intelligence platform for
+            Gridinal is a critical infrastructure cybersecurity risk intelligence platform for
             D3COY PS03. It will support preventive decisions with traceable vulnerability evidence,
             transparent relative risk assessments and conditional service impact estimates. This
             foundation demonstrates the interface and inventory architecture.

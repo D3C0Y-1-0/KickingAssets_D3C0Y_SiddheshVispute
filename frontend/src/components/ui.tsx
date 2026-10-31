@@ -133,7 +133,7 @@ export function QueryState({
       <div className="query-state" role="status">
         <LoaderCircle className="spin" size={25} />
         <h2>Loading scenario inventory</h2>
-        <p>Connecting to the local GridSentinel API.</p>
+        <p>Connecting to the local Gridinal API.</p>
       </div>
     )
   if (empty)

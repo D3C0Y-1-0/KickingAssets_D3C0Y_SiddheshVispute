@@ -6,7 +6,7 @@ export default class ErrorBoundary extends Component<{ children: ReactNode }, { 
     return { failed: true }
   }
   componentDidCatch(error: Error, info: ErrorInfo) {
-    console.error('GridSentinel interface error', error.message, info.componentStack)
+    console.error('Gridinal interface error', error.message, info.componentStack)
   }
   render() {
     if (this.state.failed)
