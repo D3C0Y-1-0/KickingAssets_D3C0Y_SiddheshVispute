@@ -9,6 +9,7 @@ import {
   ChevronDown,
   ChevronRight,
   CircleHelp,
+  Clapperboard,
   ClipboardCheck,
   Command,
   FlaskConical,
@@ -45,6 +46,7 @@ const Resilience = lazy(() => import('../features/resilience/Resilience'))
 const Coverage = lazy(() => import('../features/coverage/Coverage'))
 const LiveSimulation = lazy(() => import('../features/live/LiveSimulation'))
 const navigation: { path: string; name: string; icon: typeof Grid2X2; tag?: string }[] = [
+  { path: '/gridinal', name: 'Inside the Grid', icon: Clapperboard, tag: 'INTRO' },
   { path: '/', name: 'Overview', icon: Grid2X2 },
   { path: '/live', name: 'Live Simulation', icon: PlayCircle, tag: 'NEW' },
   { path: '/infrastructure', name: 'Infrastructure Map', icon: Network },
@@ -77,7 +79,7 @@ export default function App() {
     navigation.find((x) => x.path === location.pathname)?.name ?? 'Methodology & Evidence'
   useEffect(() => {
     setMenuOpen(false)
-    document.title = `${activeName} | GridSentinel`
+    document.title = `${activeName} | GRIDINAL`
     window.scrollTo(0, 0)
   }, [location.pathname, activeName])
   useEffect(() => {
@@ -117,7 +119,7 @@ export default function App() {
             <Grid2X2 size={12} />
           </span>
           <span>
-            Grid<span className="brand-light">Sentinel</span>
+            GRID<span className="brand-light">INAL</span>
             <small>INFRASTRUCTURE INTELLIGENCE</small>
           </span>
         </Link>
@@ -296,7 +298,7 @@ export default function App() {
         </main>
         <footer className="app-footer">
           <span>
-            <Shield size={12} /> GRIDSENTINEL <span className="muted">/</span> See the blast radius
+            <Shield size={12} /> GRIDINAL <span className="muted">/</span> See the blast radius
             before the incident.
           </span>
           <span>

@@ -1,0 +1,657 @@
+/* GRIDINAL experience. Uses the shared tokens; every rule is scoped under .gx. */
+.gx {
+  --gx-pad: clamp(18px, 4vw, 56px);
+  position: relative;
+  min-height: 100vh;
+  background: var(--background);
+  color: var(--text);
+  font-family: var(--font-ui);
+}
+.gx h1,
+.gx h2,
+.gx h3 {
+  font-family: var(--font-display);
+  margin: 0;
+}
+.gx :focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+/* ---- top bar ---------------------------------------------------------------------------- */
+.gx-top {
+  position: fixed;
+  inset: 0 0 auto 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  height: 64px;
+  padding: 0 var(--gx-pad);
+  background: linear-gradient(to bottom, rgb(11 20 36 / 0.92), rgb(11 20 36 / 0));
+}
+.gx-brand {
+  font-family: var(--font-display);
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+}
+.gx-brand span {
+  font-weight: 400;
+  color: var(--accent);
+}
+.gx-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border: 1px solid var(--sample-border);
+  border-radius: 999px;
+  background: var(--sample-soft);
+  color: var(--amber);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+.gx-enter {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 16px;
+  border: 1px solid var(--accent-border);
+  border-radius: 8px;
+  background: var(--accent-soft);
+  color: var(--accent-hover);
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.gx-enter:hover {
+  background: var(--accent);
+  color: var(--ink);
+}
+
+/* ---- scene navigation / progress ------------------------------------------------------- */
+.gx-scenes {
+  position: fixed;
+  left: 50%;
+  bottom: 18px;
+  transform: translateX(-50%);
+  z-index: 25;
+  display: grid;
+  gap: 8px;
+  padding: 10px 16px 8px;
+  border: 1px solid var(--border-soft);
+  border-radius: 10px;
+  background: rgb(9 17 31 / 0.82);
+}
+.gx-scenes ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  gap: 22px;
+}
+.gx-scenes button,
+.gx-scene-off {
+  display: grid;
+  justify-items: start;
+  gap: 1px;
+  padding: 2px 0;
+  border: 0;
+  background: none;
+  color: var(--text-muted);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.gx-scene-off {
+  cursor: default;
+  opacity: 0.5;
+}
+.gx-scenes button[aria-current='step'] {
+  color: var(--text);
+}
+.gx-scenes button:hover {
+  color: var(--accent-hover);
+}
+.gx-scene-n {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: var(--accent);
+}
+.gx-scene-title {
+  font-size: 12px;
+  max-width: 120px;
+  line-height: 1.25;
+}
+.gx-scene-rail {
+  height: 2px;
+  background: var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.gx-scene-rail i {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left;
+}
+@media (max-width: 1100px) {
+  .gx-scene-title {
+    display: none;
+  }
+  .gx-scenes ol {
+    gap: 16px;
+  }
+}
+
+/* ---- cinematic stage ------------------------------------------------------------------- */
+.gx-track {
+  position: relative;
+  height: 560vh;
+}
+.gx-stage {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  height: 100svh;
+  overflow: hidden;
+}
+.gx-stage canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.gx-loading {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: var(--text-muted);
+  font-size: 14px;
+}
+.gx-vignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at 50% 55%, transparent 40%, rgb(8 14 26 / 0.7) 100%),
+    linear-gradient(
+      to bottom,
+      rgb(11 20 36 / 0.55),
+      transparent 22%,
+      transparent 70%,
+      rgb(11 20 36 / 0.7)
+    );
+}
+
+.gx-eyebrow {
+  margin: 0 0 14px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.22em;
+  color: var(--accent);
+}
+.gx-hero {
+  position: absolute;
+  left: var(--gx-pad);
+  bottom: clamp(48px, 11vh, 120px);
+  max-width: min(860px, 76vw);
+  will-change: transform, opacity;
+}
+.gx-hero h1,
+.gx-static-hero h1 {
+  font-size: clamp(3.6rem, 13vw, 10.5rem);
+  line-height: 0.9;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+.gx-tagline {
+  margin: 20px 0 10px;
+  font-family: var(--font-display);
+  font-size: clamp(1.25rem, 2.6vw, 2rem);
+  font-weight: 500;
+}
+.gx-lede {
+  margin: 0 0 26px;
+  max-width: 56ch;
+  color: var(--text-secondary);
+  font-size: clamp(0.95rem, 1.3vw, 1.1rem);
+  line-height: 1.55;
+}
+[data-hero-hidden] .gx-hero {
+  pointer-events: none;
+  visibility: hidden;
+}
+.gx-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.gx-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: rgb(23 38 60 / 0.7);
+  color: var(--text);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+.gx-btn:hover {
+  border-color: var(--accent-border);
+  color: var(--accent-hover);
+}
+.gx-btn.primary {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--ink);
+}
+.gx-btn.primary:hover {
+  background: var(--accent-hover);
+  color: var(--ink);
+}
+
+.gx-cue {
+  position: absolute;
+  left: 50%;
+  bottom: 22px;
+  translate: -50% 0;
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  pointer-events: none;
+}
+.gx-cue i {
+  width: 1px;
+  height: 34px;
+  background: linear-gradient(to bottom, var(--accent), transparent);
+  animation: gx-cue 2.2s var(--ease-cinema) infinite;
+  transform-origin: top;
+}
+@keyframes gx-cue {
+  0% {
+    transform: scaleY(0);
+  }
+  60% {
+    transform: scaleY(1);
+  }
+  100% {
+    transform: scaleY(1);
+    opacity: 0;
+  }
+}
+
+.gx-s2-title {
+  position: absolute;
+  left: var(--gx-pad);
+  top: 110px;
+  max-width: 420px;
+  opacity: 0;
+  pointer-events: none;
+}
+.gx-s2-title h2 {
+  font-size: clamp(1.8rem, 3.6vw, 3rem);
+  font-weight: 600;
+  line-height: 1.05;
+}
+.gx-s2-title p:last-child {
+  margin: 12px 0 0;
+  color: var(--text-secondary);
+}
+
+/* ---- asset side panel -------------------------------------------------------------------- */
+.gx-s2-side {
+  position: absolute;
+  right: var(--gx-pad);
+  top: 84px;
+  bottom: 84px;
+  width: min(360px, 34vw);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  opacity: 0;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+@media (max-width: 1100px) {
+  .gx-s2-side {
+    right: var(--gx-pad);
+  }
+}
+.gx-asset-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+}
+.gx-asset-list button {
+  width: 100%;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 10px;
+  align-items: center;
+  padding: 9px 12px;
+  text-align: left;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: rgb(16 28 48 / 0.94);
+  color: var(--text);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+.gx-asset-list button:hover {
+  border-color: var(--accent-border);
+}
+.gx-asset-list button[aria-pressed='true'] {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+.gx-asset-id {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--accent);
+}
+.gx-asset-kind {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+.gx-panel {
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: rgb(16 28 48 / 0.95);
+  box-shadow: var(--elevation-1);
+}
+.gx-panel-empty p {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+.gx-panel-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+.gx-panel h3 {
+  font-size: 18px;
+  font-weight: 600;
+}
+.gx-close {
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: none;
+  color: var(--text-secondary);
+  font-size: 18px;
+  line-height: 1;
+}
+.gx-panel-role {
+  margin: 8px 0 12px;
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+.gx-facts {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px 14px;
+  margin: 0 0 12px;
+}
+.gx-facts div:nth-child(n + 4) {
+  grid-column: span 2;
+}
+.gx-facts dt {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.gx-facts dd {
+  margin: 2px 0 0;
+  font-size: 14px;
+  text-transform: capitalize;
+}
+.gx-links {
+  margin: 0 0 12px;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+.gx-links li {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.gx-source {
+  margin: 0 0 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border-soft);
+  color: var(--text-muted);
+  font-size: 12px;
+}
+.gx-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--accent-hover);
+  font-size: 13px;
+  font-weight: 600;
+}
+.gx-risk {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+.gx-risk-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+}
+.gx-risk.critical {
+  color: var(--risk-critical);
+}
+.gx-risk.high {
+  color: var(--risk-high);
+}
+.gx-risk.medium {
+  color: var(--risk-medium);
+}
+.gx-risk.low {
+  color: var(--risk-low);
+}
+.gx-risk.none {
+  color: var(--text-muted);
+  font-weight: 500;
+}
+.gx-legend {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+.gx-legend li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.gx-swatch {
+  display: inline-block;
+  width: 18px;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--accent);
+  flex: none;
+}
+.gx-swatch.op {
+  background: var(--amber);
+}
+.gx-swatch.ext {
+  height: 9px;
+  width: 9px;
+  border-radius: 50%;
+  background: var(--amber);
+}
+.gx-stat {
+  display: grid;
+  gap: 2px;
+}
+.gx-stat-label {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.gx-stat-value {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 600;
+}
+.gx-stat-note {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+/* ---- outro and static mode --------------------------------------------------------------- */
+.gx-outro {
+  padding: clamp(64px, 12vh, 140px) var(--gx-pad);
+  background: linear-gradient(to bottom, var(--background), var(--sidebar));
+}
+.gx-outro h2 {
+  font-size: clamp(1.8rem, 3.6vw, 3rem);
+  margin-bottom: 12px;
+}
+.gx-outro p {
+  max-width: 60ch;
+  margin: 0 0 24px;
+  color: var(--text-secondary);
+}
+.gx-static {
+  padding-top: 64px;
+}
+.gx-static-hero {
+  padding: clamp(48px, 12vh, 120px) var(--gx-pad) clamp(40px, 8vh, 96px);
+  background:
+    radial-gradient(ellipse at 80% 20%, rgb(55 198 192 / 0.12), transparent 55%), var(--background);
+}
+.gx-static-scene {
+  padding: clamp(40px, 8vh, 96px) var(--gx-pad);
+  background: var(--sidebar);
+}
+.gx-static-scene h2 {
+  font-size: clamp(1.8rem, 3.6vw, 3rem);
+}
+.gx-static-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  gap: 24px;
+  margin-top: 24px;
+}
+@media (max-width: 900px) {
+  .gx-static-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.gx-static-side {
+  display: grid;
+  gap: 12px;
+  align-content: start;
+}
+.gx-plan {
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface-inset);
+}
+.gx-line {
+  stroke-width: 2;
+  stroke-dasharray: 5 5;
+}
+.gx-line.data {
+  stroke: var(--accent);
+}
+.gx-line.op {
+  stroke: var(--amber);
+}
+.gx-node {
+  cursor: pointer;
+}
+.gx-node circle {
+  fill: var(--surface-raised);
+  stroke: var(--accent);
+  stroke-width: 2;
+}
+.gx-node.ext circle {
+  stroke: var(--amber);
+}
+.gx-node.on circle {
+  fill: var(--accent);
+}
+.gx-node text {
+  fill: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+.gx-note {
+  margin: 0 0 18px;
+  padding: 10px 14px;
+  border: 1px solid var(--sample-border);
+  border-radius: 8px;
+  background: var(--sample-soft);
+  color: var(--amber);
+  font-size: 13px;
+}
+@media (max-width: 759px) {
+  .gx-top {
+    gap: 8px;
+  }
+  .gx-chip {
+    display: none;
+  }
+  .gx-enter {
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+  .gx-scenes {
+    display: none;
+  }
+}
+
+/* The static layout is the answer to reduced motion, but animations still stay off everywhere. */
+@media (prefers-reduced-motion: reduce) {
+  .gx *,
+  .gx *::before,
+  .gx *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}

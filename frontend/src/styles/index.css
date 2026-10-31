@@ -1,3 +1,6 @@
+@import '@fontsource-variable/inter';
+@import '@fontsource-variable/space-grotesk';
+@import '@fontsource-variable/jetbrains-mono';
 @import 'tailwindcss';
 @import '../design/tokens.css';
 @import '../components/iso/iso.css';
@@ -12,7 +15,7 @@ html {
 body {
   margin: 0;
   color: var(--text);
-  font-family: 'Inter', 'Segoe UI', sans-serif;
+  font-family: var(--font-ui);
   font-size: 15px;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
@@ -103,7 +106,7 @@ svg {
 }
 .mono,
 kbd {
-  font-family: 'Cascadia Code', 'SFMono-Regular', Consolas, monospace;
+  font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
 }
 .muted {
@@ -1939,7 +1942,7 @@ tbody tr:hover {
 .evidence-key {
   font-size: 11.5px;
   letter-spacing: 0.8px;
-  font-family: Consolas, monospace;
+  font-family: var(--font-mono);
 }
 .evidence-key.assumed {
   color: var(--sample);

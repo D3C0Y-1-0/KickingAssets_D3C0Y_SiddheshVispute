@@ -1,44 +1,67 @@
+/* GRIDINAL design tokens. Semantic colours live here; figure-local tokens stay in their own files. */
 :root {
-  --background: #08090d;
-  --sidebar: #0a0c11;
-  --surface: #111319;
-  --surface-raised: #161922;
-  --surface-inset: #0d0f15;
-  --surface-hover: #1c202c;
-  --surface-warm: #181c24;
-  --border: #202634;
-  --border-soft: #171b26;
-  --text: #f3f6fa;
-  --text-secondary: #939fb2;
-  --text-muted: #687588;
-  --accent: #ccff00;
-  --accent-hover: #d9ff33;
-  --accent-soft: #1c2406;
-  --accent-border: #4f630e;
-  --accent-shadow: rgba(204, 255, 0, 0.18);
-  --ink: #000000;
-  --sample: #d8b16c;
-  --sample-soft: #2c261d;
-  --sample-border: #53442c;
-  --notice-background: #11141a;
-  --risk-low: #ccff00;
-  --risk-medium: #d6b26c;
-  --risk-high: #e69a69;
-  --risk-critical: #ff3344;
-  --critical-soft: #31181c;
-  --critical-border: #632028;
-  --high-soft: #30251f;
-  --high-border: #604332;
-  --sector-power: #d7b674;
-  --sector-water: #7daed1;
-  --sector-healthcare: #af9ccb;
-  --track: #202634;
-  --grid-dot: #252c3c;
-  --graph-edge: #303c4f;
-  --graph-arrow: #688294;
+  /* Surfaces: midnight navy, stepped toward slate */
+  --background: #0b1424;
+  --sidebar: #09111f;
+  --surface: #101c30;
+  --surface-raised: #17263c;
+  --surface-inset: #0c1628;
+  --surface-hover: #1d2f4a;
+  --surface-warm: #172840;
+  --border: #263a57;
+  --border-soft: #1b2c45;
+
+  /* Text on navy: all pass WCAG AA (primary ~16:1, secondary ~8:1, muted ~5:1) */
+  --text: #f5f7fa;
+  --text-secondary: #aab9cd;
+  --text-muted: #8195ae;
+
+  /* Electric teal is the single interactive accent; amber marks assumptions and caution */
+  --accent: #37c6c0;
+  --accent-hover: #5dd8d2;
+  --accent-soft: #0f2d36;
+  --accent-border: #227276;
+  --accent-shadow: rgba(55, 198, 192, 0.22);
+  --ink: #06101c;
+  --amber: #f4b860;
+  --sample: #f4b860;
+  --sample-soft: #2b2519;
+  --sample-border: #6a5128;
+  --notice-background: #0f1a2e;
+
+  /* Status colours: never the only signal, always paired with a label */
+  --risk-low: #5ad1a0;
+  --risk-medium: #f4b860;
+  --risk-high: #f0894b;
+  --risk-critical: #f2555a;
+  --critical-soft: #33191f;
+  --critical-border: #6e2a33;
+  --high-soft: #33231a;
+  --high-border: #6b4228;
+  --sector-power: #f4b860;
+  --sector-water: #5fb4e5;
+  --sector-healthcare: #b79ce0;
+
+  --track: #263a57;
+  --grid-dot: #1f3250;
+  --graph-edge: #34506f;
+  --graph-arrow: #6f93b3;
   --shadow: #00000088;
-  --overlay: #040508cc;
+  --overlay: #060c16cc;
   --sidebar-width: 235px;
+
+  /* Typography: bundled with the app (works offline) */
+  --font-ui: 'Inter Variable', 'Segoe UI', system-ui, sans-serif;
+  --font-display: 'Space Grotesk Variable', 'Segoe UI', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono Variable', 'Cascadia Code', Consolas, monospace;
+
+  /* Motion */
+  --ease-cinema: cubic-bezier(0.22, 0.8, 0.2, 1);
+  --duration-ui: 160ms;
+
+  /* Elevation: thin borders first, shadow second */
+  --elevation-1: 0 1px 0 rgb(255 255 255 / 0.03) inset, 0 8px 24px -12px #000000aa;
+  --glow-accent: 0 0 24px -6px var(--accent-shadow);
 }
 
 @theme inline {
@@ -47,5 +70,7 @@
   --color-accent: var(--accent);
   --color-foreground: var(--text);
   --color-muted: var(--text-secondary);
-  --font-sans: 'Inter', 'Segoe UI', sans-serif;
+  --font-sans: var(--font-ui);
+  --font-display: var(--font-display);
+  --font-mono: var(--font-mono);
 }
