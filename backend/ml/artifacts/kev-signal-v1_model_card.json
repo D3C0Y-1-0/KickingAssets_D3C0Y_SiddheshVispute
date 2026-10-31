@@ -1,0 +1,328 @@
+{
+  "model_version": "kev-signal-v1",
+  "task": "Rank CVEs by resemblance to CVEs CISA later adds to KEV within the horizon.",
+  "not_claimed": [
+    "Not the probability that an asset or organisation is attacked or compromised.",
+    "Not calibrated; scores are a relative ranking signal.",
+    "Non-KEV CVEs are unlabeled, not confirmed unexploited (positive-unlabeled)."
+  ],
+  "data": {
+    "sources": [
+      "CISA KEV",
+      "NVD (fkie-cad per-year release)",
+      "EPSS monthly snapshots"
+    ],
+    "manifest": "data/reference/manifest.json",
+    "manifest_retrieved_at": "2026-10-31T11:12:08+00:00",
+    "nvd_release_tag": "v2026.10.31-010015",
+    "panel": {
+      "horizon_days": 180,
+      "min_age_days": 30,
+      "negative_rate": 0.03,
+      "seed": 0,
+      "kev_released": "2026-10-30",
+      "first_snapshot": "2021-12-01",
+      "last_snapshot": "2026-05-01",
+      "rows": 375027,
+      "positive_rows": 3790,
+      "distinct_positive_cves": 842
+    }
+  },
+  "design": {
+    "horizon_days": 180,
+    "candidate": "CVE at least 30 days old and not yet in KEV at the monthly snapshot",
+    "negative_sampling": "negatives subsampled; weighted by 1/rate so metrics describe the population",
+    "splits": {
+      "train": "snapshots whose label window closes by 2024-01-01",
+      "validation": "2024-01-01 .. snapshots closing by 2025-01-01",
+      "test": "2025-01-01 onward",
+      "rows": {
+        "train": 111185,
+        "val": 47878,
+        "test": 147305
+      }
+    },
+    "leakage_controls": [
+      "NVD references, cisaExploit*, SSVC and cveTags are never read",
+      "KEV-history features count only dateAdded <= snapshot",
+      "snapshots begin after KEV's Nov 2021 launch (initial bulk listing excluded)",
+      "training label windows closed before validation; validation before test",
+      "EPSS used as within-snapshot rank percentile (scale changed across EPSS versions)",
+      "shuffled-label audit below"
+    ]
+  },
+  "features": {
+    "with_epss": [
+      "cvss_score",
+      "cvss_av",
+      "cvss_ac",
+      "cvss_pr",
+      "cvss_c",
+      "cvss_i",
+      "cvss_a",
+      "txt_rce",
+      "txt_cmd_injection",
+      "txt_sqli",
+      "txt_auth_bypass",
+      "txt_unauth",
+      "txt_path_traversal",
+      "txt_deserialization",
+      "txt_memory",
+      "txt_priv_esc",
+      "txt_xss",
+      "txt_dos",
+      "txt_info_disclosure",
+      "txt_file_upload",
+      "txt_ssrf",
+      "txt_exploit_disclosed",
+      "txt_remote",
+      "txt_length",
+      "n_cwe",
+      "age_days",
+      "vendor_kev_pre",
+      "vendor_cve_pre",
+      "vendor_kev_rate",
+      "vendor_kev_90d",
+      "product_kev_pre",
+      "cwe_kev_pre",
+      "cwe_kev_90d",
+      "epss_percentile"
+    ],
+    "no_epss": [
+      "cvss_score",
+      "cvss_av",
+      "cvss_ac",
+      "cvss_pr",
+      "cvss_c",
+      "cvss_i",
+      "cvss_a",
+      "txt_rce",
+      "txt_cmd_injection",
+      "txt_sqli",
+      "txt_auth_bypass",
+      "txt_unauth",
+      "txt_path_traversal",
+      "txt_deserialization",
+      "txt_memory",
+      "txt_priv_esc",
+      "txt_xss",
+      "txt_dos",
+      "txt_info_disclosure",
+      "txt_file_upload",
+      "txt_ssrf",
+      "txt_exploit_disclosed",
+      "txt_remote",
+      "txt_length",
+      "n_cwe",
+      "age_days",
+      "vendor_kev_pre",
+      "vendor_cve_pre",
+      "vendor_kev_rate",
+      "vendor_kev_90d",
+      "product_kev_pre",
+      "cwe_kev_pre",
+      "cwe_kev_90d"
+    ]
+  },
+  "tuning": {
+    "xgboost_with_epss": {
+      "validation_average_precision": 0.0346,
+      "max_depth": 5,
+      "min_child_weight": 10.0,
+      "weighted_training": false,
+      "train_from": null,
+      "best_iteration": 90
+    },
+    "xgboost_no_epss": {
+      "validation_average_precision": 0.0013,
+      "max_depth": 3,
+      "min_child_weight": 10.0,
+      "weighted_training": false,
+      "train_from": null,
+      "best_iteration": 57
+    },
+    "xgboost_no_kev_history": {
+      "validation_average_precision": 0.0254,
+      "max_depth": 3,
+      "min_child_weight": 10.0,
+      "weighted_training": false,
+      "train_from": "2022-07-01",
+      "best_iteration": 156
+    }
+  },
+  "test_results": {
+    "xgboost_with_epss": {
+      "average_precision": 0.0037,
+      "roc_auc": 0.8789,
+      "precision_at_50_per_month": 0.0182,
+      "recall_at_50_per_month": 0.0272,
+      "precision_at_200_per_month": 0.0119,
+      "recall_at_200_per_month": 0.0532,
+      "average_precision_ci95": [
+        0.0023,
+        0.0071
+      ],
+      "ap_delta_vs_epss_ci95": [
+        -0.0141,
+        0.0017
+      ],
+      "share_of_bootstrap_draws_better_than_epss": 0.24
+    },
+    "xgboost_no_epss": {
+      "average_precision": 0.0006,
+      "roc_auc": 0.799,
+      "precision_at_50_per_month": 0.0009,
+      "recall_at_50_per_month": 0.0013,
+      "precision_at_200_per_month": 0.0015,
+      "recall_at_200_per_month": 0.0065,
+      "average_precision_ci95": [
+        0.0005,
+        0.0009
+      ],
+      "ap_delta_vs_epss_ci95": [
+        -0.0177,
+        -0.0013
+      ],
+      "share_of_bootstrap_draws_better_than_epss": 0.0
+    },
+    "xgboost_no_kev_history": {
+      "average_precision": 0.0061,
+      "roc_auc": 0.8864,
+      "precision_at_50_per_month": 0.0148,
+      "recall_at_50_per_month": 0.022,
+      "precision_at_200_per_month": 0.0079,
+      "recall_at_200_per_month": 0.035,
+      "average_precision_ci95": [
+        0.0027,
+        0.0183
+      ],
+      "ap_delta_vs_epss_ci95": [
+        -0.0119,
+        0.0115
+      ],
+      "share_of_bootstrap_draws_better_than_epss": 0.605
+    },
+    "logistic_with_epss": {
+      "average_precision": 0.0012,
+      "roc_auc": 0.8226,
+      "precision_at_50_per_month": 0.0053,
+      "recall_at_50_per_month": 0.0078,
+      "precision_at_200_per_month": 0.005,
+      "recall_at_200_per_month": 0.022,
+      "average_precision_ci95": [
+        0.0009,
+        0.0055
+      ],
+      "ap_delta_vs_epss_ci95": [
+        -0.0171,
+        0.002
+      ],
+      "share_of_bootstrap_draws_better_than_epss": 0.07
+    },
+    "epss_percentile_baseline": {
+      "average_precision": 0.0044,
+      "roc_auc": 0.729,
+      "precision_at_50_per_month": 0.0266,
+      "recall_at_50_per_month": 0.0402,
+      "precision_at_200_per_month": 0.0133,
+      "recall_at_200_per_month": 0.0597,
+      "average_precision_ci95": [
+        0.002,
+        0.0184
+      ]
+    },
+    "cvss_only_baseline": {
+      "average_precision": 0.0004,
+      "roc_auc": 0.7518,
+      "precision_at_50_per_month": 0.0165,
+      "recall_at_50_per_month": 0.0246,
+      "precision_at_200_per_month": 0.0056,
+      "recall_at_200_per_month": 0.0246,
+      "average_precision_ci95": [
+        0.0003,
+        0.0005
+      ],
+      "ap_delta_vs_epss_ci95": [
+        -0.018,
+        -0.0016
+      ],
+      "share_of_bootstrap_draws_better_than_epss": 0.0
+    },
+    "vendor_kev_history_baseline": {
+      "average_precision": 0.0002,
+      "roc_auc": 0.5765,
+      "precision_at_50_per_month": 0.0374,
+      "recall_at_50_per_month": 0.0571,
+      "precision_at_200_per_month": 0.0128,
+      "recall_at_200_per_month": 0.0571,
+      "average_precision_ci95": [
+        0.0002,
+        0.0003
+      ],
+      "ap_delta_vs_epss_ci95": [
+        -0.0181,
+        -0.0017
+      ],
+      "share_of_bootstrap_draws_better_than_epss": 0.0
+    }
+  },
+  "test_prevalence_weighted": 0.000158,
+  "shuffled_label_audit": {
+    "average_precision": 0.0006,
+    "prevalence": 0.000158
+  },
+  "mean_abs_contribution_top": {
+    "epss_percentile": 0.6495,
+    "cvss_c": 0.3375,
+    "cvss_score": 0.2945,
+    "age_days": 0.2556,
+    "cvss_a": 0.1803,
+    "cvss_ac": 0.1545,
+    "txt_length": 0.1378,
+    "product_kev_pre": 0.1367,
+    "vendor_cve_pre": 0.1194,
+    "vendor_kev_rate": 0.1055,
+    "cwe_kev_90d": 0.0965,
+    "txt_unauth": 0.0726
+  },
+  "average_precision_by_quarter": {
+    "2025Q1": {
+      "xgboost_with_epss": 0.0016,
+      "epss_percentile_baseline": 0.0006,
+      "positive_rows": 135
+    },
+    "2025Q2": {
+      "xgboost_with_epss": 0.0107,
+      "epss_percentile_baseline": 0.047,
+      "positive_rows": 125
+    },
+    "2025Q3": {
+      "xgboost_with_epss": 0.0067,
+      "epss_percentile_baseline": 0.0393,
+      "positive_rows": 127
+    },
+    "2025Q4": {
+      "xgboost_with_epss": 0.0058,
+      "epss_percentile_baseline": 0.0323,
+      "positive_rows": 152
+    },
+    "2026Q1": {
+      "xgboost_with_epss": 0.0033,
+      "epss_percentile_baseline": 0.0221,
+      "positive_rows": 158
+    },
+    "2026Q2": {
+      "xgboost_with_epss": 0.0026,
+      "epss_percentile_baseline": 0.0021,
+      "positive_rows": 74
+    }
+  },
+  "limitations": [
+    "NVD fields are the current record, not a point-in-time archive: CVSS, CWE and affected-product fields may have been edited after the snapshot.",
+    "Few positives (hundreds of distinct CVEs); intervals are wide and clustered by CVE.",
+    "KEV listing reflects CISA's inclusion criteria and timing, not the full set of exploited vulnerabilities.",
+    "EPSS model versions changed during the period; rank percentile mitigates but does not remove drift.",
+    "Vendor/product matching uses normalised NVD names.",
+    "Pairs of (CVE, snapshot) are correlated; precision/recall are over pairs."
+  ]
+}
