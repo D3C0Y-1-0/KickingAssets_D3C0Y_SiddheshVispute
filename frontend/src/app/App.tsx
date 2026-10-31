@@ -5,6 +5,7 @@ import {
   ArrowUpRight,
   BookOpen,
   BrainCircuit,
+  Building2,
   ChevronDown,
   ChevronRight,
   CircleHelp,
@@ -27,15 +28,17 @@ import { QueryState, SampleBadge } from '../components/ui'
 import Overview from '../features/overview/Overview'
 
 const Infrastructure = lazy(() => import('../features/infrastructure/Infrastructure'))
+const DigitalTwins = lazy(() => import('../features/digital-twins/DigitalTwins'))
 const Assets = lazy(() => import('../features/assets/Assets'))
 const Intelligence = lazy(() => import('../features/intelligence/Intelligence'))
 const WhatIf = lazy(() => import('../features/whatif/WhatIf'))
 const Remediation = lazy(() => import('../features/remediation/Remediation'))
 const Methodology = lazy(() => import('../features/methodology/Methodology'))
 const MlLab = lazy(() => import('../features/ml/MlLab'))
-const navigation = [
+const navigation: { path: string; name: string; icon: typeof Grid2X2; tag?: string }[] = [
   { path: '/', name: 'Command Overview', icon: Grid2X2 },
   { path: '/infrastructure', name: 'Infrastructure Map', icon: Network },
+  { path: '/digital-twins', name: 'Digital Twins', icon: Building2, tag: 'ANATOMY' },
   { path: '/assets', name: 'Asset & Risk Register', icon: Layers },
   { path: '/intelligence', name: 'Risk Intelligence', icon: Activity },
   { path: '/ml', name: 'ML Lab', icon: BrainCircuit },
@@ -121,7 +124,7 @@ export default function App() {
         </div>
         <div className="nav-label">WORKSPACE</div>
         <nav>
-          {navigation.map(({ path, name, icon: Icon }) => (
+          {navigation.map(({ path, name, icon: Icon, tag }) => (
             <NavLink
               key={path}
               end={path === '/'}
@@ -130,7 +133,11 @@ export default function App() {
             >
               <Icon size={18} />
               <span>{name}</span>
-              {path === '/what-if' && <span className="nav-tag">ACT</span>}
+              {tag ? (
+                <span className="nav-tag">{tag}</span>
+              ) : (
+                path === '/what-if' && <span className="nav-tag">ACT</span>
+              )}
             </NavLink>
           ))}
         </nav>
@@ -229,7 +236,11 @@ export default function App() {
         </div>
         <main id="main-content" tabIndex={-1}>
           <Suspense fallback={<QueryState pending error={null} />}>
-            {scenarioQuery.isPending || scenarioQuery.isError ? (
+            {location.pathname === '/digital-twins' ? (
+              <Routes>
+                <Route path="/digital-twins" element={<DigitalTwins />} />
+              </Routes>
+            ) : scenarioQuery.isPending || scenarioQuery.isError ? (
               <QueryState
                 pending={scenarioQuery.isPending}
                 error={scenarioQuery.error}
@@ -241,6 +252,7 @@ export default function App() {
               <Routes>
                 <Route path="/" element={<Overview />} />
                 <Route path="/infrastructure" element={<Infrastructure />} />
+                <Route path="/digital-twins" element={<DigitalTwins />} />
                 <Route path="/assets" element={<Assets />} />
                 <Route path="/intelligence" element={<Intelligence />} />
                 <Route path="/ml" element={<MlLab />} />

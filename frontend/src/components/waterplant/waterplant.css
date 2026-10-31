@@ -1,0 +1,58 @@
+/* Scoped Water Plant Digital Twin CSS — Dark Cyber-Physical Theme */
+.waterplant-assembly {
+  user-select: none;
+}
+
+.waterplant-assembly .iso-fill { fill: #0e202c; }
+.waterplant-assembly .iso-top { fill: #1a394e; }
+.waterplant-assembly .iso-shade { fill: #102634; }
+.waterplant-assembly path.iso-edge { stroke: #475569; stroke-width: 0.85px; }
+
+.water-interactive-group {
+  transition: opacity 0.2s ease, filter 0.2s ease;
+}
+
+.water-interactive-group:hover path.iso-edge {
+  stroke: #ccff00 !important;
+  stroke-width: 1.4px !important;
+}
+
+.water-interactive-group:hover path.iso-top {
+  fill: #223806 !important;
+}
+
+/* Selected Component State */
+.water-selected-part path.iso-edge {
+  stroke: #ccff00 !important;
+  stroke-width: 1.8px !important;
+  filter: drop-shadow(0 0 10px rgba(204, 255, 0, 0.85));
+}
+
+.water-selected-part path.iso-top {
+  fill: #2d4508 !important;
+}
+
+.water-selected-part path.iso-shade {
+  fill: #1e3004 !important;
+}
+
+/* Animated Process Piping */
+.waterplant-flow-pipes path {
+  stroke: #38bdf8 !important;
+  stroke-width: 1.6px !important;
+  stroke-dasharray: 6 3;
+  animation: water-flow-dash 18s linear infinite;
+  filter: drop-shadow(0 0 5px rgba(56, 189, 248, 0.7));
+}
+
+@keyframes water-flow-dash {
+  to {
+    stroke-dashoffset: -300;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .waterplant-flow-pipes path {
+    animation: none;
+  }
+}

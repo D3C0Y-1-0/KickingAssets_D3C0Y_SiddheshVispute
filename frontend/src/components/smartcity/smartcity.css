@@ -1,0 +1,177 @@
+/* Scoped Smart City Digital Twin CSS — Dark Cyber-Physical Theme with Electric Lime Accents */
+.smartcity-assembly {
+  user-select: none;
+}
+
+.smartcity-interactive-group {
+  transition: opacity 0.2s ease, filter 0.2s ease;
+}
+
+.smartcity-interactive-group:hover path.iso-edge {
+  stroke: #ccff00 !important;
+  stroke-width: 1.4px !important;
+}
+
+.smartcity-interactive-group:hover path.iso-top {
+  fill: #223806 !important;
+}
+
+/* ─── Per-Island Color Themes (Dark Cyber-Physical with distinct, luminous surfaces) ─── */
+
+/* Power Island: Industrial Amber & Titanium */
+.city-color-power .iso-fill { fill: #1c1810 !important; }
+.city-color-power .iso-top { fill: #362e1a !important; }
+.city-color-power .iso-shade { fill: #1e190e !important; }
+.city-color-power path.iso-edge { stroke: #d97706 !important; stroke-width: 0.85px !important; }
+.city-color-power[data-lit] > .iso-fill { fill: #332810 !important; }
+.city-color-power[data-lit] > .iso-top { fill: #4a3a14 !important; }
+
+/* Edge / Telecom Island: High-Tech Slate & Teal */
+.city-color-edge .iso-fill { fill: #101c26 !important; }
+.city-color-edge .iso-top { fill: #1d3345 !important; }
+.city-color-edge .iso-shade { fill: #12212d !important; }
+.city-color-edge path.iso-edge { stroke: #0284c7 !important; stroke-width: 0.85px !important; }
+.city-color-edge[data-lit] > .iso-fill { fill: #1a3246 !important; }
+.city-color-edge[data-lit] > .iso-top { fill: #254b68 !important; }
+
+/* IOC / Civic Island: Tiered Steel & Glass Skyscraper */
+.city-color-ioc .iso-fill { fill: #152233 !important; }
+.city-color-ioc .iso-top { fill: #243954 !important; }
+.city-color-ioc .iso-shade { fill: #172639 !important; }
+.city-color-ioc path.iso-edge { stroke: #38bdf8 !important; stroke-width: 0.85px !important; }
+.city-color-ioc[data-lit] > .iso-fill { fill: #223652 !important; }
+.city-color-ioc[data-lit] > .iso-top { fill: #325078 !important; }
+
+/* Water Island: Cool Marine Clarifiers & Reservoirs */
+.city-color-water .iso-fill { fill: #0e202c !important; }
+.city-color-water .iso-top { fill: #18384d !important; }
+.city-color-water .iso-shade { fill: #102634 !important; }
+.city-color-water path.iso-edge { stroke: #06b6d4 !important; stroke-width: 0.85px !important; }
+.city-color-water[data-lit] > .iso-fill { fill: #183c54 !important; }
+.city-color-water[data-lit] > .iso-top { fill: #225272 !important; }
+
+/* Hospital Island: Medical Slate & Carmine Telemetry */
+.city-color-hospital .iso-fill { fill: #261620 !important; }
+.city-color-hospital .iso-top { fill: #3d2333 !important; }
+.city-color-hospital .iso-shade { fill: #2b1824 !important; }
+.city-color-hospital path.iso-edge { stroke: #f43f5e !important; stroke-width: 0.85px !important; }
+.city-color-hospital[data-lit] > .iso-fill { fill: #451e33 !important; }
+.city-color-hospital[data-lit] > .iso-top { fill: #5c2744 !important; }
+
+/* Transit Island: Elevated Guideway & Concrete Hub */
+.city-color-transit .iso-fill { fill: #162420 !important; }
+.city-color-transit .iso-top { fill: #243b35 !important; }
+.city-color-transit .iso-shade { fill: #182823 !important; }
+.city-color-transit path.iso-edge { stroke: #10b981 !important; stroke-width: 0.85px !important; }
+.city-color-transit[data-lit] > .iso-fill { fill: #223c34 !important; }
+.city-color-transit[data-lit] > .iso-top { fill: #31574a !important; }
+
+/* ─── Selection State (Electric Lime Glow) ─── */
+.smartcity-selected-part path.iso-edge {
+  stroke: #ccff00 !important;
+  stroke-width: 1.8px !important;
+  filter: drop-shadow(0 0 10px rgba(204, 255, 0, 0.85));
+}
+
+.smartcity-selected-part path.iso-top {
+  fill: #2d4508 !important;
+}
+
+.smartcity-selected-part path.iso-shade {
+  fill: #1e3004 !important;
+}
+
+/* Offline state (Red Alert Pulse) */
+.smartcity-offline-pulse path.iso-edge {
+  stroke: #ff3344 !important;
+  stroke-width: 1.8px !important;
+  animation: smartcity-red-pulse 1.8s infinite;
+}
+
+.smartcity-offline-pulse path.iso-top {
+  fill: #44141a !important;
+}
+
+/* Warning state (Amber Alert Pulse) */
+.smartcity-warning-pulse path.iso-edge {
+  stroke: #f59e0b !important;
+  stroke-width: 1.6px !important;
+  animation: smartcity-amber-pulse 2s infinite;
+}
+
+.smartcity-warning-pulse path.iso-top {
+  fill: #422d0c !important;
+}
+
+/* Dynamic Cyber-Physical Flow Paths */
+.smartcity-flow-fiber path {
+  stroke: #38bdf8 !important;
+  stroke-width: 1.6px !important;
+  stroke-dasharray: 6 3;
+  animation: smartcity-flow-dash 20s linear infinite;
+  filter: drop-shadow(0 0 5px rgba(56, 189, 248, 0.7));
+}
+
+.smartcity-flow-power path {
+  stroke: #ccff00 !important;
+  stroke-width: 1.5px !important;
+  stroke-dasharray: 5 4;
+  animation: smartcity-flow-dash-rev 15s linear infinite;
+  filter: drop-shadow(0 0 5px rgba(204, 255, 0, 0.6));
+}
+
+.smartcity-flow-wireless path {
+  stroke: #c084fc !important;
+  stroke-width: 1.3px !important;
+  animation: smartcity-wave-pulse 2.5s ease-in-out infinite;
+}
+
+@keyframes smartcity-flow-dash {
+  to {
+    stroke-dashoffset: -300;
+  }
+}
+
+@keyframes smartcity-flow-dash-rev {
+  to {
+    stroke-dashoffset: 300;
+  }
+}
+
+@keyframes smartcity-wave-pulse {
+  0%, 100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 0.95;
+    filter: drop-shadow(0 0 7px rgba(192, 132, 252, 0.7));
+  }
+}
+
+@keyframes smartcity-red-pulse {
+  0%, 100% {
+    filter: drop-shadow(0 0 3px rgba(255, 51, 68, 0.4));
+  }
+  50% {
+    filter: drop-shadow(0 0 12px rgba(255, 51, 68, 0.9));
+  }
+}
+
+@keyframes smartcity-amber-pulse {
+  0%, 100% {
+    filter: drop-shadow(0 0 3px rgba(245, 158, 11, 0.4));
+  }
+  50% {
+    filter: drop-shadow(0 0 10px rgba(245, 158, 11, 0.8));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .smartcity-flow-fiber path,
+  .smartcity-flow-power path,
+  .smartcity-flow-wireless path,
+  .smartcity-offline-pulse path.iso-edge,
+  .smartcity-warning-pulse path.iso-edge {
+    animation: none;
+  }
+}

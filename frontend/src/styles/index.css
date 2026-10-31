@@ -1,5 +1,6 @@
 @import 'tailwindcss';
 @import '../design/tokens.css';
+@import '../components/iso/iso.css';
 
 * {
   box-sizing: border-box;
@@ -247,15 +248,25 @@ kbd {
   background: var(--surface);
 }
 .nav-item.active {
-  color: var(--accent);
-  background: var(--accent-soft);
-  border-color: var(--accent-border);
+  color: #000000;
+  background: var(--accent);
+  border-color: var(--accent);
+  font-weight: 700;
+}
+.nav-item.active svg {
+  color: #000000;
+}
+.nav-item.active .nav-tag {
+  color: #000000;
+  border-color: rgba(0, 0, 0, 0.35);
+  background: rgba(0, 0, 0, 0.08);
+  font-weight: 800;
 }
 .nav-item.active::before {
   content: '';
   position: absolute;
-  width: 2px;
-  height: 17px;
+  width: 3px;
+  height: 20px;
   background: var(--accent);
   left: -13px;
   border-radius: 2px;
