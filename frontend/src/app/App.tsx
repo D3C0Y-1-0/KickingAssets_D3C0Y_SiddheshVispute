@@ -1,6 +1,14 @@
 import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import {
+  AnimatePresence,
+  motion,
+  useMotionValue,
+  useSpring,
+  useTransform,
+  type MotionValue,
+} from 'motion/react'
+import {
   Activity,
   BookOpen,
   BrainCircuit,
@@ -83,7 +91,110 @@ const navGroups: { label: string; items: NavEntry[] }[] = [
 const navigation = navGroups.flatMap((g) => g.items)
 const NAV_KEY = 'gridinal.nav.collapsed'
 
+function NavDockItem({
+  mouseY,
+  path,
+  name,
+  icon: Icon,
+  collapsed,
+  subtle = false,
+  onClick,
+}: {
+  mouseY: MotionValue<number>
+  path: string
+  name: string
+  icon: typeof Grid2X2
+  collapsed: boolean
+  subtle?: boolean
+  onClick?: () => void
+}) {
+  const ref = useRef<HTMLAnchorElement>(null)
+  const [hovered, setHovered] = useState(false)
+
+  const distance = useTransform(mouseY, (val) => {
+    const bounds = ref.current?.getBoundingClientRect() ?? { y: 0, height: 0 }
+    return val - bounds.y - bounds.height / 2
+  })
+
+  // Vertical spring dock magnification with smooth bell-curve falloff
+  const iconBoxTransform = useTransform(distance, (val) => {
+    const maxDelta = 110
+    const base = collapsed ? 38 : 36
+    const peak = collapsed ? 50 : 42
+    if (Math.abs(val) > maxDelta) return base
+    const pct = 1 - Math.abs(val) / maxDelta
+    const ease = 0.5 - 0.5 * Math.cos(pct * Math.PI)
+    return base + (peak - base) * ease
+  })
+
+  const iconScaleTransform = useTransform(distance, (val) => {
+    const maxDelta = 110
+    const base = subtle ? 16 : 18
+    const peak = collapsed ? 24 : 21
+    if (Math.abs(val) > maxDelta) return base
+    const pct = 1 - Math.abs(val) / maxDelta
+    const ease = 0.5 - 0.5 * Math.cos(pct * Math.PI)
+    return base + (peak - base) * ease
+  })
+
+  const iconBoxSize = useSpring(iconBoxTransform, {
+    mass: 0.1,
+    stiffness: 180,
+    damping: 14,
+  })
+
+  const iconSize = useSpring(iconScaleTransform, {
+    mass: 0.1,
+    stiffness: 180,
+    damping: 14,
+  })
+
+  return (
+    <NavLink
+      ref={ref}
+      to={path}
+      end={path === '/'}
+      onClick={onClick}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      title={collapsed ? name : undefined}
+      className={({ isActive }) =>
+        `nav-item nav-dock-item ${subtle ? 'subtle' : ''} ${isActive ? 'active' : ''}`
+      }
+    >
+      <motion.span
+        style={{ width: iconBoxSize, height: iconBoxSize }}
+        className="nav-icon nav-dock-icon"
+      >
+        <motion.span
+          style={{ width: iconSize, height: iconSize }}
+          className="inline-flex items-center justify-center [&>svg]:w-full [&>svg]:h-full"
+        >
+          <Icon size={18} />
+        </motion.span>
+      </motion.span>
+      <span className="nav-text">{name}</span>
+      {collapsed && (
+        <AnimatePresence>
+          {hovered && (
+            <motion.span
+              initial={{ opacity: 0, x: -8, y: '-50%' }}
+              animate={{ opacity: 1, x: 0, y: '-50%' }}
+              exit={{ opacity: 0, x: -6, y: '-50%' }}
+              transition={{ duration: 0.15 }}
+              className="nav-dock-tooltip"
+            >
+              {name}
+            </motion.span>
+          )}
+        </AnimatePresence>
+      )}
+    </NavLink>
+  )
+}
+
 export default function App() {
+  const navMouseY = useMotionValue(Infinity)
   const [menuOpen, setMenuOpen] = useState(false)
   const [collapsed, setCollapsed] = useState(() => {
     try {
@@ -150,6 +261,8 @@ export default function App() {
         id="workspace-navigation"
         className={`sidebar ${menuOpen ? 'open' : ''}`}
         aria-label="Main navigation"
+        onMouseMove={(e) => navMouseY.set(e.pageY)}
+        onMouseLeave={() => navMouseY.set(Infinity)}
       >
         <Link to="/" className="brand" aria-label="Gridinal, home">
           <img className="brand-mark" src={brandMark} alt="" width={40} height={40} />
@@ -167,33 +280,29 @@ export default function App() {
             <div className="nav-group" key={group.label}>
               <div className="nav-label">{group.label}</div>
               {group.items.map(({ path, name, icon: Icon }) => (
-                <NavLink
+                <NavDockItem
                   key={path}
-                  end={path === '/'}
-                  to={path}
-                  title={collapsed ? name : undefined}
-                  className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
-                >
-                  <span className="nav-icon">
-                    <Icon size={18} />
-                  </span>
-                  <span className="nav-text">{name}</span>
-                </NavLink>
+                  mouseY={navMouseY}
+                  path={path}
+                  name={name}
+                  icon={Icon}
+                  collapsed={collapsed}
+                  onClick={() => setMenuOpen(false)}
+                />
               ))}
             </div>
           ))}
         </nav>
         <div className="sidebar-bottom">
-          <NavLink
-            className={({ isActive }) => `nav-item subtle ${isActive ? 'active' : ''}`}
-            to="/methodology"
-            title={collapsed ? 'Methodology & Evidence' : undefined}
-          >
-            <span className="nav-icon">
-              <BookOpen size={17} />
-            </span>
-            <span className="nav-text">Methodology & Evidence</span>
-          </NavLink>
+          <NavDockItem
+            mouseY={navMouseY}
+            path="/methodology"
+            name="Methodology & Evidence"
+            icon={BookOpen}
+            collapsed={collapsed}
+            subtle
+            onClick={() => setMenuOpen(false)}
+          />
           <div className="sidebar-status">
             <span className="status-dot" aria-hidden />
             <span className="nav-text">Local demo · Aurora City</span>
