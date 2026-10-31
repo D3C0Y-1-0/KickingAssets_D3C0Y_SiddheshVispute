@@ -84,3 +84,11 @@ No known Phase 1 functional blocker remains. The test-client deprecation warning
 - Vercel to Azure proxy: `/`, `/ml`, health, ML status, assets returned 200; a simulation run through the proxy returned 200 in 8.7 s (warm). The live Command Overview rendered with a computed city risk index.
 - Not verified: other pages on the live site, several visitors at once, the first-run cold start through the Vercel proxy, memory headroom on B1 under load, the force-directed map with a run overlay.
 - The earlier `codex/deploy` Vercel function deployment was replaced by this one.
+
+## Challenge-gap features verification (31 October 2026)
+
+- `pytest backend/tests`: 95 passed (20 new: telemetry, resilience, insights API, brief). Ruff check and format clean. Frontend typecheck, build, 7 tests pass; the new and edited files pass Prettier (the digital-twins files from the other push were not reformatted).
+- Detector on the simulated telemetry: 0 flags on 800 clean asset-days; all four malicious authored events flagged; the benign maintenance event flagged (a documented false positive). These results validate the mechanics on simulated data only, not real-world detection performance.
+- Real outputs: 11 of 30 assets are chokepoints; vendor scenarios and KEV counts computed from the product map and the cached KEV file; trend of 18 monthly points from 33.6 (2025-05) to 35.6 (2026-10), with criticals rising from 6 to 9.
+- Browser (local, real API): Posture, Resilience (both tabs) and Coverage rendered with real data; running the simulation enabled the brief downloads; the Markdown brief was fetched and read: ranked assets, drivers, services, activity with urgency, vendors, chokepoints, optimizer actions labelled projected, assumptions. The only console error was a 409 from a page load before the first run.
+- Not verified: the new pages on the hosted site (see deployment notes), mobile layout, accessibility audit of the new tables and charts, the brief's HTML rendering in a browser.

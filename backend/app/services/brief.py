@@ -29,7 +29,6 @@ EFFECT = {
     "loss_of_visibility": "loss of visibility",
 }
 LIMITATIONS = [
-    "The risk index is relative and uncalibrated; it is not the probability of an incident.",
     "Assets, configuration flags and assumed products are fictional or assumed, not scanned.",
     "Impact assumes no operator recovery and is an upper bound.",
     "Network activity is simulated telemetry with authored events, not observed traffic.",
@@ -182,7 +181,7 @@ def build_brief(
         BriefSection(
             title="Assumptions and limitations",
             available=True,
-            lines=[*run.assumptions, *LIMITATIONS],
+            lines=list(dict.fromkeys([*run.assumptions, *LIMITATIONS])),
         ),
     ]
     return RiskBrief(

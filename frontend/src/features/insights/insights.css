@@ -122,6 +122,8 @@
 }
 .ins-sub {
   display: block;
+  max-width: 460px;
+  white-space: normal;
   margin-top: 2px;
   color: var(--text-muted);
   font-size: 12px;

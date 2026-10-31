@@ -85,3 +85,15 @@ Agree the exact file list and schema owner before concurrent work. Keep the user
 - Package: a zip with the app, the ML code and models, the Linux wheels in `.python_packages` (CPU `xgboost-cpu`), and the reduced reference data (KEV, EPSS snapshots, derived parquet; raw NVD files are not needed). Oryx build is disabled. Startup command: `cd backend && PYTHONPATH=/home/site/wwwroot/.python_packages/lib/site-packages python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 1`. Do not put an unquoted `*` in the command: the shell expands it.
 - Azure Container Registry Tasks are blocked on the Azure for Students subscription, so container builds are not available.
 - Not on this branch: the read-only `/api/v1/impact` and `/models/kev-signal` endpoints exist only on `codex/deploy`. This branch's own workflow endpoints supersede them.
+
+## Challenge-gap features (codex/innovations)
+
+Plan and status: `docs/PLAN_CHALLENGE_GAPS.md`. All additive; `risk-index-v1` and existing contracts are unchanged.
+
+- **Simulated network activity** (`engine/telemetry.py`, `services/insights.py`, `GET /api/v1/activity`, `/activity/assets/{id}`): seeded daily telemetry per asset plus authored events (`data/scenarios/aurora-telemetry-events.json`), a robust z-score detector (28-day median/MAD baseline, z >= 3.5) and a criticality-scaled noisy-OR city activity index. Everything is labelled `simulation`. Urgency = risk x (1 + 0.5 x anomaly) appears only after a simulation run (otherwise null).
+- **Resilience** (`engine/resilience.py`, `GET /api/v1/resilience/chokepoints`, `/vendors`): single-asset-loss chokepoints and assumed vendor-compromise scenarios, both through the conditional impact engine (joint analysis for vendors); vendor concentration (HHI) per service; CISA KEV counts as context.
+- **Posture trend** (`GET /api/v1/simulation/trend`): served from `data/derived/posture-trend.json`, built by `python -m app.services.trend_build --months 18` (needs the reference cache). Absent file returns `status: unavailable`. It shows the public vulnerability landscape moving against fixed assumed assets.
+- **Risk brief** (`GET /api/v1/reports/brief?format=json|md|html`): from the latest simulation plus the companion reports and a 40 h optimizer plan; 409 without a run. Download links are on the Command Overview after a run.
+- **Pages:** Posture & Activity (`/posture`), Resilience (`/resilience`), PS03 Coverage (`/coverage`).
+- New contract file: `app/schemas/insights.py`; router `app/api/insights.py` registered in `main.py`.
+- Known limits: telemetry is simulated and the detector is exercised on its own authored events; the benign maintenance window is flagged on purpose; chokepoint and vendor figures assume no operator recovery (upper bound); no calibrated likelihood, no new sectors, no modelled monitoring or recovery benefit.

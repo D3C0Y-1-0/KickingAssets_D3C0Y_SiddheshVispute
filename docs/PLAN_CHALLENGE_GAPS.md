@@ -33,7 +33,7 @@ Not built, with reasons: calibrated incident likelihood (the model is a ranking 
 
 **Data.** 60 daily samples per asset ending 2026-10-01 (the baseline snapshot date). Metrics: `flows`, `bytes_out_mb`, `distinct_peers`, `failed_logins`, `off_hours_share`, `ot_writes` (controllers only). Baseline level and variability come from asset type and zone (OT controllers: low and very regular; gateways: high; workstations: working-hours pattern), with a weekday factor and seeded noise (`random.Random(sha256(asset|metric|day))`, so reproducible on any machine).
 **Authored events** (`data/scenarios/aurora-telemetry-events.json`, labelled scenario assumptions): a perimeter scan, credential stuffing against the internet-exposed VPN gateway, off-hours exfiltration-like transfer from a workstation, unusual write commands to a PLC, and one benign maintenance window (a deliberate false-positive probe). Each has id, asset, metrics multiplied, day range and a ground-truth `malicious` flag.
-**Detector.** For day t and metric m: robust z-score against the trailing 28 days (median and MAD scaled by 1.4826, with a floor of 10 % of the median so quiet metrics do not explode). A metric is anomalous at z >= 3.5. Asset anomaly score = 1 - exp(-(zmax - 3.5) / 4), floored at 0, plus 0.1 per extra consecutive anomalous day (cap 1.0). Reasons list metric, observed, baseline median, z. Only samples up to `as_of` are used (time-travel safe).
+**Detector.** (City index = noisy-OR of asset anomaly scores scaled by criticality, capped at 0.6 each; bands calm < 15, elevated < 40, active.) For day t and metric m: robust z-score against the trailing 28 days (median and MAD scaled by 1.4826, with a floor of 10 % of the median so quiet metrics do not explode). A metric is anomalous at z >= 3.5. Asset anomaly score = 1 - exp(-(zmax - 3.5) / 4), floored at 0, plus 0.1 per extra consecutive anomalous day (cap 1.0). Reasons list metric, observed, baseline median, z. Only samples up to `as_of` are used (time-travel safe).
 **City activity index** = criticality-weighted mean asset anomaly x 100, banded calm < 10, elevated < 25, active.
 **Urgency** (needs a simulation run): `risk_score x (1 + 0.5 x anomaly)`, documented and separate from the index; assets with no risk score get `null`.
 **API.** `GET /api/v1/activity?as_of=` returns series (city index per day), per-asset latest status and reasons, events (ground truth is NOT returned to the UI as "detections"). `GET /api/v1/activity/assets/{id}` returns metric series with baseline bands.
@@ -78,10 +78,11 @@ Time-travel trend needs the reference cache (build-time script, artifact committ
 
 ## 7. Status
 
-- [ ] F1 telemetry and detector
-- [ ] F2 vendor concentration and compromise
-- [ ] F3 chokepoints
-- [ ] F4 posture trend
-- [ ] F5 risk brief
-- [ ] F6 coverage matrix
-- [ ] Contracts regenerated, frontend, verification, deploy
+- [x] F1 telemetry and detector (`engine/telemetry.py`, 7 tests; 0 false alarms on 800 clean asset-days, every authored event flagged, the benign window flagged as a documented false positive)
+- [x] F2 vendor concentration and compromise (`engine/resilience.py`)
+- [x] F3 chokepoints (11 of 30 assets fully disrupt a service alone)
+- [x] F4 posture trend (`data/derived/posture-trend.json`, 18 monthly points built with `python -m app.services.trend_build`)
+- [x] F5 risk brief (`/api/v1/reports/brief`, md and html)
+- [x] F6 coverage matrix (`/coverage`)
+- [x] Contracts regenerated, frontend pages, browser verification
+- [ ] Deployed to Azure and Vercel (see HANDOFF.md)
