@@ -35,7 +35,7 @@
             }
           },
           "422": {
-            "description": "Unprocessable Entity",
+            "description": "Unprocessable Content",
             "content": {
               "application/json": {
                 "schema": {
@@ -90,7 +90,7 @@
             }
           },
           "422": {
-            "description": "Unprocessable Entity",
+            "description": "Unprocessable Content",
             "content": {
               "application/json": {
                 "schema": {
@@ -164,7 +164,7 @@
                 }
               }
             },
-            "description": "Unprocessable Entity"
+            "description": "Unprocessable Content"
           },
           "503": {
             "content": {
@@ -308,7 +308,7 @@
                 }
               }
             },
-            "description": "Unprocessable Entity"
+            "description": "Unprocessable Content"
           },
           "503": {
             "content": {
@@ -396,7 +396,7 @@
                 }
               }
             },
-            "description": "Unprocessable Entity"
+            "description": "Unprocessable Content"
           },
           "503": {
             "content": {
@@ -496,7 +496,7 @@
                 }
               }
             },
-            "description": "Unprocessable Entity"
+            "description": "Unprocessable Content"
           },
           "503": {
             "content": {
@@ -579,7 +579,7 @@
                 }
               }
             },
-            "description": "Unprocessable Entity"
+            "description": "Unprocessable Content"
           },
           "503": {
             "content": {
@@ -633,7 +633,7 @@
             }
           },
           "422": {
-            "description": "Unprocessable Entity",
+            "description": "Unprocessable Content",
             "content": {
               "application/json": {
                 "schema": {
@@ -729,7 +729,7 @@
                 }
               }
             },
-            "description": "Unprocessable Entity"
+            "description": "Unprocessable Content"
           },
           "503": {
             "content": {
@@ -827,7 +827,7 @@
                 }
               }
             },
-            "description": "Unprocessable Entity"
+            "description": "Unprocessable Content"
           },
           "503": {
             "content": {
@@ -891,7 +891,7 @@
             }
           },
           "422": {
-            "description": "Unprocessable Entity",
+            "description": "Unprocessable Content",
             "content": {
               "application/json": {
                 "schema": {
@@ -1073,7 +1073,7 @@
             }
           },
           "422": {
-            "description": "Unprocessable Entity",
+            "description": "Unprocessable Content",
             "content": {
               "application/json": {
                 "schema": {
@@ -1134,7 +1134,7 @@
             }
           },
           "422": {
-            "description": "Unprocessable Entity",
+            "description": "Unprocessable Content",
             "content": {
               "application/json": {
                 "schema": {
@@ -1213,7 +1213,7 @@
                 }
               }
             },
-            "description": "Unprocessable Entity"
+            "description": "Unprocessable Content"
           },
           "503": {
             "content": {
@@ -1272,7 +1272,7 @@
             }
           },
           "422": {
-            "description": "Unprocessable Entity",
+            "description": "Unprocessable Content",
             "content": {
               "application/json": {
                 "schema": {
@@ -1334,7 +1334,7 @@
             }
           },
           "422": {
-            "description": "Unprocessable Entity",
+            "description": "Unprocessable Content",
             "content": {
               "application/json": {
                 "schema": {
@@ -1395,7 +1395,7 @@
             }
           },
           "422": {
-            "description": "Unprocessable Entity",
+            "description": "Unprocessable Content",
             "content": {
               "application/json": {
                 "schema": {
@@ -1508,7 +1508,7 @@
                 }
               }
             },
-            "description": "Unprocessable Entity"
+            "description": "Unprocessable Content"
           },
           "503": {
             "content": {
@@ -1562,7 +1562,7 @@
             }
           },
           "422": {
-            "description": "Unprocessable Entity",
+            "description": "Unprocessable Content",
             "content": {
               "application/json": {
                 "schema": {
@@ -1623,7 +1623,7 @@
             }
           },
           "422": {
-            "description": "Unprocessable Entity",
+            "description": "Unprocessable Content",
             "content": {
               "application/json": {
                 "schema": {
@@ -1727,7 +1727,7 @@
                 }
               }
             },
-            "description": "Unprocessable Entity"
+            "description": "Unprocessable Content"
           },
           "503": {
             "content": {
@@ -1785,7 +1785,7 @@
             }
           },
           "422": {
-            "description": "Unprocessable Entity",
+            "description": "Unprocessable Content",
             "content": {
               "application/json": {
                 "schema": {
@@ -1814,60 +1814,80 @@
         ],
         "summary": "Options",
         "operationId": "options_api_v1_actions_options_get",
+        "parameters": [
+          {
+            "name": "run_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "If given, must be the current run; otherwise 409/404",
+              "title": "Run Id"
+            },
+            "description": "If given, must be the current run; otherwise 409/404"
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successful Response",
             "content": {
               "application/json": {
                 "schema": {
+                  "type": "array",
                   "items": {
                     "$ref": "#/components/schemas/ActionOption"
                   },
-                  "type": "array",
                   "title": "Response Options Api V1 Actions Options Get"
                 }
               }
             }
           },
           "404": {
-            "description": "Not Found",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorEnvelope"
                 }
               }
-            }
+            },
+            "description": "Not Found"
           },
           "409": {
-            "description": "Conflict",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorEnvelope"
                 }
               }
-            }
+            },
+            "description": "Conflict"
           },
           "422": {
-            "description": "Unprocessable Entity",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorEnvelope"
                 }
               }
-            }
+            },
+            "description": "Unprocessable Content"
           },
           "503": {
-            "description": "Service Unavailable",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ErrorEnvelope"
                 }
               }
-            }
+            },
+            "description": "Service Unavailable"
           }
         }
       }
@@ -1921,7 +1941,7 @@
             }
           },
           "422": {
-            "description": "Unprocessable Entity",
+            "description": "Unprocessable Content",
             "content": {
               "application/json": {
                 "schema": {
@@ -1992,7 +2012,7 @@
             }
           },
           "422": {
-            "description": "Unprocessable Entity",
+            "description": "Unprocessable Content",
             "content": {
               "application/json": {
                 "schema": {
@@ -2105,7 +2125,7 @@
                 }
               }
             },
-            "description": "Unprocessable Entity"
+            "description": "Unprocessable Content"
           },
           "503": {
             "content": {
@@ -2220,7 +2240,7 @@
                 }
               }
             },
-            "description": "Unprocessable Entity"
+            "description": "Unprocessable Content"
           },
           "503": {
             "content": {
@@ -2309,7 +2329,7 @@
                 }
               }
             },
-            "description": "Unprocessable Entity"
+            "description": "Unprocessable Content"
           },
           "503": {
             "content": {
@@ -2398,7 +2418,7 @@
                 }
               }
             },
-            "description": "Unprocessable Entity"
+            "description": "Unprocessable Content"
           },
           "503": {
             "content": {
@@ -2487,7 +2507,7 @@
                 }
               }
             },
-            "description": "Unprocessable Entity"
+            "description": "Unprocessable Content"
           },
           "503": {
             "content": {
@@ -2593,7 +2613,7 @@
                 }
               }
             },
-            "description": "Unprocessable Entity"
+            "description": "Unprocessable Content"
           },
           "503": {
             "content": {
@@ -2640,6 +2660,10 @@
             "type": "number",
             "title": "Effort Hours"
           },
+          "downtime_hours": {
+            "type": "number",
+            "title": "Downtime Hours"
+          },
           "operational_disruption": {
             "type": "string",
             "title": "Operational Disruption"
@@ -2657,6 +2681,7 @@
           "description",
           "modelled",
           "effort_hours",
+          "downtime_hours",
           "operational_disruption",
           "assumption"
         ],
@@ -2763,6 +2788,72 @@
           "operational_disruption"
         ],
         "title": "ActionOption"
+      },
+      "ActionPair": {
+        "properties": {
+          "first": {
+            "type": "string",
+            "enum": [
+              "patch_prioritization",
+              "network_segmentation",
+              "access_control",
+              "enhanced_monitoring",
+              "incident_response_plan"
+            ],
+            "title": "First"
+          },
+          "second": {
+            "type": "string",
+            "enum": [
+              "patch_prioritization",
+              "network_segmentation",
+              "access_control",
+              "enhanced_monitoring",
+              "incident_response_plan"
+            ],
+            "title": "Second"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "first",
+          "second"
+        ],
+        "title": "ActionPair"
+      },
+      "ActionPrerequisite": {
+        "properties": {
+          "action": {
+            "type": "string",
+            "enum": [
+              "patch_prioritization",
+              "network_segmentation",
+              "access_control",
+              "enhanced_monitoring",
+              "incident_response_plan"
+            ],
+            "title": "Action"
+          },
+          "requires": {
+            "type": "string",
+            "enum": [
+              "patch_prioritization",
+              "network_segmentation",
+              "access_control",
+              "enhanced_monitoring",
+              "incident_response_plan"
+            ],
+            "title": "Requires"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "action",
+          "requires"
+        ],
+        "title": "ActionPrerequisite"
       },
       "ActivityDay": {
         "properties": {
@@ -2921,6 +3012,13 @@
             },
             "type": "array",
             "title": "Details"
+          },
+          "issues": {
+            "items": {
+              "$ref": "#/components/schemas/ApiIssue"
+            },
+            "type": "array",
+            "title": "Issues"
           }
         },
         "additionalProperties": false,
@@ -2930,6 +3028,31 @@
           "message"
         ],
         "title": "ApiError"
+      },
+      "ApiIssue": {
+        "properties": {
+          "path": {
+            "type": "string",
+            "title": "Path"
+          },
+          "code": {
+            "type": "string",
+            "title": "Code"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "path",
+          "code",
+          "message"
+        ],
+        "title": "ApiIssue",
+        "description": "One machine-readable problem; `path` points at the offending request field."
       },
       "ApplicabilityFinding": {
         "properties": {
@@ -3037,9 +3160,57 @@
             "type": "number",
             "title": "Effort Hours"
           },
+          "downtime_hours": {
+            "type": "number",
+            "title": "Downtime Hours"
+          },
           "operational_disruption": {
             "type": "string",
             "title": "Operational Disruption"
+          },
+          "outcome": {
+            "type": "string",
+            "enum": [
+              "reduces_modelled_risk",
+              "no_modelled_reduction",
+              "recommendation_only",
+              "increases_modelled_risk"
+            ],
+            "title": "Outcome"
+          },
+          "standalone_city_reduction": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Standalone City Reduction",
+            "description": "City-index reduction if this were the only action."
+          },
+          "marginal_city_reduction": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Marginal City Reduction",
+            "description": "Added reduction in request order after the earlier actions; these sum to the total, so overlapping benefits are counted once."
+          },
+          "patch": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PatchOutcome"
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         },
         "additionalProperties": false,
@@ -3052,7 +3223,9 @@
           "modelled",
           "effect",
           "effort_hours",
-          "operational_disruption"
+          "downtime_hours",
+          "operational_disruption",
+          "outcome"
         ],
         "title": "AppliedAction"
       },
@@ -4657,6 +4830,38 @@
         "title": "Consequence",
         "description": "Downstream effect of the target, from the operational dependency graph. Reporting only."
       },
+      "ConstraintReport": {
+        "properties": {
+          "constraints_supplied": {
+            "type": "boolean",
+            "title": "Constraints Supplied"
+          },
+          "total_effort_hours": {
+            "type": "number",
+            "title": "Total Effort Hours"
+          },
+          "total_downtime_hours": {
+            "type": "number",
+            "title": "Total Downtime Hours"
+          },
+          "checks": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Checks"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "constraints_supplied",
+          "total_effort_hours",
+          "total_downtime_hours",
+          "checks"
+        ],
+        "title": "ConstraintReport"
+      },
       "Context": {
         "properties": {
           "scenario_id": {
@@ -4681,6 +4886,57 @@
           "snapshot_id"
         ],
         "title": "Context"
+      },
+      "CveRemediation": {
+        "properties": {
+          "cve_id": {
+            "type": "string",
+            "title": "Cve Id"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "remediated",
+              "fix_version_not_documented",
+              "not_resolved_by_target_version",
+              "applicability_unestablished"
+            ],
+            "title": "Status"
+          },
+          "applicability": {
+            "type": "string",
+            "enum": [
+              "version_confirmed",
+              "version_unknown"
+            ],
+            "title": "Applicability"
+          },
+          "fixed_in": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fixed In"
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "cve_id",
+          "status",
+          "applicability",
+          "fixed_in",
+          "reason"
+        ],
+        "title": "CveRemediation"
       },
       "CveScore": {
         "properties": {
@@ -6101,6 +6357,59 @@
         ],
         "title": "ModelEvidence"
       },
+      "OperationalConstraints": {
+        "properties": {
+          "max_downtime_per_action_hours": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 1000.0,
+                "exclusiveMinimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Downtime Per Action Hours",
+            "description": "Longest single maintenance window available."
+          },
+          "max_total_downtime_hours": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 100000.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Total Downtime Hours"
+          },
+          "incompatible": {
+            "items": {
+              "$ref": "#/components/schemas/ActionPair"
+            },
+            "type": "array",
+            "maxItems": 20,
+            "title": "Incompatible",
+            "description": "Action types that must not both be applied to the same asset."
+          },
+          "prerequisites": {
+            "items": {
+              "$ref": "#/components/schemas/ActionPrerequisite"
+            },
+            "type": "array",
+            "maxItems": 20,
+            "title": "Prerequisites",
+            "description": "`action` on an asset requires `requires` on the same asset."
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "OperationalConstraints",
+        "description": "Deterministic planning limits. Hours are modelled assumptions, not a schedule."
+      },
       "OperationalDependencyEdge": {
         "properties": {
           "scenario_id": {
@@ -6278,6 +6587,26 @@
             "pattern": "^[a-zA-Z0-9_.-]+$",
             "title": "Snapshot Id"
           },
+          "run_id": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Run Id"
+          },
+          "baseline_fingerprint": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 64,
+                "minLength": 8
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Baseline Fingerprint",
+            "description": "Optional: fingerprint of the run's results; rejected if it does not match."
+          },
           "effort_budget_hours": {
             "type": "number",
             "maximum": 10000.0,
@@ -6292,7 +6621,18 @@
               "pattern": "^[a-zA-Z0-9_.-]+$"
             },
             "type": "array",
+            "maxItems": 100,
             "title": "Excluded Asset Ids"
+          },
+          "constraints": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/OperationalConstraints"
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         },
         "additionalProperties": false,
@@ -6300,15 +6640,151 @@
         "required": [
           "scenario_id",
           "snapshot_id",
+          "run_id",
           "effort_budget_hours"
         ],
         "title": "OptimizeRequest"
+      },
+      "PatchOutcome": {
+        "properties": {
+          "scope": {
+            "type": "string",
+            "enum": [
+              "explicit_cves",
+              "default_batch",
+              "target_version"
+            ],
+            "title": "Scope"
+          },
+          "target_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Version"
+          },
+          "remediated": {
+            "items": {
+              "$ref": "#/components/schemas/CveRemediation"
+            },
+            "type": "array",
+            "title": "Remediated"
+          },
+          "not_remediated": {
+            "items": {
+              "$ref": "#/components/schemas/CveRemediation"
+            },
+            "type": "array",
+            "title": "Not Remediated"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "scope",
+          "target_version",
+          "remediated",
+          "not_remediated"
+        ],
+        "title": "PatchOutcome",
+        "description": "Which CVEs a patch is modelled to remediate, and which it is not."
+      },
+      "PlanHandoffRequest": {
+        "properties": {
+          "scenario_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Scenario Id"
+          },
+          "snapshot_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Snapshot Id"
+          },
+          "run_id": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Run Id"
+          },
+          "baseline_fingerprint": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 64,
+                "minLength": 8
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Baseline Fingerprint",
+            "description": "Optional: fingerprint of the run's results; rejected if it does not match."
+          },
+          "actions": {
+            "items": {
+              "$ref": "#/components/schemas/StagedActionRequest"
+            },
+            "type": "array",
+            "maxItems": 40,
+            "minItems": 1,
+            "title": "Actions"
+          },
+          "constraints": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/OperationalConstraints"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "scenario_id",
+          "snapshot_id",
+          "run_id",
+          "actions"
+        ],
+        "title": "PlanHandoffRequest",
+        "description": "Same shape as WhatIfRequest; a separate name keeps request and response schemas distinct."
       },
       "PlanStep": {
         "properties": {
           "rank": {
             "type": "integer",
             "title": "Rank"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "selected",
+              "prerequisite"
+            ],
+            "title": "Kind",
+            "default": "selected"
+          },
+          "prerequisite_for": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Prerequisite For"
           },
           "asset_id": {
             "type": "string",
@@ -6340,9 +6816,17 @@
             "type": "number",
             "title": "Effort Hours"
           },
+          "downtime_hours": {
+            "type": "number",
+            "title": "Downtime Hours"
+          },
           "marginal_reduction": {
             "type": "number",
             "title": "Marginal Reduction"
+          },
+          "reduction_per_effort_hour": {
+            "type": "number",
+            "title": "Reduction Per Effort Hour"
           },
           "cumulative_reduction": {
             "type": "number",
@@ -6361,6 +6845,16 @@
           "operational_disruption": {
             "type": "string",
             "title": "Operational Disruption"
+          },
+          "patch": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PatchOutcome"
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         },
         "additionalProperties": false,
@@ -6372,7 +6866,9 @@
           "action_type",
           "name",
           "effort_hours",
+          "downtime_hours",
           "marginal_reduction",
+          "reduction_per_effort_hour",
           "cumulative_reduction",
           "city_index_after",
           "justification",
@@ -6657,6 +7153,57 @@
         ],
         "title": "ProgressStep"
       },
+      "ProjectionSummary": {
+        "properties": {
+          "current_city_index": {
+            "type": "number",
+            "maximum": 100.0,
+            "minimum": 0.0,
+            "title": "Current City Index"
+          },
+          "projected_city_index": {
+            "type": "number",
+            "maximum": 100.0,
+            "minimum": 0.0,
+            "title": "Projected City Index"
+          },
+          "city_reduction": {
+            "type": "number",
+            "title": "City Reduction"
+          },
+          "current_category_counts": {
+            "items": {
+              "$ref": "#/components/schemas/CategoryCount"
+            },
+            "type": "array",
+            "title": "Current Category Counts"
+          },
+          "projected_category_counts": {
+            "items": {
+              "$ref": "#/components/schemas/CategoryCount"
+            },
+            "type": "array",
+            "title": "Projected Category Counts"
+          },
+          "overlap_adjustment": {
+            "type": "number",
+            "title": "Overlap Adjustment",
+            "description": "Sum of standalone reductions minus the joint reduction: the benefit that would have been double counted if actions were simply added up."
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "current_city_index",
+          "projected_city_index",
+          "city_reduction",
+          "current_category_counts",
+          "projected_category_counts",
+          "overlap_adjustment"
+        ],
+        "title": "ProjectionSummary",
+        "description": "Calculated current versus projected metrics (projected = estimate, not verified)."
+      },
       "Provenance": {
         "properties": {
           "kind": {
@@ -6918,6 +7465,56 @@
         ],
         "title": "ReferenceSource"
       },
+      "RejectedCandidate": {
+        "properties": {
+          "asset_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Asset Id"
+          },
+          "action_type": {
+            "type": "string",
+            "enum": [
+              "patch_prioritization",
+              "network_segmentation",
+              "access_control",
+              "enhanced_monitoring",
+              "incident_response_plan"
+            ],
+            "title": "Action Type"
+          },
+          "reason_code": {
+            "type": "string",
+            "enum": [
+              "asset_excluded",
+              "not_applicable",
+              "no_modelled_reduction",
+              "increases_modelled_risk",
+              "exceeds_effort_budget",
+              "exceeds_maintenance_window",
+              "exceeds_downtime_budget",
+              "incompatible_with_selected",
+              "prerequisite_not_applicable"
+            ],
+            "title": "Reason Code"
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "asset_id",
+          "action_type",
+          "reason_code",
+          "reason"
+        ],
+        "title": "RejectedCandidate"
+      },
       "RemediationPlan": {
         "properties": {
           "scenario_id": {
@@ -6950,6 +7547,16 @@
             "type": "string",
             "title": "Run Id"
           },
+          "baseline_fingerprint": {
+            "type": "string",
+            "title": "Baseline Fingerprint"
+          },
+          "optimality": {
+            "type": "string",
+            "const": "greedy_heuristic",
+            "title": "Optimality",
+            "default": "greedy_heuristic"
+          },
           "effort_budget_hours": {
             "type": "number",
             "title": "Effort Budget Hours"
@@ -6957,6 +7564,10 @@
           "used_hours": {
             "type": "number",
             "title": "Used Hours"
+          },
+          "used_downtime_hours": {
+            "type": "number",
+            "title": "Used Downtime Hours"
           },
           "starting_city_index": {
             "type": "number",
@@ -6977,6 +7588,13 @@
             "type": "array",
             "title": "Steps"
           },
+          "rejected": {
+            "items": {
+              "$ref": "#/components/schemas/RejectedCandidate"
+            },
+            "type": "array",
+            "title": "Rejected"
+          },
           "recommendation_only": {
             "items": {
               "$ref": "#/components/schemas/ActionOption"
@@ -6984,9 +7602,27 @@
             "type": "array",
             "title": "Recommendation Only"
           },
+          "what_if_request": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PlanHandoffRequest"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Ready to POST to /actions/what-if to reproduce this plan's projection. Null when the plan has no steps."
+          },
           "method": {
             "type": "string",
             "title": "Method"
+          },
+          "limitations": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Limitations"
           }
         },
         "additionalProperties": false,
@@ -6995,13 +7631,18 @@
           "scenario_id",
           "snapshot_id",
           "run_id",
+          "baseline_fingerprint",
           "effort_budget_hours",
           "used_hours",
+          "used_downtime_hours",
           "starting_city_index",
           "ending_city_index",
           "steps",
+          "rejected",
           "recommendation_only",
-          "method"
+          "what_if_request",
+          "method",
+          "limitations"
         ],
         "title": "RemediationPlan"
       },
@@ -7866,6 +8507,10 @@
             "type": "string",
             "title": "Id"
           },
+          "fingerprint": {
+            "type": "string",
+            "title": "Fingerprint"
+          },
           "state": {
             "type": "string",
             "const": "current",
@@ -7958,6 +8603,7 @@
           "scenario_id",
           "snapshot_id",
           "id",
+          "fingerprint",
           "as_of",
           "as_of_split",
           "held_out",
@@ -8124,6 +8770,38 @@
               "incident_response_plan"
             ],
             "title": "Action Type"
+          },
+          "cve_ids": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string",
+                  "pattern": "^CVE-\\d{4}-\\d{4,}$"
+                },
+                "type": "array",
+                "maxItems": 25,
+                "minItems": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cve Ids",
+            "description": "patch_prioritization only: the exact CVEs this patch targets. Omit for the default batch (highest-priority CVEs with a documented fixed version)."
+          },
+          "target_version": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 64,
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Target Version",
+            "description": "patch_prioritization only: the software version the asset is upgraded to. A CVE counts as remediated only if NVD affected ranges exclude this version."
           }
         },
         "additionalProperties": false,
@@ -8630,6 +9308,26 @@
             "pattern": "^[a-zA-Z0-9_.-]+$",
             "title": "Snapshot Id"
           },
+          "run_id": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Run Id"
+          },
+          "baseline_fingerprint": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 64,
+                "minLength": 8
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Baseline Fingerprint",
+            "description": "Optional: fingerprint of the run's results; rejected if it does not match."
+          },
           "actions": {
             "items": {
               "$ref": "#/components/schemas/StagedActionRequest"
@@ -8638,6 +9336,16 @@
             "maxItems": 40,
             "minItems": 1,
             "title": "Actions"
+          },
+          "constraints": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/OperationalConstraints"
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         },
         "additionalProperties": false,
@@ -8645,6 +9353,7 @@
         "required": [
           "scenario_id",
           "snapshot_id",
+          "run_id",
           "actions"
         ],
         "title": "WhatIfRequest"
@@ -8681,6 +9390,10 @@
             "type": "string",
             "title": "Run Id"
           },
+          "baseline_fingerprint": {
+            "type": "string",
+            "title": "Baseline Fingerprint"
+          },
           "current_city_index": {
             "type": "number",
             "maximum": 100.0,
@@ -8696,6 +9409,12 @@
           "city_reduction": {
             "type": "number",
             "title": "City Reduction"
+          },
+          "summary": {
+            "$ref": "#/components/schemas/ProjectionSummary"
+          },
+          "constraint_report": {
+            "$ref": "#/components/schemas/ConstraintReport"
           },
           "applied": {
             "items": {
@@ -8739,9 +9458,12 @@
           "scenario_id",
           "snapshot_id",
           "run_id",
+          "baseline_fingerprint",
           "current_city_index",
           "projected_city_index",
           "city_reduction",
+          "summary",
+          "constraint_report",
           "applied",
           "asset_deltas",
           "services_before",
