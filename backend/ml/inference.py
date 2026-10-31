@@ -248,6 +248,12 @@ class Reference:
             excluded_total=len(match.excluded),
         )
 
+    def fixed_versions(
+        self, vendor: str, product_contains: list[str], version: str
+    ) -> dict[str, str | None]:
+        """Documented NVD fix boundary per CVE affecting the version (None = not documented)."""
+        return self.shared.matcher.fixed_versions(vendor, product_contains, version)
+
     def outcomes(self, positions: np.ndarray) -> list[tuple[str, date | None]]:
         """What actually happened to each not-yet-listed CVE after the snapshot."""
         out: list[tuple[str, date | None]] = []

@@ -8,6 +8,13 @@ from app.main import create_app
 from ml import inference
 
 CONTEXT = {"scenario_id": SCENARIO_ID, "snapshot_id": SNAPSHOT_ID}
+
+
+def bound(client):
+    """Context body pinned to the current simulation run."""
+    return {**CONTEXT, "run_id": client.get("/api/v1/simulation/latest").json()["id"]}
+
+
 needs_ml = pytest.mark.skipif(
     not inference.status()["ready"], reason="local reference data or model not available"
 )
@@ -89,7 +96,11 @@ def test_actions_require_a_simulation_first(tmp_path):
     with TestClient(create_app(tmp_path / "t.sqlite3", static_dir=tmp_path / "s")) as client:
         assert client.get("/api/v1/simulation/latest").status_code == 409
         assert client.get("/api/v1/actions/options").status_code == 409
-        body = {**CONTEXT, "actions": [{"asset_id": "PWR-001", "action_type": "access_control"}]}
+        body = {
+            **CONTEXT,
+            "run_id": "run-x",
+            "actions": [{"asset_id": "PWR-001", "action_type": "access_control"}],
+        }
         assert client.post("/api/v1/actions/what-if", json=body).status_code == 409
         asset = client.get("/api/v1/assets/PWR-001").json()
         assert asset["risk"]["status"] == "unavailable"  # no invented score before a run
@@ -154,7 +165,7 @@ def test_simulation_is_deterministic(run, app_client):
 def test_what_if_projects_without_changing_the_current_state(run, app_client):
     target = next(a for a in run["assets"] if a["exposure_factor"] > 0.5)
     body = {
-        **CONTEXT,
+        **bound(app_client),
         "actions": [{"asset_id": target["asset_id"], "action_type": "network_segmentation"}],
     }
     result = app_client.post("/api/v1/actions/what-if", json=body).json()
@@ -169,7 +180,7 @@ def test_what_if_projects_without_changing_the_current_state(run, app_client):
 @needs_ml
 @pytest.mark.parametrize("action", ["enhanced_monitoring", "incident_response_plan"])
 def test_recommendation_only_actions_claim_no_reduction(run, app_client, action):
-    body = {**CONTEXT, "actions": [{"asset_id": "PWR-001", "action_type": action}]}
+    body = {**bound(app_client), "actions": [{"asset_id": "PWR-001", "action_type": action}]}
     result = app_client.post("/api/v1/actions/what-if", json=body).json()
     assert result["city_reduction"] == 0
     assert result["applied"][0]["modelled"] is False
@@ -188,7 +199,7 @@ def test_options_list_all_five_actions_per_asset(run, app_client):
 @needs_ml
 def test_optimizer_respects_budget_and_recomputes_marginal_gains(run, app_client):
     plan = app_client.post(
-        "/api/v1/actions/optimize", json={**CONTEXT, "effort_budget_hours": 60}
+        "/api/v1/actions/optimize", json={**bound(app_client), "effort_budget_hours": 60}
     ).json()
     assert plan["used_hours"] <= 60 and plan["steps"]
     previous = plan["starting_city_index"]
@@ -199,7 +210,7 @@ def test_optimizer_respects_budget_and_recomputes_marginal_gains(run, app_client
     assert plan["ending_city_index"] == pytest.approx(previous, abs=0.01)
     assert all(not o["modelled"] for o in plan["recommendation_only"])
     again = app_client.post(
-        "/api/v1/actions/optimize", json={**CONTEXT, "effort_budget_hours": 60}
+        "/api/v1/actions/optimize", json={**bound(app_client), "effort_budget_hours": 60}
     ).json()
     assert [(s["asset_id"], s["action_type"]) for s in again["steps"]] == [
         (s["asset_id"], s["action_type"]) for s in plan["steps"]
@@ -207,7 +218,7 @@ def test_optimizer_respects_budget_and_recomputes_marginal_gains(run, app_client
     excluded = plan["steps"][0]["asset_id"]
     without = app_client.post(
         "/api/v1/actions/optimize",
-        json={**CONTEXT, "effort_budget_hours": 60, "excluded_asset_ids": [excluded]},
+        json={**bound(app_client), "effort_budget_hours": 60, "excluded_asset_ids": [excluded]},
     ).json()
     assert all(s["asset_id"] != excluded for s in without["steps"])
 

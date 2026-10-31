@@ -397,10 +397,19 @@ class Health(Contract):
     intelligence: Literal["ready", "unavailable", "not_implemented"] = "not_implemented"
 
 
+class ApiIssue(Contract):
+    """One machine-readable problem; `path` points at the offending request field."""
+
+    path: str
+    code: str
+    message: str
+
+
 class ApiError(Contract):
     code: str
     message: str
     details: list[str] = Field(default_factory=list)
+    issues: list[ApiIssue] = Field(default_factory=list)
 
 
 class ErrorEnvelope(Contract):

@@ -1,5 +1,19 @@
 # Phase 1 verification record
 
+## Phase 5B frontend verification — 31 October 2026
+
+Source branch `feature/phase-5-frontend`, exact base `8ea1689b81ecd2144219d4446bd1fcb79564379e`. See [PHASE_5_FRONTEND.md](PHASE_5_FRONTEND.md) for contract coordination, scope and reproduction. Backend/ML/generated contracts were unchanged.
+
+- Frontend `npm test`: 36 passed (26 new workflow tests plus the existing 10 boundary tests). Covered stale budgets/exclusions/baselines, in-flight changes, exclusion search/removal/validation, empty/error/retry states, single/full/subset routed handoff, unsupported actions and actual typed request keys.
+- `npm run typecheck`, `npm run format:check` and `npm run build` passed. There is no separate ESLint task; Prettier is the configured source style check. Test dependencies use a jsdom version compatible with the documented Node.js 22.20 minimum. Tests/build were run on Node 24.20.0.
+- Actual desktop browser: Live Simulation completed all seven stages; actual simulation 9.2s, baseline city 35.62, nine critical assets. HLT-001 opened the filtered register with calculated workflow risk and separate curated assessment, without API-route-not-found errors.
+- Actual Fix Plan: searched/selected two exclusions, removed one, generated 60h plan with WTR-002 excluded. Three actions used 56h: HLT-009 patch, HLT-008 segmentation, PWR-008 segmentation. Backend projection 35.62 → 26.30. Editing the budget immediately marked it OUTDATED and hid old comparisons/transfer controls. Restoring the exact old inputs allowed their matching plan to be reviewed again.
+- Full-plan handoff staged all three actions without automatic calculation. Explicit What-If calculation reproduced 26.30 (9.32 points / 26.17% reduction), seven changed assets and real service values (100% → 100% worst plausible disruption for each service; no verified recovery claimed).
+- Mobile 390×844: What-If and Fix Plan document client/scroll widths both 375, with inner table overflow contained. On mobile, an 8h plan excluding WTR-002 transferred HLT-009 patch alone; explicit calculation returned 35.62 → 33.59 (2.03 points / 5.70%, 8h). Desktop viewport override was reset afterward. Audit tab captured no warning/error logs.
+- Local ignored screenshots: `artifacts/screenshots/phase5b-outdated.jpg`, `phase5b-comparison-desktop.jpg`, `phase5b-whatif-mobile.jpg`, `phase5b-plan-mobile.jpg`, `phase5b-final-comparison.jpg`. The final desktop comparison was visually inspected.
+
+Limits: full backend/model evaluation was not rerun for this frontend-only change. No unfinished hardening branch was merged. Atomic server binding, patch/fixed-version verification and maintenance constraints await the backend contract; best-effort client baseline checks do not eliminate server races. No durable saved plans or actual remediation was introduced.
+
 ## Final late-push synchronization
 
 The user's all-branches instruction also covered new pushes discovered in the final refresh: readable Live UI `7f09433`, attack-path analysis `ce13015`, and combined/force-graph history `3983920`. [REMOTE_BRANCH_SNAPSHOT.json](REMOTE_BRANCH_SNAPSHOT.json) records the exact fetched heads. Final full backend run: **141 passed**, one existing Starlette/httpx warning. Frontend: **10 passed**, typecheck, Prettier and production build passed. The D3 graph chunk configuration was updated from the obsolete Cytoscape entry, removing the empty-chunk build warning.
@@ -136,3 +150,11 @@ No known Phase 1 functional blocker remains. The test-client deprecation warning
 - Not verified: the new pages on the hosted site (see deployment notes), mobile layout, accessibility audit of the new tables and charts, the brief's HTML rendering in a browser.
 
 Hosted checks (31 October 2026): on Azure, `/activity`, `/activity/assets/PWR-002`, `/resilience/vendors`, `/resilience/chokepoints`, `/simulation/trend` (18 points) returned 200; the brief returned 409 before a run, then 200 after a run (31 s on the B1 plan, 28.7 s through the Vercel proxy); urgency became available after the run (PWR-002: risk 11.56, urgency 17.34). Through Vercel, `/posture`, `/resilience`, `/coverage` and the API endpoints returned 200 and the live Posture page loaded with no console errors. Not verified: the brief under concurrent use, mobile layout.
+
+## Phase 5A hardening verification (31 October 2026)
+
+- `pytest backend/tests`: 180 passed (39 new in `test_phase5_hardening.py`: run binding, duplicates, unknown assets and exclusions, parameter and precondition errors, CVE-specific patches, fixed-version and target-version evidence, constraints, overlap, immutability, budget, determinism, prerequisites, hand-off). Ruff check and format clean; `docs/openapi.json` and `frontend/src/api/schema.d.ts` regenerated.
+- Real HTTP against uvicorn: missing run id (422), unknown run (404), duplicate plus unknown asset (422, two issues), unsupported CVE (422), unknown exclusion (422), valid patch with remediated/not-remediated CVEs (200), downtime limit (422), 60 h plan (200), stale run after a re-run (409).
+- Reference scenario: baseline 35.62 reproduced; plan 35.62 -> 27.72, 3 steps, 56 h (was 25.90, 5 steps). Explanation in `docs/PHASE_5A.md`.
+- Frontend: typecheck fails in `Remediation.tsx` and `hooks/liveSimulation.ts` because `run_id` is now required (Codex-owned, not edited). Build and frontend tests were not run on this branch.
+- Not verified: behaviour against the Postgres store, concurrent runs during a planning request.
