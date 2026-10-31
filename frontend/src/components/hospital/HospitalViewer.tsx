@@ -13,6 +13,8 @@ import {
   Activity,
   Eye,
 } from "lucide-react";
+import { RadarPing, RiskLine } from "../TwinRadar";
+import type { TwinRisk } from "../../hooks/twinRisk";
 import "./hospital.css";
 
 interface HospHotspot {
@@ -67,7 +69,7 @@ const HOSP_HOTSPOTS: HospHotspot[] = [
   },
 ];
 
-export function HospitalViewer() {
+export function HospitalViewer({ risk = {} }: { risk?: Record<string, TwinRisk> }) {
   const [zoom, setZoom] = useState<number>(0.9);
   const [pan, setPan] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState<boolean>(false);
@@ -140,7 +142,7 @@ export function HospitalViewer() {
       className={`select-none flex flex-col bg-[#08090d] overflow-hidden transition-all ${
         isFullScreen
           ? "fixed inset-0 z-50 w-screen h-screen rounded-none border-0 shadow-2xl"
-          : "relative flex flex-col w-full h-full min-h-[640px] border border-[#202634] rounded-xl shadow-2xl"
+          : "relative flex flex-col w-full h-full border border-[#202634] rounded-xl shadow-2xl"
       }`}
     >
       {/* Top Header Toolbar */}
@@ -285,6 +287,7 @@ export function HospitalViewer() {
                       className="group cursor-pointer z-30"
                     >
                       <div className="relative flex items-center justify-center">
+                        <RadarPing risk={risk[h.id]} />
                         {isSel && (
                           <span className="absolute w-7 h-7 rounded-full bg-[#ccff00]/40 animate-ping pointer-events-none" />
                         )}
@@ -302,6 +305,7 @@ export function HospitalViewer() {
                         <div className="text-[9px] font-mono text-[#ccff00] font-bold uppercase">{h.metric}: {h.value}</div>
                         <div className="text-xs font-bold text-white truncate">{h.label}</div>
                         <div className="text-[10px] text-slate-400">{h.sub}</div>
+                        <RiskLine risk={risk[h.id]} />
                       </div>
                     </div>
                   );
@@ -312,35 +316,26 @@ export function HospitalViewer() {
         </Plate>
       </div>
 
-      {/* Bottom Component Quick Selection Dock */}
-      <div className="p-3 bg-[#111319]/95 border-t border-[#202634] z-20">
-        <div className="flex items-center justify-between text-[11px] mb-2 font-mono text-slate-400">
-          <span className="flex items-center gap-1.5 uppercase font-bold tracking-wider text-slate-200">
-            <HeartPulse className="w-3.5 h-3.5 text-[#ccff00]" />
-            Healthcare Subsystems & Life-Safety Facilities
-          </span>
-          <span className="text-slate-500 text-[10px]">Active Inspection: {activeHotspot.label}</span>
-        </div>
-
-        <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-thin">
-          {HOSP_HOTSPOTS.map((h) => {
-            const isSel = selectedId === h.id;
-            return (
-              <button
-                key={h.id}
-                onClick={() => setSelectedId(h.id)}
-                className={`flex-shrink-0 px-3 py-1.5 rounded-lg border text-xs transition flex items-center gap-2 ${
-                  isSel
-                    ? "bg-[#ccff00] border-[#ccff00] text-black font-extrabold shadow-sm"
-                    : "bg-[#161922] border-[#202634] text-slate-300 hover:bg-[#1f2432] hover:text-white"
-                }`}
-              >
-                <span className={`w-2 h-2 rounded-full ${isSel ? "bg-black" : "bg-rose-500"}`} />
-                <span>{h.label}</span>
-              </button>
-            );
-          })}
-        </div>
+      {/* Part selector */}
+      <div className="twin-dock">
+        <label className="twin-dock-label" htmlFor="twin-part-select">
+          Highlight part
+        </label>
+        <select
+          id="twin-part-select"
+          className="twin-select"
+          value={selectedId}
+          onChange={(e) => setSelectedId(e.target.value)}
+        >
+          {HOSP_HOTSPOTS.map((h) => (
+            <option key={h.id} value={h.id}>
+              {h.label}
+            </option>
+          ))}
+        </select>
+        <span className="twin-dock-info">
+          {activeHotspot.metric}: {activeHotspot.value}
+        </span>
       </div>
 
       {/* Floating Exit Fullscreen pill when in fullscreen */}

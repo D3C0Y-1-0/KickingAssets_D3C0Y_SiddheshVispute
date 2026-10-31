@@ -17,6 +17,8 @@ import {
   Zap,
   Info,
 } from "lucide-react";
+import { RadarPing } from "../TwinRadar";
+import type { TwinRisk } from "../../hooks/twinRisk";
 import "./substation.css";
 
 interface SubstationViewerProps {
@@ -26,6 +28,7 @@ interface SubstationViewerProps {
   isSimulationActive?: boolean;
   failedAssetIds?: string[];
   affectedAssetIds?: string[];
+  risk?: Record<string, TwinRisk>;
 }
 
 export function SubstationViewer({
@@ -35,6 +38,7 @@ export function SubstationViewer({
   isSimulationActive = false,
   failedAssetIds = [],
   affectedAssetIds = [],
+  risk = {},
 }: SubstationViewerProps) {
   // Canvas View transform state (Pan & Zoom)
   const [zoom, setZoom] = useState<number>(1);
@@ -269,28 +273,18 @@ export function SubstationViewer({
           )}
         </div>
 
-        {/* Quick Selector Pills */}
-        <div className="hidden lg:flex items-center gap-1 overflow-x-auto py-0.5 scrollbar-none">
-          {hotspots.map((h) => {
-            const isSelected = selectedComponentId === h.id;
-            const status = statusMap[h.id];
-            return (
-              <button
-                key={h.id}
-                onClick={() => handleSelectComponent(h.id)}
-                className={`px-2.5 py-1 rounded text-[11px] font-medium transition-all whitespace-nowrap flex items-center gap-1.5 ${
-                  isSelected
-                    ? "bg-[#ccff00] text-black font-extrabold shadow-sm"
-                    : "bg-[#161922] text-slate-300 hover:bg-[#1f2432] hover:text-white border border-[#202634]"
-                }`}
-              >
-                {status === "offline" && <span className="h-1.5 w-1.5 rounded-full bg-red-500 animate-ping" />}
-                {status === "degraded" && <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />}
-                {h.label}
-              </button>
-            );
-          })}
-        </div>
+        <select
+          className="twin-select"
+          aria-label="Highlight a part of the diagram"
+          value={selectedComponentId ?? ""}
+          onChange={(e) => handleSelectComponent(e.target.value)}
+        >
+          {hotspots.map((h) => (
+            <option key={h.id} value={h.id}>
+              {h.label}
+            </option>
+          ))}
+        </select>
 
         {/* View & Layer Controls */}
         <div className="flex items-center gap-1.5 bg-[#161922] p-1 rounded-lg border border-[#202634]">
@@ -462,6 +456,7 @@ export function SubstationViewer({
                         onMouseEnter={() => setHoveredComponentId(spot.id)}
                         onMouseLeave={() => setHoveredComponentId(null)}
                       >
+                        <RadarPing risk={risk[spot.id]} />
                         <div
                           className={`flex items-center gap-1.5 px-2 py-0.5 rounded-full border text-[10px] font-mono shadow-sm backdrop-blur-xs transition ${badgeColor} ${
                             isHovered || isSelected ? "scale-105 z-20" : "opacity-90 hover:opacity-100"
@@ -470,6 +465,11 @@ export function SubstationViewer({
                           <span className={`h-1.5 w-1.5 rounded-full ${dotColor}`} />
                           <span className="font-sans font-semibold tracking-tight">
                             {spot.label}
+                            {risk[spot.id] && (
+                              <span className="font-mono ml-1 opacity-80">
+                                {risk[spot.id].score.toFixed(0)}
+                              </span>
+                            )}
                           </span>
                         </div>
                       </div>

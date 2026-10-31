@@ -5,6 +5,7 @@ real CVEs; consequence comes from the conditional impact engine; the composition
 published formula in app.engine.risk.
 """
 
+import threading
 import time
 from dataclasses import dataclass, field
 from datetime import UTC, date, datetime, timedelta
@@ -469,7 +470,77 @@ def product_map() -> ProductMap:
     )
 
 
+STAGE_NAMES = [
+    "Load inventory",
+    "Load reference data and model",
+    "Match real products to NVD affected-version ranges and score with the ML model",
+    "Explain top candidates",
+    "Reachability and conditional service impact",
+    "Backtest against real KEV outcomes",
+    "Compose risk index",
+]
+
+
+class Progress:
+    """Live state of the run in flight. Written by run_simulation, read by the progress endpoint."""
+
+    def __init__(self) -> None:
+        self._lock = threading.Lock()
+        self.state: dict = {"status": "idle", "steps": [], "note": None}
+
+    def begin(self) -> None:
+        with self._lock:
+            self.state = {
+                "status": "running",
+                "steps": [
+                    {"name": n, "detail": "", "seconds": None, "status": "pending"}
+                    for n in STAGE_NAMES
+                ],
+                "note": None,
+            }
+            self.state["steps"][0]["status"] = "active"
+
+    def note(self, text: str) -> None:
+        with self._lock:
+            self.state["note"] = text
+
+    def done(self, name: str, detail: str, seconds: float) -> None:
+        with self._lock:
+            steps = self.state["steps"]
+            for i, step in enumerate(steps):
+                if step["name"] == name:
+                    step.update(detail=detail, seconds=seconds, status="done")
+                    if i + 1 < len(steps):
+                        steps[i + 1]["status"] = "active"
+            self.state["note"] = None
+
+    def finish(self, ok: bool) -> None:
+        with self._lock:
+            self.state["status"] = "done" if ok else "failed"
+            self.state["note"] = None
+
+    def snapshot(self) -> dict:
+        with self._lock:
+            return {**self.state, "steps": [dict(s) for s in self.state["steps"]]}
+
+
+PROGRESS = Progress()
+
+
 def run_simulation(
+    db_path: Path, scenario_id: str, snapshot_id: str, as_of: date | None = None
+) -> RunContext:
+    PROGRESS.begin()
+    try:
+        ctx = _run_simulation(db_path, scenario_id, snapshot_id, as_of)
+    except BaseException:
+        PROGRESS.finish(False)
+        raise
+    PROGRESS.finish(True)
+    return ctx
+
+
+def _run_simulation(
     db_path: Path, scenario_id: str, snapshot_id: str, as_of: date | None = None
 ) -> RunContext:
     stages: list[SimulationStage] = []
@@ -478,7 +549,9 @@ def run_simulation(
     def stage(name: str, detail: str) -> None:
         nonlocal clock
         now = time.perf_counter()
-        stages.append(SimulationStage(name=name, detail=detail, seconds=round(now - clock, 2)))
+        seconds = round(now - clock, 2)
+        stages.append(SimulationStage(name=name, detail=detail, seconds=seconds))
+        PROGRESS.done(name, detail, seconds)
         clock = now
 
     bundle = load_bundle(db_path, scenario_id, snapshot_id)
@@ -495,8 +568,9 @@ def run_simulation(
     cache: dict[tuple, tuple] = {}
     evidence: dict[str, AssetEvidence] = {}
     total_candidates = confirmed_total = 0
-    for asset in sorted(bundle.assets, key=lambda a: a.id):
+    for number, asset in enumerate(sorted(bundle.assets, key=lambda a: a.id), start=1):
         product = product_for(asset.id)
+        PROGRESS.note(f"{number}/{len(bundle.assets)} · {asset.id} · {product.label}")
         key = (product.nvd_vendor, product.nvd_product_contains, product.version)
         if key not in cache:
             match = ref.match_product(

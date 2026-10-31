@@ -140,6 +140,19 @@ class SimulationStage(Contract):
     seconds: float
 
 
+class ProgressStep(Contract):
+    name: str
+    detail: str
+    seconds: float | None
+    status: Literal["pending", "active", "done"]
+
+
+class SimulationProgress(Contract):
+    status: Literal["idle", "running", "done", "failed"]
+    steps: list[ProgressStep]
+    note: str | None
+
+
 class CategoryCount(Contract):
     category: Category
     count: int

@@ -17,6 +17,7 @@ from app.schemas.simulation import (
     PooledBacktest,
     ProductMap,
     RemediationPlan,
+    SimulationProgress,
     SimulationRun,
     SnapshotOption,
     WhatIfRequest,
@@ -125,6 +126,11 @@ def run(
             raise HTTPException(422, str(exc)) from exc
         request.app.state.simulation = ctx
     return ctx.run
+
+
+@router.get("/simulation/progress", response_model=SimulationProgress, tags=["Simulation"])
+def progress():
+    return simulation.PROGRESS.snapshot()
 
 
 @router.get("/simulation/latest", response_model=SimulationRun, tags=["Simulation"])

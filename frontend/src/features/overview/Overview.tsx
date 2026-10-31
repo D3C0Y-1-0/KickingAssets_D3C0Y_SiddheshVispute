@@ -17,12 +17,7 @@ import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts'
 import { api } from '../../api/client'
 import { useAssets, useLatestRun, useScenarioContext, useServices } from '../../hooks/queries'
 import { AssetDrawer } from '../../components/AssetDrawer'
-import {
-  AsOfBanner,
-  AsOfSelect,
-  ProvenanceNotice,
-  RunSimulationButton,
-} from '../../components/Simulation'
+import { AsOfSelect, ProvenanceNotice, RunSimulationButton } from '../../components/Simulation'
 import {
   EmptyState,
   PageHeading,
@@ -76,7 +71,6 @@ export default function Overview() {
           </>
         }
       />
-      {run && <AsOfBanner run={run} />}
       <div className="workflow-steps">
         <section className={`workflow-step ${run ? 'done' : ''}`}>
           <span className="step-number">STEP 1 · SIMULATE</span>

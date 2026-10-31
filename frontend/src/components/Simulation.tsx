@@ -1,8 +1,9 @@
-import type { ReactNode } from 'react'
+import { useState, type ReactNode } from 'react'
 import { CircleAlert, LoaderCircle, Play, RotateCw } from 'lucide-react'
 import { useRunSimulation, useSimulationDates } from '../hooks/queries'
 import type { SimulationRun } from '../api/client'
 import { EmptyState } from './ui'
+import { SimulationProgressPanel } from './SimulationProgress'
 
 export function RunSimulationButton({
   label,
@@ -14,12 +15,16 @@ export function RunSimulationButton({
   asOf?: string
 }) {
   const run = useRunSimulation()
+  const [open, setOpen] = useState(false)
   return (
     <>
       <button
         className={`button ${variant} simulation-run`}
         disabled={run.isPending}
-        onClick={() => run.mutate(asOf)}
+        onClick={() => {
+          setOpen(true)
+          run.mutate(asOf)
+        }}
       >
         {run.isPending ? (
           <LoaderCircle className="spin" size={16} />
@@ -30,6 +35,14 @@ export function RunSimulationButton({
         )}
         {run.isPending ? 'Simulating…' : (label ?? 'Run simulation')}
       </button>
+      {open && (
+        <SimulationProgressPanel
+          running={run.isPending}
+          run={run.data}
+          error={run.isError ? run.error.message : null}
+          onClose={() => setOpen(false)}
+        />
+      )}
       {run.isError && (
         <span className="run-error" role="alert">
           <CircleAlert size={14} />
