@@ -17,6 +17,44 @@ function response(body: unknown, status = 200) {
 }
 
 describe('snapshot-scoped API integration boundary', () => {
+  it('requests action options against the exact run', async () => {
+    const fetchMock = response([])
+    await api.actionOptions(undefined, 'run-1')
+    expect(fetchMock.mock.calls[0][0]).toBe('/api/v1/actions/options?run_id=run-1')
+  })
+  it('preserves structured Phase 5 issue codes, paths and details', async () => {
+    const issues = [
+      {
+        path: 'actions[0].target_version',
+        code: 'invalid_target_version',
+        message: 'Not newer than the assumed version.',
+      },
+    ]
+    response(
+      {
+        error: {
+          code: 'invalid_actions',
+          message: 'One invalid action',
+          details: ['Target version rejected'],
+          issues,
+        },
+      },
+      422,
+    )
+    await expect(
+      api.whatIf({
+        ...context,
+        run_id: 'run-1',
+        baseline_fingerprint: 'fingerprint-123',
+        actions: [{ asset_id: 'A', action_type: 'patch_prioritization', target_version: '1' }],
+      }),
+    ).rejects.toMatchObject({
+      status: 422,
+      code: 'invalid_actions',
+      details: ['Target version rejected'],
+      issues,
+    })
+  })
   it('keeps curated priorities scoped and preserves unavailable as null', async () => {
     const fetchMock = response({
       assets: [{ asset_id: 'unmapped', risk: { score: null, status: 'unavailable' } }],

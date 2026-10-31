@@ -21,6 +21,7 @@ import {
   SectorBadge,
 } from '../../components/ui'
 import type { Asset } from '../../api/client'
+import { WorkflowNav } from '../actions/WorkflowUI'
 
 type SortKey =
   'name' | 'sector' | 'asset_type' | 'criticality' | 'exposure' | 'workflow_risk' | 'curated_risk'
@@ -100,6 +101,7 @@ export default function Assets() {
         description="Inspect the infrastructure, configuration and evidence behind each asset."
         actions={<SampleBadge>Scenario inventory</SampleBadge>}
       />
+      <WorkflowNav current="assets" />
       <VulnerabilitySummary />
       <QueryState pending={curated.isPending} error={curated.error} retry={curated.refetch} />
       <Panel

@@ -151,9 +151,12 @@ export function useLiveSimulation() {
         return `${v.vendors.length} suppliers tested`
       })
       await step('plan', 'POST /actions/optimize', async () => {
+        if (!out.run) throw new Error('Run a simulation before planning.')
         const plan = await api.optimize({
           scenario_id: context.scenario_id,
           snapshot_id: context.snapshot_id ?? '',
+          run_id: out.run.id,
+          baseline_fingerprint: out.run.fingerprint,
           effort_budget_hours: 40,
         })
         out.plan = plan

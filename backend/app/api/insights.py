@@ -117,6 +117,7 @@ def _brief(request: Request, scenario_id: str, snapshot_id: str | None) -> RiskB
         OptimizeRequest(
             scenario_id=bundle.scenario.id,
             snapshot_id=bundle.snapshot.snapshot_id,
+            run_id=ctx.run.id,
             effort_budget_hours=BRIEF_BUDGET_HOURS,
         ),
     )

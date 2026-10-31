@@ -17,6 +17,7 @@ from app.db.store import STORAGE_ERRORS, Target, close_pools, default_db_path, i
 from app.db.vulnerability_store import bootstrap
 from app.domain.seed import ROOT
 from app.services.intelligence import bootstrap as bootstrap_intelligence
+from app.services.remediation import RemediationError
 
 
 def create_app(db_path: Target | None = None, static_dir: Path | None = None) -> FastAPI:
@@ -55,6 +56,20 @@ def create_app(db_path: Target | None = None, static_dir: Path | None = None) ->
                     "code": codes.get(exc.status_code, "request_error"),
                     "message": str(exc.detail),
                     "details": [],
+                }
+            },
+        )
+
+    @application.exception_handler(RemediationError)
+    async def remediation_error(request: Request, exc: RemediationError):
+        return JSONResponse(
+            status_code=exc.status,
+            content={
+                "error": {
+                    "code": exc.code,
+                    "message": exc.message,
+                    "details": [f"{i.path}: {i.message}" for i in exc.issues],
+                    "issues": [i.model_dump() for i in exc.issues],
                 }
             },
         )

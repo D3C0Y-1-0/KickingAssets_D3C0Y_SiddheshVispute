@@ -18,6 +18,9 @@ export class ApiError extends Error {
   constructor(
     public status: number,
     message: string,
+    public code: string = 'request_error',
+    public details: string[] = [],
+    public issues: Models['ApiIssue'][] = [],
   ) {
     super(message)
   }
@@ -45,6 +48,9 @@ async function request<T>(
     throw new ApiError(
       response.status,
       payload?.error?.message ?? `API request failed (${response.status})`,
+      payload?.error?.code,
+      payload?.error?.details,
+      payload?.error?.issues,
     )
   }
   return response.json() as Promise<T>
@@ -117,8 +123,8 @@ export const api = {
       throw error
     }
   },
-  actionOptions: (signal?: AbortSignal) =>
-    get<Models['ActionOption'][]>('/actions/options', {}, signal),
+  actionOptions: (signal?: AbortSignal, runId?: string) =>
+    get<Models['ActionOption'][]>('/actions/options', { run_id: runId }, signal),
   whatIf: (body: Models['WhatIfRequest']) => post<Models['WhatIfResult']>('/actions/what-if', body),
   optimize: (body: Models['OptimizeRequest']) =>
     post<Models['RemediationPlan']>('/actions/optimize', body),
