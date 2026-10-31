@@ -37,14 +37,13 @@ export function BaselineNotice({
         <strong>Simulation baseline · {run.as_of}</strong>
         <small className="mono">
           {run.id} · {run.snapshot_id}
+          <span className="workflow-fingerprint">Fingerprint: {run.fingerprint}</span>
         </small>
       </div>
       <button className="button secondary" disabled={refreshing} onClick={() => void refresh()}>
         {refreshing ? 'Checking baseline…' : 'Check baseline'}
       </button>
-      <p>
-        Baseline checked before and after each calculation. Projections never change infrastructure.
-      </p>
+      <p>Requests name this exact run and fingerprint. Projections never change infrastructure.</p>
     </div>
   )
 }

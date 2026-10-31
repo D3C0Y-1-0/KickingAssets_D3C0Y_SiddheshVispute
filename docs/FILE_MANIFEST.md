@@ -1,5 +1,9 @@
 # Phase 1 file manifest
 
+## Phase 5 final integration
+
+Both feature histories are preserved. The exact integration-only file list relative to the clean a5bac82/cb7920a merge is [PHASE_5_INTEGRATION_FILES.txt](PHASE_5_INTEGRATION_FILES.txt). New `ActionControls.tsx` supplies contract-backed constraint/patch editors, fixed-version evidence and structured errors. Existing action helpers/screens, API client, Live Simulation hook and tests were adapted to the authoritative merged API; OpenAPI/TypeScript were regenerated. Documentation records results, limits and launch. No backend/ML/dataset file was modified by integration wiring beyond the imported feature histories.
+
 ## Phase 5B frontend
 
 Created: `docs/PHASE_5_FRONTEND.md`, `frontend/src/features/actions/workflow.ts`, `frontend/src/features/actions/useActionWorkflow.ts`, `frontend/src/features/actions/WorkflowUI.tsx`, `frontend/src/features/actions/workflow.css`, `frontend/tests/workflow.test.tsx`.

@@ -104,6 +104,50 @@
   border-radius: 6px;
   font-size: 12px;
 }
+.workflow-constraints,
+.workflow-patch {
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 14px;
+  margin: 16px 0;
+  min-width: 0;
+}
+.workflow-constraints label,
+.workflow-patch label {
+  display: block;
+  margin: 12px 0 6px;
+  font-size: 12px;
+}
+.workflow-constraints input,
+.workflow-constraints select,
+.workflow-patch input {
+  width: 100%;
+  max-width: 500px;
+}
+.workflow-constraints details,
+.workflow-patch details,
+.workflow-patch-evidence {
+  margin: 12px 0;
+  font-size: 12px;
+  line-height: 1.7;
+}
+.workflow-patch-evidence small,
+.run-error small,
+.workflow-fingerprint {
+  display: block;
+}
+.workflow-patch-evidence p,
+.workflow-patch-evidence li,
+.run-error {
+  overflow-wrap: anywhere;
+}
+.workflow-patch-evidence {
+  max-width: 520px;
+  white-space: normal;
+}
+.workflow-patch-evidence summary {
+  cursor: pointer;
+}
 .workflow-selection {
   display: flex;
   gap: 8px;

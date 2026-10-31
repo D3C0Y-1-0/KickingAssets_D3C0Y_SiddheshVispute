@@ -8,14 +8,23 @@ import { PageHeading, Panel, QueryState, RiskBadge, SectorBadge } from '../../co
 import { useActionBaseline, useBoundOptions, useBoundWhatIf } from '../actions/useActionWorkflow'
 import { BaselineNotice, Outdated, RiskComparison, WorkflowNav } from '../actions/WorkflowUI'
 import {
+  ActionError,
+  ConstraintsEditor,
+  PatchEditor,
+  PatchEvidence,
+} from '../actions/ActionControls'
+import {
   actionNames,
   actionKey,
   actionInputKey,
   baselineKey,
   identity,
+  binding,
+  constraintIssues,
   readHandoff,
   validateActions,
   type StagedAction,
+  type Constraints,
 } from '../actions/workflow'
 
 export default function WhatIf() {
@@ -85,6 +94,10 @@ function WhatIfWorkspace({
     () => incoming.handoff?.baseline ?? identity(run),
   )
   const [assetId, setAssetId] = useState(() => staged[0]?.asset_id ?? '')
+  const [constraints, setConstraints] = useState<Constraints | null>(
+    () => incoming.handoff?.constraints ?? null,
+  )
+  const invalidConstraints = constraintIssues(constraints)
   const options = useBoundOptions(run)
   const whatIf = useBoundWhatIf()
   const knownIds = new Set(assets.map((asset) => asset.id))
@@ -93,7 +106,7 @@ function WhatIfWorkspace({
   const forAsset = (options.data ?? []).filter((option) => option.asset_id === assetId)
   const issues = validateActions(staged, assets).issues
   const baselineChanged = baselineKey(draftBaseline) !== baselineKey(run)
-  const inputKey = actionInputKey(run, staged)
+  const inputKey = actionInputKey(run, staged, constraints)
   const saved = whatIf.data
   const outdated =
     !!saved &&
@@ -115,11 +128,11 @@ function WhatIfWorkspace({
     setStaged([...staged, { asset_id: assetId, action_type }])
   }
   const calculate = () => {
-    if (issues.length || baselineChanged || blockedHandoff) return
+    if (issues.length || invalidConstraints.length || baselineChanged || blockedHandoff) return
     whatIf.mutate({
       baseline: run,
       inputKey,
-      body: { scenario_id: run.scenario_id, snapshot_id: run.snapshot_id, actions: staged },
+      body: { ...binding(run), actions: staged, constraints },
     })
   }
   const changedAssets =
@@ -128,8 +141,11 @@ function WhatIfWorkspace({
     const option = options.data?.find((value) => actionKey(value) === actionKey(action))
     return option ? sum + option.effort_hours : sum
   }, 0)
-  const effortKnown = staged.every((action) =>
-    options.data?.some((value) => actionKey(value) === actionKey(action)),
+  const effortKnown = staged.every(
+    (action) =>
+      !action.cve_ids?.length &&
+      !action.target_version &&
+      options.data?.some((value) => actionKey(value) === actionKey(action)),
   )
   return (
     <>
@@ -156,6 +172,7 @@ function WhatIfWorkspace({
                 setHandoffDismissed(true)
                 setStaged([])
                 setDraftBaseline(identity(run))
+                setConstraints(null)
               }}
             >
               Discard handoff and stage manually
@@ -295,31 +312,51 @@ function WhatIfWorkspace({
                 </p>
               )}
               {staged.map((action) => (
-                <div className="staged-row" key={actionKey(action)}>
-                  <div>
-                    <small>
-                      {action.asset_id} · {names.get(action.asset_id) ?? 'Not in current inventory'}
-                    </small>
-                    <strong>{actionNames[action.action_type]}</strong>
+                <div key={actionKey(action)}>
+                  <div className="staged-row">
+                    <div>
+                      <small>
+                        {action.asset_id} ·{' '}
+                        {names.get(action.asset_id) ?? 'Not in current inventory'}
+                      </small>
+                      <strong>{actionNames[action.action_type]}</strong>
+                    </div>
+                    <button
+                      className="icon-button"
+                      aria-label={`Remove ${action.action_type} for ${action.asset_id}`}
+                      onClick={() =>
+                        setStaged(staged.filter((value) => actionKey(value) !== actionKey(action)))
+                      }
+                    >
+                      <Trash2 size={16} />
+                    </button>
                   </div>
-                  <button
-                    className="icon-button"
-                    aria-label={`Remove ${action.action_type} for ${action.asset_id}`}
-                    onClick={() =>
-                      setStaged(staged.filter((value) => actionKey(value) !== actionKey(action)))
-                    }
-                  >
-                    <Trash2 size={16} />
-                  </button>
+                  {action.action_type === 'patch_prioritization' && (
+                    <PatchEditor
+                      action={action}
+                      candidates={
+                        run.assets.find((asset) => asset.asset_id === action.asset_id)
+                          ?.top_vulnerabilities ?? []
+                      }
+                      onChange={(next) =>
+                        setStaged(
+                          staged.map((value) =>
+                            actionKey(value) === actionKey(action) ? next : value,
+                          ),
+                        )
+                      }
+                    />
+                  )}
                 </div>
               ))}
               <p className="small muted">
                 Staged effort:{' '}
                 {effortKnown
                   ? `${estimatedEffort} h (planning assumption)`
-                  : 'unavailable until action options load'}
+                  : 'calculated by the backend after patch evidence is resolved'}
                 .
               </p>
+              <ConstraintsEditor value={constraints} onChange={setConstraints} />
               {staged.length > 0 && issues.length > 0 && (
                 <ul className="workflow-issues" role="alert">
                   {issues.map((issue) => (
@@ -329,7 +366,13 @@ function WhatIfWorkspace({
               )}
               <button
                 className="button primary full-width simulation-button"
-                disabled={!!issues.length || baselineChanged || blockedHandoff || whatIf.isPending}
+                disabled={
+                  !!issues.length ||
+                  !!invalidConstraints.length ||
+                  baselineChanged ||
+                  blockedHandoff ||
+                  whatIf.isPending
+                }
                 onClick={calculate}
               >
                 {whatIf.isPending
@@ -341,11 +384,7 @@ function WhatIfWorkspace({
               {whatIf.isPending && (
                 <p role="status">Calculating against the checked simulation baseline…</p>
               )}
-              {whatIf.isError && (
-                <p className="run-error" role="alert">
-                  {whatIf.error.message}
-                </p>
-              )}
+              {whatIf.isError && <ActionError error={whatIf.error} />}
               {!result && (
                 <p className="small muted">
                   Baseline city index: {run.city_risk.score?.toFixed(2) ?? 'unavailable'}.{' '}
@@ -362,9 +401,9 @@ function WhatIfWorkspace({
                 />
               )}
               <p className="small muted">
-                Patch batches assume remediation of up to three CVEs; fixed versions and vendor
-                compatibility are not verified. Segmentation assumes full cyber isolation. Effort
-                and controls are scenario assumptions.
+                A patch only removes CVEs supported by documented NVD fixes or the declared target
+                version. Vendor compatibility and installation are not verified. Segmentation
+                assumes full cyber isolation. Effort and downtime are scenario assumptions.
               </p>
             </div>
           </Panel>
@@ -443,13 +482,34 @@ function WhatIfWorkspace({
               </Panel>
               <Panel title="Applied actions and assumptions" className="spaced-panel">
                 <div className="panel-padding">
+                  <p>
+                    Modelled downtime: {result.constraint_report.total_downtime_hours} h · effort:{' '}
+                    {result.constraint_report.total_effort_hours} h.
+                  </p>
+                  <p>
+                    Overlap adjustment: {result.summary.overlap_adjustment.toFixed(2)} index points
+                    (standalone benefits minus joint benefit).
+                  </p>
+                  <ul>
+                    {result.constraint_report.checks.map((check) => (
+                      <li key={check}>{check}</li>
+                    ))}
+                  </ul>
                   <ul className="list-plain">
                     {result.applied.map((action) => (
                       <li key={actionKey(action)}>
                         <strong>
                           {action.asset_id} · {action.name}
                         </strong>
-                        : {action.effect} · {action.effort_hours} h
+                        : {action.effect} · {action.effort_hours} h effort · {action.downtime_hours}{' '}
+                        h downtime
+                        <small>
+                          Outcome: {action.outcome} · standalone reduction{' '}
+                          {action.standalone_city_reduction?.toFixed(2) ?? 'not modelled'} ·
+                          marginal reduction{' '}
+                          {action.marginal_city_reduction?.toFixed(2) ?? 'not modelled'} points
+                        </small>
+                        <PatchEvidence patch={action.patch} />
                       </li>
                     ))}
                     {result.notes.map((note) => (
@@ -458,6 +518,9 @@ function WhatIfWorkspace({
                   </ul>
                   <small className="mono">
                     Simulation {result.run_id} · projected · not verified
+                    <span className="workflow-fingerprint">
+                      Fingerprint: {result.baseline_fingerprint}
+                    </span>
                   </small>
                 </div>
               </Panel>

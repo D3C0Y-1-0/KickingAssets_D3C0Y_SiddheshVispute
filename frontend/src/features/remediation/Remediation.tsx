@@ -6,14 +6,20 @@ import { ProvenanceNotice, SimulationRequired } from '../../components/Simulatio
 import { EmptyState, PageHeading, Panel, QueryState } from '../../components/ui'
 import { useActionBaseline, useBoundOptimize } from '../actions/useActionWorkflow'
 import { BaselineNotice, Outdated, RiskComparison, WorkflowNav } from '../actions/WorkflowUI'
+import { ActionError, ConstraintsEditor, PatchEvidence } from '../actions/ActionControls'
 import {
   actionKey,
+  actionNames,
   baselineKey,
+  binding,
+  constraintIssues,
   makeHandoff,
   planInputKey,
   validateActions,
   validateBudget,
   validateExclusions,
+  selectPlanRequest,
+  type Constraints,
 } from '../actions/workflow'
 
 export default function Remediation() {
@@ -61,9 +67,11 @@ function PlanWorkspace({ run, assets }: { run: SimulationRun; assets: Asset[] })
   const [excluded, setExcluded] = useState<string[]>([])
   const [search, setSearch] = useState('')
   const [selected, setSelected] = useState<string[]>([])
+  const [constraints, setConstraints] = useState<Constraints | null>(null)
+  const invalidConstraints = constraintIssues(constraints)
   const budgetError = validateBudget(budget)
   const unknown = validateExclusions(excluded, assets)
-  const key = planInputKey(run, budget, excluded)
+  const key = planInputKey(run, budget, excluded, constraints)
   const saved = optimize.data
   const outdated =
     !!saved && (saved.inputKey !== key || baselineKey(saved.baseline) !== baselineKey(run))
@@ -71,33 +79,40 @@ function PlanWorkspace({ run, assets }: { run: SimulationRun; assets: Asset[] })
   const returnedExcluded = plan?.steps.filter((step) => excluded.includes(step.asset_id)) ?? []
   const integrityError = returnedExcluded.length > 0
   const visibleSteps = integrityError ? [] : (plan?.steps ?? [])
-  const validation = validateActions(visibleSteps, assets)
+  const fullSelection = plan ? selectPlanRequest(plan, visibleSteps.map(actionKey)) : null
+  const validation = validateActions(fullSelection?.request?.actions ?? [], assets)
+  const handoffIssues = [...validation.issues, ...(fullSelection?.issues ?? [])]
   const selectedSteps = visibleSteps.filter((step) => selected.includes(actionKey(step)))
-  const selectedValidation = validateActions(selectedSteps, assets)
+  const subsetSelection = plan ? selectPlanRequest(plan, selectedSteps.map(actionKey)) : null
+  const selectedValidation = validateActions(subsetSelection?.request?.actions ?? [], assets)
   const matches = assets.filter((asset) =>
     `${asset.id} ${asset.name} ${asset.site}`.toLowerCase().includes(search.toLowerCase()),
   )
   const send = () => {
-    if (budgetError || unknown.length) return
+    if (budgetError || unknown.length || invalidConstraints.length) return
     setSelected([])
     optimize.mutate({
       baseline: run,
       inputKey: key,
       body: {
-        scenario_id: run.scenario_id,
-        snapshot_id: run.snapshot_id,
+        ...binding(run),
         effort_budget_hours: Number(budget),
         excluded_asset_ids: excluded,
+        constraints,
       },
     })
   }
   const handoff = (steps: typeof visibleSteps) => {
     if (!plan || outdated || integrityError || validateActions(steps, assets).issues.length) return
+    const selection = selectPlanRequest(plan, steps.map(actionKey))
+    if (
+      !selection.request ||
+      selection.issues.length ||
+      validateActions(selection.request.actions, assets).issues.length
+    )
+      return
     navigate('/what-if', {
-      state: makeHandoff(
-        run,
-        steps.map(({ asset_id, action_type }) => ({ asset_id, action_type })),
-      ),
+      state: makeHandoff(run, selection.request.actions, selection.request.constraints ?? null),
     })
   }
   return (
@@ -178,14 +193,20 @@ function PlanWorkspace({ run, assets }: { run: SimulationRun; assets: Asset[] })
               Remove exclusions missing from this inventory: {unknown.join(', ')}.
             </p>
           )}
+          <ConstraintsEditor value={constraints} onChange={setConstraints} />
           <p className="small muted">
-            Effort is a planning assumption. Downtime limits, maintenance windows and fixed-version
-            choices are not available in this API yet.
+            Effort and downtime are planning assumptions. The optimizer uses documented fixes; use
+            What-If to evaluate a specific target version.
           </p>
           <div className="workflow-buttons">
             <button
               className="button primary"
-              disabled={!!budgetError || unknown.length > 0 || optimize.isPending}
+              disabled={
+                !!budgetError ||
+                unknown.length > 0 ||
+                !!invalidConstraints.length ||
+                optimize.isPending
+              }
               onClick={send}
             >
               {optimize.isPending
@@ -201,11 +222,7 @@ function PlanWorkspace({ run, assets }: { run: SimulationRun; assets: Asset[] })
       {optimize.isPending && (
         <p role="status">Calculating a simulated plan and checking its baseline…</p>
       )}
-      {optimize.isError && (
-        <p className="run-error" role="alert">
-          {optimize.error.message} Review the inputs and retry.
-        </p>
-      )}
+      {optimize.isError && <ActionError error={optimize.error} />}
       {integrityError && (
         <p className="run-error" role="alert">
           The API returned an excluded target. This plan is blocked; recalculate or review the
@@ -222,6 +239,10 @@ function PlanWorkspace({ run, assets }: { run: SimulationRun; assets: Asset[] })
           <p className="small muted">
             {plan.steps.length} prioritized actions · {plan.used_hours} of{' '}
             {plan.effort_budget_hours} h used · simulation {plan.run_id}
+          </p>
+          <p className="small muted">
+            Modelled downtime: {plan.used_downtime_hours} h · greedy heuristic, not a proven
+            optimum. Selected transfers include any required prerequisite actions.
           </p>
         </>
       )}
@@ -255,22 +276,22 @@ function PlanWorkspace({ run, assets }: { run: SimulationRun; assets: Asset[] })
             <div className="panel-padding workflow-buttons">
               <button
                 className="button primary"
-                disabled={!!validation.issues.length}
+                disabled={!!handoffIssues.length}
                 onClick={() => handoff(visibleSteps)}
               >
                 Simulate full plan in What-If
               </button>
               <button
                 className="button secondary"
-                disabled={!!selectedValidation.issues.length}
+                disabled={!!selectedValidation.issues.length || !!subsetSelection?.issues.length}
                 onClick={() => handoff(selectedSteps)}
               >
                 Simulate selected actions in What-If ({selectedSteps.length})
               </button>
             </div>
-            {validation.issues.length > 0 && (
+            {handoffIssues.length > 0 && (
               <ul className="workflow-issues" role="alert">
-                {validation.issues.map((issue) => (
+                {handoffIssues.map((issue) => (
                   <li key={issue}>{issue}</li>
                 ))}
               </ul>
@@ -290,7 +311,12 @@ function PlanWorkspace({ run, assets }: { run: SimulationRun; assets: Asset[] })
                 </thead>
                 <tbody>
                   {visibleSteps.map((step) => {
-                    const issue = validateActions([step], assets).issues
+                    const rowSelection = selectPlanRequest(plan, [actionKey(step)])
+                    const issue = [
+                      ...validateActions([step], assets).issues,
+                      ...validateActions(rowSelection.request?.actions ?? [], assets).issues,
+                      ...rowSelection.issues,
+                    ]
                     return (
                       <tr key={actionKey(step)}>
                         <td>
@@ -313,17 +339,24 @@ function PlanWorkspace({ run, assets }: { run: SimulationRun; assets: Asset[] })
                         </td>
                         <td>
                           <strong>{step.name}</strong>
+                          {step.kind === 'prerequisite' && (
+                            <small>Prerequisite for {step.prerequisite_for}</small>
+                          )}
                           <small>
                             {step.asset_name} · {step.asset_id}
                           </small>
                           <small className="muted">{step.justification}</small>
+                          <PatchEvidence patch={step.patch} />
                           {issue.map((message) => (
                             <p key={message} className="run-error">
                               {message}
                             </p>
                           ))}
                         </td>
-                        <td>{step.effort_hours} h</td>
+                        <td>
+                          {step.effort_hours} h effort
+                          <small>{step.downtime_hours} h downtime</small>
+                        </td>
                         <td>{step.marginal_reduction.toFixed(2)} points</td>
                         <td>{step.city_index_after.toFixed(2)}</td>
                         <td>{step.operational_disruption}</td>
@@ -383,6 +416,30 @@ function PlanWorkspace({ run, assets }: { run: SimulationRun; assets: Asset[] })
             These recommendations are separate from selected plan steps. No detection or recovery
             benefit is included in the risk formula.
           </p>
+        </Panel>
+      )}
+      {plan && !integrityError && (
+        <Panel title="Planning limits and unselected candidates" className="spaced-panel">
+          <div className="panel-padding">
+            <ul>
+              {plan.limitations.map((limit) => (
+                <li key={limit}>{limit}</li>
+              ))}
+            </ul>
+            <details>
+              <summary>Why candidates were not selected ({plan.rejected.length})</summary>
+              <ul>
+                {plan.rejected.map((candidate) => (
+                  <li key={actionKey(candidate)}>
+                    <strong>
+                      {candidate.asset_id} · {actionNames[candidate.action_type]}
+                    </strong>{' '}
+                    · {candidate.reason_code}: {candidate.reason}
+                  </li>
+                ))}
+              </ul>
+            </details>
+          </div>
         </Panel>
       )}
       <ProvenanceNotice />

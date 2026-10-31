@@ -5,7 +5,7 @@ import { act, cleanup, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { api, type Asset, type Models, type SimulationRun } from '../src/api/client'
+import { api, ApiError, type Asset, type Models, type SimulationRun } from '../src/api/client'
 import Remediation from '../src/features/remediation/Remediation'
 import WhatIf from '../src/features/whatif/WhatIf'
 import {
@@ -16,6 +16,8 @@ import {
   validateActions,
   validateBudget,
   validateExclusions,
+  selectPlanRequest,
+  binding,
 } from '../src/features/actions/workflow'
 import { checkBaseline } from '../src/features/actions/useActionWorkflow'
 
@@ -27,6 +29,7 @@ const assets = [
 const run = {
   ...context,
   id: 'test-run',
+  fingerprint: 'test-fingerprint-0123456789',
   created_at: '2026-10-31T10:00:00Z',
   as_of: '2026-10-01',
   city_risk: { score: 40 },
@@ -43,6 +46,9 @@ const run = {
 const steps: Models['PlanStep'][] = [
   {
     rank: 1,
+    kind: 'selected',
+    downtime_hours: 2,
+    reduction_per_effort_hour: 1,
     asset_id: 'A',
     asset_name: 'Test gateway',
     action_type: 'patch_prioritization',
@@ -56,6 +62,9 @@ const steps: Models['PlanStep'][] = [
   },
   {
     rank: 2,
+    kind: 'selected',
+    downtime_hours: 1,
+    reduction_per_effort_hour: 0.1667,
     asset_id: 'B',
     asset_name: 'Test controller',
     action_type: 'access_control',
@@ -71,6 +80,18 @@ const steps: Models['PlanStep'][] = [
 const plan: Models['RemediationPlan'] = {
   ...context,
   run_id: run.id,
+  baseline_fingerprint: run.fingerprint,
+  optimality: 'greedy_heuristic',
+  used_downtime_hours: 3,
+  rejected: [],
+  limitations: ['Test heuristic limitation'],
+  what_if_request: {
+    ...context,
+    run_id: run.id,
+    baseline_fingerprint: run.fingerprint,
+    constraints: null,
+    actions: steps.map(({ asset_id, action_type }) => ({ asset_id, action_type })),
+  },
   state: 'projected',
   verification: 'not_verified',
   effort_budget_hours: 60,
@@ -100,6 +121,21 @@ const options: Models['ActionOption'][] = assets.flatMap((asset) =>
 const projection: Models['WhatIfResult'] = {
   ...context,
   run_id: run.id,
+  baseline_fingerprint: run.fingerprint,
+  summary: {
+    current_city_index: 40,
+    projected_city_index: 30,
+    city_reduction: 10,
+    current_category_counts: [],
+    projected_category_counts: [],
+    overlap_adjustment: 0,
+  },
+  constraint_report: {
+    total_effort_hours: 8,
+    total_downtime_hours: 2,
+    constraints_supplied: false,
+    checks: [],
+  },
   state: 'projected',
   verification: 'not_verified',
   current_city_index: 40,
@@ -114,6 +150,8 @@ const projection: Models['WhatIfResult'] = {
       modelled: true,
       effect: 'Test projected effect',
       effort_hours: 8,
+      downtime_hours: 2,
+      outcome: 'reduces_modelled_risk',
       operational_disruption: 'Assumed',
     },
   ],
@@ -298,10 +336,16 @@ describe('typed plan-to-What-If handoff', () => {
     await screen.findByText('Affected assets (1)')
     expect(api.whatIf).toHaveBeenCalledWith({
       ...context,
+      run_id: run.id,
+      baseline_fingerprint: run.fingerprint,
+      constraints: null,
       actions: [{ asset_id: 'A', action_type: 'patch_prioritization' }],
     })
     expect(Object.keys(vi.mocked(api.whatIf).mock.calls[0][0]).sort()).toEqual([
       'actions',
+      'baseline_fingerprint',
+      'constraints',
+      'run_id',
       'scenario_id',
       'snapshot_id',
     ])
@@ -439,7 +483,10 @@ describe('What-If baseline, errors and comparison', () => {
     const { user } = mount('/what-if')
     await screen.findByText('Options unavailable')
     await user.click(screen.getByRole('button', { name: 'Retry connection' }))
-    await user.selectOptions(screen.getByRole('combobox'), 'A')
+    await user.selectOptions(
+      screen.getByRole('combobox', { name: 'Infrastructure asset (ordered by computed risk)' }),
+      'A',
+    )
     await screen.findByRole('heading', { name: 'Patch prioritization' })
   })
   it('shows a simulation-required state instead of fabricated results', async () => {
@@ -484,5 +531,205 @@ describe('workflow validation boundaries', () => {
       expect(validateBudget(invalid)).toBeTruthy()
     expect(validateBudget('10000')).toBeNull()
     expect(validateExclusions(['A', 'missing'], assets)).toEqual(['missing'])
+  })
+})
+
+describe('Phase 5 final integration contract', () => {
+  it('binds optimizer requests to the exact run and fingerprint', async () => {
+    const { user } = mount()
+    await generate(user)
+    expect(api.optimize).toHaveBeenCalledWith({
+      ...binding(run),
+      effort_budget_hours: 60,
+      excluded_asset_ids: [],
+      constraints: null,
+    })
+    expect(api.actionOptions).not.toHaveBeenCalled()
+  })
+  it('scopes action options to the current run', async () => {
+    mount('/what-if')
+    await waitFor(() => expect(api.actionOptions).toHaveBeenCalledWith(undefined, run.id))
+  })
+  it('marks plans stale when maintenance limits change and sends the new constraints', async () => {
+    const { user } = mount()
+    await generate(user)
+    await user.type(screen.getByLabelText('Longest maintenance window per action (hours)'), '2')
+    await user.type(screen.getByLabelText('Maximum total downtime (hours)'), '4')
+    expect(screen.getByText('Plan outdated.')).toBeTruthy()
+    await user.click(screen.getByRole('button', { name: 'Recalculate Plan' }))
+    await waitFor(() =>
+      expect(api.optimize).toHaveBeenLastCalledWith(
+        expect.objectContaining({
+          constraints: { max_downtime_per_action_hours: 2, max_total_downtime_hours: 4 },
+        }),
+      ),
+    )
+  })
+  it('rejects an invalid single-action window before sending', async () => {
+    const { user } = mount()
+    await user.type(
+      await screen.findByLabelText('Longest maintenance window per action (hours)'),
+      '0',
+    )
+    expect(
+      (screen.getByRole('button', { name: 'Generate plan' }) as HTMLButtonElement).disabled,
+    ).toBe(true)
+    expect(api.optimize).not.toHaveBeenCalled()
+  })
+  it('preserves exact CVE parameters and constraints in a full-plan handoff', async () => {
+    const request: Models['WhatIfRequest'] = {
+      ...binding(run),
+      actions: [
+        {
+          asset_id: 'A',
+          action_type: 'patch_prioritization',
+          cve_ids: ['CVE-2022-0778'],
+          target_version: '3.1.1',
+        },
+        { asset_id: 'B', action_type: 'access_control', cve_ids: null, target_version: null },
+      ],
+      constraints: { max_total_downtime_hours: 4 },
+    }
+    vi.mocked(api.optimize).mockResolvedValue({ ...plan, what_if_request: request })
+    const { user } = mount()
+    await generate(user)
+    await user.click(screen.getByRole('button', { name: 'Simulate full plan in What-If' }))
+    await screen.findByText('2 STAGED')
+    expect(
+      (screen.getByLabelText('Patch CVE IDs for A (optional)') as HTMLInputElement).value,
+    ).toBe('CVE-2022-0778')
+    await user.click(screen.getByRole('button', { name: 'Calculate projected risk' }))
+    await screen.findByText('Affected assets (1)')
+    expect(api.whatIf).toHaveBeenCalledWith(request)
+  })
+  it('includes prerequisite closure in subset transfer and preserves server order', () => {
+    const actions: Models['StagedActionRequest'][] = [
+      { asset_id: 'A', action_type: 'incident_response_plan' },
+      { asset_id: 'A', action_type: 'network_segmentation' },
+    ]
+    const constraints: Models['OperationalConstraints'] = {
+      prerequisites: [{ action: 'network_segmentation', requires: 'incident_response_plan' }],
+    }
+    const source = {
+      ...plan,
+      steps: [
+        {
+          ...steps[0],
+          action_type: 'incident_response_plan' as const,
+          kind: 'prerequisite' as const,
+        },
+        { ...steps[0], rank: 2, action_type: 'network_segmentation' as const },
+      ],
+      what_if_request: { ...binding(run), actions, constraints },
+    }
+    const selected = selectPlanRequest(source, ['A:network_segmentation'])
+    expect(selected.issues).toEqual([])
+    expect(selected.request?.actions).toEqual(actions)
+    expect(selected.request?.constraints).toEqual(constraints)
+  })
+  it('explains missing prerequisites and mismatched handoff baselines', () => {
+    const broken = {
+      ...plan,
+      what_if_request: {
+        ...binding(run),
+        actions: [{ asset_id: 'A', action_type: 'patch_prioritization' as const }],
+        constraints: {
+          prerequisites: [
+            {
+              action: 'patch_prioritization' as const,
+              requires: 'incident_response_plan' as const,
+            },
+          ],
+        },
+      },
+    }
+    expect(selectPlanRequest(broken, ['A:patch_prioritization']).issues.join()).toContain(
+      'Missing prerequisite',
+    )
+    expect(
+      selectPlanRequest(
+        { ...plan, what_if_request: { ...plan.what_if_request!, run_id: 'other-run' } },
+        ['A:patch_prioritization'],
+      ).issues.join(),
+    ).toContain('different baseline')
+  })
+  it('retains comma-separated CVE editing and target versions, invalidating old comparisons', async () => {
+    const { user } = mount(
+      '/what-if',
+      makeHandoff(run, [{ asset_id: 'A', action_type: 'patch_prioritization' }]),
+    )
+    await user.click(await screen.findByRole('button', { name: 'Calculate projected risk' }))
+    await screen.findByText('Affected assets (1)')
+    await user.type(
+      screen.getByLabelText('Patch CVE IDs for A (optional)'),
+      'CVE-2022-0778, CVE-2022-0779',
+    )
+    await user.type(screen.getByLabelText('Target version for A (optional)'), '3.1.1')
+    expect(screen.getByText('Projection outdated.')).toBeTruthy()
+    await user.click(screen.getByRole('button', { name: 'Recalculate projected risk' }))
+    await waitFor(() =>
+      expect(api.whatIf).toHaveBeenLastCalledWith(
+        expect.objectContaining({
+          actions: [
+            {
+              asset_id: 'A',
+              action_type: 'patch_prioritization',
+              cve_ids: ['CVE-2022-0778', 'CVE-2022-0779'],
+              target_version: '3.1.1',
+            },
+          ],
+        }),
+      ),
+    )
+  })
+  it('renders structured validation issues without losing staged actions', async () => {
+    vi.mocked(api.whatIf).mockRejectedValue(
+      new ApiError(
+        422,
+        'The actions do not fit.',
+        'constraint_violation',
+        [],
+        [{ path: 'actions[0]', code: 'exceeds_maintenance_window', message: 'Needs 6 hours.' }],
+      ),
+    )
+    const { user } = mount('/what-if', makeHandoff(run, [steps[0]]))
+    await user.click(await screen.findByRole('button', { name: 'Calculate projected risk' }))
+    await screen.findByText(/exceeds_maintenance_window: Needs 6 hours/)
+    expect(screen.getByText('1 STAGED')).toBeTruthy()
+    expect(screen.getByText('HTTP 422 · constraint_violation')).toBeTruthy()
+  })
+  it('rejects a wrong fingerprint even when the run ID matches', async () => {
+    vi.mocked(api.whatIf).mockResolvedValue({
+      ...projection,
+      baseline_fingerprint: 'wrong-fingerprint',
+    })
+    const { user } = mount('/what-if', makeHandoff(run, [steps[0]]))
+    await user.click(await screen.findByRole('button', { name: 'Calculate projected risk' }))
+    await screen.findByText(/The simulation baseline changed. Review/)
+    expect(screen.queryByLabelText('Simulated risk comparison')).toBeNull()
+  })
+  it('preserves NVD evidence for unresolved CVEs without claiming a benefit', async () => {
+    const patch: Models['PatchOutcome'] = {
+      scope: 'explicit_cves',
+      target_version: null,
+      remediated: [],
+      not_remediated: [
+        {
+          cve_id: 'CVE-2022-0778',
+          status: 'fix_version_not_documented',
+          applicability: 'version_unknown',
+          fixed_in: null,
+          reason: 'NVD does not establish a fixed version.',
+        },
+      ],
+    }
+    vi.mocked(api.whatIf).mockResolvedValue({
+      ...projection,
+      applied: [{ ...projection.applied[0], outcome: 'no_modelled_reduction', patch }],
+    })
+    const { user } = mount('/what-if', makeHandoff(run, [steps[0]]))
+    await user.click(await screen.findByRole('button', { name: 'Calculate projected risk' }))
+    await screen.findByText('Patch evidence · 0 remediated / 1 unresolved')
+    expect(screen.getByText(/not documented.*NVD does not establish/)).toBeTruthy()
   })
 })

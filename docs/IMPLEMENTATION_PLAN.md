@@ -1,5 +1,7 @@
 # Implementation plan
 
+**Phase 5 integrated and verified:** [PHASE_5_INTEGRATION.md](PHASE_5_INTEGRATION.md) records exact run/fingerprint binding, CVE-specific patches, maintenance constraints, optimizer/handoff compatibility and complete tests/browser checks on `integration/phase-5`. This completes the specifically assigned Phase 5 integration, not every later production capability in the historical roadmap. Phase 6 has not begun; define its scope against the recorded remaining limitations.
+
 **Delivered integration batch:** [PHASE_3_INTEGRATION.md](PHASE_3_INTEGRATION.md) documents the bounded Phase 3A work and subsequent user-authorized synchronization of all existing branches. ML training/artifacts were inspected and reevaluated, not replaced. Risk UI/API and transparent prioritization now use real inference. Existing workflow, twins, force graph and action implementations were integrated from remote histories; no new later-phase engine was developed. The historical phase numbering below remains the original roadmap.
 
 **Phase 2A delivered:** real offline-capable reference ingestion, conservative applicability to declared simulated components, separate configuration/exposure evidence, persistence, APIs and register integration. [PHASE_2A.md](PHASE_2A.md) records exact coverage and remaining limits. Subsequent ML/risk/What-If/optimizer work remains deferred. Claude's independent impact module must be integrated separately through coordinated entry points; this branch does not implement or modify it.

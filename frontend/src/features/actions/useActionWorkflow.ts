@@ -20,7 +20,7 @@ export class BaselineChanged extends Error {
   }
 }
 
-/** Best-effort protection with the existing API. Atomic binding still requires server run_id. */
+/** Refresh the UI as well as enforcing the backend's exact run/fingerprint binding. */
 export async function checkBaseline(
   expected: Baseline,
   update: (run: Awaited<ReturnType<typeof api.latestRun>>) => void,
@@ -38,7 +38,7 @@ export function useBoundOptions(run: Baseline) {
       const update = (value: Awaited<ReturnType<typeof api.latestRun>>) =>
         client.setQueryData(['simulation', 'latest'], value)
       await checkBaseline(run, update)
-      const options = await api.actionOptions()
+      const options = await api.actionOptions(undefined, run.id)
       await checkBaseline(run, update)
       return options
     },
@@ -47,9 +47,15 @@ export function useBoundOptions(run: Baseline) {
 }
 
 type BoundInput<T> = { baseline: Baseline; inputKey: string; body: T }
-function useBoundAction<T, R extends { run_id: string; scenario_id: string; snapshot_id: string }>(
-  send: (body: T) => Promise<R>,
-) {
+function useBoundAction<
+  T,
+  R extends {
+    run_id: string
+    scenario_id: string
+    snapshot_id: string
+    baseline_fingerprint: string
+  },
+>(send: (body: T) => Promise<R>) {
   const client = useQueryClient()
   return useMutation({
     mutationFn: async ({ baseline, inputKey, body }: BoundInput<T>) => {
@@ -61,7 +67,8 @@ function useBoundAction<T, R extends { run_id: string; scenario_id: string; snap
       if (
         result.run_id !== baseline.id ||
         result.scenario_id !== baseline.scenario_id ||
-        result.snapshot_id !== baseline.snapshot_id
+        result.snapshot_id !== baseline.snapshot_id ||
+        result.baseline_fingerprint !== baseline.fingerprint
       )
         throw new BaselineChanged()
       return { result, baseline, inputKey }
