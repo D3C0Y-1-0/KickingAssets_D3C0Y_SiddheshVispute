@@ -3213,3 +3213,18 @@ html {
   scrollbar-gutter: stable;
   scroll-behavior: auto;
 }
+
+.how-it-works {
+  margin: 18px 0;
+}
+.how-it-works > summary {
+  cursor: pointer;
+  color: var(--text-secondary);
+  font-size: 15px;
+  font-weight: 600;
+  padding: 6px 0 12px;
+}
+.metric-grid + .callout,
+.metric-grid + * {
+  margin-top: 16px;
+}

@@ -64,9 +64,9 @@ export default function Overview() {
   return (
     <>
       <PageHeading
-        eyebrow="WORKSPACE / COMMAND CENTER"
-        title="Command overview"
-        description="Simulate, assess with the ML model, then act. Every score below is computed from real vulnerability data."
+        eyebrow="WORKSPACE / OVERVIEW"
+        title="Overview"
+        description="See how risky the city is, which assets need attention first, and what to fix. Scores use real vulnerability data."
         actions={
           <>
             <AsOfSelect value={asOf} onChange={setAsOf} />
@@ -83,85 +83,6 @@ export default function Overview() {
           </>
         }
       />
-      {run && <AsOfBanner run={run} />}
-      <div className="workflow-steps">
-        <section className={`workflow-step ${run ? 'done' : ''}`}>
-          <span className="step-number">STEP 1 · SIMULATE</span>
-          <h3>Fetch vulnerabilities for every asset</h3>
-          <p>
-            Each asset is assumed to run a specific real product version. NVD affected-version
-            ranges decide which CVEs apply, and the trained model scores them live.
-          </p>
-          <div className="step-actions">
-            <RunSimulationButton
-              asOf={asOf || undefined}
-              variant={run ? 'secondary' : 'primary'}
-              label={run ? 'Re-run' : 'Run simulation'}
-            />
-            {run && <span className="subtle-label mono">{run.id}</span>}
-          </div>
-        </section>
-        <section className={`workflow-step ${run ? 'done' : ''}`}>
-          <span className="step-number">STEP 2 · ASSESS</span>
-          <h3>ML-scored risk and its reasons</h3>
-          <p>
-            Vulnerability signal × exposure × conditional service impact, with the drivers behind
-            every CVE.
-          </p>
-          <div className="step-actions">
-            {run ? (
-              <Link className="button secondary" to="/intelligence">
-                Open risk intelligence <ArrowRight size={14} />
-              </Link>
-            ) : (
-              <span className="subtle-label">Needs step 1</span>
-            )}
-            <Link className="text-link" to="/ml">
-              ML Lab
-            </Link>
-          </div>
-        </section>
-        <section className="workflow-step">
-          <span className="step-number">STEP 3 · ACT</span>
-          <h3>Preventive actions and projected effect</h3>
-          <p>
-            Patch prioritization, segmentation, access control, monitoring and incident-response
-            planning, with a greedy plan.
-          </p>
-          <div className="step-actions">
-            {run ? (
-              <>
-                <Link className="button secondary" to="/what-if">
-                  What-if <ArrowRight size={14} />
-                </Link>
-                <Link className="button secondary" to="/remediation">
-                  Remediation plan <ArrowRight size={14} />
-                </Link>
-              </>
-            ) : (
-              <span className="subtle-label">Needs step 1</span>
-            )}
-          </div>
-        </section>
-      </div>
-      <Panel
-        title="Curated CVE assessment"
-        aside={
-          <Link to="/curated-intelligence" className="text-link">
-            Explain curated priorities →
-          </Link>
-        }
-      >
-        <QueryState pending={curated.isPending} error={curated.error} retry={curated.refetch} />
-        {!curated.isError && curated.data && (
-          <p>
-            {curated.data.assessed_count} / {curated.data.assets.length} assets assessed ·
-            covered-asset mean {curated.data.covered_asset_mean?.toFixed(2) ?? 'Unavailable'} / 100
-            · {curated.data.unavailable_count} unavailable. A separate Apache overlay and formula;
-            not comparable to workflow scores or an incident probability.
-          </p>
-        )}
-      </Panel>
       <div className="metric-grid">
         <section className="metric-card city-risk">
           <div className="metric-label">
@@ -239,6 +160,7 @@ export default function Overview() {
           </div>
         </section>
       </div>
+      {run && <AsOfBanner run={run} />}
       <div className="overview-middle">
         <Panel
           title={
@@ -501,6 +423,86 @@ export default function Overview() {
           </EmptyState>
         )}
       </Panel>
+      <Panel
+        title="Curated vulnerability check"
+        aside={
+          <Link to="/curated-intelligence" className="text-link">
+            What this means →
+          </Link>
+        }
+      >
+        <QueryState pending={curated.isPending} error={curated.error} retry={curated.refetch} />
+        {!curated.isError && curated.data && (
+          <p>
+            {curated.data.assessed_count} / {curated.data.assets.length} assets assessed ·
+            average score {curated.data.covered_asset_mean?.toFixed(1) ?? 'unavailable'} out of 100 ·
+            {curated.data.unavailable_count} not assessed. This is a separate check, so do not compare it with the
+            main risk scores.
+          </p>
+        )}
+      </Panel>
+      <details className="how-it-works" open={!run}>
+        <summary>How it works in three steps</summary>
+      <div className="workflow-steps">
+        <section className={`workflow-step ${run ? 'done' : ''}`}>
+          <span className="step-number">STEP 1 · SIMULATE</span>
+          <h3>Find the weaknesses</h3>
+          <p>
+            Each asset is assumed to run a real product version. The public list of known flaws shows
+            which ones apply, and the trained model scores them.
+          </p>
+          <div className="step-actions">
+            <RunSimulationButton
+              asOf={asOf || undefined}
+              variant={run ? 'secondary' : 'primary'}
+              label={run ? 'Re-run' : 'Run simulation'}
+            />
+            {run && <span className="subtle-label mono">{run.id}</span>}
+          </div>
+        </section>
+        <section className={`workflow-step ${run ? 'done' : ''}`}>
+          <span className="step-number">STEP 2 · ASSESS</span>
+          <h3>Score the risk and see why</h3>
+          <p>
+            How likely a flaw is to be attacked, how exposed the asset is, and how many services
+            would stop. Every score shows its reasons.
+          </p>
+          <div className="step-actions">
+            {run ? (
+              <Link className="button secondary" to="/intelligence">
+                Open risk ranking <ArrowRight size={14} />
+              </Link>
+            ) : (
+              <span className="subtle-label">Needs step 1</span>
+            )}
+            <Link className="text-link" to="/ml">
+              AI model
+            </Link>
+          </div>
+        </section>
+        <section className="workflow-step">
+          <span className="step-number">STEP 3 · ACT</span>
+          <h3>Plan the fixes</h3>
+          <p>
+            Which updates and access changes cut the most risk for the least effort. These are estimates.
+          </p>
+          <div className="step-actions">
+            {run ? (
+              <>
+                <Link className="button secondary" to="/what-if">
+                  What-if <ArrowRight size={14} />
+                </Link>
+                <Link className="button secondary" to="/remediation">
+                  Remediation plan <ArrowRight size={14} />
+                </Link>
+              </>
+            ) : (
+              <span className="subtle-label">Needs step 1</span>
+            )}
+          </div>
+        </section>
+      </div>
+      </details>
       <ProvenanceNotice />
       <AssetDrawer id={selected} onClose={() => setSelected(null)} />
     </>

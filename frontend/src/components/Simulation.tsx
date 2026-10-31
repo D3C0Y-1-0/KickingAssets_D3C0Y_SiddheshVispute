@@ -112,9 +112,8 @@ export function AsOfSelect({
 export function AsOfBanner({ run }: { run: SimulationRun }) {
   return (
     <div className={`callout ${run.held_out ? '' : 'warn'}`}>
-      <strong>Simulated as of {run.as_of}.</strong> CVE publication dates and KEV/EPSS history are
-      cutoff-scoped. NVD fields use current records and may include later edits, so this is not a
-      fully point-in-time archive.{' '}
+      <strong>Simulated as of {run.as_of}.</strong> Only information from before that date is used for
+      history, but the public flaw records may include later edits, so this is not a perfect replay.{' '}
       {run.as_of_split.charAt(0).toUpperCase() + run.as_of_split.slice(1)}.
     </div>
   )
