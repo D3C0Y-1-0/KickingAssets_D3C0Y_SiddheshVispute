@@ -1,0 +1,310 @@
+{
+  "map_version": 1,
+  "provenance": {
+    "kind": "scenario_assumption",
+    "source": "Aurora City real-product assumption v1",
+    "notes": "Aurora City assets are fictional. Each is ASSUMED to run the real product and version listed here so that real NVD affected-version ranges can be applied. These are not scan results and not a claim about any real organisation."
+  },
+  "assets": {
+    "HLT-001": {
+      "vendor": "Ivanti",
+      "product": "Connect Secure",
+      "version": "22.3R1",
+      "nvd_vendor": "ivanti",
+      "nvd_product_contains": [
+        "connectsecure"
+      ],
+      "role": "Perimeter VPN / remote-access gateway"
+    },
+    "HLT-002": {
+      "vendor": "Schneider Electric",
+      "product": "Modicon M340 firmware",
+      "version": "3.10",
+      "nvd_vendor": "schneiderelectric",
+      "nvd_product_contains": [
+        "modiconm340"
+      ],
+      "role": "Clinical systems controller"
+    },
+    "HLT-003": {
+      "vendor": "Honeywell",
+      "product": "Experion server",
+      "version": "510.1",
+      "nvd_vendor": "honeywell",
+      "nvd_product_contains": [
+        "experion"
+      ],
+      "role": "HVAC / plant controller"
+    },
+    "HLT-004": {
+      "vendor": "Microsoft",
+      "product": "Windows 10 22H2",
+      "version": "10.0.19045.5000",
+      "nvd_vendor": "microsoft",
+      "nvd_product_contains": [
+        "windows10version22h2"
+      ],
+      "role": "Clinical engineering workstation"
+    },
+    "HLT-005": {
+      "vendor": "Microsoft",
+      "product": "Windows Server 2019",
+      "version": "10.0.17763.6189",
+      "nvd_vendor": "microsoft",
+      "nvd_product_contains": [
+        "windowsserver2019"
+      ],
+      "role": "Patient systems server"
+    },
+    "HLT-006": {
+      "vendor": "Moxa",
+      "product": "MGate MB3170 firmware",
+      "version": "4.1",
+      "nvd_vendor": "moxa",
+      "nvd_product_contains": [
+        "mgatemb3170"
+      ],
+      "role": "Cold-chain sensor gateway"
+    },
+    "HLT-007": {
+      "vendor": "Siemens",
+      "product": "SIMATIC S7-1500 CPU firmware",
+      "version": "2.9.4",
+      "nvd_vendor": "siemens",
+      "nvd_product_contains": [
+        "simatics71500cpu"
+      ],
+      "role": "Medical gas controller"
+    },
+    "HLT-008": {
+      "vendor": "Microsoft",
+      "product": "Windows Server 2019",
+      "version": "10.0.17763.5000",
+      "nvd_vendor": "microsoft",
+      "nvd_product_contains": [
+        "windowsserver2019"
+      ],
+      "role": "Hospital operations server"
+    },
+    "HLT-009": {
+      "vendor": "Rockwell Automation",
+      "product": "CompactLogix 5380 firmware",
+      "version": "32.013",
+      "nvd_vendor": "rockwellautomation",
+      "nvd_product_contains": [
+        "compactlogix5380"
+      ],
+      "role": "Emergency ward controller"
+    },
+    "HLT-010": {
+      "vendor": "Hitachi Energy",
+      "product": "FOX61x firmware",
+      "version": "15",
+      "nvd_vendor": "hitachienergy",
+      "nvd_product_contains": [
+        "fox61x"
+      ],
+      "role": "Backup generator interface"
+    },
+    "PWR-001": {
+      "vendor": "Fortinet",
+      "product": "FortiOS (FortiGate)",
+      "version": "7.0.12",
+      "nvd_vendor": "fortinet",
+      "nvd_product_contains": [
+        "fortios"
+      ],
+      "role": "Perimeter VPN / remote-access gateway"
+    },
+    "PWR-002": {
+      "vendor": "Siemens",
+      "product": "SIMATIC S7-1500 CPU firmware",
+      "version": "2.9.2",
+      "nvd_vendor": "siemens",
+      "nvd_product_contains": [
+        "simatics71500cpu"
+      ],
+      "role": "Substation / process controller"
+    },
+    "PWR-003": {
+      "vendor": "Schneider Electric",
+      "product": "Modicon M340 firmware",
+      "version": "3.20",
+      "nvd_vendor": "schneiderelectric",
+      "nvd_product_contains": [
+        "modiconm340"
+      ],
+      "role": "Substation / process controller"
+    },
+    "PWR-004": {
+      "vendor": "Microsoft",
+      "product": "Windows 10 22H2",
+      "version": "10.0.19045.4170",
+      "nvd_vendor": "microsoft",
+      "nvd_product_contains": [
+        "windows10version22h2"
+      ],
+      "role": "Operator workstation"
+    },
+    "PWR-005": {
+      "vendor": "Microsoft",
+      "product": "Windows Server 2019",
+      "version": "10.0.17763.5458",
+      "nvd_vendor": "microsoft",
+      "nvd_product_contains": [
+        "windowsserver2019"
+      ],
+      "role": "Historian server"
+    },
+    "PWR-006": {
+      "vendor": "Moxa",
+      "product": "NPort 5100A series firmware",
+      "version": "3.8",
+      "nvd_vendor": "moxa",
+      "nvd_product_contains": [
+        "nport5100a"
+      ],
+      "role": "Sensor serial gateway"
+    },
+    "PWR-007": {
+      "vendor": "Hitachi Energy",
+      "product": "RTU500 series firmware",
+      "version": "12.0.1",
+      "nvd_vendor": "hitachienergy",
+      "nvd_product_contains": [
+        "rtu500"
+      ],
+      "role": "Feeder protection / RTU"
+    },
+    "PWR-008": {
+      "vendor": "Microsoft",
+      "product": "Windows Server 2019",
+      "version": "10.0.17763.6000",
+      "nvd_vendor": "microsoft",
+      "nvd_product_contains": [
+        "windowsserver2019"
+      ],
+      "role": "Dispatch control server"
+    },
+    "PWR-009": {
+      "vendor": "ABB",
+      "product": "AC500 V3 firmware",
+      "version": "3.5.0",
+      "nvd_vendor": "abb",
+      "nvd_product_contains": [
+        "ac500v3"
+      ],
+      "role": "Microgrid controller"
+    },
+    "PWR-010": {
+      "vendor": "Eaton",
+      "product": "UPS Companion Software",
+      "version": "2.6.9",
+      "nvd_vendor": "eaton",
+      "nvd_product_contains": [
+        "upscompanion"
+      ],
+      "role": "Backup power management"
+    },
+    "WTR-001": {
+      "vendor": "Palo Alto Networks",
+      "product": "PAN-OS (GlobalProtect)",
+      "version": "10.2.4",
+      "nvd_vendor": "paloaltonetworks",
+      "nvd_product_contains": [
+        "panos"
+      ],
+      "role": "Perimeter VPN / remote-access gateway"
+    },
+    "WTR-002": {
+      "vendor": "Rockwell Automation",
+      "product": "ControlLogix 5580 firmware",
+      "version": "33.011",
+      "nvd_vendor": "rockwellautomation",
+      "nvd_product_contains": [
+        "controllogix5580"
+      ],
+      "role": "Treatment process controller"
+    },
+    "WTR-003": {
+      "vendor": "Rockwell Automation",
+      "product": "CompactLogix 5380 firmware",
+      "version": "33.011",
+      "nvd_vendor": "rockwellautomation",
+      "nvd_product_contains": [
+        "compactlogix5380"
+      ],
+      "role": "Treatment process controller"
+    },
+    "WTR-004": {
+      "vendor": "Microsoft",
+      "product": "Windows 11 23H2",
+      "version": "10.0.22631.3000",
+      "nvd_vendor": "microsoft",
+      "nvd_product_contains": [
+        "windows11version23h2"
+      ],
+      "role": "Operator workstation"
+    },
+    "WTR-005": {
+      "vendor": "Microsoft",
+      "product": "Windows Server 2019",
+      "version": "10.0.17763.4000",
+      "nvd_vendor": "microsoft",
+      "nvd_product_contains": [
+        "windowsserver2019"
+      ],
+      "role": "Historian server"
+    },
+    "WTR-006": {
+      "vendor": "WAGO",
+      "product": "PFC200 firmware",
+      "version": "03.10.08",
+      "nvd_vendor": "wago",
+      "nvd_product_contains": [
+        "pfc200"
+      ],
+      "role": "Sensor I/O controller"
+    },
+    "WTR-007": {
+      "vendor": "Mitsubishi Electric",
+      "product": "MELSEC iQ-F series firmware",
+      "version": "1.280",
+      "nvd_vendor": "mitsubishielectric",
+      "nvd_product_contains": [
+        "melseciqfseries"
+      ],
+      "role": "Pump controller"
+    },
+    "WTR-008": {
+      "vendor": "Microsoft",
+      "product": "Windows Server 2019",
+      "version": "10.0.17763.5936",
+      "nvd_vendor": "microsoft",
+      "nvd_product_contains": [
+        "windowsserver2019"
+      ],
+      "role": "Control server"
+    },
+    "WTR-009": {
+      "vendor": "Siemens",
+      "product": "SIMATIC S7-1500 CPU firmware",
+      "version": "2.8.1",
+      "nvd_vendor": "siemens",
+      "nvd_product_contains": [
+        "simatics71500cpu"
+      ],
+      "role": "Pressure management controller"
+    },
+    "WTR-010": {
+      "vendor": "ABB",
+      "product": "AC500 V2 firmware",
+      "version": "2.8.0",
+      "nvd_vendor": "abb",
+      "nvd_product_contains": [
+        "ac500v2"
+      ],
+      "role": "Backup controller"
+    }
+  }
+}

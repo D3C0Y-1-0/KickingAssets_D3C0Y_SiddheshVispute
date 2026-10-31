@@ -1,52 +1,69 @@
 import { useState } from 'react'
-import { ArrowRight, Check, FlaskConical, LockKeyhole, Plus, Trash2 } from 'lucide-react'
-import { useAssets } from '../../hooks/queries'
-import { actionCatalog } from '../../fixtures/previews'
-import { PageHeading, Panel, PreviewNotice, QueryState, SectorBadge } from '../../components/ui'
-import type { Models } from '../../api/client'
+import { ArrowRight, Check, FlaskConical, LoaderCircle, Plus, Trash2 } from 'lucide-react'
+import { useActionOptions, useLatestRun, useScenarioContext, useWhatIf } from '../../hooks/queries'
+import { ProvenanceNotice, SimulationRequired } from '../../components/Simulation'
+import { PageHeading, Panel, QueryState, RiskBadge, SectorBadge } from '../../components/ui'
+import type { ActionType, Models } from '../../api/client'
 
-type Staged = Models['StagedAction']
+type Staged = { asset_id: string; action_type: ActionType }
+
 export default function WhatIf() {
-  const assets = useAssets()
+  const latest = useLatestRun()
+  const run = latest.data ?? null
+  const options = useActionOptions(!!run)
+  const context = useScenarioContext()
+  const whatIf = useWhatIf()
   const [assetId, setAssetId] = useState('')
   const [staged, setStaged] = useState<Staged[]>([])
-  const active = assets.data?.find((a) => a.id === assetId)
-  const applicable = actionCatalog.filter(
-    (action) =>
-      active &&
-      (action.type === 'patch_review'
-        ? active.security.patch_status !== 'current'
-        : action.applicable(active.security.mfa_enabled, active.security.remote_access)),
-  )
-  const add = (action_type: Staged['action_type']) =>
-    setStaged((previous) =>
-      previous.some((a) => a.asset_id === assetId && a.action_type === action_type)
-        ? previous
-        : [...previous, { asset_id: assetId, action_type }],
+  if (latest.isPending || latest.isError)
+    return <QueryState pending={latest.isPending} error={latest.error} retry={latest.refetch} />
+  if (!run)
+    return (
+      <>
+        <PageHeading
+          title="What-If lab"
+          description="Stage preventive actions and see the projected change in risk."
+        />
+        <SimulationRequired />
+      </>
     )
+  const active = run.assets.find((a) => a.asset_id === assetId)
+  const forAsset = (options.data ?? []).filter((o) => o.asset_id === assetId)
+  const result = whatIf.data
+  const change = (next: Staged[]) => {
+    setStaged(next)
+    whatIf.reset()
+  }
+  const add = (action_type: ActionType) =>
+    change(
+      staged.some((s) => s.asset_id === assetId && s.action_type === action_type)
+        ? staged
+        : [...staged, { asset_id: assetId, action_type }],
+    )
+  const calculate = () =>
+    whatIf.mutate({
+      scenario_id: context.scenario_id,
+      snapshot_id: context.snapshot_id ?? '',
+      actions: staged,
+    } as Models['WhatIfRequest'])
   return (
     <>
       <PageHeading
         title="What-If lab"
-        description="Stage a preventive action. Understand its assumptions before estimating its effect."
+        description="Stage the actions named in the problem statement and recompute the risk. Nothing is changed or verified."
         actions={
           <span className="badge neutral">
             <FlaskConical size={13} />
-            SCENARIO WORKBENCH
+            PROJECTED · NOT VERIFIED
           </span>
         }
       />
-      <PreviewNotice>
-        Interface foundation. Staging is local and temporary. Recalculation is unavailable; no
-        infrastructure changes are applied.
-      </PreviewNotice>
       <div className="whatif-layout">
         <div>
           <Panel title="01 / Select a target asset">
-            <QueryState pending={assets.isPending} error={assets.error} retry={assets.refetch} />
             <div className="panel-padding">
               <label className="field-label" htmlFor="whatif-asset">
-                Infrastructure asset
+                Infrastructure asset (ordered by computed risk)
               </label>
               <select
                 id="whatif-asset"
@@ -55,9 +72,9 @@ export default function WhatIf() {
                 onChange={(e) => setAssetId(e.target.value)}
               >
                 <option value="">Choose an asset…</option>
-                {assets.data?.map((a) => (
-                  <option key={a.id} value={a.id}>
-                    {a.id} · {a.name}
+                {run.assets.map((a) => (
+                  <option key={a.asset_id} value={a.asset_id}>
+                    {a.asset_id} · {a.name} · {a.risk.score?.toFixed(1)}
                   </option>
                 ))}
               </select>
@@ -66,54 +83,58 @@ export default function WhatIf() {
                   <SectorBadge sector={active.sector} />
                   <h3>{active.name}</h3>
                   <p>
-                    {active.security.network_zone} · {active.criticality} · {active.exposure}{' '}
-                    exposure
+                    <RiskBadge category={active.risk.category} /> score{' '}
+                    <strong className="mono">{active.risk.score?.toFixed(1)}</strong> · S{' '}
+                    {active.vulnerability_signal?.toFixed(2)} × E{' '}
+                    {active.exposure_factor.toFixed(2)} × I′ {active.impact_factor.toFixed(2)}
                   </p>
-                  <span className="subtle-label">CONFIGURATION SOURCE: SCENARIO ASSUMPTION</span>
                 </div>
               )}
             </div>
           </Panel>
           <Panel
-            title="02 / Review preventive actions"
-            aside={<span className="subtle-label">CONFIGURATION-BASED OPTIONS</span>}
+            title="02 / Choose preventive actions"
+            aside={<span className="subtle-label">FROM THE PROBLEM STATEMENT</span>}
             className="spaced-panel"
           >
             <div className="panel-padding">
               {!active ? (
-                <div className="quiet-placeholder">
-                  Select a target to see actions applicable to its fictional configuration.
-                </div>
-              ) : applicable.length === 0 ? (
-                <div className="quiet-placeholder">
-                  No catalog actions match this configuration. This does not establish that the
-                  asset is secure.
-                </div>
+                <div className="quiet-placeholder">Select a target to see its actions.</div>
+              ) : options.isPending ? (
+                <LoaderCircle className="spin" size={20} />
               ) : (
-                applicable.map((action) => {
+                forAsset.map((o) => {
                   const isStaged = staged.some(
-                    (a) => a.asset_id === assetId && a.action_type === action.type,
+                    (s) => s.asset_id === assetId && s.action_type === o.action_type,
                   )
                   return (
-                    <div className="action-option" key={action.type}>
+                    <div className="action-option" key={o.action_type}>
                       <div className="action-option-heading">
-                        <LockKeyhole size={18} />
-                        <h3>{action.name}</h3>
+                        <h3>{o.name}</h3>
+                        <span className={`badge ${o.modelled ? 'neutral' : 'sample'}`}>
+                          {o.modelled ? 'MODELLED' : 'RECOMMENDATION ONLY'}
+                        </span>
                       </div>
-                      <p>{action.description}</p>
+                      <p>{o.justification}</p>
                       <dl className="action-meta">
                         <dt>Effort</dt>
-                        <dd>{action.effort}</dd>
+                        <dd>{o.effort_hours} h (planning assumption)</dd>
                         <dt>Operational considerations</dt>
-                        <dd>{action.disruption}</dd>
+                        <dd>{o.operational_disruption}</dd>
+                        {o.modelled && o.applicable && o.city_reduction != null && (
+                          <>
+                            <dt>Projected city-index change</dt>
+                            <dd className="mono">−{o.city_reduction.toFixed(2)}</dd>
+                          </>
+                        )}
                       </dl>
                       <button
                         className={`button ${isStaged ? 'secondary' : 'primary'}`}
-                        disabled={isStaged}
-                        onClick={() => add(action.type)}
+                        disabled={isStaged || !o.applicable}
+                        onClick={() => add(o.action_type)}
                       >
                         {isStaged ? <Check size={14} /> : <Plus size={14} />}
-                        {isStaged ? 'Staged locally' : 'Stage hypothetical action'}
+                        {!o.applicable ? 'Not applicable' : isStaged ? 'Staged' : 'Stage action'}
                       </button>
                     </div>
                   )
@@ -124,25 +145,28 @@ export default function WhatIf() {
         </div>
         <div>
           <Panel
-            title="03 / Hypothesis staging"
+            title="03 / Projected result"
             aside={<span className="badge neutral">{staged.length} STAGED</span>}
           >
             <div className="panel-padding">
               {staged.length === 0 ? (
                 <div className="quiet-placeholder">
-                  Your staged actions will appear here. Nothing is persisted or executed.
+                  Staged actions appear here. Nothing is executed.
                 </div>
               ) : (
-                staged.map((a) => (
-                  <div className="staged-row" key={`${a.asset_id}-${a.action_type}`}>
+                staged.map((s) => (
+                  <div className="staged-row" key={`${s.asset_id}-${s.action_type}`}>
                     <div>
-                      <small className="mono mint">{a.asset_id}</small>
-                      <strong>{actionCatalog.find((c) => c.type === a.action_type)?.name}</strong>
+                      <small className="mono mint">{s.asset_id}</small>
+                      <strong>
+                        {options.data?.find((o) => o.action_type === s.action_type)?.name ??
+                          s.action_type}
+                      </strong>
                     </div>
                     <button
                       className="icon-button"
-                      aria-label={`Remove ${a.action_type} for ${a.asset_id}`}
-                      onClick={() => setStaged((previous) => previous.filter((s) => s !== a))}
+                      aria-label={`Remove ${s.action_type} for ${s.asset_id}`}
+                      onClick={() => change(staged.filter((x) => x !== s))}
                     >
                       <Trash2 size={16} />
                     </button>
@@ -151,37 +175,113 @@ export default function WhatIf() {
               )}
               <div className="comparison-grid">
                 <div>
-                  <span className="eyebrow">CURRENT RISK</span>
-                  <strong>—</strong>
-                  <small>Not assessed</small>
+                  <span className="eyebrow">CURRENT CITY INDEX</span>
+                  <strong>{(result?.current_city_index ?? run.city_risk.score)?.toFixed(1)}</strong>
+                  <small>Computed baseline</small>
                 </div>
                 <ArrowRight size={20} />
                 <div>
-                  <span className="eyebrow">PROJECTED RISK</span>
-                  <strong>—</strong>
-                  <small>Not calculated</small>
+                  <span className="eyebrow">PROJECTED</span>
+                  <strong>{result ? result.projected_city_index.toFixed(1) : '—'}</strong>
+                  <small>
+                    {result
+                      ? `${result.city_reduction > 0 ? '−' : ''}${result.city_reduction.toFixed(2)} · not verified`
+                      : 'Not calculated'}
+                  </small>
                 </div>
-              </div>
-              <div className="inset-note">
-                Per-action effects and service disruption require a calculated baseline and a
-                versioned what-if engine.
               </div>
               <button
                 className="button primary full-width simulation-button"
-                disabled
-                title="The recalculation engine is planned for a later phase"
+                disabled={staged.length === 0 || whatIf.isPending}
+                onClick={calculate}
               >
-                <FlaskConical size={16} />
-                Simulation unavailable in Phase 1
+                {whatIf.isPending ? (
+                  <LoaderCircle className="spin" size={16} />
+                ) : (
+                  <FlaskConical size={16} />
+                )}
+                Calculate projected risk
               </button>
+              {whatIf.isError && <p className="run-error">{whatIf.error.message}</p>}
               <p className="small muted">
-                Current → projected does not imply verified. Any future verification requires
-                independent evidence.
+                Current → projected does not imply verified. Verification needs independent evidence
+                that a change was actually made.
               </p>
             </div>
           </Panel>
+          {result && (
+            <>
+              <Panel title="Asset changes" className="spaced-panel">
+                <div className="table-scroll">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>ASSET</th>
+                        <th>CURRENT</th>
+                        <th>PROJECTED</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {result.asset_deltas
+                        .filter((d) => d.current_score !== d.projected_score)
+                        .slice(0, 12)
+                        .map((d) => (
+                          <tr key={d.asset_id}>
+                            <td>
+                              {d.name} <small className="mono muted">{d.asset_id}</small>
+                            </td>
+                            <td>
+                              <RiskBadge category={d.current_category} />{' '}
+                              <span className="mono">{d.current_score.toFixed(1)}</span>
+                            </td>
+                            <td>
+                              <RiskBadge category={d.projected_category} />{' '}
+                              <span className="mono delta-down">
+                                {d.projected_score.toFixed(1)}
+                              </span>
+                            </td>
+                          </tr>
+                        ))}
+                    </tbody>
+                  </table>
+                </div>
+              </Panel>
+              <Panel title="Services: worst plausible disruption" className="spaced-panel">
+                <div className="panel-padding">
+                  {result.services_before.map((s, i) => (
+                    <div className="bar-row" key={s.service_id}>
+                      <span>{s.name}</span>
+                      <span className="mono">
+                        {(s.worst_disruption_fraction * 100).toFixed(0)}% →{' '}
+                        {(result.services_after[i].worst_disruption_fraction * 100).toFixed(0)}%
+                      </span>
+                      <span />
+                    </div>
+                  ))}
+                </div>
+              </Panel>
+              <Panel title="What was applied" className="spaced-panel">
+                <div className="panel-padding">
+                  <ul className="list-plain">
+                    {result.applied.map((a) => (
+                      <li key={`${a.asset_id}-${a.action_type}`}>
+                        <strong>
+                          {a.asset_id} · {a.name}
+                        </strong>
+                        : {a.effect}
+                      </li>
+                    ))}
+                    {result.notes.map((n) => (
+                      <li key={n}>{n}</li>
+                    ))}
+                  </ul>
+                </div>
+              </Panel>
+            </>
+          )}
         </div>
       </div>
+      <ProvenanceNotice />
     </>
   )
 }

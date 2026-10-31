@@ -1,9 +1,20 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
-import cytoscape from 'cytoscape'
-import type { Core, EventObject, StylesheetJson } from 'cytoscape'
-import { ArrowRight, ArrowUpRight, Focus, Minus, Network, Plus, Search, X } from 'lucide-react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import {
+  ArrowRight,
+  ArrowUpRight,
+  Focus,
+  Minus,
+  Maximize2,
+  Minimize2,
+  Network,
+  PanelRight,
+  Plus,
+  Search,
+  Shuffle,
+  X,
+} from 'lucide-react'
 import { useSearchParams } from 'react-router-dom'
-import { useGraph, useIntelligence } from '../../hooks/queries'
+import { useGraph, useLatestRun } from '../../hooks/queries'
 import type { Asset, GraphMode } from '../../api/client'
 import { AssetDrawer } from '../../components/AssetDrawer'
 import {
@@ -14,7 +25,8 @@ import {
   SampleBadge,
   SectorBadge,
 } from '../../components/ui'
-const categoryLabels = ['low', 'medium', 'high', 'critical'] as const
+import { categoryLabels } from '../../lib/risk'
+import { ForceGraph, type ForceGraphHandle } from './ForceGraph'
 
 export default function Infrastructure() {
   const [params, setParams] = useSearchParams()
@@ -25,19 +37,32 @@ export default function Infrastructure() {
     : 'all'
   const focusId = params.get('focus')
   const query = useGraph(mode)
-  const intelligence = useIntelligence()
-  const priorities = intelligence.isError ? undefined : intelligence.data?.assets
-  const container = useRef<HTMLDivElement>(null)
-  const cy = useRef<Core | null>(null)
+  const graph = useRef<ForceGraphHandle>(null)
   const [selected, setSelected] = useState<string | null>(focusId)
   const [detail, setDetail] = useState<string | null>(null)
   const [search, setSearch] = useState('')
-  const [preview, setPreview] = useState(true)
+  const [preview, setPreview] = useState(false)
+  const latestRun = useLatestRun()
+  const runAssets = latestRun.data?.assets
+  const riskOf = (id: string) => runAssets?.find((a) => a.asset_id === id)?.risk
   const [zoom, setZoom] = useState(100)
-  const selection = useRef(selected)
+  const [fullscreen, setFullscreen] = useState(false)
+  const [showInspector, setShowInspector] = useState(false)
   useEffect(() => {
-    selection.current = selected
+    if (selected) setShowInspector(true)
   }, [selected])
+  useEffect(() => {
+    const t = window.setTimeout(() => graph.current?.fit(), 150)
+    if (!fullscreen) return () => window.clearTimeout(t)
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setFullscreen(false)
+    }
+    window.addEventListener('keydown', onKey)
+    return () => {
+      window.clearTimeout(t)
+      window.removeEventListener('keydown', onKey)
+    }
+  }, [fullscreen])
   useEffect(() => {
     if (focusId) setSelected(focusId)
   }, [focusId])
@@ -61,142 +86,24 @@ export default function Infrastructure() {
       return next
     })
 
-  useEffect(() => {
-    if (!container.current || !query.data) return
-    const colors = getComputedStyle(container.current)
-    const token = (name: string) => colors.getPropertyValue(name).trim()
-    const style: StylesheetJson = [
-      {
-        selector: 'node',
-        style: {
-          'background-color': 'data(color)',
-          'background-opacity': 0.13,
-          'border-color': 'data(color)',
-          'border-width': 1.5,
-          label: 'data(label)',
-          color: token('--text-secondary'),
-          'font-size': 9,
-          'font-family': 'Segoe UI, sans-serif',
-          'text-valign': 'bottom',
-          'text-margin-y': 8,
-          'text-wrap': 'wrap',
-          'text-max-width': '100px',
-          width: 26,
-          height: 26,
-          shape: 'round-rectangle',
-        },
-      },
-      { selector: 'node[essential]', style: { width: 34, height: 34, 'border-width': 2 } },
-      {
-        selector: 'edge',
-        style: {
-          width: 1.1,
-          'curve-style': 'bezier',
-          'target-arrow-shape': 'triangle',
-          'arrow-scale': 0.65,
-          'line-color': token('--graph-edge'),
-          'target-arrow-color': token('--graph-arrow'),
-          opacity: 0.85,
-          'line-style': mode === 'cyber' ? 'solid' : 'dashed',
-        },
-      },
-      {
-        selector: 'edge:selected',
-        style: {
-          'line-color': token('--accent'),
-          'target-arrow-color': token('--accent'),
-          width: 2,
-        },
-      },
-      {
-        selector: 'node:selected',
-        style: {
-          'background-opacity': 0.4,
-          'border-width': 3,
-          'border-color': token('--text'),
-          color: token('--text'),
-          'font-weight': 'bold',
-        },
-      },
-      { selector: '.dim', style: { opacity: 0.15 } },
-    ]
-    const getColor = (asset: Asset) =>
-      colors
-        .getPropertyValue(
-          preview
-            ? priorities?.find((r) => r.asset_id === asset.id)?.risk.category
-              ? `--risk-${priorities.find((r) => r.asset_id === asset.id)!.risk.category}`
-              : '--text-secondary'
-            : `--sector-${asset.sector}`,
-        )
+  const colorOf = useCallback(
+    (asset: Asset) => {
+      const root = getComputedStyle(document.documentElement)
+      const category = preview ? riskOf(asset.id)?.category : undefined
+      return root
+        .getPropertyValue(category ? `--risk-${category}` : `--sector-${asset.sector}`)
         .trim()
-    const sectors = ['power', 'water', 'healthcare']
-    const c = cytoscape({
-      container: container.current,
-      elements: [
-        ...nodes.map((a) => {
-          const groupIndex = sectors.indexOf(a.sector)
-          const i = nodes.filter((n) => n.sector === a.sector).findIndex((n) => n.id === a.id)
-          return {
-            data: {
-              id: a.id,
-              label: `${a.id}\n${a.name.replace(/^(North |South |Central |Waterworks |Hospital |Aurora )/, '')}`,
-              color: getColor(a),
-              ...(a.criticality === 'essential' ? { essential: true } : {}),
-            },
-            position: {
-              x: groupIndex * 300 + (i % 3) * 100,
-              y: Math.floor(i / 3) * 115 + (i % 3 === 1 ? 25 : 0),
-            },
-          }
-        }),
-        ...edges.map((e) => ({
-          data: { id: e.id, source: e.source_asset_id, target: e.target_asset_id },
-        })),
-      ],
-      style,
-      layout: { name: 'preset', fit: true, padding: 45 },
-      minZoom: 0.25,
-      maxZoom: 3,
-    })
-    cy.current = c
-    if (selection.current) c.getElementById(selection.current).select()
-    c.on('tap', 'node', (event: EventObject) => setSelected(event.target.id() as string))
-    c.on('zoom', () => setZoom(Math.round(c.zoom() * 100)))
-    const observer = new ResizeObserver(() => {
-      c.resize()
-      c.fit(undefined, 45)
-    })
-    observer.observe(container.current)
-    if (focusId) {
-      const target = c.getElementById(focusId)
-      if (target.length) {
-        target.select()
-        c.center(target)
-        c.zoom({ level: 1.5, position: target.position() })
-      }
-    }
-    return () => {
-      observer.disconnect()
-      c.destroy()
-      cy.current = null
-    }
-  }, [query.data, nodes, edges, mode, preview, focusId, priorities])
-  useEffect(() => {
-    const c = cy.current
-    if (!c) return
-    c.nodes().unselect()
-    if (selected) c.getElementById(selected).select()
-  }, [selected, nodes])
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [preview, runAssets],
+  )
   const focus = (id: string) => {
-    const c = cy.current
-    const n = c?.getElementById(id)
-    if (c && n?.length) {
-      setSelected(id)
-      c.center(n)
-      c.zoom({ level: 1.6, position: n.position() })
-    }
+    setSelected(id)
+    graph.current?.focus(id)
   }
+  useEffect(() => {
+    if (focusId) graph.current?.focus(focusId)
+  }, [focusId, nodes, mode])
   const matches = nodes.filter((a) =>
     `${a.name} ${a.id}`.toLowerCase().includes(search.toLowerCase()),
   )
@@ -204,16 +111,11 @@ export default function Infrastructure() {
     ? edges.filter((e) => e.source_asset_id === active.id || e.target_asset_id === active.id)
     : []
   return (
-    <>
+    <div className="graph-full">
       <PageHeading
         title="Infrastructure map"
         description="Two independent views. One inventory. Explore connections without confusing their meaning."
         actions={<SampleBadge>Fictional topology</SampleBadge>}
-      />
-      <QueryState
-        pending={intelligence.isPending}
-        error={intelligence.error}
-        retry={intelligence.refetch}
       />
       <div className="graph-mode-bar">
         <div className="segmented-control" aria-label="Graph display mode">
@@ -238,7 +140,9 @@ export default function Infrastructure() {
           {mode === 'cyber' ? 'CONNECTIVITY ≠ COMPROMISE' : 'PROVIDER → DEPENDENT'}
         </span>
       </div>
-      <div className="graph-layout">
+      <div
+        className={`graph-layout ${fullscreen ? 'graph-fs' : ''} ${showInspector ? '' : 'inspector-hidden'}`}
+      >
         <Panel
           title={mode === 'cyber' ? 'Cyber reachability graph' : 'Operational dependency graph'}
           aside={
@@ -271,13 +175,46 @@ export default function Infrastructure() {
               <option value="water">Water</option>
               <option value="healthcare">Healthcare</option>
             </select>
+            <select
+              aria-label="Graph view"
+              value={mode}
+              onChange={(e) => updateParams('mode', e.target.value)}
+            >
+              <option value="cyber">Cyber reachability</option>
+              <option value="operational">Operational dependencies</option>
+            </select>
+            <button
+              className={`icon-button ${showInspector ? 'on' : ''}`}
+              title={showInspector ? 'Hide inspector' : 'Show inspector'}
+              aria-label={showInspector ? 'Hide node inspector' : 'Show node inspector'}
+              aria-pressed={showInspector}
+              onClick={() => setShowInspector((v) => !v)}
+            >
+              <PanelRight size={18} />
+            </button>
+            <button
+              className="icon-button"
+              title={fullscreen ? 'Exit full screen (Esc)' : 'Full screen'}
+              aria-label={fullscreen ? 'Exit full screen' : 'Full screen'}
+              onClick={() => setFullscreen((v) => !v)}
+            >
+              {fullscreen ? <Minimize2 size={18} /> : <Maximize2 size={18} />}
+            </button>
             <button
               className="icon-button"
               title="Fit to screen"
               aria-label="Fit graph to screen"
-              onClick={() => cy.current?.fit(undefined, 45)}
+              onClick={() => graph.current?.fit()}
             >
               <Focus size={18} />
+            </button>
+            <button
+              className="icon-button"
+              title="Re-run layout"
+              aria-label="Re-run force layout"
+              onClick={() => graph.current?.relayout()}
+            >
+              <Shuffle size={18} />
             </button>
           </div>
           {query.isPending || query.isError ? (
@@ -287,17 +224,26 @@ export default function Infrastructure() {
               <div
                 className="graph-canvas"
                 data-testid="graph-canvas"
-                ref={container}
-                role="img"
-                aria-label={`${mode} directed graph, ${nodes.length} assets. Use the adjacent asset selector for keyboard inspection.`}
-              />
+                role="group"
+                aria-label={`${mode} directed force graph, ${nodes.length} assets. Drag nodes to rearrange, scroll to zoom. Nodes are keyboard focusable; the adjacent asset selector is also available.`}
+              >
+                <ForceGraph
+                  ref={graph}
+                  nodes={nodes}
+                  edges={edges}
+                  mode={mode}
+                  selected={selected}
+                  colorOf={colorOf}
+                  onSelect={setSelected}
+                  onZoom={setZoom}
+                />
+              </div>
               <div className="graph-controls">
                 <button
                   className="icon-button"
                   aria-label="Zoom out"
                   onClick={() => {
-                    const c = cy.current
-                    if (c) c.zoom(c.zoom() / 1.2)
+                    graph.current?.zoomBy(1 / 1.3)
                   }}
                 >
                   <Minus size={16} />
@@ -307,8 +253,7 @@ export default function Infrastructure() {
                   className="icon-button"
                   aria-label="Zoom in"
                   onClick={() => {
-                    const c = cy.current
-                    if (c) c.zoom(c.zoom() * 1.2)
+                    graph.current?.zoomBy(1.3)
                   }}
                 >
                   <Plus size={16} />
@@ -335,7 +280,7 @@ export default function Infrastructure() {
           <div className="panel-footnote">
             {mode === 'cyber'
               ? 'Directed paths represent fictional protocol and access assumptions. They do not establish exploit success or attack propagation.'
-              : 'Edges point from provider to dependent. Inspect conditional service impact in asset details; paths alone do not establish failure.'}
+              : 'Edges point from provider to dependent. Backup and redundancy requirements are stored; cascading disruption is not calculated.'}
           </div>
         </Panel>
         <aside className="inspector panel">
@@ -384,20 +329,17 @@ export default function Infrastructure() {
                   <dd>{active.criticality}</dd>
                   <dt>Assessment</dt>
                   <dd>
-                    {priorities?.find((r) => r.asset_id === active.id)?.risk.score?.toFixed(2) ??
-                      'Unavailable'}
+                    {riskOf(active.id)?.score != null
+                      ? `${riskOf(active.id)!.score!.toFixed(1)} (${riskOf(active.id)!.category})`
+                      : 'Run the simulation'}
                   </dd>
                   <dt>Relationships</dt>
                   <dd>{selectedEdges.length} in this view</dd>
                 </dl>
-                {preview && priorities?.find((r) => r.asset_id === active.id)?.risk.category && (
+                {riskOf(active.id)?.category && (
                   <div className="inline-items">
-                    <RiskBadge
-                      category={
-                        priorities.find((r) => r.asset_id === active.id)!.risk.category ?? undefined
-                      }
-                    />
-                    <span className="badge neutral">CURATED COVERAGE</span>
+                    <RiskBadge category={riskOf(active.id)!.category} />
+                    <span className="subtle-label">COMPUTED</span>
                   </div>
                 )}
                 <button
@@ -436,17 +378,19 @@ export default function Infrastructure() {
               <input
                 type="checkbox"
                 checked={preview}
+                disabled={!runAssets}
                 onChange={(e) => setPreview(e.target.checked)}
               />
-              Show calculated risk colors
+              Color by computed risk
             </label>
             <p className="muted small">
-              Calculated relative priorities use risk colors. Grey nodes have unavailable results;
-              this does not establish safety. Turn off highlighting to show sector colors.
+              {runAssets
+                ? 'Colors come from the latest simulation.'
+                : 'Run the simulation on the overview to color assets by risk.'}
             </p>
             {preview && (
               <div className="demo-risk-legend">
-                <span className="subtle-label">CALCULATED PRIORITY</span>
+                <span className="subtle-label">COMPUTED</span>
                 {categoryLabels.map((category) => (
                   <span key={category}>
                     <i className={`legend-dot ${category}`} />
@@ -459,6 +403,6 @@ export default function Infrastructure() {
         </aside>
       </div>
       <AssetDrawer id={detail} onClose={() => setDetail(null)} />
-    </>
+    </div>
   )
 }

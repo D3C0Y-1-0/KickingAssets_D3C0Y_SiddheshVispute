@@ -8,7 +8,8 @@ import {
   SlidersHorizontal,
 } from 'lucide-react'
 import { useSearchParams } from 'react-router-dom'
-import { useAssets, useIntelligence } from '../../hooks/queries'
+import { useAssets, useLatestRun, useProducts, useIntelligence } from '../../hooks/queries'
+import { VulnerabilitySummary } from './VulnerabilityEvidence'
 import { AssetDrawer } from '../../components/AssetDrawer'
 import {
   EmptyState,
@@ -20,15 +21,16 @@ import {
   SectorBadge,
 } from '../../components/ui'
 import type { Asset } from '../../api/client'
-import { useVulnerabilityAssessment } from '../../hooks/vulnerability'
-import { VulnerabilitySummary } from './VulnerabilityEvidence'
 
-type SortKey = 'name' | 'sector' | 'asset_type' | 'criticality' | 'exposure' | 'risk'
+type SortKey = 'name' | 'sector' | 'asset_type' | 'criticality' | 'exposure'
 export default function Assets() {
   const query = useAssets()
-  const evidence = useVulnerabilityAssessment()
-  const intelligence = useIntelligence()
-  const priorities = intelligence.isError ? [] : (intelligence.data?.assets ?? [])
+  const latest = useLatestRun()
+  const products = useProducts()
+  const curated = useIntelligence()
+  const curatedById = new Map((curated.isError ? [] : curated.data?.assets ?? []).map(a => [a.asset_id, a.risk]))
+  const productById = new Map((products.data?.products ?? []).map((p) => [p.asset_id, p]))
+  const riskById = new Map((latest.data?.assets ?? []).map((a) => [a.asset_id, a.risk]))
   const [params, setParams] = useSearchParams()
   const search = params.get('q') ?? ''
   const [sector, setSector] = useState('all')
@@ -48,13 +50,6 @@ export default function Assets() {
             ),
         )
         .sort((a, b) => {
-          if (sort === 'risk') {
-            const left = priorities.find((r) => r.asset_id === a.id)?.risk.score
-            const right = priorities.find((r) => r.asset_id === b.id)?.risk.score
-            if (left == null) return right == null ? a.id.localeCompare(b.id) : 1
-            if (right == null) return -1
-            return descending ? left - right : right - left
-          }
           const order =
             sort === 'criticality'
               ? { essential: 0, important: 1, supporting: 2 }[a.criticality] -
@@ -62,7 +57,7 @@ export default function Assets() {
               : a[sort].localeCompare(b[sort])
           return descending ? -order : order
         }),
-    [query.data, sector, type, search, sort, descending, priorities],
+    [query.data, sector, type, search, sort, descending],
   )
   const sortColumn = (key: SortKey) => {
     if (sort === key) setDescending(!descending)
@@ -93,12 +88,6 @@ export default function Assets() {
         title="Asset & risk register"
         description="Inspect the infrastructure, configuration and evidence behind each asset."
         actions={<SampleBadge>Scenario inventory</SampleBadge>}
-      />
-      <VulnerabilitySummary />
-      <QueryState
-        pending={intelligence.isPending}
-        error={intelligence.error}
-        retry={intelligence.refetch}
       />
       <Panel
         title="Infrastructure inventory"
@@ -155,11 +144,10 @@ export default function Assets() {
                     {header('name', 'ASSET / PRODUCT')}
                     {header('sector', 'SECTOR')}
                     {header('asset_type', 'TYPE')}
+                    <th>ASSUMED REAL PRODUCT</th>
                     {header('criticality', 'CRITICALITY')}
                     {header('exposure', 'EXPOSURE')}
-                    <th>CVE EVIDENCE / CONFIGURATION</th>
-                    {header('risk', 'RISK INDEX')}
-                    <th>RISK CATEGORY</th>
+                    <th>ASSESSMENT</th>
                     <th>
                       <span className="sr-only">Details</span>
                     </th>
@@ -180,6 +168,10 @@ export default function Assets() {
                         <SectorBadge sector={a.sector} />
                       </td>
                       <td className="capitalize">{a.asset_type}</td>
+                      <td className="small">
+                        {productById.get(a.id)?.label ?? '—'}
+                        <small className="muted">{productById.get(a.id)?.role}</small>
+                      </td>
                       <td>
                         <span className={`criticality ${a.criticality}`}>{a.criticality}</span>
                       </td>
@@ -187,45 +179,14 @@ export default function Assets() {
                         <span className={`exposure ${a.exposure}`}>{a.exposure}</span>
                       </td>
                       <td>
-                        <div className="evidence-cell">
-                          {(() => {
-                            const item = evidence.data?.stale
-                              ? undefined
-                              : evidence.data?.assets.find((e) => e.asset_id === a.id)
-                            return item ? (
-                              <>
-                                <span>
-                                  {item.components.length
-                                    ? `${item.applicability.filter((f) => f.link.applicability === 'confirmed').length} version matches · ${item.applicability.filter((f) => f.link.applicability === 'candidate').length} candidates`
-                                    : 'CVE identity unassessed'}
-                                </span>
-                                <small>
-                                  {item.configuration.filter((f) => f.kind === 'weakness').length}{' '}
-                                  weaknesses ·{' '}
-                                  {item.configuration.filter((f) => f.kind === 'exposure').length}{' '}
-                                  exposure indicators ·{' '}
-                                  {item.configuration.filter((f) => f.kind === 'review').length}{' '}
-                                  reviews
-                                </small>
-                              </>
-                            ) : (
-                              <span>Evidence unavailable</span>
-                            )
-                          })()}
-                        </div>
-                      </td>
-                      <td>
-                        <span className="mono">
-                          {priorities.find((r) => r.asset_id === a.id)?.risk.score?.toFixed(2) ??
-                            'Unavailable'}
-                        </span>
-                      </td>
-                      <td>
-                        <RiskBadge
-                          category={
-                            priorities.find((r) => r.asset_id === a.id)?.risk.category ?? undefined
-                          }
-                        />
+                        {riskById.get(a.id)?.score != null ? (
+                          <>
+                            <RiskBadge category={riskById.get(a.id)?.category} />{' '}
+                            <span className="mono">{riskById.get(a.id)?.score?.toFixed(1)}</span>
+                          </>
+                        ) : (
+                          <span className="muted">Run the simulation</span>
+                        )}
                       </td>
                       <td>
                         <button
@@ -260,10 +221,8 @@ export default function Assets() {
       </Panel>
       <div className="preview-notice">
         <span>
-          CVE applicability uses declared simulated software and real cached references. Risk is a
-          calculated relative index where evidence supports it. Curated coverage is partial;
-          unavailable does not mean safe. CVSS is severity; EPSS and ML signals are not
-          asset-compromise probabilities.
+          Scores come from the latest simulation (ML-scored real CVEs, exposure and conditional
+          impact). Before a simulation there is no score, and missing is never shown as zero.
         </span>
       </div>
       <AssetDrawer id={selected} onClose={() => setSelected(null)} />

@@ -5,11 +5,14 @@ const status = [
   { name: 'Deterministic scenario & SQLite persistence', done: true },
   { name: 'Typed inventory APIs & asset inspection', done: true },
   { name: 'Independent cyber & operational graphs', done: true },
-  { name: 'Local hypothetical action staging', done: true },
-  { name: 'Curated real CVE ingestion & declared-version matching', done: true },
-  { name: 'Experimental CVE ML signal & temporal evaluation', done: true },
-  { name: 'Explainable priority index & conditional impact', done: true },
-  { name: 'What-if calculations & remediation optimization', done: false },
+  { name: 'Real KEV / NVD / EPSS ingestion with a source manifest', done: true },
+  { name: 'ML KEV-prioritization signal with leakage controls and baselines', done: true },
+  { name: 'Live simulation: candidate CVEs scored by the model', done: true },
+  { name: 'Conditional service impact over reachability and dependencies', done: true },
+  { name: 'What-if recalculation and greedy remediation plan', done: true },
+  { name: 'Confirmed CVE applicability (needs real product versions)', done: false },
+  { name: 'Verification of real changes (needs independent evidence)', done: false },
+  { name: 'Live monitoring or real incident prediction', done: false },
 ]
 
 export default function Methodology() {
@@ -18,7 +21,7 @@ export default function Methodology() {
       <PageHeading
         title="Methodology & evidence"
         description="Know what is observed, what is assumed, and what has yet to be calculated."
-        actions={<SampleBadge>Phase 3A · experimental intelligence</SampleBadge>}
+        actions={<SampleBadge>Prototype v0.2</SampleBadge>}
       />
       <div className="methodology-intro">
         <span className="empty-icon">
@@ -61,7 +64,8 @@ export default function Methodology() {
             </p>
             <p>
               Service requirements store k-of-n provider groups, minimum availability, backup
-              activation delay and duration. Conditional disruption is not computed in this phase.
+              activation delay and duration. Conditional disruption is computed by the impact engine
+              as an upper bound, with each compromise effect an explicit assumption.
             </p>
           </div>
         </Panel>
@@ -84,17 +88,16 @@ export default function Methodology() {
             <div>
               <span className="evidence-key reference">REFERENCE</span>
               <p>
-                Real NVD, CVSS, EPSS and KEV records require source attribution, retrieval
-                timestamps and applicability evidence. Phase 2A imports two curated NVD CVEs with
-                CVSS, dated EPSS and KEV evidence. Inspect the Asset Register for declared software,
-                version matches and uncertain candidates.
+                Real NVD, CVSS, EPSS and KEV records, with a manifest of exactly which files were
+                retrieved and when. Assets are fictional, so a CVE is only ever a candidate for an
+                asset's assumed product family, never confirmed.
               </p>
             </div>
             <div>
               <span className="evidence-key model">MODEL / SIMULATION</span>
               <p>
-                Future model outputs and projected effects must include versions, assumptions and
-                source snapshots. UI preview fixtures are not model evidence.
+                Model scores, risk indexes and projected effects carry versions and assumptions. The
+                projected state is never shown as verified.
               </p>
             </div>
           </div>
@@ -104,13 +107,13 @@ export default function Methodology() {
         <Panel title="Risk index ≠ incident probability">
           <div className="method-section">
             <p>
-              A future 0–100 risk index will represent relative review priority under documented
-              weights. It will not predict that a real incident will occur, or when it will occur.
+              The 0–100 risk index represents relative review priority under a published formula. It
+              does not predict that a real incident will occur, or when.
             </p>
             <p>
-              The overview’s risk index, category summary and priority preview are isolated
-              illustrative fixtures. The backend returns unavailable assessments with null scores.
-              Missing is never zero.
+              Every score is computed by the backend after a simulation from ML-scored real CVEs,
+              exposure and conditional impact. Before a simulation there is no score. Missing is
+              never zero.
             </p>
             <h3>Current → Projected → Verified</h3>
             <p>
@@ -120,7 +123,7 @@ export default function Methodology() {
             </p>
           </div>
         </Panel>
-        <Panel title="ML evaluation & scoring policy">
+        <Panel title="ML evaluation">
           <div className="method-section">
             <p>
               Use versioned reference datasets, time-based train/validation/test splits and
@@ -132,21 +135,9 @@ export default function Methodology() {
               outputs intended to represent probabilities.
             </p>
             <p>
-              Risk Intelligence exposes the actual trained model, temporal holdout metrics,
-              baselines and signed tree contributions. The no-KEV-history variant uses supported
-              runtime features. It is experimental and uncalibrated; improvement over EPSS is not
-              statistically established. Non-KEV records are unlabeled, not confirmed unexploited.
-            </p>
-            <p>
-              Asset priority = 40 × vulnerability + 15 × exposure + 10 × configuration weakness + 15
-              × criticality + 20 × conditional impact. Vulnerability is the maximum confirmed CVE
-              value: 0.6 × CVSS/10 + 0.4 × (known KEV = 1, otherwise ML signal). EPSS is a model
-              input and has no separate score weight. Missing required evidence remains unavailable.
-            </p>
-            <p>
-              All indices are relative review priorities within curated coverage. Conditional impact
-              independently assumes asset unavailability over 1,440 minutes. Backups do not relieve
-              edge cascades, so impact is an upper bound with respect to backups.
+              CVE prioritization quality is evaluated separately from asset-level risk and
+              service-impact assumptions. See the ML Lab for the held-out metrics, baselines and
+              limits. The model is statistically tied with the EPSS baseline.
             </p>
           </div>
         </Panel>
@@ -174,8 +165,8 @@ export default function Methodology() {
       </Panel>
       <div className="inset-note spaced-panel">
         No live monitoring, real-world incident prediction, autonomous remediation or actual
-        infrastructure changes are provided. The single seed snapshot was recorded on 1 October 2026
-        at 09:00 UTC; it is not a live timestamp.
+        infrastructure changes are provided. The inventory is a fictional snapshot (1 October 2026,
+        09:00 UTC); vulnerability data is real and as of the latest local EPSS snapshot.
       </div>
     </>
   )

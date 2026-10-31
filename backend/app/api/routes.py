@@ -6,7 +6,6 @@ from app.db.store import connection, read_documents
 from app.db.vulnerability_store import report
 from app.domain.seed import SCENARIO_ID
 from app.schemas.models import (
-    AssessmentRequest,
     AssessmentSnapshot,
     AssetDetail,
     CyberGraph,
@@ -15,15 +14,12 @@ from app.schemas.models import (
     Health,
     InfrastructureAsset,
     OperationalGraph,
-    RemediationPlan,
-    RemediationRequest,
     RiskAssessment,
     Scenario,
-    WhatIfRequest,
-    WhatIfResult,
 )
 from app.services.intelligence import get_report
 from app.services.inventory import Inventory
+from ml import inference
 
 router = APIRouter(
     prefix="/api/v1",
@@ -46,7 +42,12 @@ def health(request: Request):
             row = db.execute("SELECT value FROM metadata WHERE key='schema_version'").fetchone()
             if not row:
                 raise RuntimeError("Schema not initialized")
-        return Health(status="ok", database="ready", application_version="0.1.0")
+        return Health(
+            status="ok",
+            database="ready",
+            application_version="0.1.0",
+            intelligence="ready" if inference.status()["ready"] else "unavailable",
+        )
     except Exception as exc:
         raise HTTPException(503, "Database unavailable") from exc
 
@@ -96,12 +97,19 @@ def asset_detail(
     )
     if asset is None:
         raise HTTPException(404, "Asset not found in this snapshot")
-    risk = RiskAssessment(
-        scenario_id=scenario_id,
-        snapshot_id=snapshot_id,
-        asset_id=asset_id,
-        state="current",
-        provenance=asset["provenance"],
+    ctx = getattr(request.app.state, "simulation", None)
+    simulated = ctx and next((a for a in ctx.run.assets if a.asset_id == asset_id), None)
+    risk = (
+        simulated.risk
+        if simulated
+        else RiskAssessment(
+            scenario_id=scenario_id,
+            snapshot_id=snapshot_id,
+            asset_id=asset_id,
+            state="current",
+            unavailable_reason="No simulation has been run yet.",
+            provenance=asset["provenance"],
+        )
     )
     try:
         priority = get_report(inv.path, scenario_id, snapshot_id)
@@ -151,33 +159,3 @@ def services(request: Request, scenario_id: str = SCENARIO_ID, snapshot_id: str 
     inv = inventory(request)
     scenario_id, snapshot_id = inv.context(scenario_id, snapshot_id)
     return inv.collection("services", scenario_id, snapshot_id)
-
-
-@router.post(
-    "/assessments",
-    response_model=RiskAssessment,
-    responses={501: {"model": ErrorEnvelope}},
-    tags=["Future engines"],
-)
-def assess(body: AssessmentRequest):
-    raise HTTPException(501, "Risk assessment engine is not implemented in Phase 1")
-
-
-@router.post(
-    "/what-if",
-    response_model=WhatIfResult,
-    responses={501: {"model": ErrorEnvelope}},
-    tags=["Future engines"],
-)
-def what_if(body: WhatIfRequest):
-    raise HTTPException(501, "What-if recalculation engine is not implemented in Phase 1")
-
-
-@router.post(
-    "/remediation/optimize",
-    response_model=RemediationPlan,
-    responses={501: {"model": ErrorEnvelope}},
-    tags=["Future engines"],
-)
-def optimize(body: RemediationRequest):
-    raise HTTPException(501, "Remediation optimizer is not implemented in Phase 1")

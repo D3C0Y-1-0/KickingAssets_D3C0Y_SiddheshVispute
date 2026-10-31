@@ -4,8 +4,9 @@ import {
   Activity,
   ArrowUpRight,
   BookOpen,
+  BrainCircuit,
+  Building2,
   ChevronDown,
-  ChevronRight,
   CircleHelp,
   Command,
   FlaskConical,
@@ -22,20 +23,26 @@ import {
 import { NavLink, Route, Routes, Link, useLocation, useNavigate } from 'react-router-dom'
 import { api } from '../api/client'
 import { useScenario } from '../hooks/queries'
-import { QueryState, SampleBadge } from '../components/ui'
+import { QueryState } from '../components/ui'
 import Overview from '../features/overview/Overview'
 
 const Infrastructure = lazy(() => import('../features/infrastructure/Infrastructure'))
+const DigitalTwins = lazy(() => import('../features/digital-twins/DigitalTwins'))
 const Assets = lazy(() => import('../features/assets/Assets'))
 const Intelligence = lazy(() => import('../features/intelligence/Intelligence'))
+const CuratedIntelligence = lazy(() => import('../features/intelligence/CuratedIntelligence'))
 const WhatIf = lazy(() => import('../features/whatif/WhatIf'))
 const Remediation = lazy(() => import('../features/remediation/Remediation'))
 const Methodology = lazy(() => import('../features/methodology/Methodology'))
-const navigation = [
+const MlLab = lazy(() => import('../features/ml/MlLab'))
+const navigation: { path: string; name: string; icon: typeof Grid2X2; tag?: string }[] = [
   { path: '/', name: 'Command Overview', icon: Grid2X2 },
   { path: '/infrastructure', name: 'Infrastructure Map', icon: Network },
+  { path: '/digital-twins', name: 'Digital Twins', icon: Building2, tag: 'ANATOMY' },
   { path: '/assets', name: 'Asset & Risk Register', icon: Layers },
   { path: '/intelligence', name: 'Risk Intelligence', icon: Activity },
+  { path: '/curated-intelligence', name: 'Curated CVE Assessment', icon: ShieldCheck },
+  { path: '/ml', name: 'ML Lab', icon: BrainCircuit },
   { path: '/what-if', name: 'What-If Lab', icon: FlaskConical },
   { path: '/remediation', name: 'Remediation Plan', icon: ListChecks },
 ]
@@ -118,7 +125,7 @@ export default function App() {
         </div>
         <div className="nav-label">WORKSPACE</div>
         <nav>
-          {navigation.map(({ path, name, icon: Icon }) => (
+          {navigation.map(({ path, name, icon: Icon, tag }) => (
             <NavLink
               key={path}
               end={path === '/'}
@@ -127,7 +134,11 @@ export default function App() {
             >
               <Icon size={18} />
               <span>{name}</span>
-              {path === '/what-if' && <span className="nav-tag">LAB</span>}
+              {tag ? (
+                <span className="nav-tag">{tag}</span>
+              ) : (
+                path === '/what-if' && <span className="nav-tag">ACT</span>
+              )}
             </NavLink>
           ))}
         </nav>
@@ -142,21 +153,22 @@ export default function App() {
           <div className="foundation-note">
             <div>
               <span className="status-dot" />
-              PHASE 03A · RISK INTELLIGENCE
+              PROTOTYPE · LIVE WORKFLOW
             </div>
             <p>
-              A clear view of the system.
-              <br />A foundation for what comes next.
+              Simulate, assess with ML,
+              <br />
+              then act.
             </p>
             <Link to="/methodology">
-              View implementation status
+              How it works
               <ArrowUpRight size={13} />
             </Link>
           </div>
           <div className="sidebar-footer">
             <span className="avatar">GS</span>
             <div>
-              Local demonstration<small>Read-only scenario environment</small>
+              Local demonstration<small>Fictional city · real CVE data</small>
             </div>
             <ShieldCheck size={16} />
           </div>
@@ -210,22 +222,13 @@ export default function App() {
             </Link>
           </div>
         </header>
-        <div className="environment-bar">
-          <div>
-            <SampleBadge>Sample scenario</SampleBadge>
-            <span>
-              Simulated infrastructure. Calculated review priorities with partial coverage. No live
-              monitoring.
-            </span>
-          </div>
-          <Link to="/methodology">
-            About this environment
-            <ChevronRight size={13} />
-          </Link>
-        </div>
         <main id="main-content" tabIndex={-1}>
           <Suspense fallback={<QueryState pending error={null} />}>
-            {scenarioQuery.isPending || scenarioQuery.isError ? (
+            {location.pathname === '/digital-twins' ? (
+              <Routes>
+                <Route path="/digital-twins" element={<DigitalTwins />} />
+              </Routes>
+            ) : scenarioQuery.isPending || scenarioQuery.isError ? (
               <QueryState
                 pending={scenarioQuery.isPending}
                 error={scenarioQuery.error}
@@ -237,8 +240,11 @@ export default function App() {
               <Routes>
                 <Route path="/" element={<Overview />} />
                 <Route path="/infrastructure" element={<Infrastructure />} />
+                <Route path="/digital-twins" element={<DigitalTwins />} />
                 <Route path="/assets" element={<Assets />} />
                 <Route path="/intelligence" element={<Intelligence />} />
+                <Route path="/curated-intelligence" element={<CuratedIntelligence />} />
+                <Route path="/ml" element={<MlLab />} />
                 <Route path="/what-if" element={<WhatIf />} />
                 <Route path="/remediation" element={<Remediation />} />
                 <Route path="/methodology" element={<Methodology />} />
@@ -264,7 +270,7 @@ export default function App() {
             before the incident.
           </span>
           <span>
-            PS03 · D3COY <span className="muted">/</span> Experimental intelligence
+            PS03 · D3COY <span className="muted">/</span> Prototype v0.2
           </span>
         </footer>
       </div>

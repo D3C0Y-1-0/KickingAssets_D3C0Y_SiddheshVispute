@@ -11,6 +11,7 @@ from starlette.exceptions import HTTPException
 from app.api.intelligence import router as intelligence_router
 from app.api.routes import router
 from app.api.vulnerability import router as vulnerability_router
+from app.api.workflow import router as workflow_router
 from app.db.store import default_db_path, initialize
 from app.db.vulnerability_store import bootstrap
 from app.domain.seed import ROOT
@@ -77,6 +78,7 @@ def create_app(db_path: Path | None = None, static_dir: Path | None = None) -> F
     application.include_router(router)
     application.include_router(vulnerability_router)
     application.include_router(intelligence_router)
+    application.include_router(workflow_router)
     compiled = (static_dir or ROOT / "frontend" / "dist").resolve()
     if (compiled / "assets").is_dir():
         application.mount(
