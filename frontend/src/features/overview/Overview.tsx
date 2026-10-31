@@ -395,6 +395,8 @@ export default function Overview() {
           </div>
         </Panel>
       </div>
+      <details className="stage-details">
+        <summary>Technical details of the last run</summary>
       <Panel
         title="Last simulation"
         aside={
@@ -423,6 +425,7 @@ export default function Overview() {
           </EmptyState>
         )}
       </Panel>
+      </details>
       <Panel
         title="Curated vulnerability check"
         aside={

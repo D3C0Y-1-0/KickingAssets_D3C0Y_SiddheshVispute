@@ -3228,3 +3228,26 @@ html {
 .metric-grid + * {
   margin-top: 16px;
 }
+
+.page-heading {
+  flex-wrap: wrap;
+  gap: 14px 24px;
+}
+.page-heading > div:first-child {
+  flex: 1 1 420px;
+  min-width: 0;
+}
+.page-actions {
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+.priority-panel td {
+  white-space: normal;
+}
+.stage-details > summary {
+  cursor: pointer;
+  color: var(--text-secondary);
+  font-size: 15px;
+  font-weight: 600;
+  padding: 6px 0 12px;
+}
