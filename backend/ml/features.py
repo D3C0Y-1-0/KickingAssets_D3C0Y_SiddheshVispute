@@ -17,7 +17,12 @@ import numpy as np
 _AV = {"NETWORK": 3, "ADJACENT_NETWORK": 2, "ADJACENT": 2, "LOCAL": 1, "PHYSICAL": 0}
 _AC = {"LOW": 2, "MEDIUM": 1, "HIGH": 0}
 _PR = {"NONE": 2, "LOW": 1, "HIGH": 0}
-_UI = {"NONE": 2, "PASSIVE": 1, "REQUIRED": 1, "ACTIVE": 0}
+_UI = {
+    "NONE": 2,
+    "PASSIVE": 1,
+    "REQUIRED": 1,
+    "ACTIVE": 1,
+}  # v4 levels share the v3 "required" code
 _IMPACT = {"HIGH": 2, "COMPLETE": 2, "LOW": 1, "PARTIAL": 1, "NONE": 0}
 _AUTH = {"NONE": 2, "SINGLE": 1, "MULTIPLE": 0}
 _SCOPE = {"CHANGED": 1, "UNCHANGED": 0}

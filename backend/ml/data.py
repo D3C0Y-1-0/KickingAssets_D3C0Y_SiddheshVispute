@@ -1,9 +1,11 @@
-"""Build the point-in-time CVE table used to train and evaluate the KEV-prioritization signal.
+"""Build the point-in-time monthly panel used to train and evaluate the KEV-prioritization signal.
 
-One row per CVE. ``t0`` is the first month start at least 30 days after publication; every
-feature is computed from information available at t0. The label is whether the CVE is added to
-CISA KEV in (t0, t0 + horizon]. CVEs already in KEV at t0 are excluded. Non-KEV CVEs are
-*unlabeled*, not confirmed unexploited (positive-unlabeled setting).
+At each monthly snapshot ``s`` every CVE that is at least ``min_age`` days old and not yet in
+CISA KEV is a candidate. Features use only information available at ``s``. The label is whether
+the CVE is added to KEV in (s, s + horizon]. Non-KEV CVEs are *unlabeled*, not confirmed
+unexploited (positive-unlabeled setting). Snapshots start after KEV launched (Nov 2021), because
+its initial bulk listing is a catalog artifact, not a time of recognised exploitation.
+Negatives are subsampled and carry a weight of 1/rate so population metrics stay unbiased.
 """
 
 import gzip
@@ -22,28 +24,37 @@ from ml.features import (
     TEXT_PATTERNS,
     count_on_or_before,
     cvss_features,
-    label_in_window,
     normalize_name,
-    prediction_date,
     text_flags,
     to_epoch_day,
 )
 
 ROOT = Path(__file__).resolve().parents[2]
 CACHE = ROOT / "data" / "reference" / "cache"
-MIN_PUBLISHED_YEAR = 2018
+FIRST_SNAPSHOT = date(2021, 12, 1)
 _CWE = re.compile(r"^CWE-\d+$")
 
 HISTORY_COLUMNS = [
     "vendor_kev_pre",
     "vendor_cve_pre",
     "vendor_kev_rate",
+    "vendor_kev_90d",
     "product_kev_pre",
     "cwe_kev_pre",
+    "cwe_kev_90d",
 ]
 EPSS_COLUMNS = ["epss_percentile"]
 TEXT_COLUMNS = [*TEXT_PATTERNS, "txt_length"]
-BASE_FEATURES = [*CVSS_COLUMNS, *TEXT_COLUMNS, "n_cwe", *HISTORY_COLUMNS]
+# CVSS fields that only exist for some NVD scoring eras (v2 has no UI/scope, v4 has no scope):
+# their presence or absence mostly encodes publication date, not risk.
+ERA_PROXY_COLUMNS = ["cvss_version", "cvss_ui", "cvss_scope"]
+BASE_FEATURES = [
+    *[c for c in CVSS_COLUMNS if c not in ERA_PROXY_COLUMNS],
+    *TEXT_COLUMNS,
+    "n_cwe",
+    "age_days",
+    *HISTORY_COLUMNS,
+]
 EPSS_FEATURES = [*BASE_FEATURES, *EPSS_COLUMNS]
 
 
@@ -145,23 +156,79 @@ def _sorted_days(mapping: dict[str, list[int]]) -> dict[str, np.ndarray]:
     return {key: np.array(sorted(days), dtype=np.int64) for key, days in mapping.items()}
 
 
-def build_table(
-    horizon_days: int = 180, lag_days: int = 30, *, use_cache: bool = True
+def snapshot_candidates(
+    published_days: np.ndarray,
+    added_days: np.ndarray,
+    snapshot_day: int,
+    horizon_days: int,
+    min_age_days: int,
+) -> tuple[np.ndarray, np.ndarray]:
+    """Indices of (positive, negative) candidates at one snapshot.
+
+    ``added_days`` holds the KEV dateAdded as an epoch day, or a huge value if never listed.
+    A CVE already listed at the snapshot is not a candidate.
+    """
+    candidate = (published_days <= snapshot_day - min_age_days) & (added_days > snapshot_day)
+    positive = candidate & (added_days <= snapshot_day + horizon_days)
+    return np.flatnonzero(positive), np.flatnonzero(candidate & ~positive)
+
+
+def _snapshots(first: date, last: date) -> list[date]:
+    days, year, month = [], first.year, first.month
+    while date(year, month, 1) <= last:
+        days.append(date(year, month, 1))
+        year, month = (year + 1, 1) if month == 12 else (year, month + 1)
+    return days
+
+
+def _history_features(
+    snapshot_day: int,
+    vendor: str | None,
+    product: str | None,
+    cwes: list[str],
+    tables: dict[str, dict[str, np.ndarray]],
+) -> tuple[float, ...]:
+    """KEV/vendor history counts using only dates <= the snapshot."""
+    v_kev, v_cve = tables["vendor_kev"].get(vendor), tables["vendor_cve"].get(vendor)
+    v_now = count_on_or_before(v_kev, snapshot_day) if vendor else 0
+    v_cves = count_on_or_before(v_cve, snapshot_day) if vendor else 0
+    v_recent = v_now - count_on_or_before(v_kev, snapshot_day - 90) if vendor else 0
+    p_now = (
+        count_on_or_before(tables["product_kev"].get(f"{vendor}|{product}"), snapshot_day)
+        if vendor and product
+        else 0
+    )
+    cwe_now = cwe_recent = 0
+    for cwe in cwes:
+        days = tables["cwe_kev"].get(cwe)
+        now = count_on_or_before(days, snapshot_day)
+        cwe_now = max(cwe_now, now)
+        cwe_recent = max(cwe_recent, now - count_on_or_before(days, snapshot_day - 90))
+    return (v_now, v_cves, v_now / (v_cves + 20), v_recent, p_now, cwe_now, cwe_recent)
+
+
+def build_panel(
+    horizon_days: int = 180,
+    min_age_days: int = 30,
+    negative_rate: float = 0.03,
+    seed: int = 0,
+    *,
+    use_cache: bool = True,
 ) -> tuple[pd.DataFrame, dict]:
     derived = CACHE / "derived"
-    cache_path = derived / f"table_h{horizon_days}_lag{lag_days}.parquet"
-    meta_path = derived / f"table_h{horizon_days}_lag{lag_days}.json"
+    stem = f"panel_h{horizon_days}_age{min_age_days}_r{negative_rate}_s{seed}"
+    cache_path, meta_path = derived / f"{stem}.parquet", derived / f"{stem}.json"
     if use_cache and cache_path.exists() and meta_path.exists():
         return pd.read_parquet(cache_path), json.loads(meta_path.read_text())
 
     kev, released = load_kev()
-    nvd = load_nvd()
+    nvd = load_nvd().reset_index(drop=True)
     cutoff = released - timedelta(days=horizon_days)
-
     nvd_index = nvd.set_index("cve_id")
     kev_added = {r.cve_id: to_epoch_day(r.added) for r in kev.itertuples()}
+
     vendor_kev: dict[str, list[int]] = defaultdict(list)
-    product_kev: dict[tuple[str, str], list[int]] = defaultdict(list)
+    product_kev: dict[str, list[int]] = defaultdict(list)
     cwe_kev: dict[str, list[int]] = defaultdict(list)
     for r in kev.itertuples():
         day = to_epoch_day(r.added)
@@ -173,82 +240,79 @@ def build_table(
         if vendor:
             vendor_kev[vendor].append(day)
             if product:
-                product_kev[(vendor, product)].append(day)
+                product_kev[f"{vendor}|{product}"].append(day)
         for cwe in cwes:
             cwe_kev[cwe].append(day)
     vendor_cve: dict[str, list[int]] = defaultdict(list)
     for r in nvd[["vendor", "published"]].itertuples():
         if _s(r.vendor):
             vendor_cve[r.vendor].append(to_epoch_day(r.published))
-    vendor_kev_days, cwe_kev_days = _sorted_days(vendor_kev), _sorted_days(cwe_kev)
-    product_kev_days = _sorted_days({"|".join(k): v for k, v in product_kev.items()})
-    vendor_cve_days = _sorted_days(vendor_cve)
+    tables = {
+        "vendor_kev": _sorted_days(vendor_kev),
+        "product_kev": _sorted_days(product_kev),
+        "cwe_kev": _sorted_days(cwe_kev),
+        "vendor_cve": _sorted_days(vendor_cve),
+    }
 
-    rows = []
-    stats = {"considered": 0, "dropped_already_in_kev": 0, "dropped_after_cutoff": 0}
-    for record in nvd.to_dict("records"):
-        if record["published"].year < MIN_PUBLISHED_YEAR:
-            continue
-        stats["considered"] += 1
-        t0 = prediction_date(record["published"], lag_days)
-        if t0 > cutoff:
-            stats["dropped_after_cutoff"] += 1
-            continue
-        t0_day = to_epoch_day(t0)
-        added = kev_added.get(record["cve_id"])
-        if added is not None and added <= t0_day:
-            stats["dropped_already_in_kev"] += 1
-            continue
-        vendor, product = _s(record["vendor"]), _s(record["product"])
-        v_kev = count_on_or_before(vendor_kev_days.get(vendor), t0_day) if vendor else 0
-        v_cve = count_on_or_before(vendor_cve_days.get(vendor), t0_day) if vendor else 0
-        p_kev = (
-            count_on_or_before(product_kev_days.get(f"{vendor}|{product}"), t0_day)
-            if vendor and product
-            else 0
-        )
-        c_kev = max(
-            (count_on_or_before(cwe_kev_days.get(c), t0_day) for c in record["cwes"]), default=0
-        )
-        row = {k: v for k, v in record.items() if k not in {"vendor", "product", "cwes"}}
-        row.update(
-            t0=t0,
-            n_cwe=len(record["cwes"]),
-            vendor_kev_pre=v_kev,
-            vendor_cve_pre=v_cve,
-            vendor_kev_rate=v_kev / (v_cve + 20),
-            product_kev_pre=p_kev,
-            cwe_kev_pre=c_kev,
-            y=label_in_window(added, t0_day, horizon_days),
-            kev_added=None if added is None else date(1970, 1, 1) + timedelta(days=added),
-        )
-        rows.append(row)
-    table = pd.DataFrame(rows)
+    published = np.array([to_epoch_day(d) for d in nvd["published"]], dtype=np.int64)
+    never = np.iinfo(np.int64).max // 4
+    added = np.array([kev_added.get(c, never) for c in nvd["cve_id"]], dtype=np.int64)
+    vendors = [_s(v) for v in nvd["vendor"]]
+    products = [_s(p) for p in nvd["product"]]
+    cwe_lists = nvd["cwes"].tolist()
+    static = nvd.drop(columns=["vendor", "product", "cwes"])
 
-    epss_dir = CACHE / "epss"
-    files = _epss_files(epss_dir)
-    table["epss"] = np.nan
-    table["epss_percentile"] = np.nan
-    for t0, index in table.groupby("t0").groups.items():
-        match = next((files[d] for d in sorted(files) if t0 <= d <= t0 + timedelta(days=4)), None)
-        if match is None:
-            continue
-        scores = _read_epss(match)
-        joined = scores.reindex(table.loc[index, "cve_id"])
-        table.loc[index, "epss"] = joined["epss"].to_numpy()
-        table.loc[index, "epss_percentile"] = joined["epss_percentile"].to_numpy()
-
+    rng = np.random.default_rng(seed)
+    epss_files = _epss_files(CACHE / "epss")
+    frames = []
+    for snapshot in _snapshots(FIRST_SNAPSHOT, cutoff):
+        s_day = to_epoch_day(snapshot)
+        positive, negative = snapshot_candidates(
+            published, added, s_day, horizon_days, min_age_days
+        )
+        keep_negative = negative[rng.random(len(negative)) < negative_rate]
+        index = np.concatenate([positive, keep_negative])
+        history = [
+            _history_features(s_day, vendors[i], products[i], cwe_lists[i], tables) for i in index
+        ]
+        frame = static.iloc[index].reset_index(drop=True)
+        frame["snapshot"] = snapshot
+        frame["age_days"] = s_day - published[index]
+        frame["n_cwe"] = [len(cwe_lists[i]) for i in index]
+        frame[HISTORY_COLUMNS] = np.array(history, dtype=float).reshape(len(index), -1)
+        frame["y"] = np.r_[np.ones(len(positive), int), np.zeros(len(keep_negative), int)]
+        frame["weight"] = np.r_[
+            np.ones(len(positive)), np.full(len(keep_negative), 1 / negative_rate)
+        ]
+        match = next(
+            (
+                epss_files[d]
+                for d in sorted(epss_files)
+                if snapshot <= d <= snapshot + timedelta(days=4)
+            ),
+            None,
+        )
+        if match is not None:
+            joined = _read_epss(match).reindex(frame["cve_id"])
+            frame["epss"] = joined["epss"].to_numpy()
+            frame["epss_percentile"] = joined["epss_percentile"].to_numpy()
+        else:
+            frame["epss"] = frame["epss_percentile"] = np.nan
+        frames.append(frame)
+    panel = pd.concat(frames, ignore_index=True)
     meta = {
         "horizon_days": horizon_days,
-        "lag_days": lag_days,
+        "min_age_days": min_age_days,
+        "negative_rate": negative_rate,
+        "seed": seed,
         "kev_released": released.isoformat(),
-        "label_cutoff_t0": cutoff.isoformat(),
-        "min_published_year": MIN_PUBLISHED_YEAR,
-        "rows": len(table),
-        "positives": int(table["y"].sum()),
-        **stats,
+        "first_snapshot": FIRST_SNAPSHOT.isoformat(),
+        "last_snapshot": max(panel["snapshot"]).isoformat(),
+        "rows": len(panel),
+        "positive_rows": int(panel["y"].sum()),
+        "distinct_positive_cves": int(panel.loc[panel["y"] == 1, "cve_id"].nunique()),
     }
     derived.mkdir(parents=True, exist_ok=True)
-    table.to_parquet(cache_path, index=False)
+    panel.to_parquet(cache_path, index=False)
     meta_path.write_text(json.dumps(meta, indent=2))
-    return table, meta
+    return panel, meta
