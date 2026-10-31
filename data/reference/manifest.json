@@ -1,0 +1,576 @@
+{
+  "retrieved_at": "2026-10-31T11:12:08+00:00",
+  "nvd_release_tag": "v2026.10.31-010015",
+  "files": [
+    {
+      "path": "data/reference/cache/epss/epss_scores-2021-05-01.csv.gz",
+      "url": "https://epss.empiricalsecurity.com/epss_scores-2021-05-01.csv.gz",
+      "bytes": 247483,
+      "sha256": "03cc4c280936ed69bc145c94725e5ca6af26f0fd6cd507cbeb7bd7797791d806"
+    },
+    {
+      "path": "data/reference/cache/epss/epss_scores-2021-06-01.csv.gz",
+      "url": "https://epss.empiricalsecurity.com/epss_scores-2021-06-01.csv.gz",
+      "bytes": 253109,
+      "sha256": "2303303be14555cfb8c2a953b0d65cf4255a2804b0f823511405121799558541"
+    },
+    {
+      "path": "data/reference/cache/epss/epss_scores-2021-07-01.csv.gz",
+      "url": "https://epss.empiricalsecurity.com/epss_scores-2021-07-01.csv.gz",
+      "bytes": 259256,
+      "sha256": "be8a6b3548363d65595966abfb7430ce588ac27130e5bf6e020c6c64ecbea0bb"
+    },
+    {
+      "path": "data/reference/cache/epss/epss_scores-2021-08-01.csv.gz",
+      "url": "https://epss.empiricalsecurity.com/epss_scores-2021-08-01.csv.gz",
+      "bytes": 264918,
+      "sha256": "a6c45376123461ec5ad8f92e4e7fb5ffce4938bc4899d59af640ee1728c28fcb"
+    },
+    {
+      "path": "data/reference/cache/epss/epss_scores-2021-09-01.csv.gz",
+      "url": "https://epss.empiricalsecurity.com/epss_scores-2021-09-01.csv.gz",
+      "bytes": 363905,
+      "sha256": "aee900eaab697ecaf4f677e8a413dc0737d537953aa05072802beee655800703"
+    },
+    {
+      "path": "data/reference/cache/epss/epss_scores-2021-10-01.csv.gz",
+      "url": "https://epss.empiricalsecurity.com/epss_scores-2021-10-01.csv.gz",
+      "bytes": 372630,
+      "sha256": "5ef371bff1c62cd1b67b84bd1215db17511f31a5faa454357f23fcc2153af14d"
+    },
+    {
+      "path": "data/reference/cache/epss/epss_scores-2021-11-01.csv.gz",
+      "url": "https://epss.empiricalsecurity.com/epss_scores-2021-11-01.csv.gz",
+      "bytes": 381541,
+      "sha256": "301d09b33feecbd1150314bb3d42e298f669a745ebe8f7077dba87c9f5336703"
+    },
+    {
+      "path": "data/reference/cache/epss/epss_scores-2021-12-01.csv.gz",
+      "url": "https://epss.empiricalsecurity.com/epss_scores-2021-12-01.csv.gz",
+      "bytes": 387077,
+      "sha256": "a8af27ee621b50fcde8ee8b811dbbb3df218eebf8c544cf6f6745acf1ab90d96"
+    },
+    {
+      "path": "data/reference/cache/epss/epss_scores-2022-01-01.csv.gz",
+      "url": "https://epss.empiricalsecurity.com/epss_scores-2022-01-01.csv.gz",
+      "bytes": 396795,
+      "sha256": "1d8068c5009080e0bb02089e2b875676f3bb882622bd86913123bf92339b4b06"
+    },
+    {
+      "path": "data/reference/cache/epss/epss_scores-2022-02-01.csv.gz",
+      "url": "https://epss.empiricalsecurity.com/epss_scores-2022-02-01.csv.gz",
+      "bytes": 365122,
+      "sha256": "7cbfe92bfe17db28d470c6038abd333f0d3fa794e0f1b9aec6e4c04d0b488610"
+    },
+    {
+      "path": "data/reference/cache/epss/epss_scores-2022-03-01.csv.gz",
+      "url": "https://epss.empiricalsecurity.com/epss_scores-2022-03-01.csv.gz",
+      "bytes": 720319,
+      "sha256": "97cdc0a3df73d7b171d5af079d1bff3fba5be334c56475369b79af76af8b4322"
+    },
+    {
+      "path": "data/reference/cache/epss/epss_scores-2022-04-01.csv.gz",
+      "url": "https://epss.empiricalsecurity.com/epss_scores-2022-04-01.csv.gz",
+      "bytes": 703381,
+      "sha256": "dfe4521b1a9855f2d2e8278ba0869884e280a51e0bd7af5fa3048ee7bf508b4d"
+    },
+    {
+      "path": "data/reference/cache/epss/epss_scores-2022-05-01.csv.gz",
+      "url": "https://epss.empiricalsecurity.com/epss_scores-2022-05-01.csv.gz",
+      "bytes": 710592,
+      "sha256": "cd749830245fef3c33358c72b0febbebdf428cc0fb8c11f2d8807fc8038b775b"
+    },
+    {
+      "path": "data/reference/cache/epss/epss_scores-2022-06-01.csv.gz",
+      "url": "https://epss.empiricalsecurity.com/epss_scores-2022-06-01.csv.gz",
+      "bytes": 719863,
+      "sha256": "f150801efc16af86feaae50a96781039404ae94a31ea8b106e66786641846899"
+    },
+    {
+      "path": "data/reference/cache/epss/epss_scores-2022-07-01.csv.gz",
+      "url": "https://epss.empiricalsecurity.com/epss_scores-2022-07-01.csv.gz",
+      "bytes": 725620,
+      "sha256": "4ea115aba204d4849da779eaace55d1a2e8b2b033dc36fefcf79a6e428545e7c"
+    },
+    {
+      "path": "data/reference/cache/epss/epss_scores-2022-08-01.csv.gz",
+      "url": "https://epss.empiricalsecurity.com/epss_scores-2022-08-01.csv.gz",
+      "bytes": 731219,
+      "sha256": "5bf57e0c9bcaa2c874b74e6e0925b59d731d1aeecac6fca39819b36f6d7d0515"
+    },
+    {
+      "path": "data/reference/cache/epss/epss_scores-2022-09-01.csv.gz",
+      "url": "https://epss.empiricalsecurity.com/epss_scores-2022-09-01.csv.gz",
+      "bytes": 739738,
+      "sha256": "63cff060ad5dbd3173a7715909ce0145e05923073aa284b175ee7e0bbf13f134"
+    },
+    {
+      "path": "data/reference/cache/epss/epss_scores-2022-10-01.csv.gz",
+      "url": "https://epss.empiricalsecurity.com/epss_scores-2022-10-01.csv.gz",
+      "bytes": 745502,
+      "sha256": "62141f004b1c696238e5385e378b4c78e90709328bc01a433298c5575c8ceb86"
+    },
+    {
+      "path": "data/reference/cache/epss/epss_scores-2022-11-01.csv.gz",
+      "url": "https://epss.empiricalsecurity.com/epss_scores-2022-11-01.csv.gz",
+      "bytes": 755213,
+      "sha256": "f640c33bda3022c34b13205308cf0cc4dbda6751e40a6a72d28e7560bf83e169"
+    },
+    {
+      "path": "data/reference/cache/epss/epss_scores-2022-12-01.csv.gz",
+      "url": "https://epss.empiricalsecurity.com/epss_scores-2022-12-01.csv.gz",
+      "bytes": 761173,
+      "sha256": "4ede8cf0b188a4e1752e89ab69458434fa239f9b381c793462658ac82617bc7a"
+    },
+    {
+      "path": "data/reference/cache/epss/epss_scores-2023-01-01.csv.gz",
+      "url": "https://epss.empiricalsecurity.com/epss_scores-2023-01-01.csv.gz",
+      "bytes": 770241,
+      "sha256": "1080c38b5ad29f7295b4f834903bd3c8122e5b3afefbae8217e4f42dc2555ae3"
+    },
+    {
+      "path": "data/reference/cache/epss/epss_scores-2023-02-01.csv.gz",
+      "url": "https://epss.empiricalsecurity.com/epss_scores-2023-02-01.csv.gz",
+      "bytes": 779727,
+      "sha256": "7ef7856e41a778003176fe83fe34fce0807c37b111403fce42bc809fb5e4568b"
+    },
+    {
+      "path": "data/reference/cache/epss/epss_scores-2023-03-01.csv.gz",
+      "url": "https://epss.empiricalsecurity.com/epss_scores-2023-03-01.csv.gz",
+      "bytes": 783634,
+      "sha256": "b66ccfadcfc7338682d3c8f209df0006cc19185c89f7965730c822a40437ab22"
+    },
+    {
+      "path": "data/reference/cache/epss/epss_scores-2023-04-01.csv.gz",
+      "url": "https://epss.empiricalsecurity.com/epss_scores-2023-04-01.csv.gz",
+      "bytes": 1272208,
+      "sha256": "fb3274fbd2076ff88b8c8a8e2cc524861c4fa9a531b75a3f3e0e2ea92f5ef9b9"
+    },
+    {
+      "path": "data/reference/cache/epss/epss_scores-2023-05-01.csv.gz",
+      "url": "https://epss.empiricalsecurity.com/epss_scores-2023-05-01.csv.gz",
+      "bytes": 1285555,
+      "sha256": "77ec872d64131f2d8d648102b6178488b04ed57255913919d034a67b6f9903ee"
+    },
+    {
+      "path": "data/reference/cache/epss/epss_scores-2023-06-01.csv.gz",
+      "url": "https://epss.empiricalsecurity.com/epss_scores-2023-06-01.csv.gz",
+      "bytes": 1299960,
+      "sha256": "9affab1a1d4a2a5c81739a5e8c127a881b2926fda21715c39652cbda9ae684e7"
+    },
+    {
+      "path": "data/reference/cache/epss/epss_scores-2023-07-01.csv.gz",
+      "url": "https://epss.empiricalsecurity.com/epss_scores-2023-07-01.csv.gz",
+      "bytes": 1314516,
+      "sha256": "d5d6a30ba83e61e1dee29d9e9af0c2109a01aadf96d0063c1473abbba59e8612"
+    },
+    {
+      "path": "data/reference/cache/epss/epss_scores-2023-08-01.csv.gz",
+      "url": "https://epss.empiricalsecurity.com/epss_scores-2023-08-01.csv.gz",
+      "bytes": 1326286,
+      "sha256": "fad9c0c3f350793e61d93f54cbfa14ded334b363a81020762ba0faff099ee3a0"
+    },
+    {
+      "path": "data/reference/cache/epss/epss_scores-2023-09-01.csv.gz",
+      "url": "https://epss.empiricalsecurity.com/epss_scores-2023-09-01.csv.gz",
+      "bytes": 1340889,
+      "sha256": "caf940449596bf77b30414ab87f39920a2c22950b6edd84ce6144b505c97330b"
+    },
+    {
+      "path": "data/reference/cache/epss/epss_scores-2023-10-01.csv.gz",
+      "url": "https://epss.empiricalsecurity.com/epss_scores-2023-10-01.csv.gz",
+      "bytes": 1356343,
+      "sha256": "8cad499a66bb048338433f518f98bdda32ca18a111dadea34c7d640070d3f0e0"
+    },
+    {
+      "path": "data/reference/cache/epss/epss_scores-2023-11-01.csv.gz",
+      "url": "https://epss.empiricalsecurity.com/epss_scores-2023-11-01.csv.gz",
+      "bytes": 1371264,
+      "sha256": "58b4363332c9057571c8883aa19cb9192fc453a5c24eddd026a6b55192d69ad4"
+    },
+    {
+      "path": "data/reference/cache/epss/epss_scores-2023-12-01.csv.gz",
+      "url": "https://epss.empiricalsecurity.com/epss_scores-2023-12-01.csv.gz",
+      "bytes": 1381846,
+      "sha256": "107ef555aa97cb35a6c2af3355ac3dde2286b703295c477fefb2a09d392e995a"
+    },
+    {
+      "path": "data/reference/cache/epss/epss_scores-2024-01-01.csv.gz",
+      "url": "https://epss.empiricalsecurity.com/epss_scores-2024-01-01.csv.gz",
+      "bytes": 1397032,
+      "sha256": "0953a1e6f96a5b1085fe867112735f1b2f8f113c611d568c51985cbe339fbc8e"
+    },
+    {
+      "path": "data/reference/cache/epss/epss_scores-2024-02-01.csv.gz",
+      "url": "https://epss.empiricalsecurity.com/epss_scores-2024-02-01.csv.gz",
+      "bytes": 1412893,
+      "sha256": "1379f522b82fbe92373ee3d5ec74e093fa8a6bdea354c8150f1d6fa375e4da9c"
+    },
+    {
+      "path": "data/reference/cache/epss/epss_scores-2024-03-01.csv.gz",
+      "url": "https://epss.empiricalsecurity.com/epss_scores-2024-03-01.csv.gz",
+      "bytes": 1497769,
+      "sha256": "7775c3d2fb76b5e6ebbcfed8b6ff62fc0637b427281e064cab0bebfa96df9ee7"
+    },
+    {
+      "path": "data/reference/cache/epss/epss_scores-2024-04-01.csv.gz",
+      "url": "https://epss.empiricalsecurity.com/epss_scores-2024-04-01.csv.gz",
+      "bytes": 1516954,
+      "sha256": "c5437dbc2337ea973253ee65bd02a10da380fcc7be8701ead095643a5fa26f07"
+    },
+    {
+      "path": "data/reference/cache/epss/epss_scores-2024-05-01.csv.gz",
+      "url": "https://epss.empiricalsecurity.com/epss_scores-2024-05-01.csv.gz",
+      "bytes": 1536900,
+      "sha256": "ad29fe4acda01c0d6bb867825cff2a5a029f076524de23dd18ff79d36a662f37"
+    },
+    {
+      "path": "data/reference/cache/epss/epss_scores-2024-06-01.csv.gz",
+      "url": "https://epss.empiricalsecurity.com/epss_scores-2024-06-01.csv.gz",
+      "bytes": 1560660,
+      "sha256": "29afb6383102d3fd2151c178d23c95b49a23f8ca4044ab7e9226c51f32ec76b8"
+    },
+    {
+      "path": "data/reference/cache/epss/epss_scores-2024-07-01.csv.gz",
+      "url": "https://epss.empiricalsecurity.com/epss_scores-2024-07-01.csv.gz",
+      "bytes": 1544747,
+      "sha256": "ecce8ef82f56344c69e049784b2816557cfd8ff33f99be5fd6481d391435cdda"
+    },
+    {
+      "path": "data/reference/cache/epss/epss_scores-2024-08-01.csv.gz",
+      "url": "https://epss.empiricalsecurity.com/epss_scores-2024-08-01.csv.gz",
+      "bytes": 1568199,
+      "sha256": "adaf77f992aa3df0828e3c4aa143bd787b30e64df1f51017463e070a0b91c56a"
+    },
+    {
+      "path": "data/reference/cache/epss/epss_scores-2024-09-01.csv.gz",
+      "url": "https://epss.empiricalsecurity.com/epss_scores-2024-09-01.csv.gz",
+      "bytes": 1563929,
+      "sha256": "a77d40c3427248a949547874fa031ebca0bfc6e80ae032cef0dacfcaa37334f3"
+    },
+    {
+      "path": "data/reference/cache/epss/epss_scores-2024-10-01.csv.gz",
+      "url": "https://epss.empiricalsecurity.com/epss_scores-2024-10-01.csv.gz",
+      "bytes": 1575345,
+      "sha256": "f4ffadaf781caad7dcf6c9b73014e3a1e9397651a7dea88ee18c67f93b748fbc"
+    },
+    {
+      "path": "data/reference/cache/epss/epss_scores-2024-11-01.csv.gz",
+      "url": "https://epss.empiricalsecurity.com/epss_scores-2024-11-01.csv.gz",
+      "bytes": 1592063,
+      "sha256": "92f31633d5ab68c7298ff88f714fde9c4577e42ae3ae18e99da0dc8870740c04"
+    },
+    {
+      "path": "data/reference/cache/epss/epss_scores-2024-12-02.csv.gz",
+      "url": "https://epss.empiricalsecurity.com/epss_scores-2024-12-02.csv.gz",
+      "bytes": 1610601,
+      "sha256": "2a45355b9514e3db546437636754cb065569a90c86a35cf3490d798eac204fb6"
+    },
+    {
+      "path": "data/reference/cache/epss/epss_scores-2025-01-01.csv.gz",
+      "url": "https://epss.empiricalsecurity.com/epss_scores-2025-01-01.csv.gz",
+      "bytes": 1640466,
+      "sha256": "5a9bb9a956376c9520f6cb63fb27b883726412266e410b7ed567741392f996dc"
+    },
+    {
+      "path": "data/reference/cache/epss/epss_scores-2025-02-01.csv.gz",
+      "url": "https://epss.empiricalsecurity.com/epss_scores-2025-02-01.csv.gz",
+      "bytes": 1659696,
+      "sha256": "f5e26288b9f8cc05c6a2a9869e8f17ce936104dd99a985a9859ea9a1a04fd8ce"
+    },
+    {
+      "path": "data/reference/cache/epss/epss_scores-2025-03-01.csv.gz",
+      "url": "https://epss.empiricalsecurity.com/epss_scores-2025-03-01.csv.gz",
+      "bytes": 1679076,
+      "sha256": "5bb841e1c5bae2205aa94e31e1a9892c5fcb262877448c1cafad53526fb37bd3"
+    },
+    {
+      "path": "data/reference/cache/epss/epss_scores-2025-04-01.csv.gz",
+      "url": "https://epss.empiricalsecurity.com/epss_scores-2025-04-01.csv.gz",
+      "bytes": 1825748,
+      "sha256": "87d6744e6bc7b5e3b05095d60d69e3f01a475dcf7cd1f02bdc1f1562535a9530"
+    },
+    {
+      "path": "data/reference/cache/epss/epss_scores-2025-05-01.csv.gz",
+      "url": "https://epss.empiricalsecurity.com/epss_scores-2025-05-01.csv.gz",
+      "bytes": 1851185,
+      "sha256": "bc55b5f3f066e5b1a83538e748390b317e001eea2cede5e1aad8f96710b77c3e"
+    },
+    {
+      "path": "data/reference/cache/epss/epss_scores-2025-06-01.csv.gz",
+      "url": "https://epss.empiricalsecurity.com/epss_scores-2025-06-01.csv.gz",
+      "bytes": 1874754,
+      "sha256": "72f56f8b47737e0a57ae5416b4065eb78c58090bdcb494042b25f3351738a4e3"
+    },
+    {
+      "path": "data/reference/cache/epss/epss_scores-2025-07-01.csv.gz",
+      "url": "https://epss.empiricalsecurity.com/epss_scores-2025-07-01.csv.gz",
+      "bytes": 1899113,
+      "sha256": "fc9ffea6438f0ab87a337b45884330c899ac36313cd80c44a8632876d93966a9"
+    },
+    {
+      "path": "data/reference/cache/epss/epss_scores-2025-08-01.csv.gz",
+      "url": "https://epss.empiricalsecurity.com/epss_scores-2025-08-01.csv.gz",
+      "bytes": 1921796,
+      "sha256": "8631f94569e7bad03e6bd1da7d393a7a030b0b2c39dcdcfadd85a051dc751eb0"
+    },
+    {
+      "path": "data/reference/cache/epss/epss_scores-2025-09-01.csv.gz",
+      "url": "https://epss.empiricalsecurity.com/epss_scores-2025-09-01.csv.gz",
+      "bytes": 1947223,
+      "sha256": "3f2cae4fdd8f7609dc4795fa0fdbc31ab915ffad7329cce4127b534068153b38"
+    },
+    {
+      "path": "data/reference/cache/epss/epss_scores-2025-10-01.csv.gz",
+      "url": "https://epss.empiricalsecurity.com/epss_scores-2025-10-01.csv.gz",
+      "bytes": 1977008,
+      "sha256": "d8a34baffdb8dedfe6c3ce06bb6763cbbb200d20afda7d1bb6259c3a426fe12b"
+    },
+    {
+      "path": "data/reference/cache/epss/epss_scores-2025-11-01.csv.gz",
+      "url": "https://epss.empiricalsecurity.com/epss_scores-2025-11-01.csv.gz",
+      "bytes": 2001479,
+      "sha256": "524ebbe3773f97480c97edcc479cb8d60562014dfa86739f00c5d9f6b31a9563"
+    },
+    {
+      "path": "data/reference/cache/epss/epss_scores-2025-12-01.csv.gz",
+      "url": "https://epss.empiricalsecurity.com/epss_scores-2025-12-01.csv.gz",
+      "bytes": 2023296,
+      "sha256": "186a873eb896a48c47c6a6c663b2d75867f461b87939efb3009d610c4dc2888a"
+    },
+    {
+      "path": "data/reference/cache/epss/epss_scores-2026-01-01.csv.gz",
+      "url": "https://epss.empiricalsecurity.com/epss_scores-2026-01-01.csv.gz",
+      "bytes": 2055383,
+      "sha256": "24c0b7ed6ce5a385b16899e5496c15820fcf8df1e307b194b8c64c7c0549e354"
+    },
+    {
+      "path": "data/reference/cache/epss/epss_scores-2026-02-01.csv.gz",
+      "url": "https://epss.empiricalsecurity.com/epss_scores-2026-02-01.csv.gz",
+      "bytes": 2085994,
+      "sha256": "e4387473a8b92b0c85aff8837c4669d41ce8801c1019dee2dd54fb43b54b8c96"
+    },
+    {
+      "path": "data/reference/cache/epss/epss_scores-2026-03-01.csv.gz",
+      "url": "https://epss.empiricalsecurity.com/epss_scores-2026-03-01.csv.gz",
+      "bytes": 2119564,
+      "sha256": "a09cf639aac8aec106e5999bce4e28d1a9cd82e0134d01528dffced6f1b82b69"
+    },
+    {
+      "path": "data/reference/cache/epss/epss_scores-2026-04-01.csv.gz",
+      "url": "https://epss.empiricalsecurity.com/epss_scores-2026-04-01.csv.gz",
+      "bytes": 2161319,
+      "sha256": "1ebc89bb171e7ca54b217c5e561ffa931d15e6187be5dd204f5fec031a3ad6d8"
+    },
+    {
+      "path": "data/reference/cache/epss/epss_scores-2026-05-01.csv.gz",
+      "url": "https://epss.empiricalsecurity.com/epss_scores-2026-05-01.csv.gz",
+      "bytes": 2200348,
+      "sha256": "cffa98fe30b3aad3aa8c5e1dc0f592fa8bb072bbadbf2b9e5ebf8ebf100d12af"
+    },
+    {
+      "path": "data/reference/cache/epss/epss_scores-2026-06-01.csv.gz",
+      "url": "https://epss.empiricalsecurity.com/epss_scores-2026-06-01.csv.gz",
+      "bytes": 2247901,
+      "sha256": "02faddfe00053bba47b50c6e7c4045dc66e6b998566716e21ede85e4b8cf01ba"
+    },
+    {
+      "path": "data/reference/cache/epss/epss_scores-2026-07-01.csv.gz",
+      "url": "https://epss.empiricalsecurity.com/epss_scores-2026-07-01.csv.gz",
+      "bytes": 2442935,
+      "sha256": "3aee5c0acb2c456a14b45618d239c69d644afc73c08f61e9e8de5641153d5b36"
+    },
+    {
+      "path": "data/reference/cache/epss/epss_scores-2026-08-01.csv.gz",
+      "url": "https://epss.empiricalsecurity.com/epss_scores-2026-08-01.csv.gz",
+      "bytes": 2507180,
+      "sha256": "eda73271023428e8bec132906050ed0dc53f8e052affe7121cc20372b20081b6"
+    },
+    {
+      "path": "data/reference/cache/epss/epss_scores-2026-09-01.csv.gz",
+      "url": "https://epss.empiricalsecurity.com/epss_scores-2026-09-01.csv.gz",
+      "bytes": 2588389,
+      "sha256": "83638fae7e1f13c1167c83ee7e878a301689fbfce8a7a0621e2d5ea60ee2c366"
+    },
+    {
+      "path": "data/reference/cache/epss/epss_scores-2026-10-01.csv.gz",
+      "url": "https://epss.empiricalsecurity.com/epss_scores-2026-10-01.csv.gz",
+      "bytes": 2681877,
+      "sha256": "3feb16d42f0ec9a22f2951a63fc58a10e588fedd9e579c584c5014743a24451e"
+    },
+    {
+      "path": "data/reference/cache/kev/known_exploited_vulnerabilities.json",
+      "url": "https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json",
+      "bytes": 1826755,
+      "sha256": "3aa9cf3c01f116362a29d111702979175453c425e3733bde80fc4f6f8e2294e5"
+    },
+    {
+      "path": "data/reference/cache/nvd/CVE-1999.json.xz",
+      "url": "https://github.com/fkie-cad/nvd-json-data-feeds/releases/download/v2026.10.31-010015/CVE-1999.json.xz",
+      "bytes": 211436,
+      "sha256": "5931023da7704ffee68520eb3e13dbc9c5d319d91ef8c299c82a116c5d6b3057"
+    },
+    {
+      "path": "data/reference/cache/nvd/CVE-2000.json.xz",
+      "url": "https://github.com/fkie-cad/nvd-json-data-feeds/releases/download/v2026.10.31-010015/CVE-2000.json.xz",
+      "bytes": 215308,
+      "sha256": "97cad8437c9d35c04864f3aa2d3fb47e1079b68fa9a35b53ce204e77a915d812"
+    },
+    {
+      "path": "data/reference/cache/nvd/CVE-2001.json.xz",
+      "url": "https://github.com/fkie-cad/nvd-json-data-feeds/releases/download/v2026.10.31-010015/CVE-2001.json.xz",
+      "bytes": 311900,
+      "sha256": "e6cf034a460e32900f6b1b069b5bdcca07efbe5d23dd005cba8b6fc203893080"
+    },
+    {
+      "path": "data/reference/cache/nvd/CVE-2002.json.xz",
+      "url": "https://github.com/fkie-cad/nvd-json-data-feeds/releases/download/v2026.10.31-010015/CVE-2002.json.xz",
+      "bytes": 569160,
+      "sha256": "3b8a976a5ad9514e6c9cbfc7f7c6558c918cafda314548274a9c75dccc6ad4ed"
+    },
+    {
+      "path": "data/reference/cache/nvd/CVE-2003.json.xz",
+      "url": "https://github.com/fkie-cad/nvd-json-data-feeds/releases/download/v2026.10.31-010015/CVE-2003.json.xz",
+      "bytes": 427936,
+      "sha256": "8701962980dbcdcc63dd2102609181b377bac3cb2f149604a66b1fd49717da25"
+    },
+    {
+      "path": "data/reference/cache/nvd/CVE-2004.json.xz",
+      "url": "https://github.com/fkie-cad/nvd-json-data-feeds/releases/download/v2026.10.31-010015/CVE-2004.json.xz",
+      "bytes": 781940,
+      "sha256": "de5c5d80bdcc97f7592492edb5056cd989094c70da37da80290ef01c435d554a"
+    },
+    {
+      "path": "data/reference/cache/nvd/CVE-2005.json.xz",
+      "url": "https://github.com/fkie-cad/nvd-json-data-feeds/releases/download/v2026.10.31-010015/CVE-2005.json.xz",
+      "bytes": 1176648,
+      "sha256": "8367235f5d1e1223c14468d8ea882e879d5116bef6d8ecbedc4ba8e76f95e932"
+    },
+    {
+      "path": "data/reference/cache/nvd/CVE-2006.json.xz",
+      "url": "https://github.com/fkie-cad/nvd-json-data-feeds/releases/download/v2026.10.31-010015/CVE-2006.json.xz",
+      "bytes": 1970528,
+      "sha256": "ee0297ad45593169465e4654a10229431350372e34e3bf91de26aee80532e03e"
+    },
+    {
+      "path": "data/reference/cache/nvd/CVE-2007.json.xz",
+      "url": "https://github.com/fkie-cad/nvd-json-data-feeds/releases/download/v2026.10.31-010015/CVE-2007.json.xz",
+      "bytes": 2059232,
+      "sha256": "4ce74ee89d360bbc6b89ca7c8527ff3d60d1f13b477639b128063b750286da32"
+    },
+    {
+      "path": "data/reference/cache/nvd/CVE-2008.json.xz",
+      "url": "https://github.com/fkie-cad/nvd-json-data-feeds/releases/download/v2026.10.31-010015/CVE-2008.json.xz",
+      "bytes": 2269664,
+      "sha256": "c456a6ce74361519376f0c69a072da46f6ca61b00100fc4ca52dde4797986cbb"
+    },
+    {
+      "path": "data/reference/cache/nvd/CVE-2009.json.xz",
+      "url": "https://github.com/fkie-cad/nvd-json-data-feeds/releases/download/v2026.10.31-010015/CVE-2009.json.xz",
+      "bytes": 1908884,
+      "sha256": "39e09636757a01d3334fa41203a92479c731b62a8c6923d5aae0973382d62615"
+    },
+    {
+      "path": "data/reference/cache/nvd/CVE-2010.json.xz",
+      "url": "https://github.com/fkie-cad/nvd-json-data-feeds/releases/download/v2026.10.31-010015/CVE-2010.json.xz",
+      "bytes": 1768456,
+      "sha256": "a931db086807060f0f5e6c9bcefd204ceb05108138e23797d9c89647da5b314a"
+    },
+    {
+      "path": "data/reference/cache/nvd/CVE-2011.json.xz",
+      "url": "https://github.com/fkie-cad/nvd-json-data-feeds/releases/download/v2026.10.31-010015/CVE-2011.json.xz",
+      "bytes": 1717336,
+      "sha256": "40c81e587e29bdb51d4e1045aa02dc62d60851e2f97c0bf6ded7d8db33274f13"
+    },
+    {
+      "path": "data/reference/cache/nvd/CVE-2012.json.xz",
+      "url": "https://github.com/fkie-cad/nvd-json-data-feeds/releases/download/v2026.10.31-010015/CVE-2012.json.xz",
+      "bytes": 1955420,
+      "sha256": "bd2699410756885b7deba2580b733a54eceee5a57b97ad07bd99facef80485f5"
+    },
+    {
+      "path": "data/reference/cache/nvd/CVE-2013.json.xz",
+      "url": "https://github.com/fkie-cad/nvd-json-data-feeds/releases/download/v2026.10.31-010015/CVE-2013.json.xz",
+      "bytes": 2113364,
+      "sha256": "f6e741a1287311f57e5d86c7fed0ceb968886627b74ae59915a440dc036f6922"
+    },
+    {
+      "path": "data/reference/cache/nvd/CVE-2014.json.xz",
+      "url": "https://github.com/fkie-cad/nvd-json-data-feeds/releases/download/v2026.10.31-010015/CVE-2014.json.xz",
+      "bytes": 2347024,
+      "sha256": "9a78e36abed827e531d844ba87f965cf303a4e3a828cb085852522ef27777237"
+    },
+    {
+      "path": "data/reference/cache/nvd/CVE-2015.json.xz",
+      "url": "https://github.com/fkie-cad/nvd-json-data-feeds/releases/download/v2026.10.31-010015/CVE-2015.json.xz",
+      "bytes": 2084636,
+      "sha256": "5afbfe27443b9901e9a23e554273375323eeb7cfa04133cf3f5b1f07bd0f4299"
+    },
+    {
+      "path": "data/reference/cache/nvd/CVE-2016.json.xz",
+      "url": "https://github.com/fkie-cad/nvd-json-data-feeds/releases/download/v2026.10.31-010015/CVE-2016.json.xz",
+      "bytes": 2488568,
+      "sha256": "d684c2b8294c640739db0b7f46776106af80e646ae64a8829514c1345c70f325"
+    },
+    {
+      "path": "data/reference/cache/nvd/CVE-2017.json.xz",
+      "url": "https://github.com/fkie-cad/nvd-json-data-feeds/releases/download/v2026.10.31-010015/CVE-2017.json.xz",
+      "bytes": 3760704,
+      "sha256": "15a764b106884158eb01a007293e408e0959751c0f73100ee5856dcfeb654cfc"
+    },
+    {
+      "path": "data/reference/cache/nvd/CVE-2018.json.xz",
+      "url": "https://github.com/fkie-cad/nvd-json-data-feeds/releases/download/v2026.10.31-010015/CVE-2018.json.xz",
+      "bytes": 3895748,
+      "sha256": "10ea5a54b49f070c068bc6b58f63959edb2f1bcbc6a07bfd11ef1e2817b0cb13"
+    },
+    {
+      "path": "data/reference/cache/nvd/CVE-2019.json.xz",
+      "url": "https://github.com/fkie-cad/nvd-json-data-feeds/releases/download/v2026.10.31-010015/CVE-2019.json.xz",
+      "bytes": 4570528,
+      "sha256": "9437cbcd2002ebc29bea57b4379477b97a3e33d58bd213cd438dde00d1c0a405"
+    },
+    {
+      "path": "data/reference/cache/nvd/CVE-2020.json.xz",
+      "url": "https://github.com/fkie-cad/nvd-json-data-feeds/releases/download/v2026.10.31-010015/CVE-2020.json.xz",
+      "bytes": 5428220,
+      "sha256": "bc7a7750a361182a8fcd334e7da4afaa8cda902625a66437dfbb84a946cd5005"
+    },
+    {
+      "path": "data/reference/cache/nvd/CVE-2021.json.xz",
+      "url": "https://github.com/fkie-cad/nvd-json-data-feeds/releases/download/v2026.10.31-010015/CVE-2021.json.xz",
+      "bytes": 7045132,
+      "sha256": "0f2449dc6cbc9d60e66e3a0000d3eacfb4cad1d22f61d1245a8a10127788aca0"
+    },
+    {
+      "path": "data/reference/cache/nvd/CVE-2022.json.xz",
+      "url": "https://github.com/fkie-cad/nvd-json-data-feeds/releases/download/v2026.10.31-010015/CVE-2022.json.xz",
+      "bytes": 8371288,
+      "sha256": "035ee8f9ffcb3230870b2b112ed02bec8cb16d6926dd8428d15f7afa61552e4b"
+    },
+    {
+      "path": "data/reference/cache/nvd/CVE-2023.json.xz",
+      "url": "https://github.com/fkie-cad/nvd-json-data-feeds/releases/download/v2026.10.31-010015/CVE-2023.json.xz",
+      "bytes": 9107192,
+      "sha256": "ce550990c80fb15e199285da2aeeffdba9fc02cb37d4f1afe462b5d8b92fa496"
+    },
+    {
+      "path": "data/reference/cache/nvd/CVE-2024.json.xz",
+      "url": "https://github.com/fkie-cad/nvd-json-data-feeds/releases/download/v2026.10.31-010015/CVE-2024.json.xz",
+      "bytes": 12249672,
+      "sha256": "ba9b48aaa7f6582a86d653ed7c55bc34051829c3220fdb8cdf0c14c105e5d780"
+    },
+    {
+      "path": "data/reference/cache/nvd/CVE-2025.json.xz",
+      "url": "https://github.com/fkie-cad/nvd-json-data-feeds/releases/download/v2026.10.31-010015/CVE-2025.json.xz",
+      "bytes": 12103388,
+      "sha256": "a25597f8c4369ab1578f0a3a2de29683657ef0e82e7f3b5ee88b2943e7eccf9a"
+    },
+    {
+      "path": "data/reference/cache/nvd/CVE-2026.json.xz",
+      "url": "https://github.com/fkie-cad/nvd-json-data-feeds/releases/download/v2026.10.31-010015/CVE-2026.json.xz",
+      "bytes": 23152476,
+      "sha256": "1e90557d8ded75dfd5322fdf3f4928bf03ef81625d469d574d09150e558f6f08"
+    }
+  ]
+}
