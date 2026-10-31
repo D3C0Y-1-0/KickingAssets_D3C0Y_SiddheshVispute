@@ -291,9 +291,6 @@ export function SmartCityViewer({
                 </span>
               )}
             </div>
-            <p className="text-[11px] text-slate-400">
-              Cyber-Physical Urban Infrastructure · Multi-Sector Telemetry · Subterranean & Transit Mesh
-            </p>
           </div>
         </div>
 
@@ -561,47 +558,23 @@ export function SmartCityViewer({
         </Plate>
       </div>
 
-      {/* Bottom Component Quick Selection Dock */}
-      <div className="p-3 bg-[#111319]/95 border-t border-[#202634] backdrop-blur z-20">
-        <div className="flex items-center justify-between text-[11px] mb-2 font-mono text-slate-400">
-          <span className="flex items-center gap-1.5 uppercase font-bold tracking-wider text-slate-200">
-            <Building className="w-3.5 h-3.5 text-[#ccff00]" />
-            Precinct Subsystems & Critical Facilities
-          </span>
-          <span className="text-slate-500 text-[10px]">Click any facility to view details & telemetry</span>
-        </div>
-
-        <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-thin">
-          {hotspots.map((h) => {
-            const isSelected = selectedComponentId === h.id;
-            const status = statusMap[h.id] || "operational";
-
-            return (
-              <button
-                key={h.id}
-                onClick={() => handleSelectComponent(h.id)}
-                className={`flex-shrink-0 px-3 py-1.5 rounded-lg border text-xs transition flex items-center gap-2 ${
-                  isSelected
-                    ? "bg-[#ccff00] border-[#ccff00] text-black font-extrabold shadow-sm"
-                    : "bg-[#161922] border-[#202634] text-slate-300 hover:bg-[#1f2432] hover:text-white"
-                }`}
-              >
-                <div
-                  className={`w-2 h-2 rounded-full ${
-                    isSelected
-                      ? "bg-black"
-                      : status === "offline"
-                      ? "bg-red-500 animate-pulse"
-                      : status === "degraded"
-                      ? "bg-amber-500 animate-pulse"
-                      : "bg-[#ccff00]"
-                  }`}
-                />
-                <span className="truncate">{h.label}</span>
-              </button>
-            );
-          })}
-        </div>
+      {/* Part selector */}
+      <div className="twin-dock">
+        <label className="twin-dock-label" htmlFor="twin-part-select">
+          Highlight part
+        </label>
+        <select
+          id="twin-part-select"
+          className="twin-select"
+          value={selectedComponentId ?? ""}
+          onChange={(e) => handleSelectComponent(e.target.value)}
+        >
+          {hotspots.map((h) => (
+            <option key={h.id} value={h.id}>
+              {h.label}
+            </option>
+          ))}
+        </select>
       </div>
 
       {/* Floating Exit Fullscreen pill when in fullscreen */}

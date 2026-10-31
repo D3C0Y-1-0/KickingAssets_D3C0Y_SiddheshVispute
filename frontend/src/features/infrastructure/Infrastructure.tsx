@@ -4,7 +4,10 @@ import {
   ArrowUpRight,
   Focus,
   Minus,
+  Maximize2,
+  Minimize2,
   Network,
+  PanelRight,
   Plus,
   Search,
   Shuffle,
@@ -43,6 +46,23 @@ export default function Infrastructure() {
   const runAssets = latestRun.data?.assets
   const riskOf = (id: string) => runAssets?.find((a) => a.asset_id === id)?.risk
   const [zoom, setZoom] = useState(100)
+  const [fullscreen, setFullscreen] = useState(false)
+  const [showInspector, setShowInspector] = useState(false)
+  useEffect(() => {
+    if (selected) setShowInspector(true)
+  }, [selected])
+  useEffect(() => {
+    const t = window.setTimeout(() => graph.current?.fit(), 150)
+    if (!fullscreen) return () => window.clearTimeout(t)
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setFullscreen(false)
+    }
+    window.addEventListener('keydown', onKey)
+    return () => {
+      window.clearTimeout(t)
+      window.removeEventListener('keydown', onKey)
+    }
+  }, [fullscreen])
   useEffect(() => {
     if (focusId) setSelected(focusId)
   }, [focusId])
@@ -91,7 +111,7 @@ export default function Infrastructure() {
     ? edges.filter((e) => e.source_asset_id === active.id || e.target_asset_id === active.id)
     : []
   return (
-    <>
+    <div className="graph-full">
       <PageHeading
         title="Infrastructure map"
         description="Two independent views. One inventory. Explore connections without confusing their meaning."
@@ -120,7 +140,9 @@ export default function Infrastructure() {
           {mode === 'cyber' ? 'CONNECTIVITY ≠ COMPROMISE' : 'PROVIDER → DEPENDENT'}
         </span>
       </div>
-      <div className="graph-layout">
+      <div
+        className={`graph-layout ${fullscreen ? 'graph-fs' : ''} ${showInspector ? '' : 'inspector-hidden'}`}
+      >
         <Panel
           title={mode === 'cyber' ? 'Cyber reachability graph' : 'Operational dependency graph'}
           aside={
@@ -153,6 +175,31 @@ export default function Infrastructure() {
               <option value="water">Water</option>
               <option value="healthcare">Healthcare</option>
             </select>
+            <select
+              aria-label="Graph view"
+              value={mode}
+              onChange={(e) => updateParams('mode', e.target.value)}
+            >
+              <option value="cyber">Cyber reachability</option>
+              <option value="operational">Operational dependencies</option>
+            </select>
+            <button
+              className={`icon-button ${showInspector ? 'on' : ''}`}
+              title={showInspector ? 'Hide inspector' : 'Show inspector'}
+              aria-label={showInspector ? 'Hide node inspector' : 'Show node inspector'}
+              aria-pressed={showInspector}
+              onClick={() => setShowInspector((v) => !v)}
+            >
+              <PanelRight size={18} />
+            </button>
+            <button
+              className="icon-button"
+              title={fullscreen ? 'Exit full screen (Esc)' : 'Full screen'}
+              aria-label={fullscreen ? 'Exit full screen' : 'Full screen'}
+              onClick={() => setFullscreen((v) => !v)}
+            >
+              {fullscreen ? <Minimize2 size={18} /> : <Maximize2 size={18} />}
+            </button>
             <button
               className="icon-button"
               title="Fit to screen"
@@ -356,6 +403,6 @@ export default function Infrastructure() {
         </aside>
       </div>
       <AssetDrawer id={detail} onClose={() => setDetail(null)} />
-    </>
+    </div>
   )
 }

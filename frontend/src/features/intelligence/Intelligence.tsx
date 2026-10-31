@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { ArrowRight, Route } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { useLatestRun } from '../../hooks/queries'
-import { AsOfBanner, ProvenanceNotice, SimulationRequired } from '../../components/Simulation'
+import { ProvenanceNotice, SimulationRequired } from '../../components/Simulation'
 import { PageHeading, Panel, QueryState, RiskBadge, SectorBadge } from '../../components/ui'
 import { percent } from '../../lib/risk'
 import type { AssetSimulation, SimulationRun } from '../../api/client'
@@ -139,7 +139,6 @@ export default function Intelligence() {
           </Link>
         }
       />
-      <AsOfBanner run={run} />
       <div className="split-layout spaced-panel">
         <Panel
           title="Risk-priority ranking"
