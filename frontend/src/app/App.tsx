@@ -9,6 +9,7 @@ import {
   ChevronDown,
   ChevronRight,
   CircleHelp,
+  ClipboardCheck,
   Command,
   FlaskConical,
   Grid2X2,
@@ -16,9 +17,11 @@ import {
   ListChecks,
   Menu,
   Network,
+  Radar,
   Search,
   Shield,
   ShieldCheck,
+  Waypoints,
   X,
 } from 'lucide-react'
 import { NavLink, Route, Routes, Link, useLocation, useNavigate } from 'react-router-dom'
@@ -35,6 +38,9 @@ const WhatIf = lazy(() => import('../features/whatif/WhatIf'))
 const Remediation = lazy(() => import('../features/remediation/Remediation'))
 const Methodology = lazy(() => import('../features/methodology/Methodology'))
 const MlLab = lazy(() => import('../features/ml/MlLab'))
+const Posture = lazy(() => import('../features/posture/Posture'))
+const Resilience = lazy(() => import('../features/resilience/Resilience'))
+const Coverage = lazy(() => import('../features/coverage/Coverage'))
 const navigation: { path: string; name: string; icon: typeof Grid2X2; tag?: string }[] = [
   { path: '/', name: 'Command Overview', icon: Grid2X2 },
   { path: '/infrastructure', name: 'Infrastructure Map', icon: Network },
@@ -44,6 +50,9 @@ const navigation: { path: string; name: string; icon: typeof Grid2X2; tag?: stri
   { path: '/ml', name: 'ML Lab', icon: BrainCircuit },
   { path: '/what-if', name: 'What-If Lab', icon: FlaskConical },
   { path: '/remediation', name: 'Remediation Plan', icon: ListChecks },
+  { path: '/posture', name: 'Posture & Activity', icon: Radar },
+  { path: '/resilience', name: 'Resilience', icon: Waypoints },
+  { path: '/coverage', name: 'PS03 Coverage', icon: ClipboardCheck },
 ]
 
 export default function App() {
@@ -258,6 +267,9 @@ export default function App() {
                 <Route path="/ml" element={<MlLab />} />
                 <Route path="/what-if" element={<WhatIf />} />
                 <Route path="/remediation" element={<Remediation />} />
+                <Route path="/posture" element={<Posture />} />
+                <Route path="/resilience" element={<Resilience />} />
+                <Route path="/coverage" element={<Coverage />} />
                 <Route path="/methodology" element={<Methodology />} />
                 <Route
                   path="*"

@@ -76,6 +76,7 @@ export function useRunSimulation() {
       client.setQueryData(['simulation', 'latest'], run)
       void client.invalidateQueries({ queryKey: ['asset'] })
       void client.invalidateQueries({ queryKey: ['actions'] })
+      void client.invalidateQueries({ queryKey: ['activity'] })
     },
   })
 }
@@ -116,5 +117,49 @@ export function usePooledBacktest() {
     queryFn: ({ signal }) => api.pooledBacktest(signal),
     staleTime: Infinity,
     retry: false,
+  })
+}
+
+export function useActivity() {
+  const context = useContext()
+  return useQuery({
+    queryKey: ['activity', context],
+    queryFn: ({ signal }) => api.activity(context, signal),
+    enabled: !!context.scenario_id,
+  })
+}
+export function useAssetActivity(id: string | null) {
+  const context = useContext()
+  return useQuery({
+    queryKey: ['activity', 'asset', context, id],
+    queryFn: ({ signal }) => api.assetActivity(id!, context, signal),
+    enabled: !!id && !!context.scenario_id,
+  })
+}
+export function useVendors() {
+  const context = useContext()
+  return useQuery({
+    queryKey: ['resilience', 'vendors', context],
+    queryFn: ({ signal }) => api.vendors(context, signal),
+    enabled: !!context.scenario_id,
+    staleTime: Infinity,
+  })
+}
+export function useChokepoints() {
+  const context = useContext()
+  return useQuery({
+    queryKey: ['resilience', 'chokepoints', context],
+    queryFn: ({ signal }) => api.chokepoints(context, signal),
+    enabled: !!context.scenario_id,
+    staleTime: Infinity,
+  })
+}
+export function useTrend() {
+  const context = useContext()
+  return useQuery({
+    queryKey: ['simulation', 'trend', context],
+    queryFn: ({ signal }) => api.trend(context, signal),
+    enabled: !!context.scenario_id,
+    staleTime: Infinity,
   })
 }

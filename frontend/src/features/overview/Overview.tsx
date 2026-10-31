@@ -3,6 +3,7 @@ import {
   ArrowRight,
   ArrowUpRight,
   Clock3,
+  Download,
   Database,
   Droplets,
   HeartPulse,
@@ -13,7 +14,8 @@ import {
 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts'
-import { useAssets, useLatestRun, useServices } from '../../hooks/queries'
+import { api } from '../../api/client'
+import { useAssets, useLatestRun, useScenarioContext, useServices } from '../../hooks/queries'
 import { AssetDrawer } from '../../components/AssetDrawer'
 import {
   AsOfBanner,
@@ -70,6 +72,7 @@ export default function Overview() {
               Explore infrastructure
               <ArrowUpRight size={14} />
             </Link>
+            {run && <BriefLinks />}
           </>
         }
       />
@@ -476,5 +479,31 @@ export default function Overview() {
       <ProvenanceNotice />
       <AssetDrawer id={selected} onClose={() => setSelected(null)} />
     </>
+  )
+}
+
+function BriefLinks() {
+  const context = useScenarioContext()
+  return (
+    <span className="ins-brief">
+      <a
+        className="button secondary"
+        href={api.briefUrl('html', context)}
+        download
+        title="Download the risk brief as a web page"
+      >
+        <Download size={16} />
+        Brief (HTML)
+      </a>
+      <a
+        className="button secondary"
+        href={api.briefUrl('md', context)}
+        download
+        title="Download the risk brief as Markdown"
+      >
+        <Download size={16} />
+        Markdown
+      </a>
+    </span>
   )
 }
