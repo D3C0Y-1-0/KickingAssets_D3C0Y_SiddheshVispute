@@ -456,7 +456,7 @@ kbd {
   padding: 0 30px;
   border-bottom: 1px solid var(--border-soft);
   background: var(--notice-background);
-  font-size: 12px;
+  font-size: 9px;
   color: var(--text-muted);
 }
 .environment-bar > div {
@@ -741,7 +741,7 @@ main:focus {
   padding: 27px 0 23px 22px;
 }
 .infrastructure-copy .eyebrow {
-  font-size: 11px;
+  font-size: 6.5px;
   letter-spacing: 1.1px;
   color: var(--accent);
   margin-bottom: 12px;
@@ -757,7 +757,7 @@ main:focus {
   color: var(--text-secondary);
 }
 .infrastructure-copy > p {
-  font-size: 12px;
+  font-size: 9px;
   line-height: 1.9;
   max-width: 245px;
   margin-top: 12px;
@@ -774,7 +774,7 @@ main:focus {
   padding: 6px 8px;
   border: 1px solid var(--border);
   border-radius: 4px;
-  font-size: 11.5px;
+  font-size: 8px;
   color: var(--text-secondary);
   background: var(--surface);
 }
@@ -791,7 +791,7 @@ main:focus {
   border-top: 1px solid var(--border-soft);
   padding: 10px 18px;
   color: var(--text-muted);
-  font-size: 11.5px;
+  font-size: 8px;
 }
 .infrastructure-bottom > span:first-child {
   display: flex;
@@ -832,7 +832,7 @@ main:focus {
   display: flex;
   justify-content: space-between;
   padding: 5px 0;
-  font-size: 12px;
+  font-size: 9px;
 }
 .distribution-legend > div > span {
   display: flex;
@@ -1538,7 +1538,7 @@ tbody tr:hover {
   background: var(--surface);
   border-radius: 5px;
   padding: 3px;
-  font-size: 12px;
+  font-size: 9px;
   color: var(--text-secondary);
 }
 .graph-controls > span {
@@ -1552,7 +1552,7 @@ tbody tr:hover {
   gap: 16px;
   padding: 13px 17px;
   border-top: 1px solid var(--border-soft);
-  font-size: 12px;
+  font-size: 9px;
   color: var(--text-secondary);
 }
 .graph-legend > span {
@@ -1575,7 +1575,7 @@ tbody tr:hover {
 }
 .inspector-body > select {
   width: 100%;
-  font-size: 12.5px;
+  font-size: 10px;
 }
 .field-label {
   display: block;
@@ -1600,7 +1600,7 @@ tbody tr:hover {
   margin: 7px 0 12px;
 }
 .inspector .detail-grid {
-  font-size: 12.5px;
+  font-size: 10px;
 }
 .inspector .inline-items {
   margin-bottom: 15px;
@@ -1614,11 +1614,11 @@ tbody tr:hover {
   margin: 0 auto 20px;
 }
 .inspector-empty h3 {
-  font-size: 16px;
+  font-size: 15px;
   color: var(--text);
 }
 .inspector-empty p {
-  font-size: 13px;
+  font-size: 11px;
   line-height: 1.9;
 }
 .checkbox-label {
@@ -1648,7 +1648,7 @@ tbody tr:hover {
   flex-wrap: wrap;
   gap: 10px;
   margin-top: 15px;
-  font-size: 12px;
+  font-size: 9px;
   text-transform: capitalize;
   color: var(--text-secondary);
 }
@@ -1994,7 +1994,7 @@ tbody tr:hover {
     font-size: 23px;
   }
   .infrastructure-copy > p {
-    font-size: 13px;
+    font-size: 11px;
     max-width: 300px;
   }
   .metric-card {
@@ -2032,7 +2032,7 @@ tbody tr:hover {
   }
   .distribution-legend > div {
     padding: 7px 0;
-    font-size: 13px;
+    font-size: 11px;
   }
 }
 @media (max-width: 1250px) {
@@ -2078,11 +2078,11 @@ tbody tr:hover {
   }
   .infrastructure-copy > p {
     max-width: 200px;
-    font-size: 11.5px;
+    font-size: 8px;
   }
   .sector-tabs button {
     padding: 5px;
-    font-size: 11px;
+    font-size: 7px;
     gap: 3px;
   }
   .sector-tabs svg {
@@ -2137,13 +2137,13 @@ tbody tr:hover {
   }
   .graph-legend {
     gap: 10px;
-    font-size: 11.5px;
+    font-size: 8px;
   }
   .snapshot-label {
     display: none;
   }
   .graph-mode-bar > .subtle-label {
-    font-size: 11px;
+    font-size: 7px;
   }
   .implementation-grid {
     grid-template-columns: 1fr;
@@ -2163,11 +2163,11 @@ tbody tr:hover {
     font-size: 21px;
   }
   .infrastructure-copy > p {
-    font-size: 12.5px;
+    font-size: 10px;
     max-width: 250px;
   }
   .sector-tabs button {
-    font-size: 12px;
+    font-size: 9px;
     padding: 6px 9px;
   }
   .distribution-panel {
@@ -2229,7 +2229,7 @@ tbody tr:hover {
     display: none;
   }
   .environment-bar > div > span:last-child {
-    font-size: 11.5px;
+    font-size: 8px;
   }
   .topbar-tools {
     gap: 10px;
@@ -2308,7 +2308,7 @@ tbody tr:hover {
     gap: 9px;
   }
   .environment-bar > div > span:last-child {
-    font-size: 11px;
+    font-size: 7px;
   }
   main {
     padding: 24px 16px;
@@ -2367,24 +2367,24 @@ tbody tr:hover {
     padding: 22px 22px 0;
   }
   .infrastructure-copy .eyebrow {
-    font-size: 11px;
+    font-size: 7px;
   }
   .infrastructure-copy h3 {
     font-size: 22px;
     white-space: normal;
   }
   .infrastructure-copy > p {
-    font-size: 12.5px;
+    font-size: 10px;
     max-width: 280px;
   }
   .sector-tabs {
     margin: 17px 0;
   }
   .infrastructure-panel .subtle-label {
-    font-size: 11px;
+    font-size: 6px;
   }
   .infrastructure-bottom {
-    font-size: 11px;
+    font-size: 7px;
     padding: 10px 14px;
     gap: 8px;
   }
@@ -2460,13 +2460,13 @@ tbody tr:hover {
     height: 400px;
   }
   .graph-legend {
-    font-size: 11px;
+    font-size: 7px;
   }
   .graph-legend .edge-legend {
     margin-left: 0;
   }
   .graph-panel .panel-heading .mono {
-    font-size: 11px;
+    font-size: 6px;
   }
   .ranking-row {
     gap: 8px;
