@@ -83,10 +83,12 @@ export function useLatestRun() {
   })
   return { ...query, data: query.isError ? undefined : query.data }
 }
+export const RUN_MUTATION_KEY = ['simulation', 'run'] as const
 export function useRunSimulation() {
   const client = useQueryClient()
   const context = useContext()
   return useMutation({
+    mutationKey: RUN_MUTATION_KEY,
     mutationFn: (asOf?: string) => api.runSimulation(context, asOf),
     onSuccess: (run) => {
       client.setQueryData(['simulation', 'latest'], run)

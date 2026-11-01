@@ -1,0 +1,99 @@
+/* Digital twin: results appear in risk order after a run, and the stage scans while one is running */
+.twin-radar-pop,
+.twin-pop,
+.twin-flow li {
+  animation: twin-pop 0.5s cubic-bezier(0.2, 1.3, 0.4, 1) both;
+  animation-delay: var(--pop-delay, 0ms);
+}
+@keyframes twin-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.2);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+.twin-scanning {
+  color: var(--accent);
+  animation: radar-blink 0.9s ease-in-out infinite alternate;
+}
+.twin-stage {
+  position: relative;
+}
+.twin-stage.is-scanning::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent 0, var(--accent) 50%, transparent 100%);
+  opacity: 0.18;
+  width: 18%;
+  animation: twin-scan 1.4s linear infinite;
+}
+@keyframes twin-scan {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(560%);
+  }
+}
+.twin-flow {
+  margin: 12px 0 0;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+}
+.twin-flow header {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+.twin-flow ol {
+  list-style: none;
+  margin: 0;
+  padding: 6px;
+  display: grid;
+  gap: 6px;
+}
+.twin-flow li {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border-left: 3px solid #ff9a2e;
+  background: rgba(255, 255, 255, 0.03);
+}
+.twin-flow li.critical {
+  border-left-color: #ff3344;
+}
+.twin-flow li small {
+  display: block;
+  color: var(--text-muted);
+}
+.twin-flow-score {
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+.twin-flow-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+@media (prefers-reduced-motion: reduce) {
+  .twin-radar-pop,
+  .twin-pop,
+  .twin-flow li,
+  .twin-scanning,
+  .twin-stage.is-scanning::after {
+    animation: none;
+  }
+}

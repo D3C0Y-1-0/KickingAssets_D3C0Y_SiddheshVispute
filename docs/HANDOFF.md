@@ -125,3 +125,19 @@ Hosted: the new endpoints and pages are live on https://gridsentinel-phi.vercel.
 Added `defense-v1` (see `docs/PLAN_ATTACK_DEFEND.md`): endpoints `/api/v1/defense/attacker`, `/prevention`, `/reaction?asset=`; page `/defend`. Verified: ruff clean, 150 backend tests, 10 frontend tests, typecheck and build. Limits: modelled what-ifs on assumed products; 24 h per segmented asset is an assumption; no recovery time; nothing is applied automatically.
 
 Phase 8 feedback follow-up (1 November 2026): HLT-001 power loss / 360 returned a valid one-asset outage and zero service minutes, but its result was below the catalog. Local fix adds adjacent pending/success/structured errors and an accessible View simulation results control. 15 focused tests, TypeScript, formatting and build passed; actual browser verified. See VERIFICATION.md. Changes are uncommitted and unpushed; reload the port-8001 planner to use the rebuilt frontend. Engines/contracts unchanged.
+
+## Branch merge: live-ui-merged-all (1 November 2026)
+
+Merged into `live-ui`: `Vinay` (landing intro, dock nav, gradient dashboard), `codex/innovation-phase-7-8`
+(resilience planner, attack-path inspection, verified report step, with Phase 5/6) and
+`feature/gridinal-connected-flow` (+ `feature/gridinal-redesign-slice`).
+
+Decisions: the live-ui look (grouped menu, twin viewers) wins every UI conflict. Attack Paths and
+Resilience Planner were added to the menu. Both restore mechanisms are kept: the last run's inputs are
+saved and rebuilt on boot (`restore_latest`), and `GRIDSENTINEL_WARM_START=1` runs the default scenario
+when nothing is saved.
+
+Not brought across: the connected-flow Digital Twins rewrite (`TwinFlow`, `twinAssets` are present but not
+wired in) and the Gridinal 3D opening scene (`frontend/src/gridinal`, removed: it needs three.js, react-three-fiber
+and gsap). Both remain in git history on their branches. Checks run: backend 259 passed, ruff clean;
+frontend typecheck clean, 104 tests passed, production build succeeds. Not browser-tested; not deployed.

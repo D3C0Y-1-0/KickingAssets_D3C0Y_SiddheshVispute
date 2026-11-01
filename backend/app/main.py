@@ -1,4 +1,5 @@
 import os
+import threading
 from contextlib import asynccontextmanager
 from pathlib import Path
 
@@ -15,8 +16,8 @@ from app.api.intelligence import router as intelligence_router
 from app.api.preventive import router as preventive_router
 from app.api.routes import router
 from app.api.vulnerability import router as vulnerability_router
+from app.api.workflow import restore_latest, warm_start
 from app.api.workflow import router as workflow_router
-from app.api.workflow import warm_start
 from app.db.store import STORAGE_ERRORS, Target, close_pools, default_db_path, initialize
 from app.db.vulnerability_store import bootstrap
 from app.domain.seed import ROOT
@@ -30,6 +31,9 @@ def create_app(db_path: Target | None = None, static_dir: Path | None = None) ->
         initialize(application.state.db_path)
         bootstrap(application.state.db_path, ROOT / "data/reference/risk-v1")
         bootstrap_intelligence(application.state.db_path)
+        # Rebuild the last simulation in the background so pages are not empty after a restart.
+        # With nothing saved yet, the optional warm start runs the default scenario instead.
+        threading.Thread(target=restore_latest, args=(application,), daemon=True).start()
         if os.environ.get("GRIDSENTINEL_WARM_START") == "1":
             warm_start(application)
         yield
