@@ -38,7 +38,7 @@ function CveScorer() {
           />
           <button className="button primary" disabled={score.isPending}>
             <Search size={15} />
-            {score.isPending ? 'Scoring…' : 'Score'}
+            {score.isPending ? 'Scoringâ€¦' : 'Score'}
           </button>
         </form>
         {score.isError && (
@@ -80,7 +80,7 @@ function CveScorer() {
                   <dt>EPSS percentile</dt>
                   <dd>{percent(result.epss_percentile, 1)}</dd>
                   <dt>CVSS</dt>
-                  <dd>{result.cvss_score ?? '—'}</dd>
+                  <dd>{result.cvss_score ?? 'â€”'}</dd>
                 </>
               )}
             </dl>
@@ -115,7 +115,7 @@ function PooledBacktestPanel() {
         {query.isPending && (
           <p>
             <LoaderCircle className="spin" size={16} /> Scoring every month from January 2025 with
-            dated KEV/EPSS history; current NVD fields may contain later edits…
+            dated KEV/EPSS history; current NVD fields may contain later editsâ€¦
           </p>
         )}
         {query.isError && <p className="run-error">{query.error.message}</p>}
@@ -254,7 +254,7 @@ export default function MlLab() {
             </table>
           </div>
           <div className="panel-footnote">
-            Retrieved {ml.manifest_retrieved_at} · NVD release {ml.nvd_release_tag} · every file's
+            Retrieved {ml.manifest_retrieved_at} Â· NVD release {ml.nvd_release_tag} Â· every file's
             SHA-256 is in data/reference/manifest.json. All of this is real data. The simulated part
             is the city, not the training data.
           </div>
@@ -330,8 +330,12 @@ export default function MlLab() {
             <strong>Honest reading.</strong>{' '}
             {deployed && epss
               ? tied
-                ? `The deployed model (AP ${deployed.average_precision}) is statistically tied with the EPSS percentile baseline (AP ${epss.average_precision}): the interval of the difference includes zero. It ranks better overall (AUC ${deployed.roc_auc} vs ${epss.roc_auc}) and clearly beats CVSS alone, but it does not beat EPSS in the top of the list. Most of its signal comes from EPSS.`
-                : `The deployed model beats the EPSS baseline on average precision.`
+                ? `The deployed model (AP ${deployed.average_precision}) does not establish a statistically clear AP improvement over the EPSS percentile baseline (AP ${epss.average_precision}): the paired difference interval includes zero. It ranks better overall (AUC ${deployed.roc_auc} vs ${epss.roc_auc}) and clearly beats CVSS alone, but it does not beat EPSS in the top of the list. Most of its signal comes from EPSS.`
+                : delta && delta[1] < 0
+                  ? 'The paired interval supports lower average precision than EPSS on this evaluation.'
+                  : delta && delta[0] > 0
+                    ? 'The paired interval supports higher average precision than EPSS on this evaluation.'
+                    : 'No paired difference interval is available; inspect the reported metrics.'
               : ''}{' '}
             Prevalence in the test population is {ml.prevalence}; only a few hundred distinct CVEs
             are positive, so intervals are wide.
@@ -410,7 +414,12 @@ export default function MlLab() {
       </div>
       <PooledBacktestPanel />
       <CveScorer />
-      {features.length === 0 && <EmptyState title="No model card found">Run training.</EmptyState>}
+      {features.length === 0 && (
+        <EmptyState title="No model card found">
+          Restore the committed model artifacts and reference cache. No replacement score is
+          assigned.
+        </EmptyState>
+      )}
     </>
   )
 }

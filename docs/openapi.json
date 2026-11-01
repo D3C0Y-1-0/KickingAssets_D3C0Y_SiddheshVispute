@@ -1686,6 +1686,80 @@
               "default": 5,
               "title": "Max Paths Per Target"
             }
+          },
+          {
+            "name": "run_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 120
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Run Id"
+            }
+          },
+          {
+            "name": "baseline_fingerprint",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 8,
+                  "maxLength": 64
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Baseline Fingerprint"
+            }
+          },
+          {
+            "name": "scenario_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 100,
+                  "pattern": "^[a-zA-Z0-9_.-]+$"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Scenario Id"
+            }
+          },
+          {
+            "name": "snapshot_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 100,
+                  "pattern": "^[a-zA-Z0-9_.-]+$"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Snapshot Id"
+            }
           }
         ],
         "responses": {
@@ -1694,7 +1768,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/AttackPathAnalysis"
+                  "$ref": "#/components/schemas/AttackPathReport"
                 }
               }
             }
@@ -1822,7 +1896,9 @@
             "schema": {
               "anyOf": [
                 {
-                  "type": "string"
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 120
                 },
                 {
                   "type": "null"
@@ -1987,6 +2063,290 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/RemediationPlan"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Content",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service Unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/resilience/preventive/catalog": {
+      "post": {
+        "tags": [
+          "Preventive resilience"
+        ],
+        "summary": "Catalog",
+        "operationId": "catalog_api_v1_resilience_preventive_catalog_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Binding"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Catalog"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Content",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service Unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/resilience/preventive/simulate": {
+      "post": {
+        "tags": [
+          "Preventive resilience"
+        ],
+        "summary": "Simulate",
+        "operationId": "simulate_api_v1_resilience_preventive_simulate_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EvaluationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Evaluation"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Content",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service Unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/resilience/preventive/optimize": {
+      "post": {
+        "tags": [
+          "Preventive resilience"
+        ],
+        "summary": "Optimize",
+        "operationId": "optimize_api_v1_resilience_preventive_optimize_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OptimizationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Optimization"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Unprocessable Content",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Service Unavailable",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/resilience/preventive/stress-test": {
+      "post": {
+        "tags": [
+          "Preventive resilience"
+        ],
+        "summary": "Stress Test",
+        "operationId": "stress_test_api_v1_resilience_preventive_stress_test_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StressRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StressReport"
                 }
               }
             }
@@ -3840,6 +4200,44 @@
         "title": "AssetHistory",
         "description": "Real vulnerability history of the assumed product family up to the snapshot."
       },
+      "AssetOutage": {
+        "properties": {
+          "asset_id": {
+            "type": "string",
+            "title": "Asset Id"
+          },
+          "intervals": {
+            "items": {
+              "$ref": "#/components/schemas/Interval"
+            },
+            "type": "array",
+            "title": "Intervals"
+          },
+          "failure_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Failure Ids"
+          },
+          "dependency_edge_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Dependency Edge Ids"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "asset_id",
+          "intervals",
+          "failure_ids",
+          "dependency_edge_ids"
+        ],
+        "title": "AssetOutage"
+      },
       "AssetPriority": {
         "properties": {
           "asset_id": {
@@ -4225,7 +4623,7 @@
         ],
         "title": "AttackPath"
       },
-      "AttackPathAnalysis": {
+      "AttackPathReport": {
         "properties": {
           "method_version": {
             "type": "string",
@@ -4279,6 +4677,37 @@
             },
             "type": "array",
             "title": "Notes"
+          },
+          "scenario_id": {
+            "type": "string",
+            "title": "Scenario Id"
+          },
+          "snapshot_id": {
+            "type": "string",
+            "title": "Snapshot Id"
+          },
+          "run_id": {
+            "type": "string",
+            "title": "Run Id"
+          },
+          "baseline_fingerprint": {
+            "type": "string",
+            "title": "Baseline Fingerprint"
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "current",
+              "projected"
+            ],
+            "title": "State"
+          },
+          "isolated_assets": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Isolated Assets"
           }
         },
         "additionalProperties": false,
@@ -4291,9 +4720,15 @@
           "paths",
           "chokepoints",
           "target_reachability",
-          "notes"
+          "notes",
+          "scenario_id",
+          "snapshot_id",
+          "run_id",
+          "baseline_fingerprint",
+          "state",
+          "isolated_assets"
         ],
-        "title": "AttackPathAnalysis"
+        "title": "AttackPathReport"
       },
       "AttackerRoute": {
         "properties": {
@@ -4562,6 +4997,44 @@
         ],
         "title": "BacktestHit"
       },
+      "Binding": {
+        "properties": {
+          "scenario_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Scenario Id"
+          },
+          "snapshot_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Snapshot Id"
+          },
+          "run_id": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Run Id"
+          },
+          "baseline_fingerprint": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{32}$",
+            "title": "Baseline Fingerprint"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "scenario_id",
+          "snapshot_id",
+          "run_id",
+          "baseline_fingerprint"
+        ],
+        "title": "Binding"
+      },
       "BriefSection": {
         "properties": {
           "title": {
@@ -4791,6 +5264,112 @@
         ],
         "title": "CandidateCve"
       },
+      "Capacity": {
+        "properties": {
+          "backup_asset_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Backup Asset Id"
+          },
+          "usable_energy_fraction": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Usable Energy Fraction"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "backup_asset_id",
+          "usable_energy_fraction"
+        ],
+        "title": "Capacity"
+      },
+      "Catalog": {
+        "properties": {
+          "scenario_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Scenario Id"
+          },
+          "snapshot_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Snapshot Id"
+          },
+          "run_id": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Run Id"
+          },
+          "baseline_fingerprint": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{32}$",
+            "title": "Baseline Fingerprint"
+          },
+          "baseline_created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Baseline Created At"
+          },
+          "baseline_as_of": {
+            "type": "string",
+            "format": "date",
+            "title": "Baseline As Of"
+          },
+          "model_version": {
+            "type": "string",
+            "title": "Model Version"
+          },
+          "catalog_version": {
+            "type": "string",
+            "title": "Catalog Version"
+          },
+          "catalog_fingerprint": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Catalog Fingerprint"
+          },
+          "interventions": {
+            "items": {
+              "$ref": "#/components/schemas/Intervention"
+            },
+            "type": "array",
+            "title": "Interventions"
+          },
+          "assumptions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Assumptions"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "scenario_id",
+          "snapshot_id",
+          "run_id",
+          "baseline_fingerprint",
+          "baseline_created_at",
+          "baseline_as_of",
+          "model_version",
+          "catalog_version",
+          "catalog_fingerprint",
+          "interventions",
+          "assumptions"
+        ],
+        "title": "Catalog"
+      },
       "CategoryCount": {
         "properties": {
           "category": {
@@ -4815,6 +5394,46 @@
           "count"
         ],
         "title": "CategoryCount"
+      },
+      "ChallengeOutcome": {
+        "properties": {
+          "challenge_id": {
+            "type": "string",
+            "title": "Challenge Id"
+          },
+          "outcome": {
+            "type": "string",
+            "enum": [
+              "assumed_compromise",
+              "route_disconnected",
+              "specified_cve_patched"
+            ],
+            "title": "Outcome"
+          },
+          "explanation": {
+            "type": "string",
+            "title": "Explanation"
+          },
+          "candidate_paths": {
+            "items": {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "type": "array",
+            "title": "Candidate Paths"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "challenge_id",
+          "outcome",
+          "explanation",
+          "candidate_paths"
+        ],
+        "title": "ChallengeOutcome"
       },
       "ChokePoint": {
         "properties": {
@@ -5034,6 +5653,52 @@
           "services_fully_disrupted"
         ],
         "title": "ChokepointScenario"
+      },
+      "Comparison": {
+        "properties": {
+          "before": {
+            "$ref": "#/components/schemas/FailureOutcome"
+          },
+          "after": {
+            "$ref": "#/components/schemas/FailureOutcome"
+          },
+          "avoided_service_disruption_minutes": {
+            "type": "integer",
+            "title": "Avoided Service Disruption Minutes"
+          },
+          "improved_service_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Improved Service Ids"
+          },
+          "fully_protected_service_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Fully Protected Service Ids"
+          },
+          "challenges": {
+            "items": {
+              "$ref": "#/components/schemas/ChallengeOutcome"
+            },
+            "type": "array",
+            "title": "Challenges"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "before",
+          "after",
+          "avoided_service_disruption_minutes",
+          "improved_service_ids",
+          "fully_protected_service_ids",
+          "challenges"
+        ],
+        "title": "Comparison"
       },
       "ConfigurationFinding": {
         "properties": {
@@ -5445,6 +6110,76 @@
         ],
         "title": "CveScore"
       },
+      "CyberChallenge": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Id"
+          },
+          "entry_asset_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Entry Asset Id"
+          },
+          "target_asset_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Target Asset Id"
+          },
+          "effect": {
+            "type": "string",
+            "enum": [
+              "loss_of_control",
+              "loss_of_visibility",
+              "data_integrity",
+              "unavailability"
+            ],
+            "title": "Effect"
+          },
+          "cve_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^CVE-\\d{4}-\\d{4,}$",
+                "description": "Assume this CVE is the sole enabling cause of the specified target effect. Product/version applicability is checked; exploit-vector/effect attribution is not established."
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Cve Id"
+          },
+          "recovery_minutes": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 10080.0,
+                "minimum": 1.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Recovery Minutes"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "entry_asset_id",
+          "target_asset_id",
+          "effect"
+        ],
+        "title": "CyberChallenge"
+      },
       "CyberGraph": {
         "properties": {
           "scenario_id": {
@@ -5704,6 +6439,369 @@
           "provenance"
         ],
         "title": "EssentialService"
+      },
+      "Evaluation": {
+        "properties": {
+          "scenario_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Scenario Id"
+          },
+          "snapshot_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Snapshot Id"
+          },
+          "run_id": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Run Id"
+          },
+          "baseline_fingerprint": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{32}$",
+            "title": "Baseline Fingerprint"
+          },
+          "baseline_created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Baseline Created At"
+          },
+          "baseline_as_of": {
+            "type": "string",
+            "format": "date",
+            "title": "Baseline As Of"
+          },
+          "model_version": {
+            "type": "string",
+            "title": "Model Version"
+          },
+          "scoring_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scoring Version"
+          },
+          "catalog_fingerprint": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Catalog Fingerprint"
+          },
+          "input_fingerprint": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Input Fingerprint"
+          },
+          "engine_version": {
+            "type": "string",
+            "title": "Engine Version"
+          },
+          "calculated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Calculated At"
+          },
+          "state": {
+            "type": "string",
+            "const": "projected",
+            "title": "State",
+            "default": "projected"
+          },
+          "verification": {
+            "type": "string",
+            "const": "not_verified",
+            "title": "Verification",
+            "default": "not_verified"
+          },
+          "interventions": {
+            "items": {
+              "$ref": "#/components/schemas/Intervention"
+            },
+            "type": "array",
+            "title": "Interventions"
+          },
+          "cost_credits": {
+            "type": "integer",
+            "maximum": 1000000.0,
+            "minimum": 0.0,
+            "title": "Cost Credits"
+          },
+          "effort_hours": {
+            "type": "number",
+            "maximum": 1000000.0,
+            "minimum": 0.0,
+            "title": "Effort Hours"
+          },
+          "downtime_hours": {
+            "type": "number",
+            "maximum": 1000000.0,
+            "minimum": 0.0,
+            "title": "Downtime Hours"
+          },
+          "comparison": {
+            "$ref": "#/components/schemas/Comparison"
+          },
+          "baseline_city_index": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Baseline City Index"
+          },
+          "risk_projection": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/WhatIfResult"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "risk_projection_intervention_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Risk Projection Intervention Ids"
+          },
+          "assumptions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Assumptions"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "scenario_id",
+          "snapshot_id",
+          "run_id",
+          "baseline_fingerprint",
+          "baseline_created_at",
+          "baseline_as_of",
+          "model_version",
+          "scoring_version",
+          "catalog_fingerprint",
+          "input_fingerprint",
+          "engine_version",
+          "calculated_at",
+          "interventions",
+          "cost_credits",
+          "effort_hours",
+          "downtime_hours",
+          "comparison",
+          "baseline_city_index",
+          "assumptions"
+        ],
+        "title": "Evaluation"
+      },
+      "EvaluationRequest": {
+        "properties": {
+          "scenario_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Scenario Id"
+          },
+          "snapshot_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Snapshot Id"
+          },
+          "run_id": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Run Id"
+          },
+          "baseline_fingerprint": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{32}$",
+            "title": "Baseline Fingerprint"
+          },
+          "catalog_fingerprint": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Catalog Fingerprint"
+          },
+          "scenario": {
+            "$ref": "#/components/schemas/FailureScenario"
+          },
+          "intervention_ids": {
+            "items": {
+              "type": "string",
+              "maxLength": 100,
+              "minLength": 1,
+              "pattern": "^[a-zA-Z0-9_.-]+$"
+            },
+            "type": "array",
+            "maxItems": 12,
+            "title": "Intervention Ids"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "scenario_id",
+          "snapshot_id",
+          "run_id",
+          "baseline_fingerprint",
+          "catalog_fingerprint",
+          "scenario"
+        ],
+        "title": "EvaluationRequest"
+      },
+      "Failure": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Id"
+          },
+          "asset_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Asset Id"
+          },
+          "cause": {
+            "type": "string",
+            "enum": [
+              "power_loss",
+              "hardware_failure",
+              "cyber"
+            ],
+            "title": "Cause"
+          },
+          "effect": {
+            "type": "string",
+            "enum": [
+              "loss_of_control",
+              "loss_of_visibility",
+              "data_integrity",
+              "unavailability"
+            ],
+            "title": "Effect",
+            "default": "unavailability"
+          },
+          "recovery_minutes": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 10080.0,
+                "minimum": 1.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Recovery Minutes"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "asset_id",
+          "cause"
+        ],
+        "title": "Failure"
+      },
+      "FailureOutcome": {
+        "properties": {
+          "horizon_minutes": {
+            "type": "integer",
+            "title": "Horizon Minutes"
+          },
+          "total_service_disruption_minutes": {
+            "type": "integer",
+            "title": "Total Service Disruption Minutes"
+          },
+          "services": {
+            "items": {
+              "$ref": "#/components/schemas/ServiceOutcome"
+            },
+            "type": "array",
+            "title": "Services"
+          },
+          "asset_outages": {
+            "items": {
+              "$ref": "#/components/schemas/AssetOutage"
+            },
+            "type": "array",
+            "title": "Asset Outages"
+          },
+          "standbys": {
+            "items": {
+              "$ref": "#/components/schemas/StandbyOutcome"
+            },
+            "type": "array",
+            "title": "Standbys"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "horizon_minutes",
+          "total_service_disruption_minutes",
+          "services",
+          "asset_outages",
+          "standbys"
+        ],
+        "title": "FailureOutcome"
+      },
+      "FailureScenario": {
+        "properties": {
+          "horizon_minutes": {
+            "type": "integer",
+            "maximum": 1440.0,
+            "minimum": 1.0,
+            "title": "Horizon Minutes",
+            "default": 1440
+          },
+          "failures": {
+            "items": {
+              "$ref": "#/components/schemas/Failure"
+            },
+            "type": "array",
+            "maxItems": 8,
+            "title": "Failures"
+          },
+          "cyber_challenges": {
+            "items": {
+              "$ref": "#/components/schemas/CyberChallenge"
+            },
+            "type": "array",
+            "maxItems": 4,
+            "title": "Cyber Challenges"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "title": "FailureScenario"
       },
       "FeatureContribution": {
         "properties": {
@@ -6250,6 +7348,132 @@
           "limitations"
         ],
         "title": "IntelligenceReport"
+      },
+      "Interval": {
+        "properties": {
+          "start_minutes": {
+            "type": "integer",
+            "title": "Start Minutes"
+          },
+          "end_minutes": {
+            "type": "integer",
+            "title": "End Minutes"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "start_minutes",
+          "end_minutes"
+        ],
+        "title": "Interval"
+      },
+      "Intervention": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Id"
+          },
+          "asset_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Asset Id"
+          },
+          "action_type": {
+            "type": "string",
+            "enum": [
+              "patch",
+              "segmentation",
+              "backup_power",
+              "recovery"
+            ],
+            "title": "Action Type"
+          },
+          "cost_credits": {
+            "type": "integer",
+            "maximum": 1000000.0,
+            "minimum": 0.0,
+            "title": "Cost Credits"
+          },
+          "effort_hours": {
+            "type": "number",
+            "maximum": 1000000.0,
+            "minimum": 0.0,
+            "title": "Effort Hours"
+          },
+          "downtime_hours": {
+            "type": "number",
+            "maximum": 1000000.0,
+            "minimum": 0.0,
+            "title": "Downtime Hours"
+          },
+          "recovery_minutes": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "maximum": 10080.0,
+                "minimum": 1.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Recovery Minutes"
+          },
+          "added_backup_minutes": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Added Backup Minutes",
+            "default": 0
+          },
+          "patch": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PatchOutcome"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "preconditions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Preconditions"
+          },
+          "modelled_effect": {
+            "type": "string",
+            "title": "Modelled Effect"
+          },
+          "evidence_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Evidence Ids"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "asset_id",
+          "action_type",
+          "cost_credits",
+          "effort_hours",
+          "downtime_hours",
+          "preconditions",
+          "modelled_effect",
+          "evidence_ids"
+        ],
+        "title": "Intervention"
       },
       "MatchSummary": {
         "properties": {
@@ -6969,6 +8193,343 @@
           "edges"
         ],
         "title": "OperationalGraph"
+      },
+      "Optimization": {
+        "properties": {
+          "scenario_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Scenario Id"
+          },
+          "snapshot_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Snapshot Id"
+          },
+          "run_id": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Run Id"
+          },
+          "baseline_fingerprint": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{32}$",
+            "title": "Baseline Fingerprint"
+          },
+          "baseline_created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Baseline Created At"
+          },
+          "baseline_as_of": {
+            "type": "string",
+            "format": "date",
+            "title": "Baseline As Of"
+          },
+          "model_version": {
+            "type": "string",
+            "title": "Model Version"
+          },
+          "scoring_version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scoring Version"
+          },
+          "catalog_fingerprint": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Catalog Fingerprint"
+          },
+          "input_fingerprint": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Input Fingerprint"
+          },
+          "engine_version": {
+            "type": "string",
+            "title": "Engine Version"
+          },
+          "calculated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Calculated At"
+          },
+          "state": {
+            "type": "string",
+            "const": "projected",
+            "title": "State",
+            "default": "projected"
+          },
+          "verification": {
+            "type": "string",
+            "const": "not_verified",
+            "title": "Verification",
+            "default": "not_verified"
+          },
+          "interventions": {
+            "items": {
+              "$ref": "#/components/schemas/Intervention"
+            },
+            "type": "array",
+            "title": "Interventions"
+          },
+          "cost_credits": {
+            "type": "integer",
+            "maximum": 1000000.0,
+            "minimum": 0.0,
+            "title": "Cost Credits"
+          },
+          "effort_hours": {
+            "type": "number",
+            "maximum": 1000000.0,
+            "minimum": 0.0,
+            "title": "Effort Hours"
+          },
+          "downtime_hours": {
+            "type": "number",
+            "maximum": 1000000.0,
+            "minimum": 0.0,
+            "title": "Downtime Hours"
+          },
+          "comparison": {
+            "$ref": "#/components/schemas/Comparison"
+          },
+          "baseline_city_index": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Baseline City Index"
+          },
+          "risk_projection": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/WhatIfResult"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "risk_projection_intervention_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Risk Projection Intervention Ids"
+          },
+          "assumptions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Assumptions"
+          },
+          "objective_service_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Objective Service Ids"
+          },
+          "objective_before_minutes": {
+            "type": "integer",
+            "title": "Objective Before Minutes"
+          },
+          "objective_after_minutes": {
+            "type": "integer",
+            "title": "Objective After Minutes"
+          },
+          "method": {
+            "type": "string",
+            "const": "exhaustive-subsets-v1",
+            "title": "Method",
+            "default": "exhaustive-subsets-v1"
+          },
+          "optimal_within_submitted_candidates": {
+            "type": "boolean",
+            "const": true,
+            "title": "Optimal Within Submitted Candidates",
+            "default": true
+          },
+          "subsets_considered": {
+            "type": "integer",
+            "title": "Subsets Considered"
+          },
+          "feasible_subsets": {
+            "type": "integer",
+            "title": "Feasible Subsets"
+          },
+          "rejected_alternatives": {
+            "items": {
+              "$ref": "#/components/schemas/RejectedAlternative"
+            },
+            "type": "array",
+            "title": "Rejected Alternatives"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "scenario_id",
+          "snapshot_id",
+          "run_id",
+          "baseline_fingerprint",
+          "baseline_created_at",
+          "baseline_as_of",
+          "model_version",
+          "scoring_version",
+          "catalog_fingerprint",
+          "input_fingerprint",
+          "engine_version",
+          "calculated_at",
+          "interventions",
+          "cost_credits",
+          "effort_hours",
+          "downtime_hours",
+          "comparison",
+          "baseline_city_index",
+          "assumptions",
+          "objective_service_ids",
+          "objective_before_minutes",
+          "objective_after_minutes",
+          "subsets_considered",
+          "feasible_subsets",
+          "rejected_alternatives"
+        ],
+        "title": "Optimization"
+      },
+      "OptimizationRequest": {
+        "properties": {
+          "scenario_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Scenario Id"
+          },
+          "snapshot_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Snapshot Id"
+          },
+          "run_id": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Run Id"
+          },
+          "baseline_fingerprint": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{32}$",
+            "title": "Baseline Fingerprint"
+          },
+          "catalog_fingerprint": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Catalog Fingerprint"
+          },
+          "scenario": {
+            "$ref": "#/components/schemas/FailureScenario"
+          },
+          "intervention_ids": {
+            "items": {
+              "type": "string",
+              "maxLength": 100,
+              "minLength": 1,
+              "pattern": "^[a-zA-Z0-9_.-]+$"
+            },
+            "type": "array",
+            "maxItems": 12,
+            "minItems": 1,
+            "title": "Intervention Ids"
+          },
+          "budget_credits": {
+            "type": "integer",
+            "maximum": 1000000.0,
+            "minimum": 0.0,
+            "title": "Budget Credits"
+          },
+          "effort_limit_hours": {
+            "type": "number",
+            "maximum": 1000000.0,
+            "minimum": 0.0,
+            "title": "Effort Limit Hours"
+          },
+          "downtime_limit_hours": {
+            "type": "number",
+            "maximum": 1000000.0,
+            "minimum": 0.0,
+            "title": "Downtime Limit Hours"
+          },
+          "max_action_downtime_hours": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 1000000.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Action Downtime Hours"
+          },
+          "excluded_asset_ids": {
+            "items": {
+              "type": "string",
+              "maxLength": 100,
+              "minLength": 1,
+              "pattern": "^[a-zA-Z0-9_.-]+$"
+            },
+            "type": "array",
+            "maxItems": 30,
+            "title": "Excluded Asset Ids"
+          },
+          "service_ids": {
+            "items": {
+              "type": "string",
+              "maxLength": 100,
+              "minLength": 1,
+              "pattern": "^[a-zA-Z0-9_.-]+$"
+            },
+            "type": "array",
+            "maxItems": 20,
+            "title": "Service Ids"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "scenario_id",
+          "snapshot_id",
+          "run_id",
+          "baseline_fingerprint",
+          "catalog_fingerprint",
+          "scenario",
+          "intervention_ids",
+          "budget_credits",
+          "effort_limit_hours",
+          "downtime_limit_hours"
+        ],
+        "title": "OptimizationRequest"
       },
       "OptimizeRequest": {
         "properties": {
@@ -8013,6 +9574,33 @@
         ],
         "title": "ReferenceSource"
       },
+      "RejectedAlternative": {
+        "properties": {
+          "intervention_id": {
+            "type": "string",
+            "title": "Intervention Id"
+          },
+          "reasons": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Reasons"
+          },
+          "standalone_disruption_minutes": {
+            "type": "integer",
+            "title": "Standalone Disruption Minutes"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "intervention_id",
+          "reasons",
+          "standalone_disruption_minutes"
+        ],
+        "title": "RejectedAlternative"
+      },
       "RejectedCandidate": {
         "properties": {
           "asset_id": {
@@ -8882,6 +10470,50 @@
         ],
         "title": "ServiceLoss"
       },
+      "ServiceOutcome": {
+        "properties": {
+          "service_id": {
+            "type": "string",
+            "title": "Service Id"
+          },
+          "disrupted_minutes": {
+            "type": "integer",
+            "title": "Disrupted Minutes"
+          },
+          "disruption_fraction": {
+            "type": "number",
+            "title": "Disruption Fraction"
+          },
+          "intervals": {
+            "items": {
+              "$ref": "#/components/schemas/Interval"
+            },
+            "type": "array",
+            "title": "Intervals"
+          },
+          "restored_at_minutes": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Restored At Minutes"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "service_id",
+          "disrupted_minutes",
+          "disruption_fraction",
+          "intervals",
+          "restored_at_minutes"
+        ],
+        "title": "ServiceOutcome"
+      },
       "ServiceRequirement": {
         "properties": {
           "id": {
@@ -9513,6 +11145,232 @@
           "action_type"
         ],
         "title": "StagedActionRequest"
+      },
+      "StandbyOutcome": {
+        "properties": {
+          "service_id": {
+            "type": "string",
+            "title": "Service Id"
+          },
+          "requirement_id": {
+            "type": "string",
+            "title": "Requirement Id"
+          },
+          "backup_asset_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Backup Asset Ids"
+          },
+          "activation_condition": {
+            "type": "string",
+            "title": "Activation Condition"
+          },
+          "activation_minutes": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Activation Minutes",
+            "description": "Scheduled window start, not proof of activation; inspect available_intervals."
+          },
+          "exhaustion_minutes": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Exhaustion Minutes"
+          },
+          "usable_duration_minutes": {
+            "type": "integer",
+            "title": "Usable Duration Minutes"
+          },
+          "available_intervals": {
+            "items": {
+              "$ref": "#/components/schemas/Interval"
+            },
+            "type": "array",
+            "title": "Available Intervals"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "service_id",
+          "requirement_id",
+          "backup_asset_ids",
+          "activation_condition",
+          "activation_minutes",
+          "exhaustion_minutes",
+          "usable_duration_minutes",
+          "available_intervals"
+        ],
+        "title": "StandbyOutcome"
+      },
+      "StressCase": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Id"
+          },
+          "failed_backup_ids": {
+            "items": {
+              "type": "string",
+              "maxLength": 100,
+              "minLength": 1,
+              "pattern": "^[a-zA-Z0-9_.-]+$"
+            },
+            "type": "array",
+            "maxItems": 8,
+            "title": "Failed Backup Ids"
+          },
+          "additional_failures": {
+            "items": {
+              "$ref": "#/components/schemas/Failure"
+            },
+            "type": "array",
+            "maxItems": 8,
+            "title": "Additional Failures"
+          },
+          "backup_capacity": {
+            "items": {
+              "$ref": "#/components/schemas/Capacity"
+            },
+            "type": "array",
+            "maxItems": 8,
+            "title": "Backup Capacity"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id"
+        ],
+        "title": "StressCase"
+      },
+      "StressOutcome": {
+        "properties": {
+          "case": {
+            "$ref": "#/components/schemas/StressCase"
+          },
+          "comparison": {
+            "$ref": "#/components/schemas/Comparison"
+          },
+          "extra_projected_disruption_minutes": {
+            "type": "integer",
+            "title": "Extra Projected Disruption Minutes"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "case",
+          "comparison",
+          "extra_projected_disruption_minutes"
+        ],
+        "title": "StressOutcome"
+      },
+      "StressReport": {
+        "properties": {
+          "nominal": {
+            "$ref": "#/components/schemas/Evaluation"
+          },
+          "cases": {
+            "items": {
+              "$ref": "#/components/schemas/StressOutcome"
+            },
+            "type": "array",
+            "title": "Cases"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "nominal",
+          "cases"
+        ],
+        "title": "StressReport"
+      },
+      "StressRequest": {
+        "properties": {
+          "scenario_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Scenario Id"
+          },
+          "snapshot_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Snapshot Id"
+          },
+          "run_id": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Run Id"
+          },
+          "baseline_fingerprint": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{32}$",
+            "title": "Baseline Fingerprint"
+          },
+          "catalog_fingerprint": {
+            "type": "string",
+            "pattern": "^[a-f0-9]{64}$",
+            "title": "Catalog Fingerprint"
+          },
+          "scenario": {
+            "$ref": "#/components/schemas/FailureScenario"
+          },
+          "intervention_ids": {
+            "items": {
+              "type": "string",
+              "maxLength": 100,
+              "minLength": 1,
+              "pattern": "^[a-zA-Z0-9_.-]+$"
+            },
+            "type": "array",
+            "maxItems": 12,
+            "title": "Intervention Ids"
+          },
+          "cases": {
+            "items": {
+              "$ref": "#/components/schemas/StressCase"
+            },
+            "type": "array",
+            "maxItems": 4,
+            "minItems": 1,
+            "title": "Cases"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "scenario_id",
+          "snapshot_id",
+          "run_id",
+          "baseline_fingerprint",
+          "catalog_fingerprint",
+          "scenario",
+          "cases"
+        ],
+        "title": "StressRequest"
       },
       "TargetReachability": {
         "properties": {

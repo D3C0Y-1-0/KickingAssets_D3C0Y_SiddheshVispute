@@ -19,6 +19,7 @@ export function WorkflowNav({ current }: { current: 'assets' | 'plan' | 'whatif'
       <Link to="/what-if" aria-current={current === 'whatif' ? 'step' : undefined}>
         4. What-If comparison
       </Link>
+      <Link to="/resilience-planner">Resilience Planner</Link>
     </nav>
   )
 }

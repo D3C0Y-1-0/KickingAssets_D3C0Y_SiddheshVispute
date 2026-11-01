@@ -28,7 +28,7 @@ import {
 import { NavLink, Route, Routes, Link, useLocation, useNavigate } from 'react-router-dom'
 import { useMotionValue } from 'motion/react'
 import { api } from '../api/client'
-import { useScenario } from '../hooks/queries'
+import { useScenario, useLatestRun } from '../hooks/queries'
 import { CursorFx } from '../components/CursorFx'
 import { HalftoneBackground } from '../components/HalftoneBackground'
 import { DockNavIcon } from '../components/DockNavIcon'
@@ -51,6 +51,8 @@ const Resilience = lazy(() => import('../features/resilience/Resilience'))
 const Coverage = lazy(() => import('../features/coverage/Coverage'))
 const Defense = lazy(() => import('../features/defense/Defense'))
 const LiveSimulation = lazy(() => import('../features/live/LiveSimulation'))
+const AttackPaths = lazy(() => import('../features/attack-paths/AttackPaths'))
+const Planner = lazy(() => import('../features/planner/Planner'))
 type NavEntry = { path: string; name: string; icon: typeof Grid2X2 }
 const navGroups: { label: string; items: NavEntry[] }[] = [
   {
@@ -76,7 +78,9 @@ const navGroups: { label: string; items: NavEntry[] }[] = [
   {
     label: 'Act',
     items: [
+      { path: '/attack-paths', name: 'Attack Paths', icon: Network },
       { path: '/defend', name: 'Attack & Defend', icon: ShieldAlert },
+      { path: '/resilience-planner', name: 'Resilience Planner', icon: ShieldCheck },
       { path: '/what-if', name: 'What-If', icon: FlaskConical },
       { path: '/remediation', name: 'Fix Plan', icon: ListChecks },
     ],
@@ -116,6 +120,7 @@ export default function App({ onLogoClick }: { onLogoClick?: () => void } = {}) 
   const location = useLocation()
   const navigate = useNavigate()
   const scenarioQuery = useScenario()
+  const latest = useLatestRun()
   const health = useQuery({
     queryKey: ['health'],
     queryFn: ({ signal }) => api.health(signal),
@@ -287,6 +292,15 @@ export default function App({ onLogoClick }: { onLogoClick?: () => void } = {}) 
           </div>
         </header>
         <div className="scroll-fade-bottom" aria-hidden />
+        {latest.isError && (
+          <div className="callout warn" role="alert">
+            Simulation results are unavailable: {latest.error.message}. Cached risk values are
+            hidden.
+            <button className="button secondary" onClick={() => void latest.refetch()}>
+              Retry simulation results
+            </button>
+          </div>
+        )}
         <main id="main-content" tabIndex={-1}>
           <Suspense fallback={<QueryState pending error={null} />}>
             {location.pathname === '/digital-twins' ? (
@@ -308,6 +322,8 @@ export default function App({ onLogoClick }: { onLogoClick?: () => void } = {}) 
                 <Route path="/digital-twins" element={<DigitalTwins />} />
                 <Route path="/assets" element={<Assets />} />
                 <Route path="/intelligence" element={<Intelligence />} />
+                <Route path="/attack-paths" element={<AttackPaths />} />
+                <Route path="/resilience-planner" element={<Planner />} />
                 <Route path="/curated-intelligence" element={<CuratedIntelligence />} />
                 <Route path="/ml" element={<MlLab />} />
                 <Route path="/what-if" element={<WhatIf />} />

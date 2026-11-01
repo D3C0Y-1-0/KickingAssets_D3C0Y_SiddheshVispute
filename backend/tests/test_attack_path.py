@@ -384,4 +384,4 @@ def test_attack_paths_route_needs_a_run_and_honours_isolation(tmp_path):
     assert base["method_version"] == "attack-path-v1" and base["paths"]
     assert len(cut["paths"]) < len(base["paths"])
     assert not any("PWR-008" in p["nodes"] for p in cut["paths"])
-    assert bad.status_code == 200  # unknown isolated ids are ignored, not an error
+    assert bad.status_code == 422  # a mistyped isolation must not silently do nothing

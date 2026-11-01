@@ -179,7 +179,12 @@ export function useLiveSimulation() {
           ? `Isolating ${cut.assets.length} assets (${cut.total_hours} h) blocks all ${cut.routes_before} attacker routes`
           : 'No plausible attacker route to a critical asset'
       })
-      await step('brief', 'GET /reports/brief', async () => 'Report ready to download')
+      await step('brief', 'GET /reports/brief', async () => {
+        const brief = await api.riskBrief(context)
+        if (brief.run_id !== out.run?.id)
+          throw new Error('The report belongs to a different simulation. Run the workflow again.')
+        return 'Report fetched and checked against this run; ready to download'
+      })
       for (const key of ['activity', 'asset', 'actions'] as const) {
         void client.invalidateQueries({ queryKey: [key] })
       }

@@ -48,7 +48,7 @@ function TrendPanels() {
   if (trend.isPending || trend.error) {
     return <QueryState pending={trend.isPending} error={trend.error} retry={trend.refetch} />
   }
-  if (!data || data.status !== 'computed') {
+  if (!data || data.status !== 'computed' || !data.points?.length) {
     return (
       <Panel title="City risk over time (monthly replay)">
         <EmptyState title="Trend not built" compact>
@@ -319,7 +319,13 @@ export default function Posture() {
                             onClick={() => setSelected(a.asset_id)}
                           >
                             <td>
-                              {a.asset_name}
+                              <button
+                                className="text-link"
+                                aria-label={`View activity for ${a.asset_id}`}
+                                onClick={() => setSelected(a.asset_id)}
+                              >
+                                {a.asset_name}
+                              </button>
                               <span className="ins-sub mono">{a.asset_id}</span>
                             </td>
                             <td>

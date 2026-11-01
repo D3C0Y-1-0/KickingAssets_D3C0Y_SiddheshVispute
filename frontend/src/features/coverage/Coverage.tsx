@@ -240,7 +240,7 @@ export default function Coverage() {
         <div className="ins-metric">
           <div className="label">Objectives</div>
           <div className="value">{count(objectives, 'Working')} / 7</div>
-          <div className="foot">fully working</div>
+          <div className="foot">within prototype scope</div>
         </div>
       </div>
       <div style={{ marginTop: 16, display: 'grid', gap: 16 }}>
@@ -255,8 +255,8 @@ export default function Coverage() {
         </Panel>
       </div>
       <p className="ins-fine">
-        Statuses are reviewed text, not computed. They match docs/VERIFICATION.md and the limits
-        stated on each page.
+        Statuses are authored feature mappings within prototype scope, not evidence of compliance or
+        full objective completion. Read docs/VERIFICATION.md and the limits stated on each page.
       </p>
     </>
   )
