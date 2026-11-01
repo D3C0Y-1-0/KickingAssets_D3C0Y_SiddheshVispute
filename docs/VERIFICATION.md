@@ -395,3 +395,72 @@ was bypassed. All final gates above passed. The original app/teammate API instan
 restarted; isolated QA port 8001 uses artifacts/phase8.sqlite3. Restart an older backend from this
 branch before using the new frontend with it. The runbook lists exact steps and remaining
 prototype limits. New results stay projected/not_verified, and no infrastructure action occurs.
+
+## Phase 8 HLT-001 simulation feedback fix — 1 November 2026
+
+Reproduced HLT-001, local power loss, horizon 360 in the actual compiled planner on local
+port 8001. POST /api/v1/resilience/preventive/simulate returned HTTP 200 with matching run,
+baseline and catalog fingerprints. The actual outcome was one HLT-001 outage [0,360] and
+zero disruption for all three services. This is an asset outage with no propagated service
+loss under the current graph assumptions, not a failed request or a recovery guarantee.
+
+Root cause: successful results were rendered only in section 3 after the intervention catalog,
+more than 1400px below the viewport top during reproduction; section 1 had no completion
+feedback. Brief loading feedback was easy to miss. Added adjacent pending, structured error
+and API-derived success feedback, including an explanation for zero service impact. A View
+simulation results control focuses and scrolls the existing comparison region into view,
+without animation. Run/fingerprint guards, algorithms and API contracts are unchanged.
+
+Verification: 15 focused planner tests passed (9.10s), strict TypeScript, focused Prettier
+check and production build passed (2607 modules, 25.83s). Tests cover pending -> valid zero
+service outcome with asset outage, nearby structured HTTP 422 error/retry, focus/scroll,
+late-response invalidation and the existing planner journey. Initial sandbox attempt failed
+before any tests ran because of EPERM on a temporary-file rename; the authorized normal-host
+rerun passed. No full backend/frontend regression suite was repeated for this scoped fix.
+
+Actual rebuilt browser: clicking Simulate failure showed HLT-001 completion at viewport
+y=420..492 (height 764). View simulation results focused the comparison at y=80. Screenshot:
+ignored artifacts/screenshots/phase8-hlt001-feedback.jpg. No code, server, database, branch,
+merge or push outside the stated frontend feedback scope was required. Changes remain local.
+
+## Final Resilience Planner UI clarity verification — 1 November 2026
+
+Local branch codex/resilience-planner-clarity, based on verified Phase 8 4e777061. Includes the
+previously uncommitted HLT-001 feedback fix. No merge/push, rejected cinematic branch, new
+package, backend algorithm, contract, dataset or ML artifact changes.
+
+- Focused planner/shared-module suites: 54 tests passed across 2 files, 12.71s. The 19 planner
+  tests were rerun after final result/error wording changes: all passed, 8.70s. No unrelated
+  full regression suites repeated. The final sidebar-order/caption adjustment was browser
+  verified. Strict TypeScript, Prettier and production build passed (2607 modules, 16.79s).
+- Automated boundaries cover exact requests/bindings, stale/late results, invalid API payloads,
+  structured failures/retry, zero-service success, separate cyber/operational display inputs,
+  evidence-only affected scope, absent standby links and unavailable-vs-zero comparisons.
+- Actual compiled browser PWR-008: local power loss, horizon 360, no restoration; unprotected
+  360 service-minutes. Defaults 12 credits / 24 engineering hours / 6 shutdown hours selected
+  recover-PWR-008 (4/8/1) and fresh replay gave 90. Forcing PWR-010 unavailable under that
+  fixed recovery plan gave 180 (extra 90). The final chart visibly shows 360 / 90 / 180.
+- Actual HLT-001: same cause/horizon, 1 asset outage and 0 downstream service minutes. Its
+  completion feedback, missing after/stress values and comparison remain distinct.
+- D3 full operational view: 30 nodes, 23 actual edges, including 3 declared backup edges.
+  17 unaffected nodes dimmed in the nominal PWR-008 scenario; affected scope showed 13 nodes /
+  15 edges. The separate cyber view had 30 nodes / 27 access connections, with explicit
+  non-compromise and non-causal context captions. At API minute 30 PWR-008 changed red to
+  green (outage interval ended); no edge travel time was invented.
+- Actual map/planner comparison: identical sorted inventories (30 stable asset IDs) and all
+  23 operational edge IDs. Shared backup-edge title exposes provider/dependent, requirement
+  and 30-minute grace. Map footnote now correctly directs calculation to Resilience Planner.
+- Mobile 390x844: document client/scroll widths 375/375. Planner link is now third, after
+  Live Simulation: y322..365 within navigation ending at y489. An initial placement beside
+  Assets was partially clipped; final ordering fixes that without altering the theme.
+  Menu keyboard controls and comparison focus/scroll worked. Temporary viewport reset.
+- Browser consoles had no warnings/errors. Screenshots planner-final-comparison.jpg and
+  planner-final-mobile.jpg under ignored artifacts/screenshots were captured and inspected.
+- Credential-pattern scan passed; protected API/model/data files compared unchanged to Phase 8.
+
+Scope limits: synthetic projections only, no kW/load-flow capacity, verified recovery or real
+infrastructure actions. Causal edge IDs are aggregate evidence without per-edge transition
+clocks. Cyber context is separate topology, not a compromise simulation. Stress reevaluates
+one chosen plan; advanced CVE challenge authoring/scopes remain API-only. No full WCAG,
+physical-device, production, concurrency or security penetration audit is claimed.
+Demo and implementation notes: RESILIENCE_PLANNER_DEMO.md. Exact modified files: FILE_MANIFEST.md.

@@ -301,12 +301,14 @@ export default function Infrastructure() {
               Healthcare
             </span>
             <span className={`edge-legend ${mode}`} />
-            {mode === 'cyber' ? 'Permitted direction' : 'Required / redundant / backup'}
+            {mode === 'cyber'
+              ? 'Permitted access direction (not compromise)'
+              : 'Provider → dependent; dotted edges are declared standby'}
           </div>
           <div className="panel-footnote">
             {mode === 'cyber'
               ? 'Directed paths represent fictional protocol and access assumptions. They do not establish exploit success or attack propagation.'
-              : 'Edges point from provider to dependent. Backup and redundancy requirements are stored; cascading disruption is not calculated.'}
+              : 'Edges are direct provider → dependent relationships; indirect dependencies follow multiple edges. Hover an edge or use the inspector for its requirement, group and grace period. This map shows topology; use Resilience Planner for calculated conditional disruption.'}
           </div>
         </Panel>
         <aside className="inspector panel">
@@ -384,7 +386,7 @@ export default function Infrastructure() {
                       <small>
                         {edge.kind === 'cyber'
                           ? `${edge.protocol} · ${edge.access.replaceAll('_', ' ')}`
-                          : `${edge.dependency} · ${edge.requirement}`}
+                          : `${edge.dependency} · ${edge.requirement} · grace ${edge.grace_period_minutes} min${edge.redundancy_group ? ` · ${edge.redundancy_group}: minimum ${edge.minimum_providers}` : ''}`}
                       </small>
                     </div>
                   ))}

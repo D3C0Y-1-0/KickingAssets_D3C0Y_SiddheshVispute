@@ -8,11 +8,28 @@ import { MemoryRouter } from 'react-router-dom'
 import type { ReactNode } from 'react'
 import { api, ApiError, type Models, type SimulationRun } from '../src/api/client'
 import Planner from '../src/features/planner/Planner'
-import { Replay } from '../src/features/planner/Replay'
-import { contains, eventsFor } from '../src/features/planner/model'
+import { DisruptionChart, Replay } from '../src/features/planner/Replay'
+import { contains, eventsFor, replayScope } from '../src/features/planner/model'
 
 vi.mock('../src/features/infrastructure/ForceGraph', () => ({
-  ForceGraph: () => <div>Real D3 is verified in browser</div>,
+  ForceGraph: ({
+    nodes,
+    edges,
+    mode,
+  }: {
+    nodes: { id: string }[]
+    edges: { id: string }[]
+    mode: string
+  }) => (
+    <div
+      data-testid="graph-inputs"
+      data-nodes={nodes.map((a) => a.id).join(',')}
+      data-edges={edges.map((e) => e.id).join(',')}
+      data-mode={mode}
+    >
+      Real D3 is verified in browser
+    </div>
+  ),
 }))
 const context = { scenario_id: 'test', snapshot_id: 'test-v1' }
 const run = {
@@ -186,12 +203,15 @@ beforeEach(() => {
     { id: context.scenario_id, current_snapshot_id: context.snapshot_id },
   ] as Models['Scenario'][])
   vi.spyOn(api, 'latestRun').mockResolvedValue(run)
-  vi.spyOn(api, 'graph').mockResolvedValue({
-    ...context,
-    type: 'operational',
-    nodes,
-    edges: [],
-  } as Models['OperationalGraph'])
+  vi.spyOn(api, 'graph').mockImplementation(
+    async (mode) =>
+      ({
+        ...context,
+        type: mode,
+        nodes,
+        edges: [],
+      }) as Models['OperationalGraph'] | Models['CyberGraph'],
+  )
   vi.spyOn(api, 'resilienceCatalog').mockResolvedValue(catalog)
   vi.spyOn(api, 'resilienceSimulate').mockImplementation(async (body) =>
     evaluation(body.intervention_ids ?? [], body.intervention_ids?.length ? 3 : 8),
@@ -215,6 +235,55 @@ afterEach(() => {
 })
 
 describe('run-bound planner journey', () => {
+  it('shows pending and zero-service success beside the button and opens the actual results', async () => {
+    let resolve!: (value: Models['Evaluation']) => void
+    vi.mocked(api.resilienceSimulate).mockImplementation(
+      () =>
+        new Promise((done) => {
+          resolve = done
+        }),
+    )
+    const { user } = setup()
+    fireEvent.change(await screen.findByRole('spinbutton', { name: 'Horizon (minutes)' }), {
+      target: { value: '10' },
+    })
+    const button = screen.getByRole('button', { name: 'Simulate failure' })
+    await user.click(button)
+    expect(await screen.findByText(/Simulating failure against the exact run/)).toBeTruthy()
+    expect(button.getAttribute('aria-busy')).toBe('true')
+    expect(button.hasAttribute('disabled')).toBe(true)
+    const result = evaluation()
+    const zeroServiceOutcome = {
+      ...result.comparison.before,
+      total_service_disruption_minutes: 0,
+      services: result.comparison.before.services.map((s) => ({
+        ...s,
+        disrupted_minutes: 0,
+        disruption_fraction: 0,
+        intervals: [],
+        restored_at_minutes: null,
+      })),
+    }
+    result.comparison = {
+      ...result.comparison,
+      before: zeroServiceOutcome,
+      after: zeroServiceOutcome,
+    }
+    await act(async () => resolve(result))
+    const success = await screen.findByText(/Simulation complete for A: 1 asset\(s\)/)
+    expect(success.textContent).toContain('0 modelled service-disruption minutes')
+    expect(success.textContent).toContain('asset outages can still occur')
+    expect(success.closest('section')).toBe(button.closest('section'))
+    expect(button.getAttribute('aria-busy')).toBe('false')
+    const results = screen.getByRole('region', { name: 'Simulation results' })
+    results.scrollIntoView = vi.fn()
+    await user.click(screen.getByRole('button', { name: 'View simulation results' }))
+    expect(document.activeElement).toBe(results)
+    expect(results.scrollIntoView).toHaveBeenCalledWith({ block: 'start', behavior: 'instant' })
+    expect(
+      screen.getByRole('group', { name: 'Resilience operational dependency graph' }),
+    ).toBeTruthy()
+  })
   it('refuses cyber topology in the operational replay', async () => {
     vi.mocked(api.graph).mockResolvedValue({
       ...context,
@@ -294,7 +363,7 @@ describe('run-bound planner journey', () => {
   })
   it('invalidates a plan and replay when budget changes and accepts zero budget', async () => {
     await protectedView()
-    fireEvent.change(screen.getByRole('spinbutton', { name: 'Budget (planning credits)' }), {
+    fireEvent.change(screen.getByRole('spinbutton', { name: 'Available Budget (Demo Credits)' }), {
       target: { value: '0' },
     })
     expect(screen.getByText('Preventive plan outdated.')).toBeTruthy()
@@ -334,7 +403,12 @@ describe('run-bound planner journey', () => {
       target: { value: '10' },
     })
     await user.click(screen.getByRole('button', { name: 'Simulate failure' }))
-    await screen.findByText('Unsupported assumption')
+    const error = await screen.findByRole('alert')
+    expect(error.textContent).toContain('Unsupported assumption')
+    expect(error.textContent).toContain('HTTP 422')
+    expect(error.closest('section')).toBe(
+      screen.getByRole('button', { name: 'Simulate failure' }).closest('section'),
+    )
     expect(screen.getByText(/bad_event: Review event/)).toBeTruthy()
     expect(
       screen.queryByRole('group', { name: 'Resilience operational dependency graph' }),
@@ -388,6 +462,7 @@ describe('run-bound planner journey', () => {
     fireEvent.change(horizon, { target: { value: '20' } })
     await act(async () => resolve(evaluation()))
     await screen.findByText('Failure simulation outdated.')
+    expect(screen.queryByText(/Simulation complete for/)).toBeNull()
     expect(
       screen.queryByRole('group', { name: 'Resilience operational dependency graph' }),
     ).toBeNull()
@@ -409,6 +484,100 @@ describe('run-bound planner journey', () => {
 })
 
 describe('API interval replay', () => {
+  it('filters only evidence-backed assets and keeps cyber connections separate from dependencies', async () => {
+    const user = userEvent.setup()
+    const extraNode = { ...nodes[0], id: 'UNRELATED' }
+    const ops = [
+      {
+        id: 'declared-standby',
+        source_asset_id: 'B',
+        target_asset_id: 'A',
+        requirement: 'backup',
+        dependency: 'backup',
+      },
+    ]
+    render(
+      <Replay
+        outcome={outcome(3)}
+        nodes={[...nodes, extraNode]}
+        edges={ops}
+        names={new Map()}
+        label="Test"
+        directIds={['A']}
+        cyber={{
+          data: {
+            ...context,
+            type: 'cyber',
+            nodes: [...nodes, extraNode],
+            edges: [{ id: 'cyber-only', source_asset_id: 'A', target_asset_id: 'B' }],
+          } as Models['CyberGraph'],
+          pending: false,
+          error: null,
+          retry: vi.fn(),
+        }}
+      />,
+    )
+    expect(screen.getByTestId('graph-inputs').getAttribute('data-nodes')).toContain('UNRELATED')
+    await user.click(screen.getByRole('button', { name: 'Affected Dependencies' }))
+    expect(screen.getByTestId('graph-inputs').getAttribute('data-nodes')).toBe('A,B')
+    expect(screen.getByTestId('graph-inputs').getAttribute('data-edges')).toBe('declared-standby')
+    await user.click(screen.getByRole('button', { name: 'Cyber Connections (context only)' }))
+    expect(screen.getByTestId('graph-inputs').getAttribute('data-mode')).toBe('cyber')
+    expect(screen.getByTestId('graph-inputs').getAttribute('data-edges')).toBe('cyber-only')
+    expect(screen.getByText(/cyber links do not explain those outages/)).toBeTruthy()
+    await user.click(screen.getByRole('button', { name: 'Full Infrastructure' }))
+    expect(screen.getByTestId('graph-inputs').getAttribute('data-nodes')).toContain('UNRELATED')
+  })
+  it('shows cyber context failures without substituting operational edges', async () => {
+    const retry = vi.fn()
+    render(
+      <Replay
+        outcome={outcome(3)}
+        nodes={nodes}
+        edges={[]}
+        names={new Map()}
+        label="Test"
+        cyber={{ pending: false, error: new Error('Cyber context unavailable'), retry }}
+      />,
+    )
+    const user = userEvent.setup()
+    await user.click(screen.getByRole('button', { name: 'Cyber Connections (context only)' }))
+    expect(screen.getByText('Cyber context unavailable')).toBeTruthy()
+    expect(screen.queryByTestId('graph-inputs')).toBeNull()
+    await user.click(screen.getByRole('button', { name: 'Retry connection' }))
+    expect(retry).toHaveBeenCalledOnce()
+    await user.click(screen.getByRole('button', { name: 'Operational Dependencies' }))
+    expect(screen.getByTestId('graph-inputs').getAttribute('data-mode')).toBe('operational')
+  })
+  it('does not invent standby edges, activation or recovery', () => {
+    const noUse = {
+      ...outcome(10),
+      standbys: [
+        {
+          ...outcome(10).standbys[0],
+          activation_minutes: null,
+          exhaustion_minutes: null,
+          available_intervals: [],
+        },
+      ],
+    }
+    const scope = replayScope(
+      noUse,
+      [{ id: 'unrelated', source_asset_id: 'UNRELATED', target_asset_id: 'A' }],
+      ['A'],
+    )
+    expect([...scope.affected]).toEqual(['A'])
+    expect(scope.standby.size).toBe(0)
+    render(<Replay outcome={noUse} nodes={nodes} edges={[]} names={new Map()} label="Test" />)
+    expect(screen.getByText(/none supplied; service substitution does not imply/)).toBeTruthy()
+    expect(screen.getByText(/Scheduled activation.*not triggered/)).toBeTruthy()
+    expect(eventsFor(noUse).some((e) => /outage ends/.test(e.label))).toBe(false)
+  })
+  it('keeps unavailable comparisons distinct from genuine zero disruption', () => {
+    render(<DisruptionChart before={0} />)
+    expect(screen.getAllByText('Not calculated')).toHaveLength(2)
+    expect(screen.getByText('0')).toBeTruthy()
+  })
   it('groups simultaneous events and never invents recovery at the horizon', () => {
     const events = eventsFor(outcome(10))
     expect(events.filter((e) => e.minute === 0).length).toBeGreaterThan(1)

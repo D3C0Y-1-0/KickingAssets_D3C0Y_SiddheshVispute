@@ -6,6 +6,57 @@
 .planner-page {
   overflow-wrap: anywhere;
 }
+.planner-results {
+  scroll-margin-top: 80px;
+}
+.planner-graph .fg-node.is-unaffected:not(.is-selected) {
+  opacity: 0.2;
+}
+.planner-graph .fg-node.is-initiating .fg-body {
+  stroke-width: 4px;
+}
+.planner-graph .fg-link.is-reported {
+  stroke: var(--accent);
+  stroke-width: 2px;
+}
+.planner-graph .fg-link.is-hot {
+  animation: none;
+}
+.planner-backup {
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+.planner-backup-window,
+.planner-comparison-track {
+  position: relative;
+  height: 10px;
+  background: var(--border-soft);
+  overflow: hidden;
+  border-radius: 4px;
+}
+.planner-backup-window span {
+  position: absolute;
+  height: 100%;
+  background: var(--sector-water);
+}
+.planner-comparison {
+  display: grid;
+  gap: 14px;
+}
+.planner-comparison > div {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: 1fr auto;
+}
+.planner-comparison-track {
+  grid-column: 1 / -1;
+}
+.planner-comparison-track span {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+}
 .planner-inputs {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));

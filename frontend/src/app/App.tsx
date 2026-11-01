@@ -49,6 +49,7 @@ const Planner = lazy(() => import('../features/planner/Planner'))
 const navigation: { path: string; name: string; icon: typeof Grid2X2; tag?: string }[] = [
   { path: '/', name: 'Overview', icon: Grid2X2 },
   { path: '/live', name: 'Live Simulation', icon: PlayCircle, tag: 'NEW' },
+  { path: '/resilience-planner', name: 'Resilience Planner', icon: ShieldCheck, tag: 'PLAN' },
   { path: '/infrastructure', name: 'Infrastructure Map', icon: Network },
   { path: '/digital-twins', name: 'Digital Twins', icon: Building2, tag: 'ANATOMY' },
   { path: '/assets', name: 'Assets & Risk', icon: Layers },
@@ -60,7 +61,6 @@ const navigation: { path: string; name: string; icon: typeof Grid2X2; tag?: stri
   { path: '/remediation', name: 'Fix Plan', icon: ListChecks },
   { path: '/posture', name: 'Trends & Activity', icon: Radar },
   { path: '/resilience', name: 'Weak Points', icon: Waypoints },
-  { path: '/resilience-planner', name: 'Resilience Planner', icon: ShieldCheck },
   { path: '/coverage', name: 'Challenge Coverage', icon: ClipboardCheck },
 ]
 

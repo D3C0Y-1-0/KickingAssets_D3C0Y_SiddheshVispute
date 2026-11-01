@@ -9,7 +9,7 @@ import { ActionError } from '../actions/ActionControls'
 import { baselineKey, binding } from '../actions/workflow'
 import { usePlannerAction, usePlannerCatalog } from './queries'
 import { minutesLost, numericIssue, type Outcome } from './model'
-import { Replay, ServiceComparison } from './Replay'
+import { DisruptionChart, Replay, ServiceComparison } from './Replay'
 import './planner.css'
 
 export default function Planner() {
@@ -63,6 +63,7 @@ export default function Planner() {
 function CatalogWorkspace({ run }: { run: SimulationRun }) {
   const catalog = usePlannerCatalog(run)
   const graph = useGraph('operational')
+  const cyber = useGraph('cyber')
   if (catalog.isPending || catalog.isError || graph.isPending || graph.isError)
     return (
       <QueryState
@@ -90,6 +91,22 @@ function CatalogWorkspace({ run }: { run: SimulationRun }) {
       run={run}
       catalog={catalog.data}
       graph={graph.data}
+      cyber={{
+        data:
+          !cyber.isError &&
+          cyber.data?.type === 'cyber' &&
+          cyber.data.scenario_id === run.scenario_id &&
+          cyber.data.snapshot_id === run.snapshot_id &&
+          cyber.data.nodes.length === graph.data.nodes.length &&
+          cyber.data.nodes.every((a) => graph.data.nodes.some((b) => b.id === a.id))
+            ? cyber.data
+            : undefined,
+        pending: cyber.isPending,
+        error: cyber.error,
+        retry: () => {
+          void cyber.refetch()
+        },
+      }}
     />
   )
 }
@@ -98,10 +115,12 @@ function Workspace({
   run,
   catalog,
   graph,
+  cyber,
 }: {
   run: SimulationRun
   catalog: Models['Catalog']
   graph: Models['OperationalGraph'] | Models['CyberGraph']
+  cyber: { data?: Models['CyberGraph']; pending: boolean; error: Error | null; retry: () => void }
 }) {
   const [params] = useSearchParams()
   const [asset, setAsset] = useState(params.get('asset') ?? '')
@@ -121,6 +140,7 @@ function Workspace({
   const [extra, setExtra] = useState('')
   const [view, setView] = useState<'before' | 'after' | 'stress'>('before')
   const [replaySerial, setReplaySerial] = useState(0)
+  const resultsRef = useRef<HTMLDivElement>(null)
   const simulate = usePlannerAction(api.resilienceSimulate)
   const optimize = usePlannerAction(api.resilienceOptimize)
   const protectedReplay = usePlannerAction(api.resilienceSimulate)
@@ -239,7 +259,7 @@ function Workspace({
   useEffect(() => {
     if (known && candidateIds.length === 0 && !optimize.data) chooseAsset(asset)
   }, []) // mount only
-  const errors = [simulate.error, optimize.error, protectedReplay.error, stress.error].filter(
+  const errors = [optimize.error, protectedReplay.error, stress.error].filter(
     (e): e is Error => !!e,
   )
   const avoidedAssets = replay
@@ -327,6 +347,7 @@ function Workspace({
           )}
           <button
             className="button primary"
+            aria-busy={simulate.isPending}
             disabled={!validScenario || busy}
             onClick={() => {
               setView('before')
@@ -335,12 +356,39 @@ function Workspace({
           >
             Simulate failure
           </button>
+          {simulate.isPending && (
+            <p role="status">Simulating failure against the exact run and catalog fingerprint…</p>
+          )}
+          {simulate.error && <ActionError error={simulate.error} />}
+          {baseline && !simulate.isPending && (
+            <>
+              <p role="status">
+                Simulation complete for {asset}: {baseline.comparison.before.asset_outages.length}{' '}
+                asset(s) with modelled outages;{' '}
+                {baseline.comparison.before.total_service_disruption_minutes} modelled
+                service-disruption minutes.
+                {baseline.comparison.before.total_service_disruption_minutes === 0 &&
+                  ' No service disruption propagated in this scenario; asset outages can still occur.'}
+              </p>
+              <button
+                className="button secondary"
+                onClick={() => {
+                  resultsRef.current?.focus({ preventScroll: true })
+                  resultsRef.current?.scrollIntoView({ block: 'start', behavior: 'instant' })
+                }}
+              >
+                View simulation results
+              </button>
+            </>
+          )}
           {simulate.data && !baseline && !simulate.isError && (
             <Outdated subject="Failure simulation" />
           )}
         </div>
       </Panel>
-      {busy && <p role="status">Calculating against the exact run and catalog fingerprint…</p>}
+      {busy && !simulate.isPending && (
+        <p role="status">Calculating against the exact run and catalog fingerprint…</p>
+      )}
       {errors.map((error, i) => (
         <ActionError key={i} error={error} />
       ))}
@@ -348,18 +396,43 @@ function Workspace({
         <div className="panel-padding planner-stack">
           <div className="planner-inputs">
             {[
-              ['Budget (planning credits)', budget, setBudget],
-              ['Effort limit (hours)', effort, setEffort],
-              ['Total maintenance downtime (hours)', downtime, setDowntime],
-              ['Per-action maintenance window (hours, optional)', windowLimit, setWindowLimit],
-            ].map(([label, value, setter]) => (
+              [
+                'Available Budget (Demo Credits)',
+                budget,
+                setBudget,
+                'Synthetic planning credits, not currency. The sum of selected action costs must fit this limit.',
+              ],
+              [
+                'Engineering Work Hours',
+                effort,
+                setEffort,
+                'Total preparation and engineering effort in hours across selected actions.',
+              ],
+              [
+                'Maximum Planned Shutdown',
+                downtime,
+                setDowntime,
+                'Maximum total pre-incident maintenance downtime in hours, separate from simulated incident disruption.',
+              ],
+              [
+                'Maximum Shutdown per Action',
+                windowLimit,
+                setWindowLimit,
+                'Optional per-action maintenance limit in hours. Leave blank for no additional per-action cap.',
+              ],
+            ].map(([label, value, setter, hint]) => (
               <label key={label as string}>
                 {label as string}
+                <small className="muted" title={hint as string}>
+                  {hint as string}
+                </small>
                 <input
                   type="number"
                   min="0"
                   max="1000000"
-                  step={label === 'Budget (planning credits)' ? '1' : 'any'}
+                  aria-label={label as string}
+                  title={hint as string}
+                  step={label === 'Available Budget (Demo Credits)' ? '1' : 'any'}
                   value={value as string}
                   onChange={(e) => (setter as (v: string) => void)(e.target.value)}
                 />
@@ -369,7 +442,9 @@ function Workspace({
           <p>
             Costs and restoration targets are synthetic planning assumptions. Maintenance downtime
             is pre-incident effort, separate from incident disruption. Exact search covers only the
-            selected candidates (at most 12), not every possible real-world intervention.
+            selected candidates (at most 12), not every possible real-world intervention. Candidates
+            are actions the optimizer may choose, not an applied plan. Check only supported measures
+            you want compared; patches cannot undo an already-assumed direct failure.
           </p>
           <label>
             Find catalog interventions
@@ -441,6 +516,12 @@ function Workspace({
                 {plan.effort_hours}h effort / {plan.downtime_hours}h downtime.{' '}
                 {plan.feasible_subsets} feasible of {plan.subsets_considered} subsets.
               </p>
+              <p>
+                Modelled benefit: {plan.comparison.avoided_service_disruption_minutes} fewer
+                service-disruption minutes ({plan.objective_before_minutes} before →{' '}
+                {plan.objective_after_minutes} after). The exact search minimizes disruption for the
+                submitted candidates within all limits; it does not establish real-world optimality.
+              </p>
               {!plan.interventions.length && (
                 <p>
                   No feasible beneficial intervention was selected under these limits. The empty
@@ -451,6 +532,10 @@ function Workspace({
                 {plan.interventions.map((a) => (
                   <li key={a.id}>
                     <strong>{a.id}</strong> — {a.modelled_effect}
+                    <p>
+                      Required: {a.cost_credits} demo credits · {a.effort_hours} engineering hours ·{' '}
+                      {a.downtime_hours} planned shutdown hours.
+                    </p>
                     <p>{a.preconditions.join(' ')}</p>
                     {a.patch && (
                       <p>
@@ -468,8 +553,8 @@ function Workspace({
                 <ul>
                   {plan.rejected_alternatives.map((a) => (
                     <li key={a.intervention_id}>
-                      {a.intervention_id}: {a.reasons.join(', ')} ·{' '}
-                      {a.standalone_disruption_minutes} standalone service-minutes.
+                      {a.intervention_id}: {a.reasons.map((r) => r.replaceAll('_', ' ')).join(', ')}{' '}
+                      · {a.standalone_disruption_minutes} standalone service-minutes.
                     </li>
                   ))}
                 </ul>
@@ -499,23 +584,24 @@ function Workspace({
         </p>
       )}
       <Panel title="3 / Compare the same scenario">
-        <div className="panel-padding planner-stack">
+        <div
+          className="panel-padding planner-stack planner-results"
+          ref={resultsRef}
+          role="region"
+          aria-label="Simulation results"
+          tabIndex={-1}
+        >
           {baseline ? (
             <>
-              <div className="workflow-comparison" aria-label="Modelled service-minute comparison">
-                <div>
-                  <span>Unprotected service-disruption minutes</span>
-                  <strong>{baseline.comparison.before.total_service_disruption_minutes}</strong>
-                </div>
-                <div>
-                  <span>Protected service-disruption minutes</span>
-                  <strong>
-                    {replay && !replayMismatch
-                      ? replay.comparison.after.total_service_disruption_minutes
-                      : 'Not replayed'}
-                  </strong>
-                </div>
-              </div>
+              <DisruptionChart
+                before={baseline.comparison.before.total_service_disruption_minutes}
+                after={
+                  replay && !replayMismatch
+                    ? replay.comparison.after.total_service_disruption_minutes
+                    : undefined
+                }
+                stress={stressed?.cases[0]?.comparison.after.total_service_disruption_minutes}
+              />
               {replay && !replayMismatch && (
                 <>
                   <ServiceComparison comparison={replay.comparison} names={names} />
@@ -531,10 +617,17 @@ function Workspace({
                     .
                   </p>
                   <p>
-                    Assets with no remaining outage:{' '}
+                    Protected assets (no remaining modelled outage):{' '}
                     {avoidedAssets.map((a) => a.asset_id).join(', ') || 'none'}. Shorter outage
                     intervals: {shorterAssets.map((a) => a.asset_id).join(', ') || 'none'}. These
                     summaries are derived from returned intervals.
+                  </p>
+                  <p>
+                    Residual asset outages:{' '}
+                    {replay.comparison.after.asset_outages
+                      .map((a) => `${a.asset_id}: ${minutesLost(a.intervals)} minutes`)
+                      .join('; ') || 'none reported'}
+                    . Ended outage intervals do not establish permanent repair.
                   </p>
                 </>
               )}
@@ -547,7 +640,7 @@ function Workspace({
                     setReplaySerial((s) => s + 1)
                   }}
                 >
-                  Unprotected replay
+                  Before Protection
                 </button>
                 <button
                   className="button secondary"
@@ -558,7 +651,7 @@ function Workspace({
                     setReplaySerial((s) => s + 1)
                   }}
                 >
-                  Protected replay
+                  After Protection
                 </button>
                 <button
                   className="button secondary"
@@ -569,7 +662,7 @@ function Workspace({
                     setReplaySerial((s) => s + 1)
                   }}
                 >
-                  Stressed replay
+                  Backup Stress Test
                 </button>
               </div>
             </>
@@ -588,7 +681,22 @@ function Workspace({
           nodes={graph.nodes}
           edges={graph.edges}
           names={names}
-          label={view === 'before' ? 'Unprotected' : view === 'after' ? 'Protected' : 'Stressed'}
+          directIds={[
+            ...(scenario.failures ?? []).map((f) => f.asset_id),
+            ...(view === 'stress'
+              ? (stressed?.cases[0]?.case.additional_failures?.map((f) => f.asset_id) ?? [])
+              : []),
+          ]}
+          cyber={cyber}
+          capacities={view === 'stress' ? stressed?.cases[0]?.case.backup_capacity : []}
+          failedBackupIds={view === 'stress' ? stressed?.cases[0]?.case.failed_backup_ids : []}
+          label={
+            view === 'before'
+              ? 'Before Protection'
+              : view === 'after'
+                ? 'After Protection'
+                : 'Backup Stress Test'
+          }
         />
       )}
       <Panel title="4 / Stress-test the protected scenario">

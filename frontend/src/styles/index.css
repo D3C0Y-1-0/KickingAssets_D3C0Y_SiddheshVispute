@@ -227,6 +227,10 @@ kbd {
 }
 .sidebar nav {
   display: grid;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  align-content: start;
   gap: 5px;
   padding: 0 12px;
 }
@@ -1416,6 +1420,9 @@ tbody tr:hover {
 }
 .fg-link.operational {
   stroke-dasharray: 5 4;
+}
+.fg-link.is-backup {
+  stroke-dasharray: 1 5;
 }
 .fg-link.is-hot {
   stroke: var(--accent);

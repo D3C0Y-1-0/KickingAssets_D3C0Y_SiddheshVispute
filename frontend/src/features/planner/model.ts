@@ -1,4 +1,5 @@
 import type { Models } from '../../api/client'
+import type { ForceEdge } from '../infrastructure/ForceGraph'
 export type Outcome = Models['FailureOutcome']
 export type Comparison = Models['Comparison']
 export type TimelineEvent = { minute: number; label: string }
@@ -25,7 +26,10 @@ export function eventsFor(outcome: Outcome): TimelineEvent[] {
       standby.activation_minutes,
       `${ids}: scheduled standby window starts; availability required`,
     )
-    add(standby.exhaustion_minutes, `${ids}: stored-energy window exhausted`)
+    add(
+      standby.exhaustion_minutes,
+      `${ids}: scheduled stored-energy window ends (exhaustion limit)`,
+    )
     for (const interval of standby.available_intervals) {
       add(interval.start_minutes, `${ids}: modelled standby output available`)
       add(interval.end_minutes, `${ids}: modelled standby output unavailable`)
@@ -53,4 +57,23 @@ export function numericIssue(value: string, max: number, integer = false) {
 }
 export function minutesLost(intervals: Models['Interval'][]) {
   return intervals.reduce((sum, interval) => sum + interval.end_minutes - interval.start_minutes, 0)
+}
+
+/** Display scope from reported outages/causal IDs and declared standby edges, never inference. */
+export function replayScope(outcome: Outcome, edges: ForceEdge[], directIds: string[]) {
+  const reportedEdges = new Set(outcome.asset_outages.flatMap((a) => a.dependency_edge_ids))
+  const affected = new Set([...directIds, ...outcome.asset_outages.map((a) => a.asset_id)])
+  const standby = new Set(
+    outcome.standbys
+      .filter((b) => b.activation_minutes !== null || b.available_intervals.length > 0)
+      .flatMap((b) => b.backup_asset_ids),
+  )
+  for (const e of edges) {
+    if (reportedEdges.has(e.id) || (e.requirement === 'backup' && standby.has(e.source_asset_id))) {
+      affected.add(e.source_asset_id)
+      affected.add(e.target_asset_id)
+    }
+  }
+  for (const id of standby) affected.add(id)
+  return { affected, standby, reportedEdges }
 }

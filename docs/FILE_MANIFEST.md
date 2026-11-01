@@ -287,3 +287,36 @@ frontend/src/features/planner/planner.css
 frontend/src/features/planner/queries.ts
 frontend/tests/planner.test.tsx
 ```
+
+## Phase 8 simulation-feedback follow-up
+
+Exact modified files (no backend, schema, algorithm or theme changes):
+
+```text
+docs/FILE_MANIFEST.md
+docs/HANDOFF.md
+docs/VERIFICATION.md
+frontend/src/features/planner/Planner.tsx
+frontend/src/features/planner/planner.css
+frontend/tests/planner.test.tsx
+```
+
+## Final Resilience Planner clarity pass
+
+Exact modified/created files, including preserved local feedback fix:
+
+```text
+docs/FILE_MANIFEST.md
+docs/HANDOFF.md
+docs/RESILIENCE_PLANNER_DEMO.md
+docs/VERIFICATION.md
+frontend/src/app/App.tsx
+frontend/src/features/infrastructure/ForceGraph.tsx
+frontend/src/features/infrastructure/Infrastructure.tsx
+frontend/src/features/planner/model.ts
+frontend/src/features/planner/planner.css
+frontend/src/features/planner/Planner.tsx
+frontend/src/features/planner/Replay.tsx
+frontend/src/styles/index.css
+frontend/tests/planner.test.tsx
+```
