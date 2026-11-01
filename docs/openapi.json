@@ -35,7 +35,7 @@
             }
           },
           "422": {
-            "description": "Unprocessable Content",
+            "description": "Unprocessable Entity",
             "content": {
               "application/json": {
                 "schema": {
@@ -90,7 +90,7 @@
             }
           },
           "422": {
-            "description": "Unprocessable Content",
+            "description": "Unprocessable Entity",
             "content": {
               "application/json": {
                 "schema": {
@@ -164,7 +164,7 @@
                 }
               }
             },
-            "description": "Unprocessable Content"
+            "description": "Unprocessable Entity"
           },
           "503": {
             "content": {
@@ -308,7 +308,7 @@
                 }
               }
             },
-            "description": "Unprocessable Content"
+            "description": "Unprocessable Entity"
           },
           "503": {
             "content": {
@@ -396,7 +396,7 @@
                 }
               }
             },
-            "description": "Unprocessable Content"
+            "description": "Unprocessable Entity"
           },
           "503": {
             "content": {
@@ -496,7 +496,7 @@
                 }
               }
             },
-            "description": "Unprocessable Content"
+            "description": "Unprocessable Entity"
           },
           "503": {
             "content": {
@@ -579,7 +579,7 @@
                 }
               }
             },
-            "description": "Unprocessable Content"
+            "description": "Unprocessable Entity"
           },
           "503": {
             "content": {
@@ -633,7 +633,7 @@
             }
           },
           "422": {
-            "description": "Unprocessable Content",
+            "description": "Unprocessable Entity",
             "content": {
               "application/json": {
                 "schema": {
@@ -729,7 +729,7 @@
                 }
               }
             },
-            "description": "Unprocessable Content"
+            "description": "Unprocessable Entity"
           },
           "503": {
             "content": {
@@ -827,7 +827,7 @@
                 }
               }
             },
-            "description": "Unprocessable Content"
+            "description": "Unprocessable Entity"
           },
           "503": {
             "content": {
@@ -891,7 +891,7 @@
             }
           },
           "422": {
-            "description": "Unprocessable Content",
+            "description": "Unprocessable Entity",
             "content": {
               "application/json": {
                 "schema": {
@@ -1073,7 +1073,7 @@
             }
           },
           "422": {
-            "description": "Unprocessable Content",
+            "description": "Unprocessable Entity",
             "content": {
               "application/json": {
                 "schema": {
@@ -1134,7 +1134,7 @@
             }
           },
           "422": {
-            "description": "Unprocessable Content",
+            "description": "Unprocessable Entity",
             "content": {
               "application/json": {
                 "schema": {
@@ -1213,7 +1213,7 @@
                 }
               }
             },
-            "description": "Unprocessable Content"
+            "description": "Unprocessable Entity"
           },
           "503": {
             "content": {
@@ -1272,7 +1272,7 @@
             }
           },
           "422": {
-            "description": "Unprocessable Content",
+            "description": "Unprocessable Entity",
             "content": {
               "application/json": {
                 "schema": {
@@ -1334,7 +1334,7 @@
             }
           },
           "422": {
-            "description": "Unprocessable Content",
+            "description": "Unprocessable Entity",
             "content": {
               "application/json": {
                 "schema": {
@@ -1395,7 +1395,7 @@
             }
           },
           "422": {
-            "description": "Unprocessable Content",
+            "description": "Unprocessable Entity",
             "content": {
               "application/json": {
                 "schema": {
@@ -1508,7 +1508,7 @@
                 }
               }
             },
-            "description": "Unprocessable Content"
+            "description": "Unprocessable Entity"
           },
           "503": {
             "content": {
@@ -1562,7 +1562,7 @@
             }
           },
           "422": {
-            "description": "Unprocessable Content",
+            "description": "Unprocessable Entity",
             "content": {
               "application/json": {
                 "schema": {
@@ -1623,7 +1623,7 @@
             }
           },
           "422": {
-            "description": "Unprocessable Content",
+            "description": "Unprocessable Entity",
             "content": {
               "application/json": {
                 "schema": {
@@ -1801,7 +1801,7 @@
                 }
               }
             },
-            "description": "Unprocessable Content"
+            "description": "Unprocessable Entity"
           },
           "503": {
             "content": {
@@ -1859,7 +1859,7 @@
             }
           },
           "422": {
-            "description": "Unprocessable Content",
+            "description": "Unprocessable Entity",
             "content": {
               "application/json": {
                 "schema": {
@@ -1953,7 +1953,7 @@
                 }
               }
             },
-            "description": "Unprocessable Content"
+            "description": "Unprocessable Entity"
           },
           "503": {
             "content": {
@@ -2017,7 +2017,7 @@
             }
           },
           "422": {
-            "description": "Unprocessable Content",
+            "description": "Unprocessable Entity",
             "content": {
               "application/json": {
                 "schema": {
@@ -2088,7 +2088,7 @@
             }
           },
           "422": {
-            "description": "Unprocessable Content",
+            "description": "Unprocessable Entity",
             "content": {
               "application/json": {
                 "schema": {
@@ -2159,7 +2159,7 @@
             }
           },
           "422": {
-            "description": "Unprocessable Content",
+            "description": "Unprocessable Entity",
             "content": {
               "application/json": {
                 "schema": {
@@ -2230,7 +2230,7 @@
             }
           },
           "422": {
-            "description": "Unprocessable Content",
+            "description": "Unprocessable Entity",
             "content": {
               "application/json": {
                 "schema": {
@@ -2301,7 +2301,7 @@
             }
           },
           "422": {
-            "description": "Unprocessable Content",
+            "description": "Unprocessable Entity",
             "content": {
               "application/json": {
                 "schema": {
@@ -2372,7 +2372,7 @@
             }
           },
           "422": {
-            "description": "Unprocessable Content",
+            "description": "Unprocessable Entity",
             "content": {
               "application/json": {
                 "schema": {
@@ -2485,7 +2485,7 @@
                 }
               }
             },
-            "description": "Unprocessable Content"
+            "description": "Unprocessable Entity"
           },
           "503": {
             "content": {
@@ -2600,7 +2600,7 @@
                 }
               }
             },
-            "description": "Unprocessable Content"
+            "description": "Unprocessable Entity"
           },
           "503": {
             "content": {
@@ -2689,7 +2689,7 @@
                 }
               }
             },
-            "description": "Unprocessable Content"
+            "description": "Unprocessable Entity"
           },
           "503": {
             "content": {
@@ -2778,7 +2778,7 @@
                 }
               }
             },
-            "description": "Unprocessable Content"
+            "description": "Unprocessable Entity"
           },
           "503": {
             "content": {
@@ -2867,7 +2867,7 @@
                 }
               }
             },
-            "description": "Unprocessable Content"
+            "description": "Unprocessable Entity"
           },
           "503": {
             "content": {
@@ -2975,7 +2975,7 @@
                 }
               }
             },
-            "description": "Unprocessable Content"
+            "description": "Unprocessable Entity"
           },
           "503": {
             "content": {
@@ -3124,6 +3124,343 @@
               }
             },
             "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/soc/analyze": {
+      "post": {
+        "tags": [
+          "Live SOC"
+        ],
+        "summary": "Analyze",
+        "operationId": "analyze_api_v1_soc_analyze_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SocAnalysisRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SocAnalysis"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/soc/session": {
+      "post": {
+        "tags": [
+          "Live SOC"
+        ],
+        "summary": "Session",
+        "operationId": "session_api_v1_soc_session_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SocSession"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Live SOC"
+        ],
+        "summary": "Logout",
+        "operationId": "logout_api_v1_soc_session_delete",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SocSession"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/soc/snapshot": {
+      "get": {
+        "tags": [
+          "Live SOC"
+        ],
+        "summary": "Snapshot",
+        "operationId": "snapshot_api_v1_soc_snapshot_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SocSnapshot"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/soc/logs": {
+      "get": {
+        "tags": [
+          "Live SOC"
+        ],
+        "summary": "Logs",
+        "operationId": "logs_api_v1_soc_logs_get",
+        "parameters": [
+          {
+            "name": "before",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "title": "Before"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 200,
+              "minimum": 1,
+              "default": 100,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SocEvent"
+                  },
+                  "title": "Response Logs Api V1 Soc Logs Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/soc/blocks": {
+      "post": {
+        "tags": [
+          "Live SOC"
+        ],
+        "summary": "Block",
+        "operationId": "block_api_v1_soc_blocks_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SocBlockRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SocSnapshot"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/soc/unblock": {
+      "post": {
+        "tags": [
+          "Live SOC"
+        ],
+        "summary": "Unblock",
+        "operationId": "unblock_api_v1_soc_unblock_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SocUnblockRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SocSnapshot"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/soc/nodes/{asset}/protection": {
+      "post": {
+        "tags": [
+          "Live SOC"
+        ],
+        "summary": "Protection",
+        "operationId": "protection_api_v1_soc_nodes__asset__protection_post",
+        "parameters": [
+          {
+            "name": "asset",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Asset"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SocProtectionRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SocSnapshot"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/soc/events": {
+      "get": {
+        "tags": [
+          "Live SOC"
+        ],
+        "summary": "Events",
+        "operationId": "events_api_v1_soc_events_get",
+        "parameters": [
+          {
+            "name": "after",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0,
+              "title": "After"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
           },
           "422": {
             "description": "Validation Error",
@@ -10953,6 +11290,435 @@
           "outcome_window_closed"
         ],
         "title": "SnapshotOption"
+      },
+      "SocAnalysis": {
+        "properties": {
+          "scenario_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Scenario Id"
+          },
+          "snapshot_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Snapshot Id"
+          },
+          "run_id": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Run Id"
+          },
+          "baseline_fingerprint": {
+            "type": "string",
+            "maxLength": 64,
+            "minLength": 8,
+            "title": "Baseline Fingerprint"
+          },
+          "event_id": {
+            "type": "integer",
+            "exclusiveMinimum": 0.0,
+            "title": "Event Id"
+          },
+          "event": {
+            "$ref": "#/components/schemas/SocEvent"
+          },
+          "model_version": {
+            "type": "string",
+            "title": "Model Version"
+          },
+          "model_as_of": {
+            "type": "string",
+            "format": "date",
+            "title": "Model As Of"
+          },
+          "asset": {
+            "$ref": "#/components/schemas/AssetSimulation"
+          },
+          "options": {
+            "items": {
+              "$ref": "#/components/schemas/ActionOption"
+            },
+            "type": "array",
+            "title": "Options"
+          },
+          "what_if_request": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/PlanHandoffRequest"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "projection": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/WhatIfResult"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "notes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Notes"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "scenario_id",
+          "snapshot_id",
+          "run_id",
+          "baseline_fingerprint",
+          "event_id",
+          "event",
+          "model_version",
+          "model_as_of",
+          "asset",
+          "options",
+          "what_if_request",
+          "projection",
+          "notes"
+        ],
+        "title": "SocAnalysis"
+      },
+      "SocAnalysisRequest": {
+        "properties": {
+          "scenario_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Scenario Id"
+          },
+          "snapshot_id": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9_.-]+$",
+            "title": "Snapshot Id"
+          },
+          "run_id": {
+            "type": "string",
+            "maxLength": 120,
+            "minLength": 1,
+            "title": "Run Id"
+          },
+          "baseline_fingerprint": {
+            "type": "string",
+            "maxLength": 64,
+            "minLength": 8,
+            "title": "Baseline Fingerprint"
+          },
+          "event_id": {
+            "type": "integer",
+            "exclusiveMinimum": 0.0,
+            "title": "Event Id"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "scenario_id",
+          "snapshot_id",
+          "run_id",
+          "baseline_fingerprint",
+          "event_id"
+        ],
+        "title": "SocAnalysisRequest"
+      },
+      "SocBlock": {
+        "properties": {
+          "ip": {
+            "type": "string",
+            "title": "Ip"
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason"
+          },
+          "expires_at": {
+            "type": "number",
+            "title": "Expires At"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "ip",
+          "reason",
+          "expires_at"
+        ],
+        "title": "SocBlock"
+      },
+      "SocBlockRequest": {
+        "properties": {
+          "ip": {
+            "type": "string",
+            "maxLength": 64,
+            "minLength": 2,
+            "title": "Ip"
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 160,
+            "minLength": 3,
+            "title": "Reason"
+          },
+          "minutes": {
+            "type": "integer",
+            "maximum": 1440.0,
+            "minimum": 1.0,
+            "title": "Minutes",
+            "default": 10
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "ip",
+          "reason"
+        ],
+        "title": "SocBlockRequest"
+      },
+      "SocEvent": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "timestamp": {
+            "type": "string",
+            "title": "Timestamp"
+          },
+          "source_ip": {
+            "type": "string",
+            "title": "Source Ip"
+          },
+          "asset_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Asset Id"
+          },
+          "category": {
+            "type": "string",
+            "title": "Category"
+          },
+          "severity": {
+            "type": "string",
+            "enum": [
+              "info",
+              "medium",
+              "high",
+              "critical"
+            ],
+            "title": "Severity"
+          },
+          "outcome": {
+            "type": "string",
+            "title": "Outcome"
+          },
+          "method": {
+            "type": "string",
+            "title": "Method"
+          },
+          "path": {
+            "type": "string",
+            "title": "Path"
+          },
+          "status": {
+            "type": "integer",
+            "title": "Status"
+          },
+          "latency_ms": {
+            "type": "number",
+            "title": "Latency Ms"
+          },
+          "explanation": {
+            "type": "string",
+            "title": "Explanation"
+          },
+          "rule_version": {
+            "type": "string",
+            "title": "Rule Version",
+            "default": "soc-rules-v1"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "id",
+          "timestamp",
+          "source_ip",
+          "asset_id",
+          "category",
+          "severity",
+          "outcome",
+          "method",
+          "path",
+          "status",
+          "latency_ms",
+          "explanation"
+        ],
+        "title": "SocEvent"
+      },
+      "SocNode": {
+        "properties": {
+          "asset_id": {
+            "type": "string",
+            "title": "Asset Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "scenario": {
+            "type": "string",
+            "title": "Scenario"
+          },
+          "path": {
+            "type": "string",
+            "title": "Path"
+          },
+          "protected": {
+            "type": "boolean",
+            "title": "Protected"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "asset_id",
+          "name",
+          "scenario",
+          "path",
+          "protected"
+        ],
+        "title": "SocNode"
+      },
+      "SocProtectionRequest": {
+        "properties": {
+          "protected": {
+            "type": "boolean",
+            "title": "Protected"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "protected"
+        ],
+        "title": "SocProtectionRequest"
+      },
+      "SocSession": {
+        "properties": {
+          "operator": {
+            "type": "boolean",
+            "title": "Operator"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "operator"
+        ],
+        "title": "SocSession"
+      },
+      "SocSnapshot": {
+        "properties": {
+          "gateway_port": {
+            "type": "integer",
+            "title": "Gateway Port",
+            "default": 8006
+          },
+          "gateway_ready": {
+            "type": "boolean",
+            "title": "Gateway Ready",
+            "default": false
+          },
+          "events": {
+            "items": {
+              "$ref": "#/components/schemas/SocEvent"
+            },
+            "type": "array",
+            "title": "Events"
+          },
+          "nodes": {
+            "items": {
+              "$ref": "#/components/schemas/SocNode"
+            },
+            "type": "array",
+            "title": "Nodes"
+          },
+          "blocks": {
+            "items": {
+              "$ref": "#/components/schemas/SocBlock"
+            },
+            "type": "array",
+            "title": "Blocks"
+          },
+          "cursor": {
+            "type": "integer",
+            "title": "Cursor"
+          },
+          "retained_events": {
+            "type": "integer",
+            "title": "Retained Events"
+          },
+          "retention_floor": {
+            "type": "integer",
+            "title": "Retention Floor"
+          },
+          "operator": {
+            "type": "boolean",
+            "title": "Operator"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "events",
+          "nodes",
+          "blocks",
+          "cursor",
+          "retained_events",
+          "retention_floor",
+          "operator"
+        ],
+        "title": "SocSnapshot"
+      },
+      "SocUnblockRequest": {
+        "properties": {
+          "ip": {
+            "type": "string",
+            "maxLength": 64,
+            "minLength": 2,
+            "title": "Ip"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "ip"
+        ],
+        "title": "SocUnblockRequest"
       },
       "SoftwareEvidence": {
         "properties": {

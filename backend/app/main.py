@@ -15,6 +15,7 @@ from app.api.insights import router as insights_router
 from app.api.intelligence import router as intelligence_router
 from app.api.preventive import router as preventive_router
 from app.api.routes import router
+from app.api.soc import router as soc_router
 from app.api.vulnerability import router as vulnerability_router
 from app.api.workflow import restore_latest, warm_start
 from app.api.workflow import router as workflow_router
@@ -23,6 +24,8 @@ from app.db.vulnerability_store import bootstrap
 from app.domain.seed import ROOT
 from app.services.intelligence import bootstrap as bootstrap_intelligence
 from app.services.remediation import RemediationError
+from app.services.soc import SocStore
+from app.services.soc_gateway import SocGateway
 
 
 def create_app(db_path: Target | None = None, static_dir: Path | None = None) -> FastAPI:
@@ -46,7 +49,19 @@ def create_app(db_path: Target | None = None, static_dir: Path | None = None) ->
         lifespan=lifespan,
     )
     application.state.db_path = db_path or default_db_path()
+    soc_path = Path(
+        os.environ.get(
+            "GRIDSENTINEL_SOC_DB",
+            str(
+                db_path.with_suffix(".soc.sqlite3")
+                if isinstance(db_path, Path)
+                else ROOT / "artifacts" / "security.sqlite3"
+            ),
+        )
+    )
+    application.state.soc = SocStore(soc_path)
     application.add_middleware(GZipMiddleware, minimum_size=1024)
+    application.add_middleware(SocGateway, store=application.state.soc)
 
     @application.middleware("http")
     async def security_headers(request: Request, call_next):
@@ -119,6 +134,7 @@ def create_app(db_path: Target | None = None, static_dir: Path | None = None) ->
     application.include_router(preventive_router)
     application.include_router(insights_router)
     application.include_router(defense_router)
+    application.include_router(soc_router)
     compiled = (static_dir or ROOT / "frontend" / "dist").resolve()
     if (compiled / "assets").is_dir():
         application.mount(

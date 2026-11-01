@@ -1,9 +1,12 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { ArrowRight, Check, FlaskConical, LoaderCircle, Plus, Trash2 } from 'lucide-react'
 import { useActionOptions, useLatestRun, useScenarioContext, useWhatIf } from '../../hooks/queries'
 import { ProvenanceNotice, SimulationRequired } from '../../components/Simulation'
 import { PageHeading, Panel, QueryState, RiskBadge, SectorBadge } from '../../components/ui'
 import type { ActionType, Models } from '../../api/client'
+import { useSoc } from '../soc/provider'
+import IncidentAnalysis from '../soc/IncidentAnalysis'
 
 type Staged = { asset_id: string; action_type: ActionType }
 
@@ -15,6 +18,28 @@ export default function WhatIf() {
   const whatIf = useWhatIf()
   const [assetId, setAssetId] = useState('')
   const [staged, setStaged] = useState<Staged[]>([])
+  const [params] = useSearchParams()
+  const socEvent = params.get('soc_event')
+  const { analysis, stale } = useSoc()
+  const [edited, setEdited] = useState(false)
+  const matching = !!socEvent && analysis?.data?.event_id === Number(socEvent)
+  const candidate = analysis?.data
+  const incidentData =
+    matching &&
+    candidate &&
+    !stale &&
+    candidate.run_id === run?.id &&
+    candidate.baseline_fingerprint === run?.fingerprint
+      ? candidate
+      : null
+  useEffect(() => {
+    setEdited(false)
+    setStaged(incidentData?.what_if_request?.actions ?? [])
+    setAssetId(incidentData?.asset.asset_id ?? '')
+    whatIf.reset()
+    // Changing baseline/event clears previous staged incident actions and projections.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [socEvent, incidentData?.event_id, run?.id, run?.fingerprint])
   if (latest.isPending || latest.isError)
     return <QueryState pending={latest.isPending} error={latest.error} retry={latest.refetch} />
   if (!run)
@@ -25,12 +50,21 @@ export default function WhatIf() {
           description="Stage preventive actions and see the projected change in risk."
         />
         <SimulationRequired />
+        {socEvent && <IncidentAnalysis />}
       </>
     )
   const active = run.assets.find((a) => a.asset_id === assetId)
   const forAsset = (options.data ?? []).filter((o) => o.asset_id === assetId)
-  const result = whatIf.data
+  const result =
+    whatIf.data &&
+    whatIf.data.run_id === run.id &&
+    whatIf.data.baseline_fingerprint === run.fingerprint
+      ? whatIf.data
+      : !edited
+        ? incidentData?.projection
+        : null
   const change = (next: Staged[]) => {
+    setEdited(true)
     setStaged(next)
     whatIf.reset()
   }
@@ -45,6 +79,7 @@ export default function WhatIf() {
       scenario_id: context.scenario_id,
       snapshot_id: context.snapshot_id ?? '',
       run_id: run?.id ?? '',
+      baseline_fingerprint: run.fingerprint,
       actions: staged,
     } as Models['WhatIfRequest'])
   return (
@@ -59,6 +94,17 @@ export default function WhatIf() {
           </span>
         }
       />
+      {socEvent && (
+        <>
+          <IncidentAnalysis />
+          {!matching && (
+            <p role="alert" className="callout">
+              No retained automatic assessment for event #{socEvent} in this operator tab. Return to
+              SOC Overview and reassess; no result is substituted.
+            </p>
+          )}
+        </>
+      )}
       <div className="whatif-layout">
         <div>
           <Panel title="01 / Select a target asset">

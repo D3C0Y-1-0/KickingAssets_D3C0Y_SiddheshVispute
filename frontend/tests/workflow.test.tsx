@@ -8,6 +8,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { api, type Asset, type Models, type SimulationRun } from '../src/api/client'
 import Remediation from '../src/features/remediation/Remediation'
 import WhatIf from '../src/features/whatif/WhatIf'
+import { SocProvider } from '../src/features/soc/provider'
 import {
   actionNames,
   makeHandoff,
@@ -191,6 +192,7 @@ const projection: Models['WhatIfResult'] = {
 }
 let latest: SimulationRun | null
 beforeEach(() => {
+  vi.spyOn(api, 'socSnapshot').mockRejectedValue(new Error('No SOC operator in workflow fixture'))
   latest = run
   vi.spyOn(api, 'latestRun').mockImplementation(async () => latest)
   vi.spyOn(api, 'assets').mockResolvedValue(assets)
@@ -218,10 +220,12 @@ function mount(path = '/remediation', state?: unknown) {
   render(
     <QueryClientProvider client={client}>
       <MemoryRouter initialEntries={[{ pathname: path, state }]}>
-        <Routes>
-          <Route path="/remediation" element={<Remediation />} />
-          <Route path="/what-if" element={<WhatIf />} />
-        </Routes>
+        <SocProvider>
+          <Routes>
+            <Route path="/remediation" element={<Remediation />} />
+            <Route path="/what-if" element={<WhatIf />} />
+          </Routes>
+        </SocProvider>
       </MemoryRouter>
     </QueryClientProvider>,
   )

@@ -1,5 +1,17 @@
 # Phase 1 handoff
 
+**Current local SOC:** `codex/live-soc` from `live-ui-merged-all` da2f307; uncommitted,
+not pushed. LIVE_SOC.md owns launch/two-device steps. One SOC Overview contains all four
+former modules; old URLs redirect to its panels. Critical/high in-app alerts and opt-in
+desktop notifications use existing tokens. New node alerts update the existing map and
+prepare exact-run model-backed What-If projections. Automatic opening occurs from SOC
+Overview only, preserving ongoing map inspection. Bursts are grouped, historical events
+do not trigger notification storms, and evidence can be reassessed manually. Modelled
+priority is not a learned probability of the observed attack. Existing engines, datasets,
+ML artifacts, dependencies and approved theme are preserved. See the newest VERIFICATION
+record for measured checks and pending browser inspection. Reload the frontend once
+after deployment; new events then update live. No commit or push was requested.
+
 **Current release: codex/innovation-phase-7-8.** Includes completed Phase 7 ec1ed801, Phase 8 4e777061 and clarity/feedback improvements 266eace. The user authorizes publication only to this feature branch. Rejected cinematic ffed644 and unrelated dashboard-theme work remain excluded; approved main UI preserved. Fresh backend 63/frontend 54 focused tests, typecheck, formatting, build and 11 actual HTTP checks passed. Read INNOVATION_RELEASE.md and RESILIENCE_PLANNER_DEMO.md. Earlier local-only status notes below are historical.
 
 **Current: final Resilience Planner clarity pass.** Local branch codex/resilience-planner-clarity from verified Phase 8 4e777061; includes the prior local HLT-001 feedback fix. Read RESILIENCE_PLANNER_DEMO.md and the latest VERIFICATION.md entry. Sidebar visibility, evidence-only graph filters, separated cyber context, backup windows, planning labels and real comparison charts are verified. 54 focused tests, typecheck, formatting/build and browser checks passed. Existing engines/API/data/model/theme preserved. Local commit only; no push or merge. Earlier status notes below are historical.

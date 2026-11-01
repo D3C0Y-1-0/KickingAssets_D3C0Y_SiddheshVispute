@@ -1,5 +1,49 @@
 # Phase 1 verification record
 
+## Live SOC unification and incident workflow — 1 November 2026
+
+Local `codex/live-soc`, base da2f307. No commit/push/merge. Existing working SOC files
+were extended in place; unrelated UI/theme, datasets, model artifacts and engine code
+were preserved.
+
+- `python -m pytest backend/tests/test_soc.py backend/tests/test_soc_analysis.py backend/tests/test_phase5_hardening.py -q -s`
+  passed **69** tests in **139.60s** before the final weak-login integration case was added.
+  Final `python -m pytest backend/tests/test_soc_analysis.py -q -s`: **9 passed, 13.57s**,
+  including the added case. These selected suites now comprise **70 distinct passed tests**
+  (22 SOC + 9 incident analysis + 39 existing remediation guards). One inherited
+  Starlette/httpx deprecation warning. Logs: ignored artifacts/soc-connected-verification.log
+  and artifacts/soc-analysis-final.log. The earlier full-backend gate was 280 passed;
+  the entire backend was not unnecessarily repeated for this additive UI/bridge batch.
+- `npm test`: **79 passed**, five files, **7.07s**. Covers live event deduplication,
+  severity/critical alerts, desktop permission behavior, directed real-neighbour coloring,
+  absent-baseline creation, exact-run automatic What-If navigation, stale result removal,
+  errors, history, blocking/protection and prior frontend workflows.
+- `npm run typecheck` passed. `npm run build` passed, **3059 modules, 10.57s**;
+  existing large-chunk advisory remains. Backend Ruff check passed; all eight SOC Python
+  source/test files passed Ruff format check. Generated OpenAPI/TS were refreshed in order.
+- Full frontend `format:check` reports **10 pre-existing, untouched files**:
+  components/anatomy/SubstationViewer.tsx, components/hospital/HospitalViewer.tsx,
+  components/Simulation.tsx, components/smartcity/SmartCityViewer.tsx,
+  components/transit/TransitViewer.tsx, components/waterplant/WaterPlantViewer.tsx,
+  features/digital-twins/TwinFlow.tsx, features/methodology/Methodology.tsx,
+  features/overview/ActivityHeatmap.tsx, styles/index.css. They were not reformatted.
+  Modified frontend files were formatted separately. `git diff --check` passed.
+
+Actual saved-model results, not UI fixtures: `kev-signal-v1`, WTR-005 risk **10.0**,
+city **35.62 → 35.62** under its selected controls; PWR-001 weak login risk **97.29**,
+city **35.62 → 33.14**. Original baseline equality and exact replay through the existing
+What-If endpoint were verified. The attack does not retrain the model or raise its score.
+No CVE-specific patch is inferred from generic access evidence.
+
+Production launcher readiness passed after restarting only the two verified SOC process
+trees. Both 8005 and 8006 listen, and both services report startup complete. Existing
+databases, profiles and blocks were retained; unrelated server processes were preserved.
+Actual second-laptop probes from 172.19.245.41 were present in the earlier live evidence.
+The user reports the scripts now work, but the newly added visual/notification workflow
+still needs manual two-device inspection. Browser automation remains blocked by the
+previous saved origin-access policy; no alternate browser/rendering bypass was attempted.
+Automated React tests are not claimed as real-browser/mobile/WCAG verification.
+
 ## Phase 5 final integration — 1 November 2026
 
 Source: `integration/phase-5`, verified base 8ea1689, backend 33ed965 and frontend 50f65e9, both preserved through Claude's a5bac82 merge. No conflict required dropping a feature. See [PHASE_5_INTEGRATION.md](PHASE_5_INTEGRATION.md) and [PHASE_5_DEMO.json](PHASE_5_DEMO.json).

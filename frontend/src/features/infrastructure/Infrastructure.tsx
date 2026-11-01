@@ -29,6 +29,8 @@ import {
 } from '../../components/ui'
 import { categoryLabels } from '../../lib/risk'
 import { ForceGraph, type ForceGraphHandle } from './ForceGraph'
+import { useSoc } from '../soc/provider'
+import { mapEvidence } from '../soc/evidence'
 
 /** The single-site twin part (not the campus roll-up) that has this asset behind it, if any. */
 const twinPartOf = (assetId: string) =>
@@ -45,6 +47,7 @@ export default function Infrastructure() {
     : 'all'
   const focusId = params.get('focus')
   const query = useGraph(mode)
+  const { events, connection } = useSoc()
   const graph = useRef<ForceGraphHandle>(null)
   const [selected, setSelected] = useState<string | null>(focusId)
   const [detail, setDetail] = useState<string | null>(null)
@@ -93,6 +96,11 @@ export default function Infrastructure() {
     )
   }, [query.data, nodes])
   const active = nodes.find((a) => a.id === selected)
+  const liveMarks = useMemo(
+    () =>
+      query.data?.scenario_id === 'aurora-city' ? mapEvidence(events, edges, mode) : new Map(),
+    [events, edges, mode, query.data?.scenario_id],
+  )
   const updateParams = (key: string, value: string) =>
     setParams((previous) => {
       const next = new URLSearchParams(previous)
@@ -104,6 +112,8 @@ export default function Infrastructure() {
   const colorOf = useCallback(
     (asset: Asset) => {
       const root = getComputedStyle(document.documentElement)
+      const evidence = liveMarks.get(asset.id)
+      if (evidence) return root.getPropertyValue(evidence.token).trim()
       const category = preview ? riskOf(asset.id)?.category : undefined
       return root
         .getPropertyValue(
@@ -116,7 +126,7 @@ export default function Infrastructure() {
         .trim()
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [preview, runAssets, riskSource, curated.data, curated.isError],
+    [preview, runAssets, riskSource, curated.data, curated.isError, liveMarks],
   )
   const focus = (id: string) => {
     setSelected(id)
@@ -173,6 +183,14 @@ export default function Infrastructure() {
           }
           className="graph-panel"
         >
+          <p className="callout" role="status">
+            SOC evidence: {connection} · Red = confirmed demo-service disclosure or weak-credential
+            access. Orange = observed attempt or a connected asset requiring review.
+            {mode === 'cyber'
+              ? ' Cyber neighbours indicate potential exposure only.'
+              : ' Operational neighbours are conditional dependencies, not observed failures.'}{' '}
+            Select a node for its evidence and reason. Model risk remains a separate calculation.
+          </p>
           <div className="filter-toolbar">
             <label className="search-field">
               <Search size={15} />
@@ -257,6 +275,10 @@ export default function Infrastructure() {
                   colorOf={colorOf}
                   onSelect={setSelected}
                   onZoom={setZoom}
+                  nodeDescription={(asset) =>
+                    liveMarks.get(asset.id)?.explanation ??
+                    'No SOC alert in the loaded evidence window.'
+                  }
                 />
               </div>
               <div className="graph-controls">
@@ -341,6 +363,19 @@ export default function Infrastructure() {
                 <span className="mono subtle-label">{active.id}</span>
                 <h3>{active.name}</h3>
                 <SectorBadge sector={active.sector} />
+                {liveMarks.has(active.id) && (
+                  <div className="callout">
+                    <strong>Live SOC evidence</strong>
+                    <p>{liveMarks.get(active.id)!.explanation}</p>
+                    <Link to={`/?event=${liveMarks.get(active.id)!.event.id}#soc-logs`}>
+                      Inspect SOC evidence
+                    </Link>
+                    {' · '}
+                    <Link to={`/what-if?soc_event=${liveMarks.get(active.id)!.event.id}`}>
+                      Projected preventive response
+                    </Link>
+                  </div>
+                )}
                 <dl className="detail-grid">
                   <dt>Type</dt>
                   <dd>{active.asset_type}</dd>

@@ -1,5 +1,17 @@
 # API contract v1
 
+**Live SOC additive APIs:** `/api/v1/soc/session` POST/DELETE; `/snapshot`, `/events?after=ID`
+(ordered SSE/Last-Event-ID) and `/logs?before=ID&limit=N` GET; `/blocks` POST
+`{ip,reason,minutes}`; `/unblock` POST `{ip}`; `/nodes/{asset}/protection` POST `{protected}`.
+Operator cookies are hashed, expiring, IP-bound and bootstrapped only through loopback.
+Foreign-Origin control writes are rejected. `/analyze` POST requires
+`{event_id,scenario_id,snapshot_id,run_id,baseline_fingerprint}`. `SocAnalysis` returns the
+original event, model version/as-of, unchanged AssetSimulation, supported ActionOptions,
+nullable PlanHandoffRequest/WhatIfResult and explicit limitations. Missing/non-node events,
+unauthorized callers, non-Aurora contexts and stale/mismatched runs are rejected. Analysis
+does not replace baselines. SocEvent adds critical severity for v2 confirmed fictional-data
+disclosures; retained v1 evidence is unchanged. OpenAPI and TS types are regenerated.
+
 **Phase 7 additive endpoints:** four POSTs under `/api/v1/resilience/preventive`: `/catalog`, `/simulate`, `/optimize`, `/stress-test`. All require exact scenario/snapshot/run and 32-hex baseline fingerprint; evaluation also requires the current 64-hex catalog fingerprint. New strict models live in schemas/preventive.py. Limits, action IDs, costs/units, event assumptions and structured 404/409/422/503 behavior are defined in PHASE_7_RESILIENCE_ENGINE.md and regenerated OpenAPI. All 34 pre-existing paths and 113 schemas were compared equal; older action APIs are unchanged. No frontend behavior changed.
 
 **Phase 6 additive contract:** `GET /api/v1/simulation/attack-paths` returns `AttackPathReport`: unchanged engine analysis plus `scenario_id`, `snapshot_id`, `run_id`, `baseline_fingerprint`, `state` and `isolated_assets`. The UI supplies all binding fields; any supplied context requires run_id, optional omitted scenario/snapshot default to the current context, and explicit old/mismatched context is rejected through existing BaselineBinding (409; unknown run 404). Repeated `isolate` query values apply hypothetical full cyber isolation; unknown asset IDs now return 422. `max_paths_per_target` remains 1–50. Omitting all binding fields preserves legacy latest-read compatibility. `/actions/options?run_id=` now validates length at the HTTP boundary (422 rather than an uncaught model validation error). Raw OpenAPI and generated TS are authoritative; the pure attack-path engine is unchanged. See FINAL_DEMO_RUNBOOK.md for reproduction and limitations.

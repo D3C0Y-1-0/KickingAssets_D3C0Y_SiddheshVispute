@@ -1,5 +1,11 @@
 # GridSentinel
 
+**Local live SOC:** [runbook](docs/LIVE_SOC.md). `scripts/start-soc.ps1` starts the operator
+website on 8005 and confined fictional-data services on 8006. SOC Overview contains logs,
+incidents, protection and IP controls. Actual HTTP evidence updates the map and prepares
+run-bound model-backed What-If projections. No automatic remediation or invented asset
+compromise probabilities. Current local work: `codex/live-soc`, uncommitted, not pushed.
+
 **Phase 8 interactive resilience:** [Planner runbook](docs/PHASE_8_RESILIENCE_UI.md) documents the new `/resilience-planner` workflow, API-supported operational replay, exact budget planning, before/after comparison and stress tests. Existing visual identity, D3 graph, engines, datasets and API contracts are preserved. Local branch `feature/phase-8-resilience-ui`; no push or merge.
 
 **Phase 7 backend:** [Preventive Resilience Optimizer](docs/PHASE_7_RESILIENCE_ENGINE.md) adds separate run-bound continuity simulation, a documented intervention catalog, exact bounded service-minute optimization and stress-test APIs. Based on Phase 6 `91f2ab55`; no UI redesign or existing engine/model replacement. Demo: `python scripts/demo_resilience.py --run` using the project virtual environment and a running backend. Full verification is recorded in docs/VERIFICATION.md. This feature branch is local until the owner authorizes a push.

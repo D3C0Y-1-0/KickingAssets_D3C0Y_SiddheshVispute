@@ -75,6 +75,19 @@ function post<T>(path: string, body?: unknown, params: Record<string, string | u
 }
 
 export const api = {
+  socAnalyze: (body: Models['SocAnalysisRequest']) =>
+    post<Models['SocAnalysis']>('/soc/analyze', body),
+  socHistory: (before: number) =>
+    get<Models['SocEvent'][]>('/soc/logs', { before: String(before) }),
+  socSnapshot: () => get<Models['SocSnapshot']>('/soc/snapshot'),
+  socSession: () => post<Models['SocSession']>('/soc/session'),
+  socLogout: () => request<Models['SocSession']>('/soc/session', { method: 'DELETE' }),
+  socBlock: (body: Models['SocBlockRequest']) => post<Models['SocSnapshot']>('/soc/blocks', body),
+  socUnblock: (ip: string) => post<Models['SocSnapshot']>('/soc/unblock', { ip }),
+  socProtection: (asset: string, protectedValue: boolean) =>
+    post<Models['SocSnapshot']>(`/soc/nodes/${encodeURIComponent(asset)}/protection`, {
+      protected: protectedValue,
+    }),
   resilienceCatalog: (body: Models['Binding']) =>
     post<Models['Catalog']>('/resilience/preventive/catalog', body),
   resilienceSimulate: (body: Models['EvaluationRequest']) =>
@@ -182,4 +195,53 @@ export const api = {
     if (context.snapshot_id) query.set('snapshot_id', context.snapshot_id)
     return `${base}/reports/brief?${query}`
   },
+}
+
+/** One SSE connection per operator tab; credentials stay in the same-origin HttpOnly cookie. */
+export function socStream(
+  after: number,
+  event: (value: Models['SocEvent']) => void,
+  state: (value: string) => void,
+  reset: () => void,
+) {
+  const stream = new EventSource(`${base}/soc/events?after=${after}`, { withCredentials: true })
+  let failures = 0
+  stream.onopen = () => {
+    failures = 0
+    state('Live')
+  }
+  stream.onerror = () => {
+    state('Reconnecting')
+    if (++failures >= 3) {
+      stream.close()
+      reset()
+    }
+  }
+  stream.onmessage = (message) => {
+    try {
+      const value = JSON.parse(message.data) as Models['SocEvent']
+      if (
+        !Number.isInteger(value.id) ||
+        typeof value.source_ip !== 'string' ||
+        typeof value.category !== 'string'
+      )
+        throw new Error('Invalid security event')
+      event(value)
+    } catch {
+      state('Invalid event; resynchronizing')
+      stream.close()
+      reset()
+    }
+  }
+  stream.addEventListener('gap', () => {
+    stream.close()
+    state('History gap; resynchronizing')
+    reset()
+  })
+  stream.addEventListener('expired', () => {
+    stream.close()
+    state('Session expired')
+    reset()
+  })
+  return () => stream.close()
 }

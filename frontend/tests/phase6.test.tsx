@@ -19,6 +19,7 @@ import WhatIf from '../src/features/whatif/WhatIf'
 import Remediation from '../src/features/remediation/Remediation'
 import Resilience from '../src/features/resilience/Resilience'
 import Methodology from '../src/features/methodology/Methodology'
+import { SocProvider } from '../src/features/soc/provider'
 
 // Diagram rendering is exercised in the real browser, not emulated by jsdom.
 vi.mock('../src/features/infrastructure/ForceGraph', () => ({
@@ -115,6 +116,7 @@ const report: Models['AttackPathReport'] = {
 }
 
 beforeEach(() => {
+  vi.spyOn(api, 'socSnapshot').mockRejectedValue(new Error('No SOC operator in module fixture'))
   vi.spyOn(api, 'scenarios').mockResolvedValue([
     { id: context.scenario_id, current_snapshot_id: context.snapshot_id },
   ] as Models['Scenario'][])
@@ -136,7 +138,9 @@ function setup(path = '/attack-paths') {
   )
   const wrapper = ({ children }: { children: ReactNode }) => (
     <QueryClientProvider client={client}>
-      <MemoryRouter initialEntries={[path]}>{children}</MemoryRouter>
+      <MemoryRouter initialEntries={[path]}>
+        <SocProvider>{children}</SocProvider>
+      </MemoryRouter>
     </QueryClientProvider>
   )
   return { client, wrapper, user: userEvent.setup() }

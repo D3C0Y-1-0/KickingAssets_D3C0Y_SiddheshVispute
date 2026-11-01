@@ -1,0 +1,122 @@
+.soc-page {
+  display: grid;
+  gap: 18px;
+  overflow-wrap: anywhere;
+}
+.soc-stack {
+  display: grid;
+  gap: 14px;
+  min-width: 0;
+}
+.soc-metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 14px;
+}
+.soc-metric {
+  padding: 18px;
+  display: grid;
+  gap: 8px;
+}
+.soc-metric strong {
+  font-size: 30px;
+  color: var(--accent);
+}
+.soc-node-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+  gap: 16px;
+}
+.soc-node {
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  min-width: 0;
+  display: grid;
+  gap: 10px;
+}
+.soc-node h3,
+.soc-node p {
+  margin: 0;
+}
+.soc-controls {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.soc-alerts {
+  display: grid;
+  gap: 12px;
+  padding: 0;
+  list-style: none;
+}
+.soc-alerts li {
+  border-left: 3px solid var(--risk-high);
+  padding: 12px;
+  background: var(--surface-inset);
+  display: grid;
+  gap: 8px;
+}
+.soc-block-form {
+  scroll-margin-top: 80px;
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+}
+.soc-page label {
+  display: grid;
+  gap: 8px;
+}
+.soc-page input {
+  min-width: 0;
+  width: 100%;
+}
+.soc-page td {
+  max-width: 280px;
+}
+.soc-severity-info {
+  --soc-severity: var(--text-secondary);
+}
+.soc-severity-medium {
+  --soc-severity: var(--risk-medium);
+}
+.soc-severity-high {
+  --soc-severity: var(--risk-high);
+}
+.soc-severity-critical {
+  --soc-severity: var(--risk-critical);
+}
+.soc-severity-label {
+  color: var(--soc-severity);
+  font-weight: 700;
+}
+.soc-log-row td:first-child {
+  border-left: 3px solid var(--soc-severity);
+}
+.soc-alerts li[class*='soc-severity-'] {
+  border-left-color: var(--soc-severity);
+}
+.soc-notification {
+  border: 1px solid var(--soc-severity);
+  border-left: 4px solid var(--soc-severity);
+  border-radius: 12px;
+  background: var(--surface-inset);
+  padding: 16px;
+  margin-bottom: 18px;
+  overflow-wrap: anywhere;
+}
+.soc-notification strong {
+  color: var(--soc-severity);
+}
+.soc-checkbox {
+  display: flex !important;
+  align-items: center;
+  gap: 8px;
+}
+.soc-checkbox input {
+  width: auto;
+}
+.soc-page [id^='soc-'] {
+  scroll-margin-top: 80px;
+}

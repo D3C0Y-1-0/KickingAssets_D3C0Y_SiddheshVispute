@@ -1,5 +1,15 @@
 # Domain contracts
 
+**Live SOC:** additive schemas/soc.py owns events, sessions, nodes, blocks, snapshots and
+analysis. Events preserve UTC server time, actual peer, asset, HTTP outcome/latency and
+detector version. Critical is additive; historical evidence is not rewritten.
+SocAnalysisRequest extends exact BaselineBinding with event ID and mandatory fingerprint.
+SocAnalysis references the existing AssetSimulation, ActionOption, PlanHandoffRequest and
+WhatIfResult contracts with model/date lineage. No new prediction target or shared domain
+shape is invented. Shared models.py/simulation.py and both graph schemas are unchanged.
+The separate SOC store adds its detector-version column idempotently; infrastructure
+storage is not silently migrated. Missing analysis remains unavailable, never zero.
+
 **Phase 7:** schemas/preventive.py adds mandatory-fingerprint Binding, explicit Failure/CyberChallenge/FailureScenario, versioned Intervention/Catalog, EvaluationRequest/OptimizationRequest/StressRequest, interval/standby/service/asset outcomes, Comparison/Evaluation/Optimization and StressReport. Finite strict numeric bounds, unique event identity, explicit causes and extra-field rejection protect the additive API. Outputs retain run/date/model/engine/scoring lineage, catalog/input hashes, UTC calculation time, projected/not_verified state and separate service-minute and optional legacy risk results. Existing shared models and schemas remain unchanged. See PHASE_7_RESILIENCE_ENGINE.md.
 
 **Phase 6:** `schemas/attack_paths.py::AttackPathReport` inherits the unchanged pure-engine AttackPathAnalysis and adds exact scenario/snapshot/run/fingerprint, current/projected state and sorted hypothetical isolated asset IDs. It is an API envelope, not another risk/compromise model. Shared models.py, simulation shapes, graph schemas and model artifacts are unchanged. Generated contracts were regenerated. Missing/failed reads remain unavailable, never zero. See FINAL_DEMO_RUNBOOK.md.

@@ -1,0 +1,153 @@
+GRIDINAL - TWO-LAPTOP SOC ATTACK DEMONSTRATION
+Date: 1 November 2026
+
+PURPOSE
+Send actual, bounded HTTP requests from Laptop 2 to Gridinal's confined node
+services on Laptop 1. All exposed records and reports are fictional. These
+commands do not provide Windows shell/SSH access or attack physical equipment.
+
+PREPARATION
+1. Connect both laptops to the same trusted private Wi-Fi/hotspot.
+2. On Laptop 1, open PowerShell in the project root and run:
+   powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\scripts\start-soc.ps1"
+3. Keep that terminal open. Open http://127.0.0.1:8005/ on Laptop 1 and click
+   "Open local operator session" if required. Use the SOC Overview page.
+4. Run ipconfig on both laptops. Record their active Wi-Fi IPv4 addresses.
+5. Allow inbound TCP 8006 on Laptop 1's Private firewall profile only from
+   Laptop 2's IPv4. Administrator privileges are required. Do not disable
+   the firewall or expose this demonstration through internet port forwarding.
+6. Copy scripts/soc-demo.ps1 from Laptop 1 into Laptop 2's Downloads folder.
+   Run the commands in PowerShell, not by double-clicking the script.
+
+ON LAPTOP 2 - SETUP ONCE PER POWERSHELL WINDOW
+cd "$env:USERPROFILE\Downloads"
+$serverIp = '192.168.1.10'
+
+IMPORTANT: Replace 192.168.1.10 with LAPTOP 1's actual IPv4, NOT Laptop 2's IP.
+Check that the file exists:
+Test-Path ".\soc-demo.ps1"
+Expected: True. If False, copy the file into this folder and verify that its
+name is soc-demo.ps1, not soc-demo.ps1.txt.
+
+CONNECTIVITY CHECK (NOT AN ATTACK)
+Test-NetConnection -ComputerName $serverIp -Port 8006
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\soc-demo.ps1" -ServerIP $serverIp -Action Probe
+Expected: TcpTestSucceeded True and HTTP 200. A normal health probe has no
+asset ID and should not be labelled a confirmed attack or disclosure.
+
+DEMONSTRATION 1 - REPEATED FAILED LOGIN ATTEMPTS
+Node: PWR-001 - North Grid Gateway.
+Weakness: Missing node-login throttling when its vulnerable profile is enabled.
+Laptop 1: In SOC Overview's Node Services panel, enable PWR-001's vulnerable
+profile to compare unthrottled requests against protection. Incorrect logins
+remain incorrect in either mode; this action does not guess a valid password.
+Laptop 2 command:
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\soc-demo.ps1" -ServerIP $serverIp -Action LoginAttempts
+Expected: Six bounded incorrect login attempts. Repeated failures generate
+high-severity evidence; protected mode throttles excess attempts with HTTP 429.
+Wait at least 10 seconds between batches when comparing protection modes.
+
+DEMONSTRATION 2 - WEAK / GUESSABLE CREDENTIAL LOGIN
+Node: PWR-001 - North Grid Gateway.
+Weakness: The confined vulnerable service accepts viewer/viewer credentials.
+Laptop 1: Enable PWR-001's vulnerable profile.
+Laptop 2 command:
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\soc-demo.ps1" -ServerIP $serverIp -Action Login
+Expected: HTTP 200 and a message confirming a node viewer session. No session
+token is printed. This is node-service access, not host or SOC operator access.
+Enable protection and repeat: weak credentials should be rejected. The actual
+protected password is generated separately and must not be shared or committed.
+
+DEMONSTRATION 3 - BROKEN ACCESS CONTROL / IDOR
+Node: PWR-008 - Dispatch Control Server.
+Prerequisite node: PWR-001, which supplies the viewer node-session token.
+Weakness: A viewer can read another account's fictional dispatch record 1002.
+Laptop 1: Enable vulnerable profiles for BOTH PWR-001 and PWR-008.
+Laptop 2 command:
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\soc-demo.ps1" -ServerIP $serverIp -Action RecordAccess
+Expected: The helper logs in as viewer and returns the other account's
+fictional record. The disclosure produces critical evidence on PWR-008.
+Keep PWR-001 vulnerable, protect PWR-008, then repeat: expect HTTP 403.
+If PWR-001 is protected, login is rejected before the record request occurs.
+
+DEMONSTRATION 4 - SQL INJECTION / QUERY PREDICATE BYPASS
+Node: WTR-005 - Water Quality Historian.
+Weakness: An interpolated query in an isolated, ephemeral SQLite table.
+Laptop 1: Enable WTR-005's vulnerable profile.
+Laptop 2 command:
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\soc-demo.ps1" -ServerIP $serverIp -Action QueryExposure
+Expected: HTTP 200 and additional fictional rows, including a restricted row.
+The helper supplies the demonstration predicate; no manual payload is needed.
+Evidence: query.result / unauthorized_read / CRITICAL.
+Protect WTR-005 and repeat: parameter binding prevents restricted-row disclosure;
+the SQL-like attempt is recorded as MEDIUM, not a confirmed compromise. HTTP 200
+with an empty rows list is a successful defensive result. This handler never
+connects to the real project/infrastructure database or permits database writes.
+
+DEMONSTRATION 5 - UNAUTHORIZED RESTRICTED REPORT ACCESS
+Node: HLT-008 - Hospital Operations Server.
+Weakness: Missing authorization on a fixed fictional maintenance report.
+Laptop 1: Enable HLT-008's vulnerable profile.
+Laptop 2 command:
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\soc-demo.ps1" -ServerIP $serverIp -Action FileAccess
+Expected: HTTP 200 and fictional report content, with critical disclosure evidence.
+Enable protection and repeat: expect HTTP 403. This is not arbitrary host-file
+access, directory traversal, patient-data access or a shell.
+
+DEMONSTRATION 6 - BOUNDED REQUEST BURST / RATE-LIMIT COMPARISON
+Node: PWR-005 - Energy Historian.
+Weakness: The endpoint-specific rate limit is disabled in vulnerable mode.
+Laptop 1: First enable protection, then compare with its vulnerable profile.
+Laptop 2 command:
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\soc-demo.ps1" -ServerIP $serverIp -Action RateBurst
+Expected: Twelve lightweight requests. Protected mode allows five per fixed
+10-second window and returns HTTP 429 for excess requests in that window.
+Window boundaries can affect the exact count; wait 10 seconds before repeating.
+Vulnerable mode records the burst without that endpoint limit. A global safety
+ceiling remains active. This is NOT a DDoS attack or a demonstrated service outage.
+
+LIVE SOC -> MAP -> MODELLED PLANNING FLOW
+1. Keep Laptop 1's SOC Overview open while running a command from Laptop 2.
+2. Live logs show the actual peer IP, timestamp, asset, outcome, severity and
+   explanation without refreshing. Filter by Laptop 2's IP or the node ID.
+3. High/critical new events produce an in-app alert. Desktop alerts require
+   "Enable desktop alerts" and browser permission. Replays and repeated bursts
+   are grouped to avoid notification storms; all requests remain in the logs.
+4. The Infrastructure Map uses red for confirmed demo-service disclosure or
+   accepted weak credentials. Orange means an attempt or an actual directed
+   connected node requiring review. Inspect a node for the evidence/reason.
+   Orange adjacency is not proof of vulnerability, successful pivot or outage.
+   Cyber access paths and operational dependencies remain separate graphs.
+5. Qualifying events prepare an assessment using the existing ML-backed asset
+   priority and supported What-If actions. The exact scenario/snapshot/run and
+   fingerprint are preserved. A first baseline is created only if absent.
+   Stale/mismatched contexts display errors rather than fabricated results.
+6. When enabled, automatic What-If opening occurs from SOC Overview after a
+   projection is ready. Inspecting the map does not trigger forced navigation.
+   The Simulator's current design and algorithms are preserved.
+7. Model risk is a relative scenario priority based on CVE/KEV evidence, not a
+   newly learned probability of this particular attack succeeding. A real alert
+   does not artificially raise the ML score. Projected controls are planning
+   results; they do not repair the target service or execute real remediation.
+
+VERIFIED MODEL EXAMPLES (REFERENCE RESULTS, NOT HARDCODED OUTPUTS)
+Model: kev-signal-v1. WTR-005 asset risk 10.0, selected controls leave the city
+index at 35.62 -> 35.62. PWR-001 asset risk 97.29, selected controls project
+city index 35.62 -> 33.14. Valid results depend on the exact baseline and may
+change with different legitimate inputs. No improvement is invented.
+
+IP BLOCK / UNBLOCK DEMONSTRATION
+Laptop 1: Select an event from Laptop 2, click "Select IP for block", review
+the IP, reason and duration, then click "Block IP".
+Laptop 2: Repeat the Probe command above. Expected: HTTP 403.
+Laptop 1: Click "Unblock" for that IP.
+Laptop 2: Repeat Probe. Expected: HTTP 200.
+Blocking denies NEW HTTP requests on the two application gateways. It does not
+close the TCP port or terminate SSH/host sessions; Test-NetConnection may still
+succeed. Loopback and active operator IPs are protected from accidental lockout.
+
+AFTER THE DEMONSTRATION
+Enable protection for every node, remove demonstration IP blocks, and stop the
+launcher with Ctrl+C when finished. Remove any temporary firewall rule by its
+exact display name if no longer needed. Keep generated passwords, cookies,
+tokens, SOC databases and logs out of Git. No internet-facing deployment is needed.

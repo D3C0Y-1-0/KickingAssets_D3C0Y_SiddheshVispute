@@ -1,5 +1,54 @@
 # Phase 1 file manifest
 
+## Local live SOC and incident integration
+
+Exact created source/doc files relative to da2f307:
+
+- backend/app/api/soc.py
+- backend/app/schemas/soc.py
+- backend/app/services/soc.py
+- backend/app/services/soc_analysis.py
+- backend/app/services/soc_gateway.py
+- backend/app/soc_targets.py
+- backend/tests/test_soc.py
+- backend/tests/test_soc_analysis.py
+- frontend/src/features/soc/IncidentAnalysis.tsx
+- frontend/src/features/soc/Soc.tsx
+- frontend/src/features/soc/SocAlert.tsx
+- frontend/src/features/soc/evidence.ts
+- frontend/src/features/soc/provider.tsx
+- frontend/src/features/soc/soc.css
+- frontend/tests/soc.test.tsx
+- scripts/soc-demo.ps1
+- scripts/start-soc.ps1
+- docs/LIVE_SOC.md
+- docs/SOC_ATTACK_DEMO.txt
+
+Modified source/derived/doc files:
+
+- backend/app/main.py
+- frontend/src/api/client.ts
+- frontend/src/api/schema.d.ts (generated)
+- frontend/src/app/App.tsx
+- frontend/src/features/infrastructure/Infrastructure.tsx
+- frontend/src/features/whatif/WhatIf.tsx
+- frontend/src/main.tsx
+- frontend/tests/phase6.test.tsx
+- frontend/tests/workflow.test.tsx
+- README.md
+- docs/ARCHITECTURE.md
+- docs/API_CONTRACT.md
+- docs/DOMAIN_MODELS.md
+- docs/IMPLEMENTATION_PLAN.md
+- docs/HANDOFF.md
+- docs/VERIFICATION.md
+- docs/FILE_MANIFEST.md
+- docs/openapi.json (generated)
+
+SOC databases, node password, process metadata, logs and build output remain ignored.
+No engine, shared domain/simulation schema, dataset, model artifact, dependency manifest,
+approved global theme or teammate branch was modified. No commit/push/merge.
+
 ## Phase 5 final integration
 
 Both feature histories are preserved. The exact integration-only file list relative to the clean a5bac82/cb7920a merge is [PHASE_5_INTEGRATION_FILES.txt](PHASE_5_INTEGRATION_FILES.txt). New `ActionControls.tsx` supplies contract-backed constraint/patch editors, fixed-version evidence and structured errors. Existing action helpers/screens, API client, Live Simulation hook and tests were adapted to the authoritative merged API; OpenAPI/TypeScript were regenerated. Documentation records results, limits and launch. No backend/ML/dataset file was modified by integration wiring beyond the imported feature histories.

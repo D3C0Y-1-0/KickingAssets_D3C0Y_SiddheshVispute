@@ -31,6 +31,7 @@ import { HalftoneBackground } from '../components/HalftoneBackground'
 import { DockNavIcon } from '../components/DockNavIcon'
 import { QueryState } from '../components/ui'
 import Overview from '../features/overview/Overview'
+import SocAlert from '../features/soc/SocAlert'
 import brandMark from '../assets/brand/gridinal-mark.png'
 import brandWord from '../assets/brand/gridinal-wordmark.png'
 
@@ -46,12 +47,14 @@ const Defense = lazy(() => import('../features/defense/Defense'))
 const LiveSimulation = lazy(() => import('../features/live/LiveSimulation'))
 const AttackPaths = lazy(() => import('../features/attack-paths/AttackPaths'))
 const Planner = lazy(() => import('../features/planner/Planner'))
+const Soc = lazy(() => import('../features/soc/Soc'))
 type NavEntry = { path: string; name: string; icon: typeof Grid2X2 }
 const navGroups: { label: string; items: NavEntry[] }[] = [
   {
     label: 'Monitor',
     items: [
-      { path: '/', name: 'Overview', icon: Grid2X2 },
+      { path: '/', name: 'SOC Overview', icon: ShieldCheck },
+      { path: '/overview', name: 'Infrastructure Overview', icon: Grid2X2 },
       { path: '/live', name: 'Live Simulation', icon: PlayCircle },
       { path: '/infrastructure', name: 'Infrastructure Map', icon: Network },
       { path: '/digital-twins', name: 'Digital Twins', icon: Building2 },
@@ -285,6 +288,7 @@ export default function App({ onLogoClick }: { onLogoClick?: () => void } = {}) 
           </div>
         )}
         <main id="main-content" tabIndex={-1}>
+          <SocAlert />
           <Suspense fallback={<QueryState pending error={null} />}>
             {location.pathname === '/digital-twins' ? (
               <Routes>
@@ -300,7 +304,11 @@ export default function App({ onLogoClick }: { onLogoClick?: () => void } = {}) 
               <QueryState pending={false} error={null} empty />
             ) : (
               <Routes>
-                <Route path="/" element={<Overview />} />
+                <Route path="/" element={<Soc />} />
+                <Route path="/security-logs" element={<Navigate to="/#soc-logs" replace />} />
+                <Route path="/soc-incidents" element={<Navigate to="/#soc-incidents" replace />} />
+                <Route path="/soc-nodes" element={<Navigate to="/#soc-nodes" replace />} />
+                <Route path="/overview" element={<Overview />} />
                 <Route path="/infrastructure" element={<Infrastructure />} />
                 <Route path="/digital-twins" element={<DigitalTwins />} />
                 <Route path="/assets" element={<Navigate to="/intelligence" replace />} />

@@ -1,5 +1,15 @@
 # Architecture
 
+**Live SOC extension:** dedicated SQLite evidence/control storage is shared by the main
+application and confined target gateway. Actual peer enforcement, durable ordered SSE and
+one global frontend provider support unified SOC, alerts and existing D3 map overlays.
+Red means confirmed demo-service access/disclosure; orange means an attempt or directed
+conditional relationship, not verified propagation. Both graphs remain separate.
+Operator-only `/soc/analyze` binds retained evidence to an exact run/fingerprint and calls
+the unchanged evaluated model/risk and What-If engines. Events never become ML features,
+new CVE matches or infrastructure-state changes. The first browser analysis can create a
+missing baseline; existing mismatched runs are rejected. No automatic remediation.
+
 **Phase 8 UI integration:** features/planner consumes the unchanged Phase 7 APIs through the central typed client and before/after baseline guards. The existing ForceGraph is reused with operational edges and API-interval-derived node colors. Replay uses reported boundaries only; scheduled backup windows are distinct from usable output. No new algorithms, schemas, models or theme. See PHASE_8_RESILIENCE_UI.md.
 
 **Phase 7 additive resilience engine:** [PHASE_7_RESILIENCE_ENGINE.md](PHASE_7_RESILIENCE_ENGINE.md) documents event-time recovery/finite-standby continuity simulation over the existing operational groups, exact bounded subset search and conditional cyber prevention via the unchanged attack-path engine. The old impact, risk, ML and What-If algorithms remain untouched; a legacy What-If companion covers selected patch/segmentation only. New `/resilience/preventive/*` APIs bind before/after calculation. No UI or persistence migration is included.
