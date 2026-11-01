@@ -187,6 +187,10 @@ export default function LiveSimulation() {
           ,{' '}
           <Link className="text-link" to="/resilience">
             Weak Points
+          </Link>
+          ,{' '}
+          <Link className="text-link" to="/defend">
+            Attack &amp; Defend
           </Link>{' '}
           and{' '}
           <Link className="text-link" to="/remediation">

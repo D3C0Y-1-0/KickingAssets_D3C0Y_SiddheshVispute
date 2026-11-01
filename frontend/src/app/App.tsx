@@ -26,6 +26,7 @@ import {
   Network,
   PlayCircle,
   Radar,
+  ShieldAlert,
   ShieldCheck,
   Search,
   Shield,
@@ -53,6 +54,7 @@ const MlLab = lazy(() => import('../features/ml/MlLab'))
 const Posture = lazy(() => import('../features/posture/Posture'))
 const Resilience = lazy(() => import('../features/resilience/Resilience'))
 const Coverage = lazy(() => import('../features/coverage/Coverage'))
+const Defense = lazy(() => import('../features/defense/Defense'))
 const LiveSimulation = lazy(() => import('../features/live/LiveSimulation'))
 type NavEntry = { path: string; name: string; icon: typeof Grid2X2 }
 const navGroups: { label: string; items: NavEntry[] }[] = [
@@ -79,13 +81,17 @@ const navGroups: { label: string; items: NavEntry[] }[] = [
   {
     label: 'Act',
     items: [
+      { path: '/defend', name: 'Attack & Defend', icon: ShieldAlert },
       { path: '/what-if', name: 'What-If', icon: FlaskConical },
       { path: '/remediation', name: 'Fix Plan', icon: ListChecks },
     ],
   },
   {
     label: 'Evidence',
-    items: [{ path: '/coverage', name: 'Challenge Coverage', icon: ClipboardCheck }],
+    items: [
+      { path: '/coverage', name: 'Challenge Coverage', icon: ClipboardCheck },
+      { path: '/methodology', name: 'Methodology', icon: BookOpen },
+    ],
   },
 ]
 const navigation = navGroups.flatMap((g) => g.items)
@@ -224,7 +230,8 @@ export default function App() {
     retry: 1,
   })
   const activeName =
-    navigation.find((x) => x.path === location.pathname)?.name ?? 'Methodology & Evidence'
+    navigation.find((x) => x.path === location.pathname)?.name ??
+    (location.pathname === '/methodology' ? 'Methodology' : 'Page not found')
   useEffect(() => {
     setMenuOpen(false)
     document.title = `${activeName} | Gridinal`
@@ -397,6 +404,7 @@ export default function App() {
                 <Route path="/resilience" element={<Resilience />} />
                 <Route path="/coverage" element={<Coverage />} />
                 <Route path="/live" element={<LiveSimulation />} />
+                <Route path="/defend" element={<Defense />} />
                 <Route path="/methodology" element={<Methodology />} />
                 <Route
                   path="*"

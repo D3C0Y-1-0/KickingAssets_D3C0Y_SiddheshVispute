@@ -4,6 +4,7 @@ import {
   api,
   type ActivityReport,
   type ChokepointReport,
+  type CutPlan,
   type Models,
   type SimulationRun,
   type VendorReport,
@@ -26,6 +27,7 @@ export type LiveResults = {
   chokepoints?: ChokepointReport
   vendors?: VendorReport
   plan?: Models['RemediationPlan']
+  cut?: CutPlan
 }
 
 const initial: LiveStep[] = [
@@ -72,6 +74,14 @@ const initial: LiveStep[] = [
     explain:
       'Pick the fixes that cut the most risk for the least effort. Results are estimates, not checked.',
     call: 'POST /actions/optimize',
+    status: 'idle',
+  },
+  {
+    id: 'defend',
+    label: 'Plan the defence',
+    explain:
+      'Find how an attacker could get in, and the cheapest set of cuts that blocks every route.',
+    call: 'GET /defense/prevention',
     status: 'idle',
   },
   {
@@ -161,6 +171,13 @@ export function useLiveSimulation() {
         })
         out.plan = plan
         return `${plan.steps.length} fixes could take risk from ${plan.starting_city_index.toFixed(1)} to ${plan.ending_city_index.toFixed(1)}`
+      })
+      await step('defend', 'GET /defense/prevention', async () => {
+        const cut = await api.prevention()
+        out.cut = cut
+        return cut.status === 'cut_found'
+          ? `Isolating ${cut.assets.length} assets (${cut.total_hours} h) blocks all ${cut.routes_before} attacker routes`
+          : 'No plausible attacker route to a critical asset'
       })
       await step('brief', 'GET /reports/brief', async () => 'Report ready to download')
       for (const key of ['activity', 'asset', 'actions'] as const) {

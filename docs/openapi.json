@@ -35,7 +35,7 @@
             }
           },
           "422": {
-            "description": "Unprocessable Entity",
+            "description": "Unprocessable Content",
             "content": {
               "application/json": {
                 "schema": {
@@ -90,7 +90,7 @@
             }
           },
           "422": {
-            "description": "Unprocessable Entity",
+            "description": "Unprocessable Content",
             "content": {
               "application/json": {
                 "schema": {
@@ -164,7 +164,7 @@
                 }
               }
             },
-            "description": "Unprocessable Entity"
+            "description": "Unprocessable Content"
           },
           "503": {
             "content": {
@@ -308,7 +308,7 @@
                 }
               }
             },
-            "description": "Unprocessable Entity"
+            "description": "Unprocessable Content"
           },
           "503": {
             "content": {
@@ -396,7 +396,7 @@
                 }
               }
             },
-            "description": "Unprocessable Entity"
+            "description": "Unprocessable Content"
           },
           "503": {
             "content": {
@@ -496,7 +496,7 @@
                 }
               }
             },
-            "description": "Unprocessable Entity"
+            "description": "Unprocessable Content"
           },
           "503": {
             "content": {
@@ -579,7 +579,7 @@
                 }
               }
             },
-            "description": "Unprocessable Entity"
+            "description": "Unprocessable Content"
           },
           "503": {
             "content": {
@@ -633,7 +633,7 @@
             }
           },
           "422": {
-            "description": "Unprocessable Entity",
+            "description": "Unprocessable Content",
             "content": {
               "application/json": {
                 "schema": {
@@ -729,7 +729,7 @@
                 }
               }
             },
-            "description": "Unprocessable Entity"
+            "description": "Unprocessable Content"
           },
           "503": {
             "content": {
@@ -827,7 +827,7 @@
                 }
               }
             },
-            "description": "Unprocessable Entity"
+            "description": "Unprocessable Content"
           },
           "503": {
             "content": {
@@ -891,7 +891,7 @@
             }
           },
           "422": {
-            "description": "Unprocessable Entity",
+            "description": "Unprocessable Content",
             "content": {
               "application/json": {
                 "schema": {
@@ -1073,7 +1073,7 @@
             }
           },
           "422": {
-            "description": "Unprocessable Entity",
+            "description": "Unprocessable Content",
             "content": {
               "application/json": {
                 "schema": {
@@ -1134,7 +1134,7 @@
             }
           },
           "422": {
-            "description": "Unprocessable Entity",
+            "description": "Unprocessable Content",
             "content": {
               "application/json": {
                 "schema": {
@@ -1213,7 +1213,7 @@
                 }
               }
             },
-            "description": "Unprocessable Entity"
+            "description": "Unprocessable Content"
           },
           "503": {
             "content": {
@@ -1272,7 +1272,7 @@
             }
           },
           "422": {
-            "description": "Unprocessable Entity",
+            "description": "Unprocessable Content",
             "content": {
               "application/json": {
                 "schema": {
@@ -1334,7 +1334,7 @@
             }
           },
           "422": {
-            "description": "Unprocessable Entity",
+            "description": "Unprocessable Content",
             "content": {
               "application/json": {
                 "schema": {
@@ -1395,7 +1395,7 @@
             }
           },
           "422": {
-            "description": "Unprocessable Entity",
+            "description": "Unprocessable Content",
             "content": {
               "application/json": {
                 "schema": {
@@ -1508,7 +1508,7 @@
                 }
               }
             },
-            "description": "Unprocessable Entity"
+            "description": "Unprocessable Content"
           },
           "503": {
             "content": {
@@ -1562,7 +1562,7 @@
             }
           },
           "422": {
-            "description": "Unprocessable Entity",
+            "description": "Unprocessable Content",
             "content": {
               "application/json": {
                 "schema": {
@@ -1623,7 +1623,7 @@
             }
           },
           "422": {
-            "description": "Unprocessable Entity",
+            "description": "Unprocessable Content",
             "content": {
               "application/json": {
                 "schema": {
@@ -1727,7 +1727,7 @@
                 }
               }
             },
-            "description": "Unprocessable Entity"
+            "description": "Unprocessable Content"
           },
           "503": {
             "content": {
@@ -1785,7 +1785,7 @@
             }
           },
           "422": {
-            "description": "Unprocessable Entity",
+            "description": "Unprocessable Content",
             "content": {
               "application/json": {
                 "schema": {
@@ -1877,7 +1877,7 @@
                 }
               }
             },
-            "description": "Unprocessable Entity"
+            "description": "Unprocessable Content"
           },
           "503": {
             "content": {
@@ -1941,7 +1941,7 @@
             }
           },
           "422": {
-            "description": "Unprocessable Entity",
+            "description": "Unprocessable Content",
             "content": {
               "application/json": {
                 "schema": {
@@ -2012,7 +2012,7 @@
             }
           },
           "422": {
-            "description": "Unprocessable Entity",
+            "description": "Unprocessable Content",
             "content": {
               "application/json": {
                 "schema": {
@@ -2125,7 +2125,7 @@
                 }
               }
             },
-            "description": "Unprocessable Entity"
+            "description": "Unprocessable Content"
           },
           "503": {
             "content": {
@@ -2240,7 +2240,7 @@
                 }
               }
             },
-            "description": "Unprocessable Entity"
+            "description": "Unprocessable Content"
           },
           "503": {
             "content": {
@@ -2329,7 +2329,7 @@
                 }
               }
             },
-            "description": "Unprocessable Entity"
+            "description": "Unprocessable Content"
           },
           "503": {
             "content": {
@@ -2418,7 +2418,7 @@
                 }
               }
             },
-            "description": "Unprocessable Entity"
+            "description": "Unprocessable Content"
           },
           "503": {
             "content": {
@@ -2507,7 +2507,7 @@
                 }
               }
             },
-            "description": "Unprocessable Entity"
+            "description": "Unprocessable Content"
           },
           "503": {
             "content": {
@@ -2613,7 +2613,7 @@
                 }
               }
             },
-            "description": "Unprocessable Entity"
+            "description": "Unprocessable Content"
           },
           "503": {
             "content": {
@@ -2624,6 +2624,154 @@
               }
             },
             "description": "Service Unavailable"
+          }
+        }
+      }
+    },
+    "/api/v1/defense/attacker": {
+      "get": {
+        "tags": [
+          "Defense"
+        ],
+        "summary": "Attacker",
+        "description": "The best plausible route to each critical asset, and what it does to services step by step.",
+        "operationId": "attacker_api_v1_defense_attacker_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AttackerView"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/defense/prevention": {
+      "get": {
+        "tags": [
+          "Defense"
+        ],
+        "summary": "Prevention",
+        "description": "The cheapest set of assets to segment so no plausible route reaches a critical asset.",
+        "operationId": "prevention_api_v1_defense_prevention_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CutPlan"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Conflict",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/defense/reaction": {
+      "get": {
+        "tags": [
+          "Defense"
+        ],
+        "summary": "Reaction",
+        "description": "If this asset were taken over: where it could spread, and how to contain it.",
+        "operationId": "reaction_api_v1_defense_reaction_get",
+        "parameters": [
+          {
+            "name": "asset",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "title": "Asset"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReactionPlan"
+                }
+              }
+            }
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorEnvelope"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
           }
         }
       }
@@ -4147,6 +4295,125 @@
         ],
         "title": "AttackPathAnalysis"
       },
+      "AttackerRoute": {
+        "properties": {
+          "rank": {
+            "type": "integer",
+            "title": "Rank"
+          },
+          "entry_point": {
+            "type": "string",
+            "title": "Entry Point"
+          },
+          "target": {
+            "type": "string",
+            "title": "Target"
+          },
+          "target_name": {
+            "type": "string",
+            "title": "Target Name"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "plausible",
+              "conditional",
+              "insufficient_evidence"
+            ],
+            "title": "Status"
+          },
+          "ranking_score": {
+            "type": "number",
+            "title": "Ranking Score"
+          },
+          "nodes": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Nodes"
+          },
+          "explanation": {
+            "type": "string",
+            "title": "Explanation"
+          },
+          "frames": {
+            "items": {
+              "$ref": "#/components/schemas/RouteFrame"
+            },
+            "type": "array",
+            "title": "Frames"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "rank",
+          "entry_point",
+          "target",
+          "target_name",
+          "status",
+          "ranking_score",
+          "nodes",
+          "explanation",
+          "frames"
+        ],
+        "title": "AttackerRoute"
+      },
+      "AttackerView": {
+        "properties": {
+          "method_version": {
+            "type": "string",
+            "title": "Method Version"
+          },
+          "entry_points": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Entry Points"
+          },
+          "targets": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Targets"
+          },
+          "routes": {
+            "items": {
+              "$ref": "#/components/schemas/AttackerRoute"
+            },
+            "type": "array",
+            "title": "Routes"
+          },
+          "unreached_targets": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Unreached Targets"
+          },
+          "assumptions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Assumptions"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "method_version",
+          "entry_points",
+          "targets",
+          "routes",
+          "unreached_targets",
+          "assumptions"
+        ],
+        "title": "AttackerView"
+      },
       "Backtest": {
         "properties": {
           "as_of": {
@@ -4886,6 +5153,138 @@
           "snapshot_id"
         ],
         "title": "Context"
+      },
+      "CutAsset": {
+        "properties": {
+          "asset_id": {
+            "type": "string",
+            "title": "Asset Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "sector": {
+            "type": "string",
+            "title": "Sector"
+          },
+          "criticality": {
+            "type": "string",
+            "title": "Criticality"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "entry",
+              "pivot",
+              "target"
+            ],
+            "title": "Role"
+          },
+          "cost_hours": {
+            "type": "number",
+            "title": "Cost Hours"
+          },
+          "routes_through": {
+            "type": "integer",
+            "title": "Routes Through"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "asset_id",
+          "name",
+          "sector",
+          "criticality",
+          "role",
+          "cost_hours",
+          "routes_through"
+        ],
+        "title": "CutAsset"
+      },
+      "CutPlan": {
+        "properties": {
+          "method_version": {
+            "type": "string",
+            "title": "Method Version"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "nothing_to_cut",
+              "cut_found",
+              "cannot_cut"
+            ],
+            "title": "Status"
+          },
+          "assets": {
+            "items": {
+              "$ref": "#/components/schemas/CutAsset"
+            },
+            "type": "array",
+            "title": "Assets"
+          },
+          "total_hours": {
+            "type": "number",
+            "title": "Total Hours"
+          },
+          "isolate_everything_hours": {
+            "type": "number",
+            "title": "Isolate Everything Hours"
+          },
+          "routes_before": {
+            "type": "integer",
+            "title": "Routes Before"
+          },
+          "routes_after": {
+            "type": "integer",
+            "title": "Routes After"
+          },
+          "targets_before": {
+            "type": "integer",
+            "title": "Targets Before"
+          },
+          "targets_after": {
+            "type": "integer",
+            "title": "Targets After"
+          },
+          "protected_targets": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Protected Targets"
+          },
+          "verified_by": {
+            "type": "string",
+            "title": "Verified By"
+          },
+          "assumptions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Assumptions"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "method_version",
+          "status",
+          "assets",
+          "total_hours",
+          "isolate_everything_hours",
+          "routes_before",
+          "routes_after",
+          "targets_before",
+          "targets_after",
+          "protected_targets",
+          "verified_by",
+          "assumptions"
+        ],
+        "title": "CutPlan"
       },
       "CveRemediation": {
         "properties": {
@@ -7259,6 +7658,155 @@
         ],
         "title": "Provenance"
       },
+      "ReactionPlan": {
+        "properties": {
+          "method_version": {
+            "type": "string",
+            "title": "Method Version"
+          },
+          "compromised": {
+            "type": "string",
+            "title": "Compromised"
+          },
+          "compromised_name": {
+            "type": "string",
+            "title": "Compromised Name"
+          },
+          "spread": {
+            "items": {
+              "$ref": "#/components/schemas/SpreadItem"
+            },
+            "type": "array",
+            "title": "Spread"
+          },
+          "targets_reached": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Targets Reached"
+          },
+          "isolate_source_disruption": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Isolate Source Disruption"
+          },
+          "isolate_source_services": {
+            "items": {
+              "$ref": "#/components/schemas/ServiceLoss"
+            },
+            "type": "array",
+            "title": "Isolate Source Services"
+          },
+          "block_assets": {
+            "items": {
+              "$ref": "#/components/schemas/CutAsset"
+            },
+            "type": "array",
+            "title": "Block Assets"
+          },
+          "block_hours": {
+            "type": "number",
+            "title": "Block Hours"
+          },
+          "targets_after_block": {
+            "type": "integer",
+            "title": "Targets After Block"
+          },
+          "steps": {
+            "items": {
+              "$ref": "#/components/schemas/ReactionStep"
+            },
+            "type": "array",
+            "title": "Steps"
+          },
+          "assumptions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Assumptions"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "method_version",
+          "compromised",
+          "compromised_name",
+          "spread",
+          "targets_reached",
+          "isolate_source_disruption",
+          "isolate_source_services",
+          "block_assets",
+          "block_hours",
+          "targets_after_block",
+          "steps",
+          "assumptions"
+        ],
+        "title": "ReactionPlan"
+      },
+      "ReactionStep": {
+        "properties": {
+          "order": {
+            "type": "integer",
+            "title": "Order"
+          },
+          "kind": {
+            "type": "string",
+            "enum": [
+              "contain",
+              "block",
+              "watch",
+              "recover"
+            ],
+            "title": "Kind"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "detail": {
+            "type": "string",
+            "title": "Detail"
+          },
+          "assets": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Assets"
+          },
+          "hours": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Hours"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "order",
+          "kind",
+          "title",
+          "detail",
+          "assets",
+          "hours"
+        ],
+        "title": "ReactionStep"
+      },
       "ReferenceDataset": {
         "properties": {
           "id": {
@@ -7890,6 +8438,73 @@
         ],
         "title": "RiskFactor"
       },
+      "RouteFrame": {
+        "properties": {
+          "step": {
+            "type": "integer",
+            "title": "Step"
+          },
+          "asset_id": {
+            "type": "string",
+            "title": "Asset Id"
+          },
+          "asset_name": {
+            "type": "string",
+            "title": "Asset Name"
+          },
+          "effect": {
+            "type": "string",
+            "title": "Effect"
+          },
+          "hop_status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Hop Status"
+          },
+          "note": {
+            "type": "string",
+            "title": "Note"
+          },
+          "services": {
+            "items": {
+              "$ref": "#/components/schemas/ServiceLoss"
+            },
+            "type": "array",
+            "title": "Services"
+          },
+          "worst": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Worst"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "step",
+          "asset_id",
+          "asset_name",
+          "effect",
+          "hop_status",
+          "note",
+          "services",
+          "worst"
+        ],
+        "title": "RouteFrame",
+        "description": "The state of the city after the attacker has reached this step of the route."
+      },
       "Scenario": {
         "properties": {
           "id": {
@@ -8235,6 +8850,37 @@
           "disruption_fraction"
         ],
         "title": "ServiceDisruption"
+      },
+      "ServiceLoss": {
+        "properties": {
+          "service_id": {
+            "type": "string",
+            "title": "Service Id"
+          },
+          "service_name": {
+            "type": "string",
+            "title": "Service Name"
+          },
+          "fraction": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fraction"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "service_id",
+          "service_name",
+          "fraction"
+        ],
+        "title": "ServiceLoss"
       },
       "ServiceRequirement": {
         "properties": {
@@ -8750,6 +9396,62 @@
           "provenance"
         ],
         "title": "SoftwareEvidence"
+      },
+      "SpreadItem": {
+        "properties": {
+          "asset_id": {
+            "type": "string",
+            "title": "Asset Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "criticality": {
+            "type": "string",
+            "title": "Criticality"
+          },
+          "depth": {
+            "type": "integer",
+            "title": "Depth"
+          },
+          "via": {
+            "type": "string",
+            "title": "Via"
+          },
+          "hop_status": {
+            "type": "string",
+            "title": "Hop Status"
+          },
+          "explanation": {
+            "type": "string",
+            "title": "Explanation"
+          },
+          "worst_disruption": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Worst Disruption"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "asset_id",
+          "name",
+          "criticality",
+          "depth",
+          "via",
+          "hop_status",
+          "explanation",
+          "worst_disruption"
+        ],
+        "title": "SpreadItem"
       },
       "StagedActionRequest": {
         "properties": {

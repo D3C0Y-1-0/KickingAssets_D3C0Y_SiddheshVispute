@@ -72,6 +72,7 @@ export default function DigitalTwins() {
   return (
     <TwinNavProvider value={nav}>
       <div className="twin-page">
+        <h1 className="sr-only">Digital twins</h1>
         <div className="twin-bar">
           <label className="twin-bar-field">
             <span>Diagram</span>

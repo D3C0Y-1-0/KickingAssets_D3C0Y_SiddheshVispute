@@ -767,31 +767,39 @@ export default function Overview() {
               <Link className="text-link" to="/ml">
                 AI model
               </Link>
-            </div>
-          </section>
-          <section className="workflow-step">
-            <span className="step-number">STEP 3 · ACT</span>
-            <h3>Plan the fixes</h3>
-            <p>
-              Which updates and access changes cut the most risk for the least effort. These are
-              estimates.
-            </p>
-            <div className="step-actions">
-              {run ? (
-                <>
-                  <Link className="button secondary" to="/what-if">
-                    What-if <ArrowRight size={14} />
-                  </Link>
-                  <Link className="button secondary" to="/remediation">
-                    Remediation plan <ArrowRight size={14} />
-                  </Link>
-                </>
-              ) : (
-                <span className="subtle-label">Needs step 1</span>
-              )}
-            </div>
-          </section>
-        </div>
+            ) : (
+              <span className="subtle-label">Needs step 1</span>
+            )}
+            <Link className="text-link" to="/ml">
+              AI model
+            </Link>
+          </div>
+        </section>
+        <section className="workflow-step">
+          <span className="step-number">STEP 3 · ACT</span>
+          <h3>Plan the fixes</h3>
+          <p>
+            Which updates and access changes cut the most risk for the least effort. These are estimates.
+          </p>
+          <div className="step-actions">
+            {run ? (
+              <>
+                <Link className="button secondary" to="/defend">
+                  Attack &amp; defend <ArrowRight size={14} />
+                </Link>
+                <Link className="button secondary" to="/what-if">
+                  What-if <ArrowRight size={14} />
+                </Link>
+                <Link className="button secondary" to="/remediation">
+                  Fix plan <ArrowRight size={14} />
+                </Link>
+              </>
+            ) : (
+              <span className="subtle-label">Needs step 1</span>
+            )}
+          </div>
+        </section>
+      </div>
       </details>
       <ProvenanceNotice />
       <AssetDrawer id={selected} onClose={() => setSelected(null)} />

@@ -1,5 +1,6 @@
 """Workflow endpoints: ML section, simulation, and the action stage."""
 
+import logging
 import threading
 from datetime import date
 from typing import Annotated
@@ -49,6 +50,29 @@ router = APIRouter(
 )
 _run_lock = threading.Lock()
 RUN_HISTORY_LIMIT = 100
+
+
+log = logging.getLogger(__name__)
+
+
+def warm_start(application) -> None:
+    """Re-run the default simulation in the background, so a restarted server heals itself
+    instead of leaving every result page empty until someone presses Run."""
+
+    def work() -> None:
+        try:
+            inv = Inventory(application.state.db_path)
+            scenario_id, snapshot_id = inv.context(SCENARIO_ID, None)
+            with _run_lock:
+                if getattr(application.state, "simulation", None) is not None:
+                    return
+                application.state.simulation = simulation.run_simulation(
+                    application.state.db_path, scenario_id, snapshot_id, None
+                )
+        except Exception:  # never take the server down for a warm-up
+            log.exception("Warm start failed")
+
+    threading.Thread(target=work, name="warm-start", daemon=True).start()
 
 
 def _latest(request: Request) -> simulation.RunContext:

@@ -97,7 +97,7 @@ export default function Assets() {
   return (
     <>
       <PageHeading
-        title="Asset & risk register"
+        title="Assets & risk"
         description="Inspect the infrastructure, configuration and evidence behind each asset."
         actions={<SampleBadge>Scenario inventory</SampleBadge>}
       />

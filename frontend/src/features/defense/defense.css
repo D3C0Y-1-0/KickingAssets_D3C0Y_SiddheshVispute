@@ -1,0 +1,184 @@
+.def-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+  margin-top: 16px;
+}
+@media (max-width: 1100px) {
+  .def-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+.def-routes {
+  list-style: none;
+  margin: 0;
+  padding: 6px 0;
+}
+.def-routes button {
+  display: grid;
+  gap: 2px;
+  width: 100%;
+  text-align: left;
+  padding: 12px 18px;
+  background: none;
+  border: 0;
+  border-bottom: 1px solid var(--border-soft);
+  color: var(--text);
+  font: inherit;
+  font-size: 15px;
+  cursor: pointer;
+}
+.def-routes button span:not(.ins-tag) {
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+.def-routes button .ins-tag {
+  justify-self: start;
+  margin-top: 4px;
+}
+.def-routes button:hover,
+.def-routes button.selected {
+  background: var(--surface-hover);
+}
+.def-routes button.selected {
+  box-shadow: inset 3px 0 0 var(--accent);
+}
+.def-chain {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 16px 18px 6px;
+}
+.def-node {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--text-secondary);
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+.def-node .num {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--track);
+  font-size: 12px;
+  font-weight: 700;
+}
+.def-node.done {
+  color: var(--text);
+  border-color: var(--critical-border);
+}
+.def-node.done .num {
+  background: var(--critical-soft);
+  color: var(--risk-critical);
+}
+.def-node.now {
+  color: var(--text);
+  border-color: var(--risk-critical);
+  box-shadow: 0 0 0 3px var(--critical-soft);
+}
+.def-node.now .num {
+  background: var(--risk-critical);
+  color: #000;
+}
+.def-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+}
+.def-now {
+  padding: 4px 18px 8px;
+  font-size: 15px;
+}
+.def-now p {
+  margin: 4px 0 0;
+  color: var(--text-secondary);
+  font-size: 14.5px;
+  line-height: 1.5;
+}
+.def-services {
+  display: grid;
+  gap: 8px;
+  padding: 8px 18px 4px;
+}
+.def-service {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 15px;
+}
+.def-pick {
+  margin-top: 16px;
+}
+.def-pick label {
+  display: grid;
+  gap: 6px;
+  max-width: 520px;
+}
+.def-pick select {
+  padding: 10px 12px;
+  font-size: 15px;
+}
+.def-steps {
+  list-style: none;
+  margin: 0;
+  padding: 6px 0;
+}
+.def-steps li {
+  display: flex;
+  gap: 14px;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border-soft);
+}
+.def-steps li:last-child {
+  border-bottom: 0;
+}
+.def-steps .num {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-weight: 700;
+}
+.def-steps p {
+  margin: 4px 0 6px;
+  color: var(--text-secondary);
+  font-size: 14.5px;
+  line-height: 1.5;
+}
+.def-spread {
+  list-style: none;
+  margin: 0;
+  padding: 4px 0;
+}
+.def-spread li {
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 18px;
+  border-bottom: 1px solid var(--border-soft);
+  font-size: 15px;
+}
+.def-spread li:last-child {
+  border-bottom: 0;
+}
+.def-spread .wave {
+  color: var(--text-muted);
+  font-size: 13px;
+  font-weight: 600;
+}

@@ -42,8 +42,8 @@ export default function Remediation() {
     return (
       <>
         <PageHeading
-          title="Remediation plan"
-          description="Review assets, plan preventive actions and test their projected effects."
+          title="Fix plan"
+          description="Make the next action count. Prioritize reduction, effort and operational feasibility."
         />
         <WorkflowNav current="plan" />
         <SimulationRequired>
@@ -118,7 +118,7 @@ function PlanWorkspace({ run, assets }: { run: SimulationRun; assets: Asset[] })
   return (
     <>
       <PageHeading
-        title="Remediation plan"
+        title="Fix plan"
         description="Choose a planning budget and protected assets. Review the greedy plan, then simulate selected actions in What-If."
       />
       <Panel title="Planning inputs" className="workflow-form">
@@ -442,6 +442,11 @@ function PlanWorkspace({ run, assets }: { run: SimulationRun; assets: Asset[] })
           </div>
         </Panel>
       )}
+      <div className="centered-action">
+        <Link to="/what-if" className="button secondary">
+          Open What-If
+        </Link>
+      </div>
       <ProvenanceNotice />
     </>
   )
