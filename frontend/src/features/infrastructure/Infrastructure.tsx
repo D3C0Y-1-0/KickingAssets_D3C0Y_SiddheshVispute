@@ -136,7 +136,17 @@ export default function Infrastructure() {
       <PageHeading
         title="Infrastructure map"
         description="Two independent views. One inventory. Explore connections without confusing their meaning."
-        actions={<SampleBadge>Fictional topology</SampleBadge>}
+        actions={
+          <>
+            <SampleBadge>Fictional topology</SampleBadge>
+            <Link
+              className="button secondary"
+              to={`/resilience-planner${selected ? `?asset=${selected}` : ''}`}
+            >
+              Resilience Planner
+            </Link>
+          </>
+        }
       />
       <div className="graph-mode-bar">
         <div className="segmented-control" aria-label="Graph display mode">
@@ -296,12 +306,14 @@ export default function Infrastructure() {
               Healthcare
             </span>
             <span className={`edge-legend ${mode}`} />
-            {mode === 'cyber' ? 'Permitted direction' : 'Required / redundant / backup'}
+            {mode === 'cyber'
+              ? 'Permitted access direction (not compromise)'
+              : 'Provider → dependent; dotted edges are declared standby'}
           </div>
           <div className="panel-footnote">
             {mode === 'cyber'
               ? 'Directed paths represent fictional protocol and access assumptions. They do not establish exploit success or attack propagation.'
-              : 'Edges point from provider to dependent. Backup and redundancy requirements are stored; cascading disruption is not calculated.'}
+              : 'Direct arrows point from provider to dependent; indirect effects follow dependency chains. This map shows topology; use Resilience Planner for calculated conditional disruption.'}
           </div>
         </Panel>
         <aside className="inspector panel">

@@ -1559,6 +1559,9 @@ tbody tr:hover {
 .fg-link.operational {
   stroke-dasharray: 5 4;
 }
+.fg-link.operational.is-backup {
+  stroke-dasharray: 1 5;
+}
 .fg-link.is-hot {
   stroke: var(--accent);
   stroke-width: 1.9;

@@ -10,13 +10,13 @@ from fastapi import APIRouter, HTTPException, Query, Request
 from app.domain.seed import SCENARIO_ID
 from app.engine.attack_path import (
     AnalysisConfig,
-    AttackPathAnalysis,
     AttackPathEngine,
     AttackPathInputError,
     Controls,
 )
 from app.engine.attack_path.adapter import consequence_lookup, evidence_from_run, from_bundle
-from app.schemas.models import ErrorEnvelope
+from app.schemas.attack_paths import AttackPathReport
+from app.schemas.models import ErrorEnvelope, Id
 from app.schemas.simulation import (
     ActionDefinition,
     ActionOption,
@@ -180,25 +180,54 @@ def latest(request: Request):
     return _latest(request).run
 
 
-@router.get("/simulation/attack-paths", response_model=AttackPathAnalysis, tags=["Simulation"])
+@router.get("/simulation/attack-paths", response_model=AttackPathReport, tags=["Simulation"])
 def attack_paths(
     request: Request,
     isolate: Annotated[
         list[str] | None, Query(description="Assets treated as segmented away")
     ] = None,
     max_paths_per_target: Annotated[int, Query(ge=1, le=50)] = 5,
+    run_id: Annotated[str | None, Query(min_length=1, max_length=120)] = None,
+    baseline_fingerprint: Annotated[str | None, Query(min_length=8, max_length=64)] = None,
+    scenario_id: Id | None = None,
+    snapshot_id: Id | None = None,
 ):
     """Plausible cyber routes from exposed entry points to critical assets, using the latest
     simulation's vulnerability evidence. Reachability is not compromise."""
     ctx = _latest(request)
+    if any(value is not None for value in (run_id, baseline_fingerprint, scenario_id, snapshot_id)):
+        if run_id is None:
+            raise HTTPException(422, "run_id is required when binding attack-path context.")
+        bind_baseline(
+            ctx,
+            _history(request),
+            BaselineBinding(
+                scenario_id=scenario_id or ctx.run.scenario_id,
+                snapshot_id=snapshot_id or ctx.run.snapshot_id,
+                run_id=run_id,
+                baseline_fingerprint=baseline_fingerprint,
+            ),
+        )
+    unknown = sorted(set(isolate or ()) - {asset.id for asset in ctx.bundle.assets})
+    if unknown:
+        raise HTTPException(422, "Unknown isolated assets: " + ", ".join(unknown))
     try:
-        return AttackPathEngine(consequence_lookup(ctx.bundle)).analyze(
+        analysis = AttackPathEngine(consequence_lookup(ctx.bundle)).analyze(
             from_bundle(
                 ctx.bundle,
                 evidence_from_run(ctx.run),
                 Controls(isolated_assets=frozenset(isolate or [])),
             ),
             AnalysisConfig(max_paths_per_target=max_paths_per_target),
+        )
+        return AttackPathReport(
+            **analysis.model_dump(),
+            scenario_id=ctx.run.scenario_id,
+            snapshot_id=ctx.run.snapshot_id,
+            run_id=ctx.run.id,
+            baseline_fingerprint=ctx.run.fingerprint,
+            state="projected" if isolate else "current",
+            isolated_assets=tuple(sorted(set(isolate or ()))),
         )
     except AttackPathInputError as exc:
         raise HTTPException(422, str(exc)) from exc
@@ -213,7 +242,12 @@ def catalog():
 def options(
     request: Request,
     run_id: Annotated[
-        str | None, Query(description="If given, must be the current run; otherwise 409/404")
+        str | None,
+        Query(
+            min_length=1,
+            max_length=120,
+            description="If given, must be the current run; otherwise 409/404",
+        ),
     ] = None,
 ):
     ctx = _latest(request)

@@ -15,6 +15,9 @@ export type TwinRisk = {
 export function useTwinRisk(): {
   run: SimulationRun | null | undefined
   risk: Record<string, TwinRisk>
+  error: Error | null
+  pending: boolean
+  retry: () => unknown
 } {
   const latest = useLatestRun()
   const run = latest.data
@@ -38,5 +41,5 @@ export function useTwinRisk(): {
     }
     return out
   }, [run])
-  return { run, risk }
+  return { run, risk, error: latest.error, pending: latest.isPending, retry: latest.refetch }
 }

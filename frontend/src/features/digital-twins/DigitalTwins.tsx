@@ -37,7 +37,7 @@ export default function DigitalTwins() {
   )
   const [drawerAsset, setDrawerAsset] = useState<string | null>(null)
   const assets = INITIAL_DEMO_ASSETS
-  const { run, risk } = useTwinRisk()
+  const { run, risk, pending, error, retry } = useTwinRisk()
   const prefix = VIEWS.find((v) => v.id === activeTab)?.prefix
   const flagged = (run?.assets ?? []).filter(
     (a) =>
@@ -90,7 +90,16 @@ export default function DigitalTwins() {
             </select>
           </label>
           <div className="twin-bar-alerts">
-            {!run && <span>Run the simulation to light up the twin</span>}
+            {pending && <span role="status">Checking calculated risk…</span>}
+            {error && (
+              <>
+                <span role="alert">{error.message}</span>
+                <button className="button secondary" onClick={() => void retry()}>
+                  Retry risk
+                </button>
+              </>
+            )}
+            {!run && !pending && !error && <span>Run the simulation to light up the twin</span>}
             {run && activeTab === 'transit' && (
               <span>Transit is not part of the scored scenario</span>
             )}

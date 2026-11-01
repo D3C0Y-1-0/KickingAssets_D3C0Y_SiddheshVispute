@@ -18,6 +18,21 @@ export type ForceEdge = {
   id: string
   source_asset_id: string
   target_asset_id: string
+  dependency?: string
+  requirement?: string
+  redundancy_group?: string | null
+  minimum_providers?: number
+  grace_period_minutes?: number
+  protocol?: string
+  access?: string
+}
+
+export function edgeDescription(e: ForceEdge, mode: GraphMode) {
+  return `${e.id}: ${e.source_asset_id} → ${e.target_asset_id} · ${
+    mode === 'cyber'
+      ? `cyber access assumption · ${e.protocol ?? 'protocol not supplied'} · ${e.access ?? ''}; connectivity is not compromise`
+      : `operational provider → dependent · ${e.dependency ?? 'dependency'} · ${e.requirement ?? 'requirement not supplied'}${e.redundancy_group ? ` · group ${e.redundancy_group}, minimum ${e.minimum_providers} providers` : ''}${e.grace_period_minutes != null ? ` · grace ${e.grace_period_minutes} min` : ''}`
+  }`
 }
 
 export type ForceGraphHandle = {
@@ -36,6 +51,10 @@ type Props = {
   colorOf: (asset: Asset) => string
   onSelect: (id: string | null) => void
   onZoom?: (percent: number) => void
+  emphasizedIds?: ReadonlySet<string>
+  reportedEdgeIds?: ReadonlySet<string>
+  nodeDescription?: (asset: Asset) => string
+  initiatingIds?: ReadonlySet<string>
 }
 
 type SimNode = Asset & {
@@ -60,7 +79,19 @@ const shortName = (a: Asset) =>
  * emerge without hiding cross-sector links. Nothing here computes risk.
  */
 export const ForceGraph = forwardRef<ForceGraphHandle, Props>(function ForceGraph(
-  { nodes, edges, mode, selected, colorOf, onSelect, onZoom },
+  {
+    nodes,
+    edges,
+    mode,
+    selected,
+    colorOf,
+    onSelect,
+    onZoom,
+    emphasizedIds,
+    reportedEdgeIds,
+    nodeDescription,
+    initiatingIds,
+  },
   ref,
 ) {
   const host = useRef<HTMLDivElement>(null)
@@ -174,6 +205,13 @@ export const ForceGraph = forwardRef<ForceGraphHandle, Props>(function ForceGrap
       .attr('class', `fg-link ${mode}`)
       .attr('fill', 'none')
       .attr('marker-end', `url(#fg-arrow-base-${mode})`)
+      .classed('is-backup', (l) => edges.find((e) => e.id === l.id)?.requirement === 'backup')
+    linkSel.append('title').text((l) =>
+      edgeDescription(
+        edges.find((e) => e.id === l.id)!,
+        mode,
+      ),
+    )
 
     const nodeSel = nodeLayer
       .selectAll<SVGGElement, SimNode>('g')
@@ -470,6 +508,23 @@ export const ForceGraph = forwardRef<ForceGraphHandle, Props>(function ForceGrap
         if (!s.classed('fg-ring')) s.attr('fill', c)
       })
   }, [colorOf, nodes, edges, mode])
+
+  useEffect(() => {
+    if (!host.current) return
+    const root = select(host.current)
+    root
+      .selectAll<SVGGElement, SimNode>('.fg-node')
+      .classed('is-unaffected', (d) => !!emphasizedIds && !emphasizedIds.has(d.id))
+      .classed('is-initiating', (d) => !!initiatingIds?.has(d.id))
+      .attr(
+        'aria-label',
+        (d) =>
+          `${d.id} ${d.name}, ${d.sector}, ${d.criticality}${nodeDescription ? ` · ${nodeDescription(d)}` : ''}`,
+      )
+    root
+      .selectAll<SVGPathElement, SimLink>('.fg-link')
+      .classed('is-reported', (d) => !!reportedEdgeIds?.has(d.id))
+  }, [emphasizedIds, reportedEdgeIds, nodeDescription, initiatingIds, nodes, edges, mode])
 
   return <div className="fg-host" ref={host} />
 })

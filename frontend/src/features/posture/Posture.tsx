@@ -48,7 +48,7 @@ function TrendPanels() {
   if (trend.isPending || trend.error) {
     return <QueryState pending={trend.isPending} error={trend.error} retry={trend.refetch} />
   }
-  if (!data || data.status !== 'computed') {
+  if (!data || data.status !== 'computed' || !data.points?.length) {
     return (
       <Panel title="City risk over time (monthly replay)">
         <EmptyState title="Trend not built" compact>

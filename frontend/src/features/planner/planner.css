@@ -1,0 +1,118 @@
+.planner-stack {
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+}
+.planner-page {
+  overflow-wrap: anywhere;
+}
+.planner-results {
+  scroll-margin-top: 80px;
+}
+.planner-graph .fg-node.is-unaffected:not(.is-selected) {
+  opacity: 0.2;
+}
+.planner-graph .fg-node.is-initiating .fg-body {
+  stroke-width: 4px;
+}
+.planner-graph .fg-link.is-reported {
+  stroke: var(--accent);
+  stroke-width: 2px;
+}
+.planner-graph .fg-link.is-hot {
+  animation: none;
+}
+.planner-backup {
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+.planner-backup-window,
+.planner-comparison-track {
+  position: relative;
+  height: 10px;
+  background: var(--border-soft);
+  overflow: hidden;
+  border-radius: 4px;
+}
+.planner-backup-window span {
+  position: absolute;
+  height: 100%;
+  background: var(--sector-water);
+}
+.planner-comparison {
+  display: grid;
+  gap: 14px;
+}
+.planner-comparison > div {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: 1fr auto;
+}
+.planner-comparison-track {
+  grid-column: 1 / -1;
+}
+.planner-comparison-track span {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+}
+.planner-inputs {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+  gap: 14px;
+}
+.planner-page label {
+  display: grid;
+  gap: 8px;
+}
+.planner-page input:not([type='checkbox']),
+.planner-page select {
+  width: 100%;
+  min-width: 0;
+}
+.planner-page input[type='checkbox'] {
+  width: auto;
+  margin-right: 8px;
+}
+.planner-page label:has(input[type='checkbox']) {
+  display: block;
+}
+.planner-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.planner-graph {
+  height: 420px;
+  position: relative;
+  min-width: 0;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.planner-candidates {
+  max-height: 240px;
+  overflow: auto;
+  display: grid;
+  gap: 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px;
+}
+.planner-events {
+  max-height: 260px;
+  overflow: auto;
+  padding-left: 24px;
+}
+.planner-events li {
+  padding: 6px 0;
+}
+.planner-events [aria-current='step'] {
+  color: var(--accent);
+}
+@media (max-width: 600px) {
+  .planner-graph {
+    height: 340px;
+  }
+}

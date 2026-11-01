@@ -12,6 +12,7 @@ from starlette.exceptions import HTTPException
 from app.api.defense import router as defense_router
 from app.api.insights import router as insights_router
 from app.api.intelligence import router as intelligence_router
+from app.api.preventive import router as preventive_router
 from app.api.routes import router
 from app.api.vulnerability import router as vulnerability_router
 from app.api.workflow import router as workflow_router
@@ -111,6 +112,7 @@ def create_app(db_path: Target | None = None, static_dir: Path | None = None) ->
     application.include_router(vulnerability_router)
     application.include_router(intelligence_router)
     application.include_router(workflow_router)
+    application.include_router(preventive_router)
     application.include_router(insights_router)
     application.include_router(defense_router)
     compiled = (static_dir or ROOT / "frontend" / "dist").resolve()

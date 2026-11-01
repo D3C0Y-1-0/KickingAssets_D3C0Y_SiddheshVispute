@@ -183,3 +183,334 @@ Hosted checks (31 October 2026): on Azure, `/activity`, `/activity/assets/PWR-00
 - Reference scenario: baseline 35.62 reproduced; plan 35.62 -> 27.72, 3 steps, 56 h (was 25.90, 5 steps). Explanation in `docs/PHASE_5A.md`.
 - Frontend: typecheck fails in `Remediation.tsx` and `hooks/liveSimulation.ts` because `run_id` is now required (Codex-owned, not edited). Build and frontend tests were not run on this branch.
 - Not verified: behaviour against the Postgres store, concurrent runs during a planning request.
+
+
+## Phase 6 final verification — 1 November 2026
+
+Authoritative current delivery: [FINAL_DEMO_RUNBOOK.md](FINAL_DEMO_RUNBOOK.md),
+[PHASE_6_MODULE_AUDIT.md](PHASE_6_MODULE_AUDIT.md), measured
+[PHASE_6_DEMO.json](PHASE_6_DEMO.json) and
+[PHASE_6_MODEL_EVALUATION.json](PHASE_6_MODEL_EVALUATION.json).
+Branch `feature/phase-6-finalization` was created from verified
+`origin/integration/phase-5` at `62dece9793b3b0a901091bbd80bd6860a6ef69b8`.
+The initial working tree was clean. Fetched remote work was inspected; unrelated branch
+advances were not merged into the verified base. Earlier phase records above are historical.
+
+### Code gates
+
+- Full backend: **190 passed**, no skips, one upstream Starlette/httpx deprecation warning.
+  Final complete run took **561.59s** on this loaded Windows laptop; an earlier complete run
+  of the same backend changes passed in 199.41s. New Phase 6 tests cover exact path context,
+  cyber-edge-only traversal, isolation/immutability, invalid parameters, fingerprint/snapshot
+  mismatch, superseded runs and missing-reference failure without a score. The existing
+  39 Phase 5 hardening tests protect patch evidence, constraints and handoff.
+- Full frontend: **85 passed** across three files; final rerun **16.14s**. Adds 36 tests
+  across Phase 6 boundary tests and the API client case, including actual brief fetching/run
+  validation, cached error/scenario guards, report mismatch, isolation/empty/retry and
+  data-backed module loading/failure handling. Diagram mocks are confined to unit tests;
+  the browser audit uses actual SVGs and the actual API.
+- Strict TypeScript and frontend Prettier checks run over source/tests/Vite configuration.
+  Ruff lint and format checks passed over backend, OpenAPI exporter and the new verifier:
+  **76 Python files already formatted**. There is no separate ESLint task in this repository.
+  OpenAPI was exported, TypeScript regenerated, and a fresh in-memory backend export matched
+  docs/openapi.json exactly. No hand-authored generated declarations or dependency changes.
+- Production build passed (2602 modules), including the new lazy Attack Paths view and the
+  responsive canvas repair. The compiled application served by FastAPI was also exercised.
+
+Verification attempt notes: a restricted-shell pytest temp directory could not be created;
+that attempt did not pass. A subsequent restricted run stalled and was stopped only after
+verifying its exact owned pytest process. The final complete backend run used a fresh,
+validated workspace directory under ignored artifacts/ outside that restriction. A parallel
+frontend/build attempt timed out one existing 5s UI test under load (84 passed, one timeout);
+the serial complete reruns passed all 85 with assertions/timeouts unchanged. The last ML
+wording edit required Prettier; the frontend gates were rerun after formatting. None of these
+failed attempts is counted as a passing gate, and no result was replaced with a fixture.
+
+### Real model and API evidence
+
+- Saved-model reevaluation without fetch or retraining verified **95 source checksums** and
+  **147,305 test rows**, reproducing point metrics and model hashes. Deployed AP **0.0037**,
+  AUC **0.8789**, precision@200/month **0.0119**, recall@200/month **0.0532**. EPSS baseline
+  AP **0.0044**, AUC **0.7290**. Original model-card AP CI [0.0023, 0.0071] and paired delta
+  CI [-0.0141, 0.0017] were preserved, not recalculated. No clear AP improvement over EPSS
+  is established. No model, training source, original inventory or pure engine file changed.
+- **35 live API checks passed** with scripts/verify_demo.py --replace-baseline. Earlier
+  no-replacement pass had 32 checks. These include all data-backed modules, actual inference,
+  both graph APIs, attack consequences/isolation, plans, exclusions, budget/constraints,
+  exact What-If replay, invalid isolation/patch/incompatible actions and fingerprint mismatch.
+  Baseline payload was identical before/after projections. A new run with the same fingerprint
+  made the old bound attack-path and plan requests return **409 stale_baseline**.
+- Default October 2026 baseline **35.62**; 60h plan and replay **27.72**, three steps, **56h
+  effort / 14h downtime**. Segmentation HLT-008 and PWR-008 plus the evidenced HLT-007 patch.
+  Fifteen candidate paths; PWR-008 isolation leaves ten. The example path uses cyber-PWR-1-4
+  and cyber-PWR-4-8, not operational edges. Conditional data-integrity service upper bounds
+  remain 100%; this is not a probability or a claim of verified recovery.
+
+### Actual browser observations
+
+- All **14 assigned modules plus Attack Paths** opened at desktop and mobile widths; specific
+  actions/source distinctions and boundary checks are enumerated in PHASE_6_MODULE_AUDIT.md.
+  Desktop document client/scroll width **1265/1265**; mobile viewport **390x844**, document
+  **375/375**. No document-level horizontal overflow in recorded checkpoints. Wide tables
+  remain internally scrollable. This is browser viewport testing, not a physical touch device.
+- Full Live -> PWR-001 register/drawer -> selected ranking -> PWR-008 attack path -> operational
+  graph -> 60h Fix Plan -> exact What-If calculation reproduced 35.62 -> 27.72. The obsolete
+  asset-register API-route error did not occur. The final brief stage made its actual GET.
+- Attack filters/isolation/empty recovery, graph mode/sector/native inspector/fit/zoom,
+  mobile menu close, curated POST/no-match search, invalid CVE scoring/valid score recovery,
+  all five twins/part selectors/layers/zoom/expand, vendor view and keyboard PWR-002 activity
+  inspection were exercised. Fixed-canvas clipping was found visually and repaired; actual
+  fitted SVG bounds checked in all five mobile diagrams and desktop views.
+- Compiled port-8000 app repeated the path -> plan -> projection flow. Editing the patch hid
+  the previous comparison; unsupported CVE returned structured 422 invalid_actions without
+  losing three staged actions. A 1h maintenance window returned per-action 422 constraint
+  issues. Restoring valid inputs permits recalculation. Prior clean compiled navigation
+  had no console warnings/errors; expected deliberate 404/422 validation responses are
+  distinct from application faults. Model/API unavailable states are automated boundaries,
+  not falsely claimed as forced through every real-browser module.
+- Ignored screenshots visually inspected: phase6-attack-paths-desktop.jpg,
+  phase6-attack-paths-mobile.jpg, phase6-projection-desktop.jpg, phase6-projection-mobile.jpg,
+  phase6-final-projection.jpg, phase6-twin-desktop.jpg and repaired phase6-twin-mobile.jpg
+  under artifacts/screenshots/. Browser checkpoints are in artifacts/phase6-browser-audit.json.
+
+### Delivery review and readiness
+
+Reviewed thin API context validation, existing run-bound POSTs, escaped structured errors,
+reference provenance, generated contract coherence and absence of engine/model changes.
+Credential-pattern preflight scans reachable Git history plus all tracked/nonignored working
+files; no matches or sensitive tracked files were found. Databases, local environments,
+reference cache, build output and transient QA evidence stay ignored. The targeted review
+is not a penetration test or proof that every possible credential format is absent.
+
+Ready for the documented local hackathon demonstration. Remaining limitations include process-local
+shared latest-run state, coarse candidate-path/control evidence, numeric vendor-version matching,
+uncalibrated relative risk/ML output, conditional worst-plausible service bounds, heuristic optimizer
+and fixed effort/downtime assumptions. No real scanning, compromise, remediation execution,
+production load/concurrency, hosted release, full accessibility audit or physical offline test is
+claimed. Original objectives and all earlier implementation history remain preserved.
+
+
+## Phase 7 preventive resilience verification — 1 November 2026
+
+Branch `feature/phase-7-resilience-optimizer`, from exact Phase 6
+`91f2ab55fc0b32af0b4cca2c88d6ca8bb7784b42`. Backend-only delivery, local commit;
+no push or merge is authorized. Read PHASE_7_RESILIENCE_ENGINE.md for the exact architecture,
+contracts, synthetic assumptions, limitations and reproducible demo command.
+
+- **247 backend tests passed**, no skips, **354.57s**. **57 new tests**: 18 deterministic
+  continuity cases, four exact optimizer cases and 35 real-model/Aurora API/boundary cases.
+  Existing risk/What-If/attack/impact/ML tests remain intact. One non-failing upstream
+  Starlette/httpx deprecation warning remains.
+- **85 frontend tests passed**, three files, **12.01s**. No UI source was changed. The sole
+  frontend diff is generated OpenAPI declarations; no test timeout/assertion was relaxed.
+- Full scripts/check.ps1 exited **0**: strict TypeScript, Ruff lint/format (**85 files**),
+  frontend Prettier and Vite production build (**2602 modules**, **18.55s**).
+- Source-contract audit proved **34 old API paths and 113 old schemas identical** after
+  regeneration. Original impact/attack/risk/pivot/remediation/simulation algorithms, original
+  datasets, ML files and artifacts were compared unchanged against 91f2ab55. No package or
+  dependency version changed. Raw backend OpenAPI and generated declarations are synchronized.
+- **12 live HTTP checks passed**, using scripts/demo_resilience.py against an isolated
+  FastAPI instance on 127.0.0.1:8001 with artifacts/phase7-api-demo.sqlite3. It did not reset
+  the running app's database or in-memory run. Saved real outputs are summarized in
+  PHASE_7_DEMO.json; full responses/logs stay ignored under artifacts/.
+- Real 360-minute PWR-008 power-loss case: **360 -> 90 service-minutes** with prepared
+  recovery; exact search of eight subsets selects recover-PWR-008, **4 planning credits /
+  8h effort / 1h maintenance downtime**. These are synthetic cost/restore assumptions,
+  not observed savings or verified hardware recovery.
+- Fixed backup-extension plan nominal **90** service-minutes; forced backup failure
+  **1080**, half stored energy **360**, additional WTR-008 hardware failure **750**.
+  Cyber-only PWR-004 isolation cuts the explicitly scoped PWR-001->PWR-008 integrity
+  challenge, yielding zero residual service-minutes for that scenario only.
+- Existing Phase 6 results reproduced in tests AND live HTTP: **35.62** baseline,
+  **27.72** original 60h risk plan/What-If, **56h** effort and **15** candidate paths.
+  Latest-run payload equality confirmed new calculations and projections are immutable.
+- Negative tests cover missing/unknown/stale/mismatched run/fingerprint, changed catalog,
+  replacement during calculation even with identical IDs/scores, missing references (503
+  without a result), invalid/duplicate/unknown actions/events/scopes, invalid patch-CVE
+  attribution, unsupported edge effects/exposure, negative/nonfinite/string/boolean numeric
+  values, backup exhaustion, dependency grace/recovery, cycles, capacity limits and exclusions.
+  A hand-calculable synergy case proves the search does not just add standalone reductions.
+
+Progress audit after the intentional interruption: at 04:24:43 IST, backend and frontend suites,
+Ruff, typecheck and Prettier were already finished. The overall check runner was PID 30412;
+its current build TypeScript worker was PID 31732 (started 04:24:42), so it was not stalled.
+The build progressed to Vite rendering and finished; the runner started 04:18:05 and the log's
+last update was 04:25:18, approximately **7m13s** total. No test rerun or source change was needed
+for recovery. The quiet logs establish the latest completed frontend suite and counts but do
+not preserve its exact final individual test name. The final backend test in source collection
+order is test_workflow.py::test_cve_scoring_endpoint; all backend cases passed with no skips.
+
+The isolated QA launcher/server were PIDs 14780/33900. They were used only for the outstanding
+HTTP verification and then stopped after ownership/port checks. The original port-8000 app
+and separate port-8011 teammate instance were left untouched. No UI file was modified during
+this progress-audit continuation, and no already-passed test suite was repeated.
+
+One early new API test requested unavailability on the HLT-001->HLT-007 route; the real graph
+only supports control/visibility there. The API correctly returned unsupported_challenge.
+The test was corrected to use the actual declared loss-of-control effect; fixed-version CVE
+attribution remains an explicitly unverified user scenario assumption, not exploit evidence.
+All final new/full test gates passed afterwards.
+
+Delivery is a deterministic local prototype, not a real resilience guarantee. Exact optimality
+is limited to at most 12 submitted catalog candidates and the declared service-minute objective.
+Energy derating is runtime at nominal full output, not physical power/load-flow simulation.
+Recovery targets, costs, topology/control assumptions, pre-incident downtime and standby
+allocation limitations are documented. No UI, physical recovery, load/concurrency, hosted
+release or security penetration test is claimed. Credential-pattern and scope review precedes
+commit; environments/databases/cache/build output/QA logs remain ignored.
+
+
+## Phase 8 interactive resilience UI — 1 November 2026
+
+From exact Phase 7 ec1ed80174817b42886914c302a93136bc62beba, local branch
+feature/phase-8-resilience-ui. No backend, API schema, original graph, dataset, model artifact,
+package version, theme or landing-page change. Full modified-file inventory is FILE_MANIFEST.md.
+
+- Full backend regression: **247 passed**, no skips, **295.18s**; one existing upstream
+  Starlette/httpx deprecation warning. Ruff lint/format passed (**85 files**).
+- Full frontend regression: **99 passed**, four files, **11.88s**, including **14 new** planner
+  cases. Strict TypeScript, frontend Prettier and production build passed (**2607 modules,
+  9.02s**). No separate ESLint task exists. The earlier 12-case planner set passed before
+  adding explicit wrong-graph-type and catalog-fingerprint rejection tests.
+- New tests protect exact request identity/action transfer, changed baselines, late responses,
+  scenario/budget invalidation, invalid API responses, structured errors/retry, missing baseline,
+  catalog failure/retry, event play/pause/scrub/replay, graph separation, simultaneous events
+  and horizon-truncation semantics. Test fixtures are isolated from application data.
+- Actual compiled browser: Live Simulation completed, followed by PWR-008 power-loss simulation,
+  actual optimization and fresh protected replay **360 -> 90** service-minutes. Recovery selected
+  **4 credits / 8h effort / 1h downtime**. The existing D3 node for PWR-008 changed red -> green
+  at the API's minute-30 boundary. Native inspector/fit and Play/Pause/Next controls worked.
+- Actual standby-extension alternative selected **12 credits / 16h / 2h**, nominal 90 minutes;
+  half-energy stress returned **360**, extra 270. Forced standby unavailable with the recovery
+  plan returned **180**, extra 90. Zero-credit optimization returned an empty plan and replay
+  **360 -> 360**. No fallback constants supply these values.
+- Actual replacement run cleared prior results (no replay slider remained) after baseline check.
+  Asset Register drawer navigation retained PWR-008 in the planner selector. Invalid/failed API
+  boundaries are automated tests, not claimed as all deliberately induced in the real browser.
+- Mobile viewport **390x844**, document client/scroll width **375/375**. Controls wrap, native
+  inputs and energy range keyboard controls worked. Menu opening was observed; a browser
+  navigation automation issue required restoring the planner URL. No full menu/WCAG/touch-device
+  audit is claimed. The final console had no errors/warnings.
+- Existing scripts/demo_resilience.py against the same isolated SQLite API passed **11 HTTP
+  checks** without creating its initial run (the browser created it). Phase 6/7 results stayed
+  **35.62 -> 27.72**, **15** paths and **360 -> 90** continuity minutes, with baseline payload
+  immutability. A later isolated replacement was intentional for the stale-result test.
+- Screenshots under ignored artifacts/screenshots/: phase8-desktop.jpg and phase8-mobile.jpg
+  were captured and visually inspected. No browser verification was inferred from the build.
+
+The initial test command before continuation was not executed because automatic approval review
+had hit a usage limit. The resumed authorized command executed successfully; no approval check
+was bypassed. All final gates above passed. The original app/teammate API instances were not
+restarted; isolated QA port 8001 uses artifacts/phase8.sqlite3. Restart an older backend from this
+branch before using the new frontend with it. The runbook lists exact steps and remaining
+prototype limits. New results stay projected/not_verified, and no infrastructure action occurs.
+
+## Phase 8 HLT-001 simulation feedback fix — 1 November 2026
+
+Reproduced HLT-001, local power loss, horizon 360 in the actual compiled planner on local
+port 8001. POST /api/v1/resilience/preventive/simulate returned HTTP 200 with matching run,
+baseline and catalog fingerprints. The actual outcome was one HLT-001 outage [0,360] and
+zero disruption for all three services. This is an asset outage with no propagated service
+loss under the current graph assumptions, not a failed request or a recovery guarantee.
+
+Root cause: successful results were rendered only in section 3 after the intervention catalog,
+more than 1400px below the viewport top during reproduction; section 1 had no completion
+feedback. Brief loading feedback was easy to miss. Added adjacent pending, structured error
+and API-derived success feedback, including an explanation for zero service impact. A View
+simulation results control focuses and scrolls the existing comparison region into view,
+without animation. Run/fingerprint guards, algorithms and API contracts are unchanged.
+
+Verification: 15 focused planner tests passed (9.10s), strict TypeScript, focused Prettier
+check and production build passed (2607 modules, 25.83s). Tests cover pending -> valid zero
+service outcome with asset outage, nearby structured HTTP 422 error/retry, focus/scroll,
+late-response invalidation and the existing planner journey. Initial sandbox attempt failed
+before any tests ran because of EPERM on a temporary-file rename; the authorized normal-host
+rerun passed. No full backend/frontend regression suite was repeated for this scoped fix.
+
+Actual rebuilt browser: clicking Simulate failure showed HLT-001 completion at viewport
+y=420..492 (height 764). View simulation results focused the comparison at y=80. Screenshot:
+ignored artifacts/screenshots/phase8-hlt001-feedback.jpg. No code, server, database, branch,
+merge or push outside the stated frontend feedback scope was required. Changes remain local.
+
+## Final Resilience Planner UI clarity verification — 1 November 2026
+
+Local branch codex/resilience-planner-clarity, based on verified Phase 8 4e777061. Includes the
+previously uncommitted HLT-001 feedback fix. No merge/push, rejected cinematic branch, new
+package, backend algorithm, contract, dataset or ML artifact changes.
+
+- Focused planner/shared-module suites: 54 tests passed across 2 files, 12.71s. The 19 planner
+  tests were rerun after final result/error wording changes: all passed, 8.70s. No unrelated
+  full regression suites repeated. The final sidebar-order/caption adjustment was browser
+  verified. Strict TypeScript, Prettier and production build passed (2607 modules, 16.79s).
+- Automated boundaries cover exact requests/bindings, stale/late results, invalid API payloads,
+  structured failures/retry, zero-service success, separate cyber/operational display inputs,
+  evidence-only affected scope, absent standby links and unavailable-vs-zero comparisons.
+- Actual compiled browser PWR-008: local power loss, horizon 360, no restoration; unprotected
+  360 service-minutes. Defaults 12 credits / 24 engineering hours / 6 shutdown hours selected
+  recover-PWR-008 (4/8/1) and fresh replay gave 90. Forcing PWR-010 unavailable under that
+  fixed recovery plan gave 180 (extra 90). The final chart visibly shows 360 / 90 / 180.
+- Actual HLT-001: same cause/horizon, 1 asset outage and 0 downstream service minutes. Its
+  completion feedback, missing after/stress values and comparison remain distinct.
+- D3 full operational view: 30 nodes, 23 actual edges, including 3 declared backup edges.
+  17 unaffected nodes dimmed in the nominal PWR-008 scenario; affected scope showed 13 nodes /
+  15 edges. The separate cyber view had 30 nodes / 27 access connections, with explicit
+  non-compromise and non-causal context captions. At API minute 30 PWR-008 changed red to
+  green (outage interval ended); no edge travel time was invented.
+- Actual map/planner comparison: identical sorted inventories (30 stable asset IDs) and all
+  23 operational edge IDs. Shared backup-edge title exposes provider/dependent, requirement
+  and 30-minute grace. Map footnote now correctly directs calculation to Resilience Planner.
+- Mobile 390x844: document client/scroll widths 375/375. Planner link is now third, after
+  Live Simulation: y322..365 within navigation ending at y489. An initial placement beside
+  Assets was partially clipped; final ordering fixes that without altering the theme.
+  Menu keyboard controls and comparison focus/scroll worked. Temporary viewport reset.
+- Browser consoles had no warnings/errors. Screenshots planner-final-comparison.jpg and
+  planner-final-mobile.jpg under ignored artifacts/screenshots were captured and inspected.
+- Credential-pattern scan passed; protected API/model/data files compared unchanged to Phase 8.
+
+Scope limits: synthetic projections only, no kW/load-flow capacity, verified recovery or real
+infrastructure actions. Causal edge IDs are aggregate evidence without per-edge transition
+clocks. Cyber context is separate topology, not a compromise simulation. Stress reevaluates
+one chosen plan; advanced CVE challenge authoring/scopes remain API-only. No full WCAG,
+physical-device, production, concurrency or security penetration audit is claimed.
+Demo and implementation notes: RESILIENCE_PLANNER_DEMO.md. Exact modified files: FILE_MANIFEST.md.
+
+## Innovation feature-branch release audit — 1 November 2026
+
+Authoritative target: codex/innovation-phase-7-8, fast-forwarded from remote 4e777061 to
+completed 266eace; no merge commit and no main changes. Rejected ffed644 and unrelated
+origin/codex/inspo-dashboard-theme (965ddaa) are absent from ancestry and their new UI
+components are absent from the tree. Approved Phase 6 color tokens, Overview, entry point,
+package manifests and Vite config compare identical. No reverse patch is needed for changes
+never integrated. Existing backend/data/schema artifacts are preserved.
+
+Fresh checks: 63 backend resilience tests passed in 22.08s (one inherited deprecation warning),
+54 frontend focused tests passed in 10.21s, strict TypeScript/Prettier passed, production build
+passed (2607 modules, 10.23s). Real HTTP demo against existing isolated port 8001 passed all
+11 checks without creating a new run, including baseline immutability and Phase 6 regressions.
+No unnecessary full regression or model training was repeated. See INNOVATION_RELEASE.md
+for excluded UI scope, exact included commits and distinctions between stress plans.
+
+## Vinay + resilience integration — 1 November 2026
+
+Authoritative runbook: INTEGRATION_VINAY_RESILIENCE.md. Local integration starts at exact
+Vinay 0a7a77943fa8390ef4731961c3965547e68399da and integrates innovations e5c6945f1e1ed89b9fc5c844e398d0fc77621769.
+Rejected ffed644 absent; approved Vinay UI retained. Fourteen conflicts resolved with Vinay
+visuals authoritative, merged API contracts regenerated, and defense plus real brief retained.
+
+Full backend 258 passed (223.73s, 1 inherited warning), full frontend 104 passed (10.41s),
+strict TypeScript, Ruff lint/format (87 files), targeted frontend Prettier and production build
+passed (3057 modules, 11.48s). All 37 Vinay paths remain; 41 combined. Dependency lock/tokens/
+landing/Overview/twin viewers remain Vinay's. Global CSS adds only declared-backup edge pattern.
+Tests exposed empty trend and twin loading/error edge cases; minimal guards preserve layout.
+
+Actual browser on isolated SQLite port 8002 completed Vinay's eight-step Live Simulation,
+then PWR-008 360 -> 90 -> 180 service-minutes for baseline/recovery/recovery with PWR-010
+unavailable. HLT-001 stayed one asset outage, zero downstream minutes. Sidebar and asset drawer
+handoffs, affected replay/minute-30 event, Overview, power twin, Attack & Defend and What-If
+were inspected. Both browser consoles clean. Real HTTP demo 11 checks passed; wrong fingerprint
+409, unknown run 404, baseline unchanged. No model training. Screenshots and logs in artifacts.
+
+Windows native DLL lock required stopping only verified old workspace Vite 12408/5173 before
+npm ci. Existing backend/teammate processes and databases were preserved. New launcher/server
+9764/38848, port 8002. Inherited >500kB bundle warning and prototype/physical-recovery limitations
+remain; see runbook. No full WCAG, hosted deployment or production security audit is claimed.

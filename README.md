@@ -1,5 +1,13 @@
 # GridSentinel
 
+**Current local integration:** [Vinay + Phase 7–8 runbook](docs/INTEGRATION_VINAY_RESILIENCE.md), branch codex/integration-vinay-resilience, combines approved Vinay 0a7a779 with innovations e5c6945. Vinay's UI is retained; rejected cinematic ffed644 is excluded. Local verification site: http://127.0.0.1:8002/ . No push or main update is authorized.
+
+**Phase 8 interactive resilience:** [Planner runbook](docs/PHASE_8_RESILIENCE_UI.md) documents the new `/resilience-planner` workflow, API-supported operational replay, exact budget planning, before/after comparison and stress tests. Existing visual identity, D3 graph, engines, datasets and API contracts are preserved. Local branch `feature/phase-8-resilience-ui`; no push or merge.
+
+**Phase 7 backend:** [Preventive Resilience Optimizer](docs/PHASE_7_RESILIENCE_ENGINE.md) adds separate run-bound continuity simulation, a documented intervention catalog, exact bounded service-minute optimization and stress-test APIs. Based on Phase 6 `91f2ab55`; no UI redesign or existing engine/model replacement. Demo: `python scripts/demo_resilience.py --run` using the project virtual environment and a running backend. Full verification is recorded in docs/VERIFICATION.md. This feature branch is local until the owner authorizes a push.
+
+**Phase 6 finalization:** [Final demo runbook](docs/FINAL_DEMO_RUNBOOK.md) and [module audit](docs/PHASE_6_MODULE_AUDIT.md) are the current local launch/demo authority. Adds run-bound inspection of the existing attack-path engine, real brief verification, safer latest-run handling and responsive diagram fitting. Original PS03 objectives and existing engines/model artifacts remain unchanged. Branch `feature/phase-6-finalization`; no merge to main. Older records below are historical.
+
 **Phase 5 final integration:** [integration runbook and measured demonstration](docs/PHASE_5_INTEGRATION.md), branch `integration/phase-5`. The combined frontend/backend now bind What-If and optimization to exact runs/fingerprints, preserve CVE-specific patch evidence and constraints, and support the complete Fix Plan → What-If workflow. Local SQLite remains the launch configuration. Older integration records below are retained as history.
 
 **Latest local integration:** [Phase 3 runbook, metrics and demonstration](docs/PHASE_3_INTEGRATION.md). Branch `integration/phase-3` preserves all fetched repository branches: the ML workflow, version-aware real-data link, force graph, digital twins, existing actions and optional PostgreSQL support, plus the original curated vulnerability/priority assessment. Launch with `-SQLite` for a fully local database. The historical Phase 2 integration record remains in docs/PHASE_2_INTEGRATION.md.
