@@ -141,3 +141,12 @@ Not brought across: the connected-flow Digital Twins rewrite (`TwinFlow`, `twinA
 wired in) and the Gridinal 3D opening scene (`frontend/src/gridinal`, removed: it needs three.js, react-three-fiber
 and gsap). Both remain in git history on their branches. Checks run: backend 259 passed, ruff clean;
 frontend typecheck clean, 104 tests passed, production build succeeds. Not browser-tested; not deployed.
+
+## PDF report (reportlab)
+
+`GET /api/v1/reports/brief?format=pdf` returns the brief as a PDF built with reportlab
+(`backend/app/services/brief_pdf.py`; reportlab 5.1.0 in `requirements.txt` and the lock file). It uses the
+built-in PDF fonts so it works offline; characters outside Latin-1 are replaced by plain text first. Page 1 has
+key figures, a risk-band bar and the top-10 assets from the run, followed by the same sections as the
+Markdown/HTML brief. The Live Simulation page shows a large "Download report (PDF)" button once a run finishes.
+Known limit: the Azure deployment must install reportlab before the PDF format works there.

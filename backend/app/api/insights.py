@@ -156,7 +156,9 @@ def risk_brief(
         )
     if format == "pdf":
         return Response(
-            brief_pdf.to_pdf(brief),
+            brief_pdf.to_pdf(
+                brief, _latest(request, _bundle(request, scenario_id, snapshot_id)).run
+            ),
             media_type="application/pdf",
             headers={"Content-Disposition": 'attachment; filename="gridinal-risk-brief.pdf"'},
         )
