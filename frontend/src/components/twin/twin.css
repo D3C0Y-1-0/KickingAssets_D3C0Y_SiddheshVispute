@@ -551,3 +551,12 @@ button.twin-risk-chip:hover {
   align-items: center;
   justify-content: center;
 }
+
+/* Diagram switcher: only needed when the page bar is hidden by full screen. */
+.ts-diagram-select {
+  display: none;
+}
+:fullscreen .ts-diagram-select,
+.ts-frame.full .ts-diagram-select {
+  display: inline-block;
+}

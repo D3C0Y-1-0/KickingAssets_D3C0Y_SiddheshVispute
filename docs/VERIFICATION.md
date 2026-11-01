@@ -1,5 +1,29 @@
 # Phase 1 verification record
 
+## SOC publication and latest remote integration — 1 November 2026
+
+- Created docs/SOC_ATTACK_DEMO.txt with six named demonstrations, five exact node IDs,
+  vulnerable/protected prerequisites, copyable Laptop 2 commands, expected outcomes,
+  connectivity checks, live SOC/map/planning flow and IP block/unblock steps.
+- Fetched origin, inspected the newer `report` branch and safely merged 116f7bd/0f6acda
+  into the preserved SOC checkpoint 1645d45. No conflicts, force push or main changes.
+  Latest remote removals/simplifications are preserved, not silently restored.
+- What-If content is unchanged throughout this request; before/after Git blob:
+  54e6eb7bfcbfe5d731d712b27be61e9fac39883c. No new Simulator edits or model retraining.
+- Merged `npm test`: **71 passed**, five files, **15.31s**. The count differs from the
+  earlier 79 because the fetched branch intentionally removed obsolete module tests.
+  `npm run typecheck` passed; `npm run build` passed (**3056 modules, 15.85s**) with
+  the inherited chunk-size advisory. `ruff check backend scripts/export_openapi.py`
+  passed; `git diff --check` passed. No backend/model/data files differ from the
+  previously verified checkpoint; those suites were not unnecessarily repeated.
+- Pending-source credential-pattern scan: **0 matches in 37 files** before checkpoint.
+  Generated node password, SOC database and frontend build remain ignored. Final staged
+  files are checked again before publication. Demo weak credentials are intentional,
+  explicitly fictional service fixtures, not operator or infrastructure secrets.
+- Browser automation remains unverified under the previously recorded origin policy.
+  No new real-browser pass is claimed. Services remain on 8005/8006; reload once for
+  the new build. Actual manual second-device checks were reported by the user earlier.
+
 ## Live SOC unification and incident workflow — 1 November 2026
 
 Local `codex/live-soc`, base da2f307. No commit/push/merge. Existing working SOC files

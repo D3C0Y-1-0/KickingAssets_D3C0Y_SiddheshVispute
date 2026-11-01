@@ -1,5 +1,17 @@
 # Phase 1 handoff
 
+**SOC publication / latest repository synchronization:** the owner authorized fetching,
+integration and pushing `codex/live-soc`. SOC checkpoint 1645d45 preserves all prior local
+work and adds docs/SOC_ATTACK_DEMO.txt. Latest remote `report` at 0f6acda (including
+116f7bd) was merged without conflicts, preserving its approved page simplifications and
+original map layout together with SOC evidence overlays. Rejected cinematic ffed644 is
+not in that remote history. What-If was not edited during this request: its blob remains
+54e6eb7bfcbfe5d731d712b27be61e9fac39883c, identical to the checkpoint. Full merged
+frontend: 71 tests, typecheck and build pass; Ruff passes. No backend/model/data changed
+in the remote update, so the existing backend verification remains applicable. Existing
+servers serve the rebuilt frontend; refresh the browser once. No main/teammate push.
+This release record supersedes the earlier local-only notes below.
+
 **Current local SOC:** `codex/live-soc` from `live-ui-merged-all` da2f307; uncommitted,
 not pushed. LIVE_SOC.md owns launch/two-device steps. One SOC Overview contains all four
 former modules; old URLs redirect to its panels. Critical/high in-app alerts and opt-in

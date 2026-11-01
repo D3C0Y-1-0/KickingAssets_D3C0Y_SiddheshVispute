@@ -182,3 +182,53 @@
   font-size: 13px;
   font-weight: 600;
 }
+
+/* tidy-up */
+.def-routes button {
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  column-gap: 12px;
+  row-gap: 0;
+}
+.def-routes button .name {
+  grid-column: 1;
+  color: var(--text-secondary);
+  font-size: 13.5px;
+}
+.def-routes button .ins-tag {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  justify-self: end;
+  margin: 0;
+}
+.def-routes button .ins-tag.plausible {
+  color: var(--risk-critical);
+}
+.def-chain {
+  position: relative;
+  padding: 18px 20px 8px;
+  align-items: center;
+}
+.def-chain .def-node:not(:last-child)::after {
+  content: '→';
+  margin-left: 4px;
+  color: var(--text-muted);
+}
+.def-controls {
+  padding: 8px 20px 14px;
+  border-bottom: 1px solid var(--border-soft);
+}
+.def-now {
+  padding: 14px 20px 4px;
+}
+.def-services {
+  padding: 12px 20px 18px;
+}
+.def-service {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 220px;
+  gap: 16px;
+}
+.def-grid {
+  align-items: start;
+}

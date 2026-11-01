@@ -1,5 +1,14 @@
 # Phase 1 file manifest
 
+## SOC publication / fetched remote update
+
+Created `docs/SOC_ATTACK_DEMO.txt` and `docs/SOC_REMOTE_SYNC_FILES.txt`. The latter records
+the exact 24 source/test paths changed or removed by the fetched report branch relative
+to preserved SOC checkpoint 1645d45. README and HANDOFF/VERIFICATION/FILE_MANIFEST record
+this release. `frontend/src/features/whatif/WhatIf.tsx` was not changed by synchronization;
+its pre-request contents were preserved. All remote UI changes are upstream work, not
+a new redesign. Earlier SOC source-file lists below remain applicable.
+
 ## Local live SOC and incident integration
 
 Exact created source/doc files relative to da2f307:

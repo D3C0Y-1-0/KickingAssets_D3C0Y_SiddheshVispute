@@ -66,6 +66,11 @@ export default function DigitalTwins() {
       requestedPart,
       openPart: (part: string) => setView(viewOfPart(part) ?? activeTab, part),
       openAsset: setDrawerAsset,
+      diagram: {
+        value: activeTab,
+        options: VIEWS.map((v) => ({ id: v.id, label: TWIN_VIEW_LABEL[v.id] })),
+        onChange: (id: string) => setView(id as TwinView),
+      },
     }),
     [requestedPart, setView, activeTab],
   )

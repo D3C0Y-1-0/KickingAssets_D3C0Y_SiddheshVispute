@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { Link, useSearchParams } from 'react-router-dom'
+import { useSearchParams } from 'react-router-dom'
 import { api, type Models, type SimulationRun } from '../../api/client'
 import { useGraph, useLatestRun } from '../../hooks/queries'
 import { SimulationRequired } from '../../components/Simulation'
 import { PageHeading, Panel, QueryState } from '../../components/ui'
-import { BaselineNotice, Outdated } from '../actions/WorkflowUI'
+import { Outdated } from '../actions/WorkflowUI'
 import { ActionError } from '../actions/ActionControls'
 import { baselineKey, binding } from '../actions/workflow'
 import { usePlannerAction, usePlannerCatalog } from './queries'
@@ -29,17 +29,6 @@ export default function Planner() {
         title="Resilience planner"
         description="Simulate conditional service failures, review preventive measures and replay projected outcomes. No infrastructure changes are applied."
       />
-      <nav className="workflow-nav" aria-label="Resilience review workflow">
-        <Link to="/live">Live Simulation</Link>
-        <Link to="/intelligence">Risk Ranking</Link>
-        <Link to="/infrastructure?mode=operational">Operational map</Link>
-        <Link to="/remediation">Risk Fix Plan</Link>
-      </nav>
-      <p className="callout warn">
-        <strong>Simulated infrastructure · projected, not verified.</strong> Service-disruption
-        minutes are conditional on authored failure, backup and recovery assumptions. They are not
-        incident probabilities or the city risk index.
-      </p>
       {changed && (
         <p className="callout warn" role="status">
           Simulation baseline changed. Previous planner results were cleared; review inputs before
@@ -52,7 +41,6 @@ export default function Planner() {
         <SimulationRequired />
       ) : (
         <>
-          <BaselineNotice run={run} refreshing={latest.isFetching} refresh={latest.refetch} />
           <CatalogWorkspace key={baselineKey(run)} run={run} />
         </>
       )}
@@ -133,7 +121,6 @@ function Workspace({
   const [effort, setEffort] = useState('24')
   const [downtime, setDowntime] = useState('6')
   const [windowLimit, setWindowLimit] = useState('')
-  const [search, setSearch] = useState('')
   const [backup, setBackup] = useState('')
   const [disableBackup, setDisableBackup] = useState(false)
   const [energy, setEnergy] = useState('1')
@@ -337,11 +324,6 @@ function Workspace({
               />
             </label>
           </div>
-          <p className="small muted">
-            All events start at minute zero. A blank restoration deadline assumes no repair during
-            the horizon. Patches and segmentation cannot erase a direct, already-assumed failure;
-            prepared recovery and eligible standby continuity may help.
-          </p>
           {!validScenario && (
             <p role="status">Choose a known asset and valid integer minute limits.</p>
           )}
@@ -439,47 +421,26 @@ function Workspace({
               </label>
             ))}
           </div>
-          <p>
-            Costs and restoration targets are synthetic planning assumptions. Maintenance downtime
-            is pre-incident effort, separate from incident disruption. Exact search covers only the
-            selected candidates (at most 12), not every possible real-world intervention. Candidates
-            are actions the optimizer may choose, not an applied plan. Check only supported measures
-            you want compared; patches cannot undo an already-assumed direct failure.
-          </p>
-          <label>
-            Find catalog interventions
-            <input type="search" value={search} onChange={(e) => setSearch(e.target.value)} />
-          </label>
-          <p>
-            {candidateIds.length} / 12 candidates selected. Select candidates from any asset to
-            evaluate cross-sector protection.
-          </p>
           <fieldset className="planner-candidates">
             <legend>Candidate interventions</legend>
-            {catalog.interventions
-              .filter((a) =>
-                `${a.id} ${names.get(a.asset_id)} ${a.action_type}`
-                  .toLowerCase()
-                  .includes(search.toLowerCase()),
-              )
-              .map((a) => (
-                <label key={a.id}>
-                  <input
-                    type="checkbox"
-                    checked={candidateIds.includes(a.id)}
-                    disabled={!candidateIds.includes(a.id) && candidateIds.length >= 12}
-                    onChange={(e) =>
-                      setCandidateIds(
-                        e.target.checked
-                          ? [...candidateIds, a.id]
-                          : candidateIds.filter((id) => id !== a.id),
-                      )
-                    }
-                  />
-                  {a.id} · {a.cost_credits} credits / {a.effort_hours}h effort / {a.downtime_hours}h
-                  downtime
-                </label>
-              ))}
+            {catalog.interventions.map((a) => (
+              <label key={a.id}>
+                <input
+                  type="checkbox"
+                  checked={candidateIds.includes(a.id)}
+                  disabled={!candidateIds.includes(a.id) && candidateIds.length >= 12}
+                  onChange={(e) =>
+                    setCandidateIds(
+                      e.target.checked
+                        ? [...candidateIds, a.id]
+                        : candidateIds.filter((id) => id !== a.id),
+                    )
+                  }
+                />
+                {a.id} · {a.cost_credits} credits / {a.effort_hours}h effort / {a.downtime_hours}h
+                downtime
+              </label>
+            ))}
           </fieldset>
           {!constraintsValid && (
             <p role="alert">
@@ -734,10 +695,6 @@ function Workspace({
               onChange={(e) => setEnergy(e.target.value)}
             />
           </label>
-          <p className="small muted">
-            Reduced energy shortens full-output runtime. It is not a fractional-load power-flow
-            model.
-          </p>
           <label>
             Additional hardware failure (optional)
             <select value={extra} onChange={(e) => setExtra(e.target.value)}>

@@ -12,10 +12,7 @@ import {
   Maximize2,
   Minimize2,
   Layers,
-  Activity,
   Eye,
-  Zap,
-  Radio,
   Wifi,
   Train,
   Building,
@@ -26,7 +23,7 @@ import "./smartcity.css";
 import { useStageView } from "../twin/useStageView";
 import { FlowOverlay, type LinkMode } from "../twin/FlowOverlay";
 import { TwinInspector } from "../twin/TwinInspector";
-import { useTwinNav } from "../twin/TwinNav";
+import { DiagramSelect, useTwinNav } from "../twin/TwinNav";
 import { useLatestRun } from "../../hooks/queries";
 import { usePartLinks } from "../../hooks/twinConnections";
 
@@ -63,11 +60,11 @@ export function SmartCityViewer({
   const scored = useMemo(() => new Map((run?.assets ?? []).map((a) => [a.asset_id, a])), [run]);
 
   // Layer toggles
-  const [showMicrogrid, setShowMicrogrid] = useState<boolean>(true);
+  const [showMicrogrid] = useState<boolean>(true);
   const [showFiberMesh, setShowFiberMesh] = useState<boolean>(true);
   const [showTransitFlow, setShowTransitFlow] = useState<boolean>(true);
-  const [showBridges, setShowBridges] = useState<boolean>(true);
-  const [showWirelessWaves, setShowWirelessWaves] = useState<boolean>(true);
+  const [showBridges] = useState<boolean>(true);
+  const [showWirelessWaves] = useState<boolean>(true);
   const [showHotspots, setShowHotspots] = useState<boolean>(true);
 
   // Hover state for interactive readout
@@ -158,7 +155,7 @@ export function SmartCityViewer({
       },
       {
         id: "city-transit-rail",
-        label: "Sky-Train Rail Viaduct",
+        label: "Rail Viaduct",
         sub: "Inter-Island Driverless Light Rail",
         coord: at([-50, 35, 62]),
         assetId: "CITY-RAIL-01",
@@ -234,10 +231,7 @@ export function SmartCityViewer({
           <div>
             <div className="flex items-center gap-2">
               <span className="text-xs sm:text-sm font-bold tracking-wider text-white uppercase">
-                Metropolitan Smart City Architecture
-              </span>
-              <span className="px-1.5 py-0.5 rounded text-[10px] font-mono font-bold bg-[#182306] text-[#ccff00] border border-[#4d6313]">
-                PRECINCT 7 DIGITAL TWIN
+                Smart City
               </span>
               {isFullScreen && (
                 <span className="px-1.5 py-0.5 rounded text-[10px] font-mono font-bold bg-[#ccff00] text-black">
@@ -248,37 +242,8 @@ export function SmartCityViewer({
           </div>
         </div>
 
-        {/* Real-time City Telemetry Strip */}
-        <div className="hidden min-[1800px]:flex items-center gap-4 text-xs font-mono bg-[#161922] px-3 py-1.5 rounded-lg border border-[#202634] shadow-xs">
-          <span className="text-[#d8b16c]">Design ref., not live</span>
-          <div className="w-px h-3 bg-[#202634]" />
-          <div className="flex items-center gap-1.5">
-            <Zap className="w-3.5 h-3.5 text-[#ccff00]" />
-            <span className="text-slate-400">Grid Load:</span>
-            <span className="text-slate-100 font-semibold">14.8 MW</span>
-          </div>
-          <div className="w-px h-3 bg-[#202634]" />
-          <div className="flex items-center gap-1.5">
-            <Wifi className="w-3.5 h-3.5 text-cyan-400" />
-            <span className="text-slate-400">5G Latency:</span>
-            <span className="text-slate-100 font-semibold">3.4 ms</span>
-          </div>
-          <div className="w-px h-3 bg-[#202634]" />
-          <div className="flex items-center gap-1.5">
-            <Activity className="w-3.5 h-3.5 text-[#ccff00]" />
-            <span className="text-slate-400">Air Quality:</span>
-            <span className="text-[#ccff00] font-semibold">36 AQI</span>
-          </div>
-          <div className="w-px h-3 bg-[#202634]" />
-          <div className="flex items-center gap-1.5">
-            <Train className="w-3.5 h-3.5 text-blue-400" />
-            <span className="text-slate-400">Transit Headway:</span>
-            <span className="text-slate-100 font-semibold">90s</span>
-          </div>
-        </div>
-
-
-        <div className="ts-group" role="group" aria-label="Connection overlay">
+        <DiagramSelect />
+<div className="ts-group" role="group" aria-label="Connection overlay">
           {(["operational", "cyber", "off"] as const).map((m) => (
             <button
               key={m}
@@ -339,7 +304,7 @@ export function SmartCityViewer({
       <div className="relative z-20 mx-3 mt-2 self-start flex flex-wrap items-center gap-1.5 bg-[#111319]/95 backdrop-blur-md p-1.5 rounded-lg border border-[#202634] text-[11px] font-medium shadow-xl">
         <span className="text-[10px] font-mono uppercase text-slate-400 px-1.5 flex items-center gap-1">
           <Layers className="w-3 h-3 text-[#ccff00]" />
-          Overlays:
+          Layers
         </span>
         <button
           onClick={() => setShowFiberMesh(!showFiberMesh)}
@@ -350,18 +315,7 @@ export function SmartCityViewer({
           }`}
         >
           <Wifi className="w-3 h-3" />
-          5G & Fiber Backbone
-        </button>
-        <button
-          onClick={() => setShowMicrogrid(!showMicrogrid)}
-          className={`px-2 py-1 rounded transition flex items-center gap-1 border ${
-            showMicrogrid
-              ? "bg-[#182306] text-[#ccff00] border-[#4d6313] font-semibold"
-              : "bg-[#161922] text-slate-400 hover:text-white border-[#202634]"
-          }`}
-        >
-          <Zap className="w-3 h-3" />
-          Microgrid & Solar
+          Network
         </button>
         <button
           onClick={() => setShowTransitFlow(!showTransitFlow)}
@@ -375,27 +329,6 @@ export function SmartCityViewer({
           Sky-Train Rail
         </button>
         <button
-          onClick={() => setShowBridges(!showBridges)}
-          className={`px-2 py-1 rounded transition flex items-center gap-1 border ${
-            showBridges
-              ? "bg-[#182306] text-[#ccff00] border-[#4d6313] font-semibold"
-              : "bg-[#161922] text-slate-400 hover:text-white border-[#202634]"
-          }`}
-        >
-          Inter-Island Bridges
-        </button>
-        <button
-          onClick={() => setShowWirelessWaves(!showWirelessWaves)}
-          className={`px-2 py-1 rounded transition flex items-center gap-1 border ${
-            showWirelessWaves
-              ? "bg-[#182306] text-[#ccff00] border-[#4d6313] font-semibold"
-              : "bg-[#161922] text-slate-400 hover:text-white border-[#202634]"
-          }`}
-        >
-          <Radio className="w-3 h-3" />
-          5G Radios
-        </button>
-        <button
           onClick={() => setShowHotspots(!showHotspots)}
           className={`px-2 py-1 rounded transition flex items-center gap-1 border ${
             showHotspots
@@ -404,7 +337,7 @@ export function SmartCityViewer({
           }`}
         >
           <Eye className="w-3 h-3" />
-          Hotspot Pins
+          Pins
         </button>
       </div>
 
@@ -417,9 +350,8 @@ export function SmartCityViewer({
         className={`relative min-w-0 overflow-hidden flex items-center justify-center outline-none ${stage.dragging ? "cursor-grabbing" : "cursor-grab"}`}
       >
         <Plate
-          fig="FIG 02"
-          title="DISTRIBUTED SMART CITY ARCHITECTURE (MODULAR ISLAND BASES)"
-          hint="DRAG TO PAN · CTRL + WHEEL TO ZOOM · CLICK ANY ISLAND CAMPUS TO INSPECT"
+          fig=""
+          title=""
           readout={readoutText}
           keys={[
             { mark: "lit", label: "Selected Active Campus" },

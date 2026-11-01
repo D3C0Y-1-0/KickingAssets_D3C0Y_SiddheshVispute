@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Pause, Play, SkipBack, SkipForward } from 'lucide-react'
-import { EmptyState, PageHeading, Panel, QueryState, SampleBadge } from '../../components/ui'
+import { EmptyState, PageHeading, Panel, QueryState } from '../../components/ui'
 import { useAssets, useActivity } from '../../hooks/queries'
 import { useAttacker, usePrevention, useReaction, useRunReady } from '../../hooks/defense'
 import '../insights/insights.css'
@@ -83,7 +83,7 @@ function AttackerTab() {
   }
   return (
     <div className="def-grid">
-      <Panel title="The attacker’s easiest routes" aside={<SampleBadge>What-if</SampleBadge>}>
+      <Panel title="Easiest routes">
         <ul className="def-routes">
           {routes.map((r, i) => (
             <li key={`${r.entry_point}-${r.target}`}>
@@ -95,18 +95,14 @@ function AttackerTab() {
                 <strong>
                   {r.entry_point} → {r.target}
                 </strong>
-                <span>{r.target_name}</span>
-                <span className="ins-tag">{statusWords[r.status]}</span>
+                <span className={`ins-tag ${r.status}`}>{statusWords[r.status]}</span>
+                <span className="name">{r.target_name}</span>
               </button>
             </li>
           ))}
         </ul>
-        <p className="ins-note">
-          One best route per critical asset. “Likely” means the evidence supports every step;
-          “Possible” means some steps depend on an unproven weakness. None of these has happened.
-        </p>
       </Panel>
-      <Panel title={`Replay: ${route.entry_point} → ${route.target_name}`}>
+      <Panel title={`${route.entry_point} → ${route.target_name}`}>
         <div className="def-chain" aria-label="Route">
           {route.frames.map((f, i) => (
             <button
@@ -160,7 +156,7 @@ function AttackerTab() {
           <p>{frame.note}</p>
         </div>
         <div className="def-services">
-          <div className="subtle-label">Services right now</div>
+          <div className="subtle-label">Service loss</div>
           {frame.services.map((s) => (
             <div className="def-service" key={s.service_id}>
               <span>{s.service_name}</span>
@@ -168,10 +164,6 @@ function AttackerTab() {
             </div>
           ))}
         </div>
-        <p className="ins-note">
-          A bar shows how much of a service stops, at worst, with backups applied and no operator
-          recovery. It is a simulated story, not a prediction.
-        </p>
       </Panel>
     </div>
   )
@@ -203,33 +195,27 @@ function PreventionTab() {
         <div className="ins-metric">
           <div className="label">Assets to isolate</div>
           <div className="value">{plan.assets.length}</div>
-          <div className="foot">the smallest set that works</div>
         </div>
         <div className="ins-metric">
           <div className="label">Effort</div>
           <div className="value">{plan.total_hours} h</div>
-          <div className="foot">instead of {plan.isolate_everything_hours} h for everything</div>
+          <div className="foot">vs {plan.isolate_everything_hours} h for all</div>
         </div>
         <div className="ins-metric">
           <div className="label">Routes</div>
           <div className="value">
             {plan.routes_before} → {plan.routes_after}
           </div>
-          <div className="foot">plausible routes before and after</div>
         </div>
         <div className="ins-metric">
-          <div className="label">Critical assets safe</div>
+          <div className="label">Critical assets protected</div>
           <div className="value">
             {plan.protected_targets.length} / {plan.targets_before}
           </div>
-          <div className="foot">no route left to reach them</div>
         </div>
       </div>
       <div style={{ marginTop: 16 }}>
-        <Panel
-          title="Cut these connections first"
-          aside={<SampleBadge>Estimate, not applied</SampleBadge>}
-        >
+        <Panel title="Isolate these assets">
           <div className="table-scroll">
             <table className="ins-table">
               <thead>
@@ -263,16 +249,6 @@ function PreventionTab() {
               </tbody>
             </table>
           </div>
-          <p className="ins-note">
-            This is the cheapest set of assets that, once cut off from the network, leaves no
-            plausible route to any critical asset. We checked it by running the route finder again
-            with these assets isolated. Isolating them may interrupt remote access and data flows,
-            so test first. Try single changes in{' '}
-            <Link className="text-link" to="/what-if">
-              What-If
-            </Link>
-            .
-          </p>
           <details className="ins-fine" style={{ padding: '0 16px 14px' }}>
             <summary>Assumptions</summary>
             <ul>
@@ -300,7 +276,7 @@ function ReactionTab() {
     <>
       <div className="def-pick">
         <label>
-          <span className="subtle-label">If this asset were taken over</span>
+          <span className="subtle-label">If taken over</span>
           <select value={asset ?? ''} onChange={(e) => setChosen(e.target.value)}>
             {options.map((a) => (
               <option key={a.id} value={a.id}>
@@ -316,7 +292,7 @@ function ReactionTab() {
       )}
       {plan && (
         <div className="def-grid">
-          <Panel title="What to do, in order" aside={<SampleBadge>Recommendations</SampleBadge>}>
+          <Panel title="Response steps">
             <ol className="def-steps">
               {plan.steps.map((s) => (
                 <li key={s.order} className={s.kind}>
@@ -331,14 +307,8 @@ function ReactionTab() {
                 </li>
               ))}
             </ol>
-            <p className="ins-note">
-              {plan.targets_reached.length === 0
-                ? 'From here no critical asset is reachable on a plausible route.'
-                : `Without blocking, ${plan.targets_reached.length} critical assets could be reached. After the block step, ${plan.targets_after_block} could.`}{' '}
-              Nothing is applied automatically; a person must approve each step.
-            </p>
           </Panel>
-          <Panel title="Where it could spread next">
+          <Panel title="Could spread to">
             {plan.spread.length === 0 ? (
               <EmptyState title="Nowhere" compact>
                 No plausible onward route from this asset.
@@ -373,7 +343,7 @@ export default function Defense() {
       <PageHeading
         eyebrow="WORKSPACE / ATTACK & DEFEND"
         title="Attack and defend"
-        description="See how an attacker could get in, the cheapest way to stop them, and what to do if one asset is taken over."
+        description="How attackers get in, and how to stop them."
         actions={
           <div className="segmented-control" aria-label="View">
             {(

@@ -1,4 +1,4 @@
-import { ArrowRight, Route } from 'lucide-react'
+import { ArrowRight } from 'lucide-react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { useLatestRun } from '../../hooks/queries'
 import { ProvenanceNotice, SimulationRequired } from '../../components/Simulation'
@@ -17,11 +17,7 @@ function History({ asset }: { asset: AssetSimulation }) {
   const h = asset.history
   const max = Math.max(...h.by_year.map((y) => y.cves_published), 1)
   return (
-    <Panel
-      title="Real vulnerability history of this product"
-      aside={<span className="subtle-label">NVD + CISA KEV, up to the simulated date</span>}
-      className="spaced-panel"
-    >
+    <Panel title="Vulnerability history" className="spaced-panel">
       <div className="panel-padding">
         <div className="mini-bars" aria-label="CVEs published per year">
           {h.by_year.map((y) => (
@@ -35,29 +31,24 @@ function History({ asset }: { asset: AssetSimulation }) {
             </div>
           ))}
         </div>
-        <p className="subtle-label">
-          Bars: CVEs published per year for the product family (red = KEV additions that year).
-        </p>
-        <dl className="detail-grid">
-          <dt>Product CVEs (all versions)</dt>
-          <dd className="mono">{h.product_cves_total}</dd>
-          <dt>Of those, KEV-listed</dt>
-          <dd className="mono">
-            {h.product_kev_listed}
-            {h.first_kev_added && ` (first ${h.first_kev_added}, latest ${h.last_kev_added})`}
-          </dd>
-          <dt>Vendor KEV entries so far</dt>
-          <dd className="mono">
-            {h.vendor_kev_total} ({h.vendor_kev_last_90d} in the last 90 days)
-          </dd>
-          <dt>Vendor CVE volume so far</dt>
-          <dd className="mono">{h.vendor_cve_total}</dd>
-          <dt>Product KEV entries so far</dt>
-          <dd className="mono">{h.product_kev_total}</dd>
-        </dl>
-        <p className="small muted">
-          The vendor and product counts are exactly the history features the model was trained on.
-        </p>
+        <div className="stat-row">
+          <div>
+            <strong>{h.product_cves_total}</strong>
+            <small>Product CVEs</small>
+          </div>
+          <div>
+            <strong>{h.product_kev_listed}</strong>
+            <small>KEV-listed</small>
+          </div>
+          <div>
+            <strong>{h.vendor_kev_total}</strong>
+            <small>Vendor KEV entries</small>
+          </div>
+          <div>
+            <strong>{h.vendor_kev_last_90d}</strong>
+            <small>Vendor KEV, last 90 days</small>
+          </div>
+        </div>
       </div>
     </Panel>
   )
@@ -68,7 +59,7 @@ function RunBacktest({ run }: { run: SimulationRun }) {
   if (!b) return null
   return (
     <Panel
-      title={`Backtest at ${b.as_of}: what really happened next`}
+      title={`Backtest · ${b.as_of}`}
       aside={<span className={`badge ${b.held_out ? 'ok' : 'sample'}`}>{b.split}</span>}
       className="spaced-panel"
     >
@@ -110,7 +101,6 @@ function RunBacktest({ run }: { run: SimulationRun }) {
             )}
           </>
         ) : null}
-        <p className="small muted">{b.note}</p>
       </div>
     </Panel>
   )
@@ -146,23 +136,15 @@ export default function Intelligence() {
     <>
       <PageHeading
         title="Risk ranking"
-        description="Assets ranked by an ML-driven relative index, with the reason behind every score."
+        description="Assets ranked by risk, with the reason for each score."
         actions={
-          <>
-            <Link className="button secondary" to={`/attack-paths?asset=${active.asset_id}`}>
-              Inspect attack paths
-            </Link>
-            <Link className="button primary" to="/what-if">
-              Continue to actions <ArrowRight size={15} />
-            </Link>
-          </>
+          <Link className="button primary" to="/what-if">
+            Continue to actions <ArrowRight size={15} />
+          </Link>
         }
       />
       <div className="split-layout spaced-panel">
-        <Panel
-          title="Risk-priority ranking"
-          aside={<span className="badge neutral mono">{run.id}</span>}
-        >
+        <Panel title="Ranking">
           <div className="rank-list">
             {run.assets.map((a, i) => (
               <button
@@ -174,7 +156,7 @@ export default function Intelligence() {
                 <span>
                   <strong>{a.name}</strong>
                   <small>
-                    <span className="mono">{a.asset_id}</span> · {a.product.label}
+                    <span className="mono">{a.asset_id}</span>
                   </small>
                 </span>
                 <RiskBadge category={a.risk.category} />
@@ -196,40 +178,42 @@ export default function Intelligence() {
             <div className="panel-padding">
               <div className="mono muted">{active.asset_id}</div>
               <div className="component-grid">
+                <div className="score">
+                  <strong>{active.risk.score?.toFixed(1) ?? '—'}</strong>
+                  <small>Risk score</small>
+                </div>
                 <div>
                   <strong>{percent(active.vulnerability_signal, 1)}</strong>
-                  <small>S · ML vulnerability signal</small>
+                  <small>Vulnerability (S)</small>
                 </div>
                 <div>
                   <strong>{active.exposure_factor.toFixed(2)}</strong>
-                  <small>E · exposure factor</small>
+                  <small>Exposure (E)</small>
                 </div>
                 <div>
                   <strong>{active.impact_factor.toFixed(2)}</strong>
-                  <small>I′ · conditional impact</small>
-                </div>
-                <div>
-                  <strong>{active.risk.score?.toFixed(1) ?? '—'}</strong>
-                  <small>100 × S × E × I′</small>
+                  <small>Impact (I′)</small>
                 </div>
               </div>
-              <h3 className="section-label">Why this score</h3>
-              <ul className="list-plain">
-                {(active.risk.factors ?? []).map((f) => (
-                  <li key={f.name}>
-                    <strong>{f.name}</strong> ({f.contribution.toFixed(2)}): {f.explanation}
-                  </li>
-                ))}
-                {active.risk.status !== 'computed' && <li>{active.risk.unavailable_reason}</li>}
-              </ul>
+              <details className="why">
+                <summary>Why this score</summary>
+                <ul className="list-plain">
+                  {(active.risk.factors ?? []).map((f) => (
+                    <li key={f.name}>
+                      <strong>{f.name}</strong> ({f.contribution.toFixed(2)}): {f.explanation}
+                    </li>
+                  ))}
+                  {active.risk.status !== 'computed' && <li>{active.risk.unavailable_reason}</li>}
+                </ul>
+              </details>
             </div>
           </Panel>
           <History asset={active} />
           <Panel
-            title="Vulnerabilities that apply to this product version"
+            title="Applicable vulnerabilities"
             aside={
               <span className="subtle-label">
-                {active.candidate_count} applicable · {active.known_exploited_count} CISA-KEV-listed
+                {active.candidate_count} found · {active.known_exploited_count} KEV-listed
               </span>
             }
             className="spaced-panel"
@@ -242,10 +226,9 @@ export default function Intelligence() {
                       <th>CVE</th>
                       <th>STATUS</th>
                       <th>ML RANK</th>
-                      <th>EPSS PCT</th>
+                      <th>EPSS</th>
                       <th>CVSS</th>
-                      <th>WHAT HAPPENED NEXT</th>
-                      <th>WHY (TOP DRIVERS)</th>
+                      <th>TOP DRIVERS</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -253,11 +236,6 @@ export default function Intelligence() {
                       <tr key={v.cve_id}>
                         <td>
                           <span className="mono">{v.cve_id}</span>
-                          <small className="muted">
-                            {v.applicability === 'version_confirmed'
-                              ? 'version in affected range'
-                              : 'version not evaluable'}
-                          </small>
                         </td>
                         <td>
                           {v.status === 'kev_listed' ? (
@@ -273,15 +251,6 @@ export default function Intelligence() {
                         </td>
                         <td className="mono">{percent(v.epss_percentile, 1)}</td>
                         <td className="mono">{v.cvss_score ?? '—'}</td>
-                        <td className="small">
-                          {v.outcome === 'added_to_kev'
-                            ? `entered KEV ${v.outcome_date}`
-                            : v.outcome === 'not_added_in_window'
-                              ? 'not added within 180 days'
-                              : v.outcome === 'window_open'
-                                ? 'outcome not known yet'
-                                : '—'}
-                        </td>
                         <td>
                           {(v.drivers ?? []).length
                             ? (v.drivers ?? []).map((d) => (
@@ -293,7 +262,7 @@ export default function Intelligence() {
                                   {d.contribution.toFixed(2)}
                                 </span>
                               ))
-                            : 'Known exploited: no model score needed'}
+                            : 'Known exploited'}
                         </td>
                       </tr>
                     ))}
@@ -303,57 +272,37 @@ export default function Intelligence() {
             ) : (
               <div className="panel-padding">
                 <p>
-                  No CVE in the NVD data has an affected range that includes this version at this
-                  date.
-                  {!m.product_known && ' The product itself is not present in the NVD data.'}
+                  No known CVE affects this version.
+                  {!m.product_known && ' Product not in the NVD data.'}
                 </p>
               </div>
             )}
-            <div className="panel-footnote">
-              ML rank = position among all not-yet-listed CVEs at {run.as_of}. Contributions are
-              exact TreeSHAP values from the trained model.
-            </div>
           </Panel>
           <RunBacktest run={run} />
-          <Panel
-            title="Worst plausible consequence"
-            aside={<Route size={16} className="muted" />}
-            className="spaced-panel"
-          >
+          <Panel title="Worst case" className="spaced-panel">
             <div className="panel-padding">
               {active.worst_scenario ? (
                 <>
-                  <p className="route">
-                    Route: {active.worst_scenario.path.join(' → ')} (configured cyber reachability)
-                  </p>
+                  <p className="route">{active.worst_scenario.path.join(' → ')}</p>
                   <p>
-                    If {active.worst_scenario.target_asset_name} (
-                    <span className="mono">{active.worst_scenario.target_asset_id}</span>) were
-                    compromised with{' '}
-                    <strong>{active.worst_scenario.effect.replaceAll('_', ' ')}</strong>, the
-                    dependency model shows:
+                    <strong>{active.worst_scenario.target_asset_name}</strong>:{' '}
+                    {active.worst_scenario.effect.replaceAll('_', ' ')}
                   </p>
                   <ul className="list-plain">
                     {active.worst_scenario.services.map((s) => (
                       <li key={s.service_id}>
-                        {s.service_name}: unsatisfied for {(s.disruption_fraction * 100).toFixed(0)}
-                        % of a 24 h horizon
+                        {s.service_name}: {(s.disruption_fraction * 100).toFixed(0)}% of 24 h down
                       </li>
                     ))}
                   </ul>
                 </>
               ) : (
-                <p>No reachable scenario disrupts a modelled service.</p>
+                <p>No scenario disrupts a service.</p>
               )}
-              <p className="subtle-label">
-                Reachability is a configured route, not a successful compromise. The effect is an
-                assumption and results are an upper bound with respect to backups.
-              </p>
             </div>
           </Panel>
         </div>
       </div>
-      <div className="inset-note spaced-panel">{run.formula}</div>
       <ProvenanceNotice />
     </>
   )

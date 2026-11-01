@@ -42,7 +42,7 @@ const initial: LiveStep[] = [
     id: 'simulate',
     label: 'Find weaknesses and score risk',
     explain:
-      'Match each asset to known vulnerabilities, let the AI model rank them, then work out the damage if they fail.',
+      'Match each asset to known vulnerabilities, let the ML model rank them, then work out the damage if they fail.',
     call: 'POST /simulation/run',
     status: 'idle',
   },

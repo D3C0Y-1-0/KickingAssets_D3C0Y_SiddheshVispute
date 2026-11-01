@@ -19,7 +19,6 @@ import {
   ShieldCheck,
   Search,
   Shield,
-  Waypoints,
   X,
 } from 'lucide-react'
 import { Navigate, NavLink, Route, Routes, Link, useLocation, useNavigate } from 'react-router-dom'
@@ -42,10 +41,8 @@ const WhatIf = lazy(() => import('../features/whatif/WhatIf'))
 const Remediation = lazy(() => import('../features/remediation/Remediation'))
 const Methodology = lazy(() => import('../features/methodology/Methodology'))
 const MlLab = lazy(() => import('../features/ml/MlLab'))
-const Resilience = lazy(() => import('../features/resilience/Resilience'))
 const Defense = lazy(() => import('../features/defense/Defense'))
 const LiveSimulation = lazy(() => import('../features/live/LiveSimulation'))
-const AttackPaths = lazy(() => import('../features/attack-paths/AttackPaths'))
 const Planner = lazy(() => import('../features/planner/Planner'))
 const Soc = lazy(() => import('../features/soc/Soc'))
 type NavEntry = { path: string; name: string; icon: typeof Grid2X2 }
@@ -64,14 +61,12 @@ const navGroups: { label: string; items: NavEntry[] }[] = [
     label: 'Assess',
     items: [
       { path: '/intelligence', name: 'Risk Ranking', icon: Activity },
-      { path: '/ml', name: 'AI Model', icon: BrainCircuit },
-      { path: '/resilience', name: 'Weak Points', icon: Waypoints },
+      { path: '/ml', name: 'ML Model', icon: BrainCircuit },
     ],
   },
   {
     label: 'Act',
     items: [
-      { path: '/attack-paths', name: 'Attack Paths', icon: Network },
       { path: '/defend', name: 'Attack & Defend', icon: ShieldAlert },
       { path: '/resilience-planner', name: 'Resilience Planner', icon: ShieldCheck },
       { path: '/what-if', name: 'What-If', icon: FlaskConical },
@@ -313,7 +308,7 @@ export default function App({ onLogoClick }: { onLogoClick?: () => void } = {}) 
                 <Route path="/digital-twins" element={<DigitalTwins />} />
                 <Route path="/assets" element={<Navigate to="/intelligence" replace />} />
                 <Route path="/intelligence" element={<Intelligence />} />
-                <Route path="/attack-paths" element={<AttackPaths />} />
+                <Route path="/attack-paths" element={<Navigate to="/defend" replace />} />
                 <Route path="/resilience-planner" element={<Planner />} />
                 <Route
                   path="/curated-intelligence"
@@ -323,7 +318,7 @@ export default function App({ onLogoClick }: { onLogoClick?: () => void } = {}) 
                 <Route path="/what-if" element={<WhatIf />} />
                 <Route path="/remediation" element={<Remediation />} />
                 <Route path="/posture" element={<Navigate to="/" replace />} />
-                <Route path="/resilience" element={<Resilience />} />
+                <Route path="/resilience" element={<Navigate to="/" replace />} />
                 <Route path="/coverage" element={<Navigate to="/methodology" replace />} />
                 <Route path="/live" element={<LiveSimulation />} />
                 <Route path="/defend" element={<Defense />} />

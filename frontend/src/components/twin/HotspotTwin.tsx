@@ -6,7 +6,7 @@ import { Plate } from '../iso/react/draw'
 import { RadarPing, RiskLine } from '../TwinRadar'
 import { FlowOverlay, type LinkMode } from './FlowOverlay'
 import { TwinInspector } from './TwinInspector'
-import { useTwinNav } from './TwinNav'
+import { DiagramSelect, useTwinNav } from './TwinNav'
 import { useStageView } from './useStageView'
 import { useLatestRun } from '../../hooks/queries'
 import { usePartLinks } from '../../hooks/twinConnections'
@@ -136,6 +136,7 @@ export function HotspotTwin({
           </div>
         </div>
         <div className="ts-tools">
+          <DiagramSelect />
           <div className="ts-group" role="group" aria-label="Connection overlay">
             {(['operational', 'cyber', 'off'] as const).map((m) => (
               <button
@@ -293,9 +294,6 @@ export function HotspotTwin({
               </div>
             </div>
           </Plate>
-          <span className="ts-hint">
-            DRAG TO PAN · CTRL + SCROLL TO ZOOM · CLICK A PART · + − 0 KEYS
-          </span>
         </div>
 
         <TwinInspector

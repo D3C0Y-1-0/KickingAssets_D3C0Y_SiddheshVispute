@@ -198,7 +198,7 @@ export default function MlLab() {
     <>
       <PageHeading
         eyebrow="WORKSPACE / MACHINE LEARNING"
-        title="AI model"
+        title="ML model"
         description="The model, the real data it was trained on, how it was validated, and what it can and cannot claim."
         actions={
           <span className={`badge ${ml.status.ready ? 'neutral' : 'sample'}`}>

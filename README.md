@@ -4,7 +4,8 @@
 website on 8005 and confined fictional-data services on 8006. SOC Overview contains logs,
 incidents, protection and IP controls. Actual HTTP evidence updates the map and prepares
 run-bound model-backed What-If projections. No automatic remediation or invented asset
-compromise probabilities. Current local work: `codex/live-soc`, uncommitted, not pushed.
+compromise probabilities. Branch: `codex/live-soc`. The copyable two-laptop command
+reference is [SOC_ATTACK_DEMO.txt](docs/SOC_ATTACK_DEMO.txt). See HANDOFF for publication.
 
 **Phase 8 interactive resilience:** [Planner runbook](docs/PHASE_8_RESILIENCE_UI.md) documents the new `/resilience-planner` workflow, API-supported operational replay, exact budget planning, before/after comparison and stress tests. Existing visual identity, D3 graph, engines, datasets and API contracts are preserved. Local branch `feature/phase-8-resilience-ui`; no push or merge.
 
