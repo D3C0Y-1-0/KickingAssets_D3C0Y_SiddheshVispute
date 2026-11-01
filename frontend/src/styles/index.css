@@ -1602,30 +1602,29 @@ tbody tr:hover {
   opacity: 0.18;
 }
 .fg-halo {
-  opacity: 0.5;
-  filter: blur(9px);
+  opacity: 0;
+  filter: blur(7px);
   transition: opacity 0.2s;
 }
 .fg-node:hover .fg-halo,
 .fg-node:focus-visible .fg-halo {
-  opacity: 0.8;
+  opacity: 0.35;
 }
 .fg-node.is-selected .fg-halo {
-  opacity: 1;
+  opacity: 0.55;
 }
 .fg-body {
-  fill-opacity: 0.78;
-  stroke-width: 2.4;
-  filter: brightness(0.82) saturate(1.25);
+  fill-opacity: 0.16;
+  stroke-width: 1.8;
   transition:
     fill-opacity 0.2s,
     stroke-width 0.2s;
 }
 .fg-node:hover .fg-body {
-  fill-opacity: 0.92;
+  fill-opacity: 0.32;
 }
 .fg-node.is-selected .fg-body {
-  fill-opacity: 1;
+  fill-opacity: 0.45;
   stroke: var(--text);
   stroke-width: 2.6;
 }
@@ -1641,12 +1640,9 @@ tbody tr:hover {
   pointer-events: none;
 }
 .fg-id {
-  fill: #fff;
-  paint-order: stroke;
-  stroke: rgb(0 0 0 / 0.55);
-  stroke-width: 2px;
+  fill: var(--text);
   font:
-    700 9px 'Segoe UI',
+    600 8px 'Segoe UI',
     sans-serif;
   pointer-events: none;
   user-select: none;
