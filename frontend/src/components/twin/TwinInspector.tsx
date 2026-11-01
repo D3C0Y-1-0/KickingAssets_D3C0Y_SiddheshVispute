@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowRight, ExternalLink, Network, Search } from 'lucide-react'
+import { ExternalLink, Network, Search } from 'lucide-react'
 import { useGraph } from '../../hooks/queries'
 import { TWIN_LINKS } from '../../data/twinLinks'
 import { TWIN_VIEW_LABEL, partLabel, viewOfPart, type TwinView } from '../../data/twinParts'
@@ -114,29 +114,24 @@ export function TwinInspector({ view, parts, selectedId, onSelect, risk, scored,
             <div className="ti-metric">
               <span>{part.metric}</span>
               <strong>{part.value}</strong>
-              <em>Design reference, illustrative</em>
             </div>
           )}
 
           <section className="ti-section">
-            <h4>Scenario assets behind this part</h4>
+            <h4>Linked assets</h4>
             {assets.length === 0 ? (
-              <p className="ti-empty">
-                Purely physical or civil element: no controller, relay or gateway in the scenario is
-                attached to it, so there is nothing to assess.
-              </p>
+              <p className="ti-empty">No linked assets.</p>
             ) : (
               <>
                 {partRisk && (
                   <div className={`ti-risk ${partRisk.category}`}>
                     <strong>{partRisk.score.toFixed(1)}</strong>
                     <span>
-                      {(partRisk.category ?? '').toUpperCase()} · worst of {partRisk.linked} linked
-                      asset{partRisk.linked === 1 ? '' : 's'}
+                      {(partRisk.category ?? '').toUpperCase()} · worst of {partRisk.linked}
                     </span>
                   </div>
                 )}
-                {!partRisk && <p className="ti-empty">Not scored yet. Run the simulation.</p>}
+                {!partRisk && <p className="ti-empty">Not scored yet.</p>}
                 <ul className="ti-assets">
                   {assets.slice(0, MAX_ASSETS).map(({ id, sim }) => (
                     <li key={id}>
@@ -181,9 +176,9 @@ export function TwinInspector({ view, parts, selectedId, onSelect, risk, scored,
           </section>
 
           <section className="ti-section">
-            <h4>Operational dependencies</h4>
+            <h4>Dependencies</h4>
             {operational.length === 0 ? (
-              <p className="ti-empty">No provider or dependent link to another mapped part.</p>
+              <p className="ti-empty">None.</p>
             ) : (
               <>
                 <Group title="Provides to" rows={operational} outgoing />
@@ -193,23 +188,19 @@ export function TwinInspector({ view, parts, selectedId, onSelect, risk, scored,
           </section>
 
           <section className="ti-section">
-            <h4>Cyber reachability</h4>
+            <h4>Cyber access</h4>
             {cyber.length === 0 ? (
-              <p className="ti-empty">No permitted access path to another mapped part.</p>
+              <p className="ti-empty">None.</p>
             ) : (
               <>
                 <Group title="Can reach" rows={cyber} outgoing />
                 <Group title="Reachable from" rows={cyber} outgoing={false} />
               </>
             )}
-            <p className="ti-note">
-              <ArrowRight size={11} /> Connectivity is not compromise. Edges come from the scenario
-              graphs, not from this drawing.
-            </p>
           </section>
         </>
       ) : (
-        <p className="ti-empty">Select a part on the diagram to see what is behind it.</p>
+        <p className="ti-empty">Select a part.</p>
       )}
     </aside>
   )

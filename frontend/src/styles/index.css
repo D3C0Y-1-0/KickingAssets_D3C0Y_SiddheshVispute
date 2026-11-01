@@ -31,6 +31,17 @@ body.cursorfx-active,
 body.cursorfx-active * {
   cursor: none;
 }
+/* The glass cursor lives on <body>, which browsers hide in fullscreen, so give the native
+   cursor back inside any fullscreen element. */
+body.cursorfx-active :fullscreen,
+body.cursorfx-active :fullscreen * {
+  cursor: auto;
+}
+body.cursorfx-active :fullscreen button,
+body.cursorfx-active :fullscreen select,
+body.cursorfx-active :fullscreen a {
+  cursor: pointer;
+}
 /* Position (via JS-written transform on the outer element) and the pulse/
    expand scale animation (on the inner ::before, via a separate transform)
    are kept on different elements so the two transforms never overwrite
@@ -1591,29 +1602,30 @@ tbody tr:hover {
   opacity: 0.18;
 }
 .fg-halo {
-  opacity: 0;
-  filter: blur(7px);
+  opacity: 0.5;
+  filter: blur(9px);
   transition: opacity 0.2s;
 }
 .fg-node:hover .fg-halo,
 .fg-node:focus-visible .fg-halo {
-  opacity: 0.35;
+  opacity: 0.8;
 }
 .fg-node.is-selected .fg-halo {
-  opacity: 0.55;
+  opacity: 1;
 }
 .fg-body {
-  fill-opacity: 0.16;
-  stroke-width: 1.8;
+  fill-opacity: 0.78;
+  stroke-width: 2.4;
+  filter: brightness(0.82) saturate(1.25);
   transition:
     fill-opacity 0.2s,
     stroke-width 0.2s;
 }
 .fg-node:hover .fg-body {
-  fill-opacity: 0.32;
+  fill-opacity: 0.92;
 }
 .fg-node.is-selected .fg-body {
-  fill-opacity: 0.45;
+  fill-opacity: 1;
   stroke: var(--text);
   stroke-width: 2.6;
 }
@@ -1629,9 +1641,12 @@ tbody tr:hover {
   pointer-events: none;
 }
 .fg-id {
-  fill: var(--text);
+  fill: #fff;
+  paint-order: stroke;
+  stroke: rgb(0 0 0 / 0.55);
+  stroke-width: 2px;
   font:
-    600 8px 'Segoe UI',
+    700 9px 'Segoe UI',
     sans-serif;
   pointer-events: none;
   user-select: none;

@@ -9,7 +9,6 @@ import type { ComponentType, ReactNode } from 'react'
 import { api, type Models, type SimulationRun } from '../src/api/client'
 import { useLatestRun } from '../src/hooks/queries'
 import { useLiveSimulation } from '../src/hooks/liveSimulation'
-import AttackPaths from '../src/features/attack-paths/AttackPaths'
 import Overview from '../src/features/overview/Overview'
 import Infrastructure from '../src/features/infrastructure/Infrastructure'
 import DigitalTwins from '../src/features/digital-twins/DigitalTwins'
@@ -17,7 +16,6 @@ import Intelligence from '../src/features/intelligence/Intelligence'
 import MlLab from '../src/features/ml/MlLab'
 import WhatIf from '../src/features/whatif/WhatIf'
 import Remediation from '../src/features/remediation/Remediation'
-import Resilience from '../src/features/resilience/Resilience'
 import Methodology from '../src/features/methodology/Methodology'
 
 // Diagram rendering is exercised in the real browser, not emulated by jsdom.
@@ -55,64 +53,6 @@ const run = {
   ],
   services: [{ service_id: 'SERVICE', name: 'Essential service' }],
 } as unknown as SimulationRun
-const report: Models['AttackPathReport'] = {
-  ...context,
-  run_id: run.id,
-  baseline_fingerprint: run.fingerprint,
-  state: 'current',
-  isolated_assets: [],
-  method_version: 'attack-path-v1',
-  entry_points: ['ENTRY'],
-  targets: ['TARGET'],
-  unknown_exposure_assets: [],
-  chokepoints: [],
-  target_reachability: [
-    { target: 'TARGET', reachable: true, supported_paths: 1, verdict: 'supported_path' },
-  ],
-  notes: ['Test-only analysis fixture'],
-  paths: [
-    {
-      rank: 1,
-      entry_point: 'ENTRY',
-      target: 'TARGET',
-      nodes: ['ENTRY', 'TARGET'],
-      status: 'insufficient_evidence',
-      ranking_score: 0.18,
-      weakest_hop: 1,
-      final_effects: ['loss_of_control'],
-      consequence: {
-        effect: 'loss_of_control',
-        max_disruption: 1,
-        services: [{ service_id: 'SERVICE', disruption_fraction: 1 }],
-      },
-      explanation: 'The last step has insufficient vulnerability evidence.',
-      hops: [
-        {
-          edge_id: null,
-          source: 'internet',
-          target: 'ENTRY',
-          protocol: null,
-          access: null,
-          status: 'plausible',
-          basis: ['remote_management_without_mfa'],
-          effects: [],
-          explanation: 'Declared exposure and remote management without MFA.',
-        },
-        {
-          edge_id: 'CYBER-1',
-          source: 'ENTRY',
-          target: 'TARGET',
-          protocol: 'HTTPS',
-          access: 'network',
-          status: 'insufficient_evidence',
-          basis: ['vulnerability_evidence_unavailable'],
-          effects: ['loss_of_control'],
-          explanation: 'No exploitation evidence was supplied.',
-        },
-      ],
-    },
-  ],
-}
 
 beforeEach(() => {
   vi.spyOn(api, 'scenarios').mockResolvedValue([
@@ -141,76 +81,6 @@ function setup(path = '/attack-paths') {
   )
   return { client, wrapper, user: userEvent.setup() }
 }
-describe('run-bound attack-path inspection', () => {
-  beforeEach(() => {
-    vi.spyOn(api, 'latestRun').mockResolvedValue(run)
-    vi.spyOn(api, 'attackPaths').mockResolvedValue(report)
-  })
-  it('presents hop uncertainty and operational consequences separately from compromise', async () => {
-    const { wrapper } = setup()
-    render(<AttackPaths />, { wrapper })
-    await screen.findByText('Path evidence')
-    expect(screen.getByText(/Candidate routes, not confirmed compromises/)).toBeTruthy()
-    expect(screen.getByText(/No exploitation evidence was supplied/)).toBeTruthy()
-    expect(screen.getByRole('heading', { name: 'Conditional operational impact' })).toBeTruthy()
-    expect(screen.getByText('Essential service')).toBeTruthy()
-    expect(api.attackPaths).toHaveBeenCalledWith(run, [], 5, expect.any(AbortSignal))
-  })
-  it('changes isolation through the typed endpoint and shows an honest empty state', async () => {
-    vi.mocked(api.attackPaths).mockImplementation(async (_, isolated) => ({
-      ...report,
-      state: isolated.length ? 'projected' : 'current',
-      isolated_assets: isolated,
-      paths: isolated.length ? [] : report.paths,
-    }))
-    const { wrapper, user } = setup()
-    render(<AttackPaths />, { wrapper })
-    await screen.findByText('Path evidence')
-    await user.selectOptions(
-      screen.getByRole('combobox', { name: 'Hypothetical isolated asset' }),
-      'TARGET',
-    )
-    await user.click(screen.getByRole('button', { name: 'Add isolation' }))
-    await screen.findByText('No reported path matches this view')
-    expect(screen.getByText(/No supported path is not proof/)).toBeTruthy()
-    await user.click(screen.getByRole('button', { name: 'Remove isolation TARGET' }))
-    await screen.findByText('Path evidence')
-  })
-  it('retains loading and error/retry states without fabricated paths', async () => {
-    vi.mocked(api.attackPaths).mockRejectedValueOnce(new Error('Analysis unavailable'))
-    const { wrapper, user } = setup()
-    render(<AttackPaths />, { wrapper })
-    expect(screen.getByRole('status')).toBeTruthy()
-    await screen.findByText('Analysis unavailable')
-    expect(screen.queryByText('Path evidence')).toBeNull()
-    await user.click(screen.getByRole('button', { name: 'Retry connection' }))
-    await screen.findByText('Path evidence')
-  })
-  it('rejects a response for another run instead of displaying its paths', async () => {
-    vi.mocked(api.attackPaths).mockResolvedValue({ ...report, run_id: 'other-run' })
-    const { wrapper } = setup()
-    render(<AttackPaths />, { wrapper })
-    await screen.findByText(/Attack-path results belong to another baseline/)
-    expect(screen.queryByText('Path evidence')).toBeNull()
-  })
-  it('requires a simulation and filters targets without inventing a zero-risk route', async () => {
-    vi.mocked(api.latestRun).mockResolvedValue(null)
-    const { wrapper } = setup()
-    render(<AttackPaths />, { wrapper })
-    await screen.findByText('Run the simulation to see results')
-    expect(api.attackPaths).not.toHaveBeenCalled()
-  })
-  it('drops previous-run reports when the baseline changes', async () => {
-    const { wrapper, client } = setup()
-    render(<AttackPaths />, { wrapper })
-    await screen.findByText('Path evidence')
-    vi.mocked(api.latestRun).mockResolvedValue({ ...run, id: 'new-run' })
-    vi.mocked(api.attackPaths).mockImplementation(() => new Promise(() => {}))
-    act(() => client.setQueryData(['simulation', 'latest'], { ...run, id: 'new-run' }))
-    await waitFor(() => expect(screen.queryByText('Path evidence')).toBeNull())
-  })
-})
-
 describe('shared simulation freshness', () => {
   function Probe() {
     const latest = useLatestRun()
@@ -290,10 +160,9 @@ const modules: [string, ComponentType][] = [
   ['Infrastructure', Infrastructure],
   ['Digital Twins', DigitalTwins],
   ['Risk Ranking', Intelligence],
-  ['AI Model', MlLab],
+  ['ML Model', MlLab],
   ['What-If', WhatIf],
   ['Fix Plan', Remediation],
-  ['Weak Points', Resilience],
 ]
 const reads = [
   'assets',

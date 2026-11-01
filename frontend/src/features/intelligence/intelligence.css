@@ -80,3 +80,46 @@
   border-radius: 8px;
   line-height: 1.7;
 }
+
+/* risk ranking layout */
+.component-grid .score {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+.component-grid .score strong {
+  font-size: 28px;
+  color: var(--accent);
+}
+.why {
+  margin-top: 14px;
+  color: var(--text-secondary);
+}
+.why summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--text);
+}
+.stat-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-top: 14px;
+}
+.stat-row > div {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 12px;
+  background: var(--surface-inset);
+}
+.stat-row strong {
+  display: block;
+  font-size: 20px;
+}
+.stat-row small {
+  color: var(--text-muted);
+}
+@media (max-width: 900px) {
+  .stat-row {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

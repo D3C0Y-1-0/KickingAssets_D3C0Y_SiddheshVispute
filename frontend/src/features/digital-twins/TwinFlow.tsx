@@ -61,7 +61,10 @@ export function TwinFlow({
                 </small>
               </div>
               <span className="twin-flow-actions">
-                <Link className="text-link" to={`/intelligence?asset=${encodeURIComponent(r.assetId)}`}>
+                <Link
+                  className="text-link"
+                  to={`/intelligence?asset=${encodeURIComponent(r.assetId)}`}
+                >
                   Evidence
                 </Link>
                 <button

@@ -344,10 +344,6 @@ export function Replay({
         </div>
         <section aria-label="Modelled standby availability" className="planner-stack">
           <h3>Backup availability and limits</h3>
-          <p className="small muted">
-            Declared service standbys only. Capacity is stored-energy runtime at nominal output, not
-            kW or power-flow capacity. Scheduled windows alone do not prove usable output.
-          </p>
           {!outcome.standbys.length && <p>No standby is reported by this API result.</p>}
           {outcome.standbys.map((b) => (
             <div className="planner-backup" key={`${b.service_id}:${b.requirement_id}`}>

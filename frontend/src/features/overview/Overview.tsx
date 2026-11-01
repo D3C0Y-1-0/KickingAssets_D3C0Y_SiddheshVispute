@@ -602,10 +602,10 @@ export default function Overview() {
             <div className="orb-ring">
               <BrainCircuit size={28} />
             </div>
-            <h3>AI risk model</h3>
+            <h3>ML risk model</h3>
             <p>See the trained model's accuracy, drivers and limitations.</p>
             <Link className="button primary" to="/ml">
-              Open AI model
+              Open ML model
             </Link>
           </div>
           <div
@@ -734,7 +734,7 @@ export default function Overview() {
                 <span className="subtle-label">Needs step 1</span>
               )}
               <Link className="text-link" to="/ml">
-                AI model
+                ML model
               </Link>
             </div>
           </section>

@@ -203,10 +203,6 @@ export default function LiveSimulation() {
       {finished && (
         <p className="live-done">
           Done. See the details on{' '}
-          <Link className="text-link" to="/resilience">
-            Weak Points
-          </Link>
-          ,{' '}
           <Link className="text-link" to="/defend">
             Attack &amp; Defend
           </Link>{' '}

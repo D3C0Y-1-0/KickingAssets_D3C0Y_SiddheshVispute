@@ -23,7 +23,7 @@ import "./substation.css";
 import { useStageView } from "../twin/useStageView";
 import { FlowOverlay, type LinkMode } from "../twin/FlowOverlay";
 import { TwinInspector } from "../twin/TwinInspector";
-import { useTwinNav } from "../twin/TwinNav";
+import { DiagramSelect, useTwinNav } from "../twin/TwinNav";
 import { useLatestRun } from "../../hooks/queries";
 import { usePartLinks } from "../../hooks/twinConnections";
 
@@ -249,6 +249,7 @@ export function SubstationViewer({
         </select>
 
 
+        <DiagramSelect />
         <div className="ts-group" role="group" aria-label="Connection overlay">
           {(["operational", "cyber", "off"] as const).map((m) => (
             <button

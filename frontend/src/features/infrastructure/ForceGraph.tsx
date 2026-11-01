@@ -68,7 +68,7 @@ type SimNode = Asset & {
 }
 type SimLink = { id: string; source: SimNode; target: SimNode; index: number; curve: number }
 
-const RADIUS = { essential: 17, important: 13, supporting: 10 } as const
+const RADIUS = { essential: 23, important: 17, supporting: 14 } as const
 const SECTORS = ['power', 'water', 'healthcare']
 const shortName = (a: Asset) =>
   a.name.replace(/^(North |South |Central |Waterworks |Hospital |Aurora )/, '')
@@ -224,7 +224,7 @@ export const ForceGraph = forwardRef<ForceGraphHandle, Props>(function ForceGrap
     nodeSel
       .append('circle')
       .attr('class', 'fg-halo')
-      .attr('r', (d) => d.r + 7)
+      .attr('r', (d) => d.r + 9)
       .attr('fill', (d) => colorRef.current(d))
     nodeSel
       .append('circle')
@@ -289,7 +289,7 @@ export const ForceGraph = forwardRef<ForceGraphHandle, Props>(function ForceGrap
 
     const sectorAnchor = (sector: string) => {
       const s = Math.max(0, SECTORS.indexOf(sector))
-      const spread = Math.min(width, height) * 0.19
+      const spread = Math.min(width, height) * 0.36
       const angle = (s / SECTORS.length) * Math.PI * 2 - Math.PI / 2
       return { x: Math.cos(angle) * spread, y: Math.sin(angle) * spread }
     }
@@ -300,19 +300,19 @@ export const ForceGraph = forwardRef<ForceGraphHandle, Props>(function ForceGrap
         forceLink<SimNode, SimLink>(simLinks)
           .id((d) => d.id)
           .distance(
-            (l) => (mode === 'cyber' ? 62 : 74) + 8 * Math.min(6, degree.get(l.source.id) ?? 0),
+            (l) => (mode === 'cyber' ? 120 : 140) + 12 * Math.min(6, degree.get(l.source.id) ?? 0),
           )
           .strength(0.55),
       )
       .force(
         'charge',
         forceManyBody<SimNode>()
-          .strength((d) => -170 - 25 * (degree.get(d.id) ?? 0))
-          .distanceMax(420),
+          .strength((d) => -420 - 45 * (degree.get(d.id) ?? 0))
+          .distanceMax(900),
       )
-      .force('collide', forceCollide<SimNode>((d) => d.r + 18).strength(0.9))
-      .force('x', forceX<SimNode>((d) => sectorAnchor(d.sector).x).strength(0.12))
-      .force('y', forceY<SimNode>((d) => sectorAnchor(d.sector).y).strength(0.12))
+      .force('collide', forceCollide<SimNode>((d) => d.r + 30).strength(0.9))
+      .force('x', forceX<SimNode>((d) => sectorAnchor(d.sector).x).strength(0.07))
+      .force('y', forceY<SimNode>((d) => sectorAnchor(d.sector).y).strength(0.07))
       .alphaDecay(0.028)
       .velocityDecay(0.38)
       .on('tick', paint)
@@ -346,7 +346,7 @@ export const ForceGraph = forwardRef<ForceGraphHandle, Props>(function ForceGrap
     const fit = (animate = true) => {
       const b = bounds()
       if (!b) return
-      const k = Math.min(1.6, 0.94 / Math.max((b.x1 - b.x0) / width, (b.y1 - b.y0) / height))
+      const k = Math.min(2.4, 0.97 / Math.max((b.x1 - b.x0) / width, (b.y1 - b.y0) / height))
       const t = zoomIdentity
         .translate(width / 2 - (k * (b.x0 + b.x1)) / 2, height / 2 - (k * (b.y0 + b.y1)) / 2)
         .scale(k)
