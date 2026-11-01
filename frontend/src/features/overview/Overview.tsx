@@ -33,7 +33,7 @@ import {
   useTrend,
 } from '../../hooks/queries'
 import { AssetDrawer } from '../../components/AssetDrawer'
-import { EncryptedText } from '../../components/EncryptedText'
+import { CyclingEncryptedText } from '../../components/CyclingEncryptedText'
 import { AsOfSelect, ProvenanceNotice, RunSimulationButton } from '../../components/Simulation'
 import {
   EmptyState,
@@ -52,6 +52,12 @@ import { ActivityHeatmap } from './ActivityHeatmap'
 import { RiskArcGauge } from './RiskArcGauge'
 
 const sectorIcons = { power: Zap, water: Droplets, healthcare: HeartPulse }
+const heroHeadlines = [
+  'See the Risk. Understand the Impact.',
+  'Uncover Threats Before They Escalate.',
+  'Explore Every Connection. Expose Every Weakness.',
+  'Simulate the Future. Strengthen the Defense.',
+]
 
 export default function Overview() {
   const assets = useAssets()
@@ -109,21 +115,15 @@ export default function Overview() {
         >
           <div className="ov-greeting-top">
             <div>
-              <div className="ov-greeting-badge">
-                <span className="status-dot" />
-                <span>Cyber-Risk Command Center</span>
-                {run && <span className="ov-badge-sep">·</span>}
-                {run && <span>{run.assets.length} Assets Evaluated</span>}
-              </div>
               <h1>
-                <EncryptedText
-                  text="Hi — what do you want to check?"
+                <CyclingEncryptedText
+                  lines={heroHeadlines}
+                  intervalMs={5000}
                   revealDelayMs={35}
                   flipDelayMs={40}
                   encryptedClassName="ov-greeting-scramble"
                   revealedClassName="ov-greeting-revealed"
                 />
-                <span className="ov-wave"> 👋</span>
               </h1>
               <p>
                 See how risky Aurora City is, which assets need attention first, and what to fix.
@@ -369,8 +369,8 @@ export default function Overview() {
           )}
           <div className="panel-footnote">
             City risk index over time on held-out test snapshots; a relative index (0-100), not a
-            probability of an incident. The axis is zoomed to the observed range
-            ({trendDomain[0]}-{trendDomain[1]}) to make real month-to-month movement visible.
+            probability of an incident. The axis is zoomed to the observed range ({trendDomain[0]}-
+            {trendDomain[1]}) to make real month-to-month movement visible.
           </div>
         </Panel>
         <Panel
@@ -689,10 +689,10 @@ export default function Overview() {
           <QueryState pending={curated.isPending} error={curated.error} retry={curated.refetch} />
           {!curated.isError && curated.data && (
             <p>
-              {curated.data.assessed_count} / {curated.data.assets.length} assets assessed ·
-              average score {curated.data.covered_asset_mean?.toFixed(1) ?? 'unavailable'} out of
-              100 · {curated.data.unavailable_count} not assessed. This is a separate check, so do
-              not compare it with the main risk scores.
+              {curated.data.assessed_count} / {curated.data.assets.length} assets assessed · average
+              score {curated.data.covered_asset_mean?.toFixed(1) ?? 'unavailable'} out of 100 ·{' '}
+              {curated.data.unavailable_count} not assessed. This is a separate check, so do not
+              compare it with the main risk scores.
             </p>
           )}
         </Panel>
@@ -767,39 +767,34 @@ export default function Overview() {
               <Link className="text-link" to="/ml">
                 AI model
               </Link>
-            ) : (
-              <span className="subtle-label">Needs step 1</span>
-            )}
-            <Link className="text-link" to="/ml">
-              AI model
-            </Link>
-          </div>
-        </section>
-        <section className="workflow-step">
-          <span className="step-number">STEP 3 · ACT</span>
-          <h3>Plan the fixes</h3>
-          <p>
-            Which updates and access changes cut the most risk for the least effort. These are estimates.
-          </p>
-          <div className="step-actions">
-            {run ? (
-              <>
-                <Link className="button secondary" to="/defend">
-                  Attack &amp; defend <ArrowRight size={14} />
-                </Link>
-                <Link className="button secondary" to="/what-if">
-                  What-if <ArrowRight size={14} />
-                </Link>
-                <Link className="button secondary" to="/remediation">
-                  Fix plan <ArrowRight size={14} />
-                </Link>
-              </>
-            ) : (
-              <span className="subtle-label">Needs step 1</span>
-            )}
-          </div>
-        </section>
-      </div>
+            </div>
+          </section>
+          <section className="workflow-step">
+            <span className="step-number">STEP 3 · ACT</span>
+            <h3>Plan the fixes</h3>
+            <p>
+              Which updates and access changes cut the most risk for the least effort. These are
+              estimates.
+            </p>
+            <div className="step-actions">
+              {run ? (
+                <>
+                  <Link className="button secondary" to="/defend">
+                    Attack &amp; defend <ArrowRight size={14} />
+                  </Link>
+                  <Link className="button secondary" to="/what-if">
+                    What-if <ArrowRight size={14} />
+                  </Link>
+                  <Link className="button secondary" to="/remediation">
+                    Fix plan <ArrowRight size={14} />
+                  </Link>
+                </>
+              ) : (
+                <span className="subtle-label">Needs step 1</span>
+              )}
+            </div>
+          </section>
+        </div>
       </details>
       <ProvenanceNotice />
       <AssetDrawer id={selected} onClose={() => setSelected(null)} />

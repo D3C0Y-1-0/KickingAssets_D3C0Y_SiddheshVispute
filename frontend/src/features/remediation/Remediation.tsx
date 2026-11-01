@@ -442,11 +442,6 @@ function PlanWorkspace({ run, assets }: { run: SimulationRun; assets: Asset[] })
           </div>
         </Panel>
       )}
-      <div className="centered-action">
-        <Link to="/what-if" className="button secondary">
-          Open What-If
-        </Link>
-      </div>
       <ProvenanceNotice />
     </>
   )

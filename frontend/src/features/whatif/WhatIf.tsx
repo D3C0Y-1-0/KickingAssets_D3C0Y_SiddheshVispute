@@ -150,14 +150,9 @@ function WhatIfWorkspace({
   return (
     <>
       <PageHeading
-        title="What-If"
-        description="Stage the actions named in the problem statement and recompute the risk. Nothing is changed or verified."
-        actions={
-          <span className="badge neutral">
-            <FlaskConical size={13} />
-            PROJECTED · NOT VERIFIED
-          </span>
-        }
+        title="What-If lab"
+        description="Review staged preventive actions and calculate their simulated projection. No infrastructure changes are applied."
+        actions={<span className="badge neutral">SIMULATED PROJECTION · NOT VERIFIED</span>}
       />
       {blockedHandoff && (
         <div className="callout warn" role="alert">

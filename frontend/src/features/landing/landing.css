@@ -1,0 +1,386 @@
+@import url('https://fonts.googleapis.com/css2?family=Archivo+Black&display=swap');
+
+/* Self-contained: this file only touches .landing-* classes, scoped to the
+   intro sequence, and is not imported anywhere the dashboard renders. */
+
+.landing-root {
+  background: var(--background);
+  color: var(--text);
+  position: relative;
+}
+
+.landing-scroll {
+  position: relative;
+  width: 100%;
+}
+
+.landing-stage {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
+  perspective: 1400px;
+}
+
+/* ---- Depth field: a soft vignette + the three anatomy diagrams scattered
+   at different depths, read through all three sector focus windows as one
+   continuous camera move rather than cut between separate slides. ---- */
+.landing-field-bg {
+  position: absolute;
+  inset: -10%;
+  background:
+    radial-gradient(ellipse 50% 45% at 22% 30%, var(--accent-shadow), transparent 60%),
+    radial-gradient(ellipse 45% 40% at 78% 28%, rgb(204 255 0 / 0.1), transparent 62%),
+    radial-gradient(ellipse 55% 50% at 50% 78%, rgb(204 255 0 / 0.08), transparent 65%),
+    var(--background);
+  pointer-events: none;
+}
+
+.landing-scanlines {
+  position: absolute;
+  inset: 0;
+  background-image: repeating-linear-gradient(
+    180deg,
+    rgb(204 255 0 / 0.035) 0px,
+    rgb(204 255 0 / 0.035) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  mix-blend-mode: overlay;
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+.landing-field {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+}
+
+.landing-field-item {
+  position: absolute;
+  width: min(60vw, 720px);
+  transition: filter 60ms linear;
+}
+.landing-diagram {
+  margin: 0;
+  width: 100%;
+}
+.landing-diagram svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+.landing-diagram text {
+  font-family: 'Cascadia Code', 'SFMono-Regular', Consolas, monospace;
+  fill: var(--text-secondary);
+}
+.landing-diagram .ld-meta {
+  font-size: 8.5px;
+  letter-spacing: 1.4px;
+  fill: var(--text-muted);
+}
+.landing-diagram .ld-label {
+  font-size: 8.5px;
+  letter-spacing: 0.8px;
+}
+.landing-diagram .ld-label-strong {
+  fill: var(--text);
+  font-size: 9.5px;
+}
+.landing-diagram .ld-caption {
+  font-size: 9px;
+  letter-spacing: 1.2px;
+  fill: var(--accent);
+}
+/* The field items sit behind the readable text overlays but above the
+   ambient background layers. */
+.landing-field-item:nth-child(1) {
+  z-index: 1;
+}
+.landing-field-item:nth-child(2) {
+  z-index: 2;
+}
+.landing-field-item:nth-child(3) {
+  z-index: 3;
+}
+
+.landing-scene {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 0 24px;
+}
+
+.landing-kicker {
+  font-family: 'Cascadia Code', 'SFMono-Regular', Consolas, monospace;
+  font-size: 12px;
+  letter-spacing: 3px;
+  color: var(--accent);
+  text-transform: uppercase;
+  margin-bottom: 18px;
+}
+
+.landing-display {
+  font-family: 'Archivo Black', 'Inter', sans-serif;
+  font-size: clamp(40px, 7vw, 84px);
+  line-height: 1.05;
+  letter-spacing: -1px;
+  margin: 0 0 20px;
+  max-width: 16ch;
+  text-shadow: 0 0 60px rgb(0 0 0 / 0.6);
+}
+.landing-display em {
+  font-style: normal;
+  color: var(--accent);
+}
+.landing-display-sm {
+  font-size: clamp(32px, 5.5vw, 62px);
+}
+
+.landing-sub {
+  font-size: clamp(15px, 1.6vw, 19px);
+  color: var(--text-secondary);
+  max-width: 46ch;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.landing-scroll-cue {
+  position: absolute;
+  bottom: 44px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-muted);
+  font-size: 12px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  animation: landing-bob 1.8s ease-in-out infinite;
+}
+@keyframes landing-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(8px);
+  }
+}
+
+/* ---- Sector copy: pinned to one side of the frame while its diagram is in
+   focus at center, alternating sides per sector instead of repeating the
+   same layout three times. ---- */
+.landing-sector-copy-scene {
+  justify-content: center;
+  max-width: 520px;
+  padding: 0 48px;
+}
+.landing-sector-copy-left {
+  align-items: flex-start;
+  text-align: left;
+  margin-right: auto;
+}
+.landing-sector-copy-right {
+  align-items: flex-end;
+  text-align: right;
+  margin-left: auto;
+}
+.landing-sector-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Cascadia Code', 'SFMono-Regular', Consolas, monospace;
+  font-size: 12px;
+  letter-spacing: 2px;
+  color: var(--accent);
+  margin-bottom: 16px;
+}
+.landing-sector-title {
+  font-family: 'Archivo Black', 'Inter', sans-serif;
+  font-size: clamp(26px, 3.2vw, 40px);
+  line-height: 1.2;
+  letter-spacing: -0.5px;
+  margin: 0 0 16px;
+  max-width: 14ch;
+  text-shadow: 0 0 40px rgb(0 0 0 / 0.7);
+}
+.landing-sector-body {
+  font-size: 15.5px;
+  line-height: 1.7;
+  color: var(--text-secondary);
+  margin: 0;
+  max-width: 38ch;
+}
+
+.landing-cta-scene {
+  gap: 8px;
+}
+.landing-cta-button {
+  margin-top: 28px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 30px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: #000;
+  font-size: 16px;
+  font-weight: 700;
+  box-shadow: 0 0 40px var(--accent-shadow);
+  transition:
+    transform 160ms,
+    box-shadow 160ms;
+}
+.landing-cta-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 56px var(--accent-shadow);
+}
+.landing-cta-button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.landing-skip {
+  position: fixed;
+  top: 20px;
+  right: 24px;
+  z-index: 20;
+  font-size: 12.5px;
+  color: var(--text-muted);
+  letter-spacing: 0.5px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: rgb(8 9 13 / 0.6);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  transition:
+    color 160ms,
+    border-color 160ms;
+}
+.landing-skip:hover {
+  color: var(--text);
+  border-color: var(--accent-border);
+}
+
+@media (max-width: 900px) {
+  .landing-field-item {
+    width: min(84vw, 460px);
+  }
+  .landing-sector-copy-scene {
+    max-width: 90vw;
+    padding: 0 20px;
+    align-items: center !important;
+    text-align: center !important;
+    margin: 0 auto !important;
+  }
+  .landing-sector-title,
+  .landing-sector-body {
+    max-width: 32ch;
+  }
+}
+
+/* ---- Reduced-motion fallback: one static screen, no scroll-linked camera ---- */
+.landing-static {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 64px 24px;
+}
+.landing-static-content {
+  position: relative;
+  z-index: 1;
+  max-width: 1100px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.landing-static-sectors {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 28px;
+  margin: 44px 0 36px;
+  text-align: left;
+}
+.landing-static-sector {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.landing-static-sector .landing-diagram {
+  margin-bottom: 16px;
+}
+.landing-static-sector .landing-sector-title {
+  font-size: 19px;
+  max-width: none;
+}
+.landing-static-sector .landing-sector-body {
+  font-size: 14px;
+  max-width: none;
+}
+
+/* ---- Slide mode: scrollbar hidden, replaced by slide dots ---- */
+html.landing-active {
+  scrollbar-width: none;
+}
+html.landing-active::-webkit-scrollbar {
+  display: none;
+}
+.landing-root {
+  touch-action: none;
+}
+.landing-dots {
+  position: fixed;
+  right: 22px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+.landing-dot {
+  width: 10px;
+  height: 10px;
+  padding: 0;
+  border-radius: 999px;
+  border: 1px solid var(--accent-border);
+  background: rgb(204 255 0 / 0.12);
+  cursor: pointer;
+  transition:
+    height 260ms cubic-bezier(0.2, 0.7, 0.2, 1),
+    background 200ms,
+    box-shadow 200ms;
+}
+.landing-dot:hover {
+  background: rgb(204 255 0 / 0.45);
+}
+.landing-dot[aria-current='true'] {
+  height: 28px;
+  background: var(--accent);
+  border-color: var(--accent);
+  box-shadow: 0 0 14px var(--accent-shadow);
+}
+.landing-dot:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+@media (max-width: 900px) {
+  .landing-dots {
+    right: 10px;
+    gap: 10px;
+  }
+}

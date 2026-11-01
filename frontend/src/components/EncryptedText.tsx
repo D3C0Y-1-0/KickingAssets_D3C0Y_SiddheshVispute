@@ -21,6 +21,13 @@ type EncryptedTextProps = {
   encryptedClassName?: string
   /** CSS class for styling the revealed characters */
   revealedClassName?: string
+  /**
+   * 'reveal' (default) scrambles in from gibberish to real text, the
+   * original behavior. 'hide' runs the identical per-character timing in
+   * reverse, turning real text back into gibberish — used for a matching
+   * "outro" when cycling between lines.
+   */
+  mode?: 'reveal' | 'hide'
 }
 
 const DEFAULT_CHARSET =
@@ -54,12 +61,13 @@ export const EncryptedText: React.FC<EncryptedTextProps> = ({
   flipDelayMs = 50,
   encryptedClassName,
   revealedClassName,
+  mode = 'reveal',
 }) => {
   const ref = useRef<HTMLSpanElement>(null)
   const isInView = useInView(ref, { once: true })
   const reduceMotion = useReducedMotion()
 
-  const [revealCount, setRevealCount] = useState<number>(0)
+  const [revealCount, setRevealCount] = useState<number>(mode === 'hide' ? text.length : 0)
   const animationFrameRef = useRef<number | null>(null)
   const startTimeRef = useRef<number>(0)
   const lastFlipTimeRef = useRef<number>(0)
@@ -70,9 +78,10 @@ export const EncryptedText: React.FC<EncryptedTextProps> = ({
   useEffect(() => {
     if (!isInView) return
 
-    // Reduced motion: skip the scramble animation and reveal immediately.
+    // Reduced motion: skip the scramble animation and jump straight to the
+    // mode's resting state (fully revealed, or fully hidden).
     if (reduceMotion) {
-      setRevealCount(text.length)
+      setRevealCount(mode === 'hide' ? 0 : text.length)
       return
     }
 
@@ -81,7 +90,7 @@ export const EncryptedText: React.FC<EncryptedTextProps> = ({
     scrambleCharsRef.current = initial.split('')
     startTimeRef.current = performance.now()
     lastFlipTimeRef.current = startTimeRef.current
-    setRevealCount(0)
+    setRevealCount(mode === 'hide' ? text.length : 0)
 
     let isCancelled = false
 
@@ -90,27 +99,22 @@ export const EncryptedText: React.FC<EncryptedTextProps> = ({
 
       const elapsedMs = now - startTimeRef.current
       const totalLength = text.length
-      const currentRevealCount = Math.min(
-        totalLength,
-        Math.floor(elapsedMs / Math.max(1, revealDelayMs)),
-      )
+      const steps = Math.min(totalLength, Math.floor(elapsedMs / Math.max(1, revealDelayMs)))
+      const currentRevealCount = mode === 'hide' ? totalLength - steps : steps
 
       setRevealCount(currentRevealCount)
 
-      if (currentRevealCount >= totalLength) {
+      const done = mode === 'hide' ? currentRevealCount <= 0 : currentRevealCount >= totalLength
+      if (done) {
         return
       }
 
-      // Re-randomize unrevealed scramble characters on an interval
+      // Re-randomize the gibberish side of the boundary on an interval
       const timeSinceLastFlip = now - lastFlipTimeRef.current
       if (timeSinceLastFlip >= Math.max(0, flipDelayMs)) {
         for (let index = 0; index < totalLength; index += 1) {
-          if (index >= currentRevealCount) {
-            if (text[index] !== ' ') {
-              scrambleCharsRef.current[index] = generateRandomCharacter(charset)
-            } else {
-              scrambleCharsRef.current[index] = ' '
-            }
+          if (index >= currentRevealCount && text[index] !== ' ') {
+            scrambleCharsRef.current[index] = generateRandomCharacter(charset)
           }
         }
         lastFlipTimeRef.current = now
@@ -127,7 +131,7 @@ export const EncryptedText: React.FC<EncryptedTextProps> = ({
         cancelAnimationFrame(animationFrameRef.current)
       }
     }
-  }, [isInView, text, revealDelayMs, charset, flipDelayMs, reduceMotion])
+  }, [isInView, text, revealDelayMs, charset, flipDelayMs, reduceMotion, mode])
 
   if (!text) return null
 

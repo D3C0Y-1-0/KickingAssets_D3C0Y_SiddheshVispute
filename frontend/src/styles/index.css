@@ -5,6 +5,10 @@
 * {
   box-sizing: border-box;
 }
+::selection {
+  background: var(--accent);
+  color: var(--ink);
+}
 html {
   background: var(--background);
   color-scheme: dark;
@@ -365,45 +369,6 @@ kbd {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
-.nav-dock-item {
-  position: relative;
-}
-.nav-dock-icon {
-  display: flex !important;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-.nav-collapsed .nav-dock-icon {
-  margin: 0 auto;
-}
-.nav-dock-tooltip {
-  position: absolute;
-  left: calc(100% + 14px);
-  top: 50%;
-  transform: translateY(-50%);
-  background: var(--surface-raised, #161922);
-  border: 1px solid var(--border, #202634);
-  color: var(--text, #fff);
-  padding: 5px 12px;
-  border-radius: 8px;
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.2px;
-  white-space: nowrap;
-  pointer-events: none;
-  z-index: 100;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5), 0 0 1px rgba(204, 255, 0, 0.4);
-}
-.nav-dock-tooltip::before {
-  content: '';
-  position: absolute;
-  right: 100%;
-  top: 50%;
-  transform: translateY(-50%);
-  border: 5px solid transparent;
-  border-right-color: var(--border, #202634);
-}
 .sidebar-bottom {
   margin-top: auto;
   padding: 22px 14px 14px;
@@ -479,6 +444,13 @@ kbd {
   justify-content: center;
   padding: 5px;
 }
+.nav-collapsed .nav-group {
+  /* The magnified icon (DockNavIcon) grows past the 36px base size on
+     hover; the wider expanded row absorbs that growth on its own, but the
+     collapsed rail is just icon width, so items need more vertical room
+     between them or the enlarged icon visually crowds its neighbors. */
+  gap: 10px;
+}
 .nav-collapsed .nav-item.active::before {
   left: -14px;
 }
@@ -487,6 +459,8 @@ kbd {
   padding: 12px 0 0;
 }
 .main-shell {
+  position: relative;
+  z-index: 1;
   margin-left: var(--sidebar-width);
   min-height: 100vh;
   display: flex;
@@ -3913,4 +3887,13 @@ button.ov-rail-item:focus-visible {
   .ov-greeting-scramble {
     color: var(--text);
   }
+}
+
+/* Halftone page background (HalftoneBackground.tsx): a fixed layer behind
+   the dashboard, visible only in the gaps between cards. */
+.app-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
 }
