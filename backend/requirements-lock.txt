@@ -2,6 +2,7 @@ annotated-doc==0.0.5
 annotated-types==0.8.0
 anyio==4.15.1
 certifi==2026.10.23
+charset-normalizer==3.5.2
 click==8.5.0
 cloudpickle==3.1.2
 colorama==0.4.6
@@ -17,16 +18,18 @@ networkx==3.7
 numpy==2.5.4
 packaging==26.3
 pandas==3.1.0
+pillow==13.0.0
 pluggy==1.7.0
-psycopg==3.3.6
 psycopg-binary==3.3.6
 psycopg-pool==3.3.3
+psycopg==3.3.6
 pyarrow==26.0.0
 pydantic==2.12.5
 pydantic_core==2.41.5
 Pygments==2.21.0
 pytest==9.0.2
 python-dateutil==3.0.0
+reportlab==5.1.0
 ruff==0.15.5
 scikit-learn==1.9.1
 scipy==1.18.1

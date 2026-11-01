@@ -101,6 +101,49 @@
   color: var(--risk-critical);
   font-size: 14.5px;
 }
+.live-report {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px 32px;
+  margin: 22px 0 0;
+  padding: 22px 26px;
+  border: 1px solid var(--accent-border);
+  border-radius: 16px;
+  background: linear-gradient(120deg, var(--accent-soft), var(--surface) 70%);
+}
+.live-report h2 {
+  margin: 0 0 4px;
+  font-size: 22px;
+}
+.live-report p {
+  margin: 0;
+  max-width: 46ch;
+  color: var(--text-secondary);
+  font-size: 15.5px;
+}
+.live-report-actions {
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+}
+.button.live-download {
+  gap: 12px;
+  min-height: 64px;
+  padding: 0 38px;
+  border-radius: 14px;
+  font-size: 20px;
+  font-weight: 700;
+  text-decoration: none;
+  box-shadow: 0 10px 30px var(--accent-shadow);
+}
+@media (max-width: 700px) {
+  .live-report-actions,
+  .button.live-download {
+    width: 100%;
+  }
+}
 .live-done {
   margin: 18px 0 0;
   font-size: 15.5px;

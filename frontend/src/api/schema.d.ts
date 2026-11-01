@@ -5778,7 +5778,7 @@ export interface operations {
             query?: {
                 scenario_id?: string;
                 snapshot_id?: string | null;
-                format?: "json" | "md" | "html";
+                format?: "json" | "md" | "html" | "pdf";
             };
             header?: never;
             path?: never;
@@ -5795,6 +5795,7 @@ export interface operations {
                     "application/json": components["schemas"]["RiskBrief"];
                     "text/markdown": unknown;
                     "text/html": unknown;
+                    "application/pdf": unknown;
                 };
             };
             /** @description Not Found */

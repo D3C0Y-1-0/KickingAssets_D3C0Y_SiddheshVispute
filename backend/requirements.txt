@@ -12,3 +12,4 @@ scikit-learn==1.9.1
 networkx==3.7
 psycopg[binary]==3.3.6
 psycopg-pool==3.3.3
+reportlab==5.1.0

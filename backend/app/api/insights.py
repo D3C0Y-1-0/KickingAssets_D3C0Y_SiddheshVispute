@@ -4,7 +4,7 @@ from datetime import date
 from typing import Literal
 
 from fastapi import APIRouter, HTTPException, Request
-from fastapi.responses import HTMLResponse, PlainTextResponse
+from fastapi.responses import HTMLResponse, PlainTextResponse, Response
 
 from app.domain.seed import SCENARIO_ID
 from app.schemas.insights import (
@@ -18,7 +18,7 @@ from app.schemas.insights import (
 from app.schemas.models import ErrorEnvelope, ScenarioBundle
 from app.schemas.simulation import OptimizeRequest
 from app.services import brief as brief_service
-from app.services import insights, simulation
+from app.services import brief_pdf, insights, simulation
 from app.services.inventory import Inventory
 
 BRIEF_BUDGET_HOURS = 40.0
@@ -133,14 +133,14 @@ def _brief(request: Request, scenario_id: str, snapshot_id: str | None) -> RiskB
 @router.get(
     "/reports/brief",
     response_model=RiskBrief,
-    responses={200: {"content": {"text/markdown": {}, "text/html": {}}}},
+    responses={200: {"content": {"text/markdown": {}, "text/html": {}, "application/pdf": {}}}},
     tags=["Reports"],
 )
 def risk_brief(
     request: Request,
     scenario_id: str = SCENARIO_ID,
     snapshot_id: str | None = None,
-    format: Literal["json", "md", "html"] = "json",
+    format: Literal["json", "md", "html", "pdf"] = "json",
 ):
     brief = _brief(request, scenario_id, snapshot_id)
     if format == "md":
@@ -153,5 +153,11 @@ def risk_brief(
         return HTMLResponse(
             brief_service.to_html(brief),
             headers={"Content-Disposition": 'attachment; filename="gridsentinel-risk-brief.html"'},
+        )
+    if format == "pdf":
+        return Response(
+            brief_pdf.to_pdf(brief),
+            media_type="application/pdf",
+            headers={"Content-Disposition": 'attachment; filename="gridinal-risk-brief.pdf"'},
         )
     return brief

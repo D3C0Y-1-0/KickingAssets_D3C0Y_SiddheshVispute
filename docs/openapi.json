@@ -2924,7 +2924,8 @@
               "enum": [
                 "json",
                 "md",
-                "html"
+                "html",
+                "pdf"
               ],
               "type": "string",
               "default": "json",
@@ -2942,7 +2943,8 @@
                 }
               },
               "text/markdown": {},
-              "text/html": {}
+              "text/html": {},
+              "application/pdf": {}
             }
           },
           "404": {

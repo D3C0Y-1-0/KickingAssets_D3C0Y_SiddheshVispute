@@ -177,7 +177,7 @@ export const api = {
     get<ReactionPlan>('/defense/reaction', { asset }, signal),
   trend: (context: Context, signal?: AbortSignal) =>
     get<PostureTrend>('/simulation/trend', context, signal),
-  briefUrl: (format: 'md' | 'html', context: Context) => {
+  briefUrl: (format: 'md' | 'html' | 'pdf', context: Context) => {
     const query = new URLSearchParams({ format, scenario_id: context.scenario_id })
     if (context.snapshot_id) query.set('snapshot_id', context.snapshot_id)
     return `${base}/reports/brief?${query}`

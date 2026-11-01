@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { Check, CircleDashed, Loader2, Play, TriangleAlert } from 'lucide-react'
+import { Check, CircleDashed, Download, Loader2, Play, TriangleAlert } from 'lucide-react'
 import { api } from '../../api/client'
 import { PageHeading, Panel, SampleBadge } from '../../components/ui'
 import { useLiveSimulation, type LiveStep } from '../../hooks/liveSimulation'
@@ -173,17 +173,36 @@ export default function LiveSimulation() {
         </div>
       )}
       {finished && (
+        <section className="live-report" aria-label="Download the report">
+          <div>
+            <h2>Your report is ready</h2>
+            <p>Everything from this run in one document: risk, weak points, fixes and defence.</p>
+          </div>
+          <div className="live-report-actions">
+            <a
+              className="button primary live-download"
+              href={api.briefUrl('pdf', context)}
+              download
+            >
+              <Download size={24} aria-hidden />
+              Download report (PDF)
+            </a>
+            <span className="small muted">
+              Other formats:{' '}
+              <a className="text-link" href={api.briefUrl('html', context)} download>
+                Web page
+              </a>
+              {' · '}
+              <a className="text-link" href={api.briefUrl('md', context)} download>
+                Markdown
+              </a>
+            </span>
+          </div>
+        </section>
+      )}
+      {finished && (
         <p className="live-done">
-          Done.{' '}
-          <a
-            className="text-link"
-            href={api.briefUrl('html', context)}
-            target="_blank"
-            rel="noreferrer"
-          >
-            Open the report
-          </a>{' '}
-          or see the details on{' '}
+          Done. See the details on{' '}
           <Link className="text-link" to="/resilience">
             Weak Points
           </Link>

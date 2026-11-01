@@ -128,3 +128,23 @@ def test_after_a_run_urgency_appears_and_the_brief_is_grounded_in_the_run(tmp_pa
     assert markdown.status_code == 200 and markdown.text.startswith("# GridSentinel risk brief")
     assert "attachment" in markdown.headers["content-disposition"]
     assert page.status_code == 200 and "<!doctype html>" in page.text
+
+
+@needs_ml
+def test_brief_pdf_is_a_real_pdf_download(tmp_path):
+    with client(tmp_path) as c:
+        c.post("/api/v1/simulation/run", params=CONTEXT)
+        pdf = c.get("/api/v1/reports/brief", params={"format": "pdf"})
+    assert pdf.status_code == 200
+    assert pdf.headers["content-type"] == "application/pdf"
+    assert "attachment" in pdf.headers["content-disposition"]
+    assert pdf.content.startswith(b"%PDF-") and pdf.content.rstrip().endswith(b"%%EOF")
+    assert len(pdf.content) > 3000
+
+
+def test_pdf_text_is_escaped_and_always_drawable():
+    from app.services.brief_pdf import _text
+
+    assert _text("a → b × c") == "a -&gt; b x c"
+    assert _text("R&D <x>") == "R&amp;D &lt;x&gt;"
+    assert _text("中").encode("latin-1")  # unsupported characters never reach the PDF raw
