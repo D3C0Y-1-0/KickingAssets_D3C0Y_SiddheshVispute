@@ -8,8 +8,8 @@ export function WorkflowNav({ current }: { current: 'assets' | 'plan' | 'whatif'
     <nav className="workflow-nav" aria-label="Risk review workflow">
       <Link to="/live">1. Live Simulation</Link>
       <span aria-hidden="true">→</span>
-      <Link to="/assets" aria-current={current === 'assets' ? 'step' : undefined}>
-        2. Assets &amp; Risk
+      <Link to="/intelligence" aria-current={current === 'assets' ? 'step' : undefined}>
+        2. Risk Ranking
       </Link>
       <span aria-hidden="true">→</span>
       <Link to="/remediation" aria-current={current === 'plan' ? 'step' : undefined}>

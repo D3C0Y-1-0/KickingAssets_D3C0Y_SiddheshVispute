@@ -41,8 +41,8 @@ export default function LiveSimulation() {
       />
       <p className="small muted">
         Demonstration: run the simulation, inspect{' '}
-        <Link className="text-link" to="/assets">
-          Assets &amp; Risk
+        <Link className="text-link" to="/intelligence">
+          Risk Ranking
         </Link>
         , then open{' '}
         <Link className="text-link" to="/remediation">
@@ -95,7 +95,10 @@ export default function LiveSimulation() {
             <ul className="live-list">
               {topAssets.map((a) => (
                 <li key={a.asset_id}>
-                  <Link className="text-link" to={`/assets?q=${encodeURIComponent(a.asset_id)}`}>
+                  <Link
+                    className="text-link"
+                    to={`/intelligence?asset=${encodeURIComponent(a.asset_id)}`}
+                  >
                     {a.asset_id}
                   </Link>
                   <span className="mono">{a.risk.score?.toFixed(1)}</span>
@@ -181,10 +184,6 @@ export default function LiveSimulation() {
             Open the report
           </a>{' '}
           or see the details on{' '}
-          <Link className="text-link" to="/posture">
-            Trends &amp; Activity
-          </Link>
-          ,{' '}
           <Link className="text-link" to="/resilience">
             Weak Points
           </Link>

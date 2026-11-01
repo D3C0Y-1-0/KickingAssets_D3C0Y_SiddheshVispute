@@ -31,7 +31,7 @@ export default function Planner() {
       />
       <nav className="workflow-nav" aria-label="Resilience review workflow">
         <Link to="/live">Live Simulation</Link>
-        <Link to="/assets">Assets &amp; Risk</Link>
+        <Link to="/intelligence">Risk Ranking</Link>
         <Link to="/infrastructure?mode=operational">Operational map</Link>
         <Link to="/remediation">Risk Fix Plan</Link>
       </nav>

@@ -13,15 +13,11 @@ import AttackPaths from '../src/features/attack-paths/AttackPaths'
 import Overview from '../src/features/overview/Overview'
 import Infrastructure from '../src/features/infrastructure/Infrastructure'
 import DigitalTwins from '../src/features/digital-twins/DigitalTwins'
-import Assets from '../src/features/assets/Assets'
 import Intelligence from '../src/features/intelligence/Intelligence'
-import Curated from '../src/features/intelligence/CuratedIntelligence'
 import MlLab from '../src/features/ml/MlLab'
 import WhatIf from '../src/features/whatif/WhatIf'
 import Remediation from '../src/features/remediation/Remediation'
-import Posture from '../src/features/posture/Posture'
 import Resilience from '../src/features/resilience/Resilience'
-import Coverage from '../src/features/coverage/Coverage'
 import Methodology from '../src/features/methodology/Methodology'
 
 // Diagram rendering is exercised in the real browser, not emulated by jsdom.
@@ -293,13 +289,10 @@ const modules: [string, ComponentType][] = [
   ['Overview', Overview],
   ['Infrastructure', Infrastructure],
   ['Digital Twins', DigitalTwins],
-  ['Assets', Assets],
   ['Risk Ranking', Intelligence],
-  ['Curated', Curated],
   ['AI Model', MlLab],
   ['What-If', WhatIf],
   ['Fix Plan', Remediation],
-  ['Trends', Posture],
   ['Weak Points', Resilience],
 ]
 const reads = [
@@ -338,27 +331,12 @@ describe('application module API-failure boundaries', () => {
     if (name === 'Digital Twins') expect(screen.getByText('Checking calculated risk…')).toBeTruthy()
     else expect(screen.getAllByRole('status').length).toBeGreaterThan(0)
   })
-  it('static coverage and methodology disclose limits rather than claim live observations', () => {
+  it('methodology discloses its limits rather than claiming live observations', () => {
     const { wrapper } = setup()
-    const page = render(<Coverage />, { wrapper })
-    expect(
-      screen.getAllByText(/statistically tied|not an incident probability/).length,
-    ).toBeGreaterThan(0)
-    page.unmount()
     render(<Methodology />, { wrapper })
     expect(
       screen.getByText('Verification of actual installed products and exploitation'),
     ).toBeTruthy()
     expect(screen.getAllByText(/No live|No live/).length).toBeGreaterThan(0)
-  })
-  it('handles a computed trend with an empty points list without a chart crash', async () => {
-    vi.spyOn(api, 'trend').mockResolvedValue({
-      status: 'computed',
-      points: [],
-    } as unknown as Models['PostureTrend'])
-    vi.spyOn(api, 'activity').mockRejectedValue(new Error('Activity unavailable'))
-    const { wrapper } = setup()
-    render(<Posture />, { wrapper })
-    await screen.findByText('Trend not built')
   })
 })

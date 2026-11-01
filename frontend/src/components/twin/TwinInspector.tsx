@@ -171,8 +171,8 @@ export function TwinInspector({ view, parts, selectedId, onSelect, risk, scored,
                 {assets.length > MAX_ASSETS && (
                   <p className="ti-empty">
                     +{assets.length - MAX_ASSETS} more on the{' '}
-                    <Link to="/assets" className="text-link">
-                      register <ExternalLink size={11} />
+                    <Link to="/intelligence" className="text-link">
+                      ranking <ExternalLink size={11} />
                     </Link>
                   </p>
                 )}

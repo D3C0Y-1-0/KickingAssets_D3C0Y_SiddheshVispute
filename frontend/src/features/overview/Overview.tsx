@@ -24,14 +24,7 @@ import {
   XAxis,
   YAxis,
 } from 'recharts'
-import {
-  useActivity,
-  useAssets,
-  useIntelligence,
-  useLatestRun,
-  useServices,
-  useTrend,
-} from '../../hooks/queries'
+import { useActivity, useAssets, useLatestRun, useServices, useTrend } from '../../hooks/queries'
 import { AssetDrawer } from '../../components/AssetDrawer'
 import { CyclingEncryptedText } from '../../components/CyclingEncryptedText'
 import { AsOfSelect, ProvenanceNotice, RunSimulationButton } from '../../components/Simulation'
@@ -63,7 +56,6 @@ export default function Overview() {
   const assets = useAssets()
   const services = useServices()
   const latest = useLatestRun()
-  const curated = useIntelligence()
   const trend = useTrend()
   const activity = useActivity()
   const [sector, setSector] = useState<Sector>('power')
@@ -83,7 +75,6 @@ export default function Overview() {
   const orbTilt = useCardTilt<HTMLDivElement>()
   const gaugeTilt = useCardTilt<HTMLDivElement>()
   const essentialTilt = useCardTilt<HTMLElement>()
-  const curatedTilt = useCardTilt<HTMLElement>()
   if (assets.isPending || assets.isError)
     return <QueryState pending={assets.isPending} error={assets.error} retry={assets.refetch} />
   const rows = assets.data
@@ -673,28 +664,6 @@ export default function Overview() {
             Conditional on assumed compromise effects, with redundancy and backups applied; not a
             forecast and not monitored status.
           </div>
-        </Panel>
-        <Panel
-          title="Curated vulnerability check"
-          aside={
-            <Link to="/curated-intelligence" className="text-link">
-              What this means →
-            </Link>
-          }
-          className="card-fx"
-          cardRef={curatedTilt.ref}
-          onMouseMove={curatedTilt.onMouseMove}
-          onMouseLeave={curatedTilt.onMouseLeave}
-        >
-          <QueryState pending={curated.isPending} error={curated.error} retry={curated.refetch} />
-          {!curated.isError && curated.data && (
-            <p>
-              {curated.data.assessed_count} / {curated.data.assets.length} assets assessed · average
-              score {curated.data.covered_asset_mean?.toFixed(1) ?? 'unavailable'} out of 100 ·{' '}
-              {curated.data.unavailable_count} not assessed. This is a separate check, so do not
-              compare it with the main risk scores.
-            </p>
-          )}
         </Panel>
       </div>
 

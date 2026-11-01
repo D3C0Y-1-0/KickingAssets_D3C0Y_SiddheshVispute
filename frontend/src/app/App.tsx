@@ -9,15 +9,12 @@ import {
   ChevronLeft,
   ChevronRight,
   CircleHelp,
-  ClipboardCheck,
   FlaskConical,
   Grid2X2,
-  Layers,
   ListChecks,
   Menu,
   Network,
   PlayCircle,
-  Radar,
   ShieldAlert,
   ShieldCheck,
   Search,
@@ -25,7 +22,7 @@ import {
   Waypoints,
   X,
 } from 'lucide-react'
-import { NavLink, Route, Routes, Link, useLocation, useNavigate } from 'react-router-dom'
+import { Navigate, NavLink, Route, Routes, Link, useLocation, useNavigate } from 'react-router-dom'
 import { useMotionValue } from 'motion/react'
 import { api } from '../api/client'
 import { useScenario, useLatestRun } from '../hooks/queries'
@@ -39,16 +36,12 @@ import brandWord from '../assets/brand/gridinal-wordmark.png'
 
 const Infrastructure = lazy(() => import('../features/infrastructure/Infrastructure'))
 const DigitalTwins = lazy(() => import('../features/digital-twins/DigitalTwins'))
-const Assets = lazy(() => import('../features/assets/Assets'))
 const Intelligence = lazy(() => import('../features/intelligence/Intelligence'))
-const CuratedIntelligence = lazy(() => import('../features/intelligence/CuratedIntelligence'))
 const WhatIf = lazy(() => import('../features/whatif/WhatIf'))
 const Remediation = lazy(() => import('../features/remediation/Remediation'))
 const Methodology = lazy(() => import('../features/methodology/Methodology'))
 const MlLab = lazy(() => import('../features/ml/MlLab'))
-const Posture = lazy(() => import('../features/posture/Posture'))
 const Resilience = lazy(() => import('../features/resilience/Resilience'))
-const Coverage = lazy(() => import('../features/coverage/Coverage'))
 const Defense = lazy(() => import('../features/defense/Defense'))
 const LiveSimulation = lazy(() => import('../features/live/LiveSimulation'))
 const AttackPaths = lazy(() => import('../features/attack-paths/AttackPaths'))
@@ -67,11 +60,8 @@ const navGroups: { label: string; items: NavEntry[] }[] = [
   {
     label: 'Assess',
     items: [
-      { path: '/assets', name: 'Assets & Risk', icon: Layers },
       { path: '/intelligence', name: 'Risk Ranking', icon: Activity },
-      { path: '/curated-intelligence', name: 'Curated CVE Assessment', icon: ShieldCheck },
       { path: '/ml', name: 'AI Model', icon: BrainCircuit },
-      { path: '/posture', name: 'Trends & Activity', icon: Radar },
       { path: '/resilience', name: 'Weak Points', icon: Waypoints },
     ],
   },
@@ -83,13 +73,6 @@ const navGroups: { label: string; items: NavEntry[] }[] = [
       { path: '/resilience-planner', name: 'Resilience Planner', icon: ShieldCheck },
       { path: '/what-if', name: 'What-If', icon: FlaskConical },
       { path: '/remediation', name: 'Fix Plan', icon: ListChecks },
-    ],
-  },
-  {
-    label: 'Evidence',
-    items: [
-      { path: '/coverage', name: 'Challenge Coverage', icon: ClipboardCheck },
-      { path: '/methodology', name: 'Methodology', icon: BookOpen },
     ],
   },
 ]
@@ -129,7 +112,7 @@ export default function App({ onLogoClick }: { onLogoClick?: () => void } = {}) 
   })
   const activeName =
     navigation.find((x) => x.path === location.pathname)?.name ??
-    (location.pathname === '/methodology' ? 'Methodology' : 'Page not found')
+    (location.pathname === '/methodology' ? 'Evidence' : 'Page not found')
   useEffect(() => {
     setMenuOpen(false)
     document.title = `${activeName} | Gridinal`
@@ -220,12 +203,12 @@ export default function App({ onLogoClick }: { onLogoClick?: () => void } = {}) 
           <NavLink
             className={({ isActive }) => `nav-item subtle ${isActive ? 'active' : ''}`}
             to="/methodology"
-            title={collapsed ? 'Methodology & Evidence' : undefined}
+            title={collapsed ? 'Evidence' : undefined}
           >
             <span className="nav-icon">
               <BookOpen size={17} />
             </span>
-            <span className="nav-text">Methodology & Evidence</span>
+            <span className="nav-text">Evidence</span>
           </NavLink>
           <div className="sidebar-status">
             <span className="status-dot" aria-hidden />
@@ -268,7 +251,7 @@ export default function App({ onLogoClick }: { onLogoClick?: () => void } = {}) 
               className="global-search"
               onSubmit={(e) => {
                 e.preventDefault()
-                navigate(`/assets?q=${encodeURIComponent(search)}`)
+                navigate(`/intelligence?asset=${encodeURIComponent(search.trim().toUpperCase())}`)
                 searchInput.current?.blur()
               }}
             >
@@ -320,17 +303,20 @@ export default function App({ onLogoClick }: { onLogoClick?: () => void } = {}) 
                 <Route path="/" element={<Overview />} />
                 <Route path="/infrastructure" element={<Infrastructure />} />
                 <Route path="/digital-twins" element={<DigitalTwins />} />
-                <Route path="/assets" element={<Assets />} />
+                <Route path="/assets" element={<Navigate to="/intelligence" replace />} />
                 <Route path="/intelligence" element={<Intelligence />} />
                 <Route path="/attack-paths" element={<AttackPaths />} />
                 <Route path="/resilience-planner" element={<Planner />} />
-                <Route path="/curated-intelligence" element={<CuratedIntelligence />} />
+                <Route
+                  path="/curated-intelligence"
+                  element={<Navigate to="/intelligence" replace />}
+                />
                 <Route path="/ml" element={<MlLab />} />
                 <Route path="/what-if" element={<WhatIf />} />
                 <Route path="/remediation" element={<Remediation />} />
-                <Route path="/posture" element={<Posture />} />
+                <Route path="/posture" element={<Navigate to="/" replace />} />
                 <Route path="/resilience" element={<Resilience />} />
-                <Route path="/coverage" element={<Coverage />} />
+                <Route path="/coverage" element={<Navigate to="/methodology" replace />} />
                 <Route path="/live" element={<LiveSimulation />} />
                 <Route path="/defend" element={<Defense />} />
                 <Route path="/methodology" element={<Methodology />} />
