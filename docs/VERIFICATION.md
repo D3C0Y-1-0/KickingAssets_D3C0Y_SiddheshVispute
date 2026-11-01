@@ -464,3 +464,19 @@ clocks. Cyber context is separate topology, not a compromise simulation. Stress 
 one chosen plan; advanced CVE challenge authoring/scopes remain API-only. No full WCAG,
 physical-device, production, concurrency or security penetration audit is claimed.
 Demo and implementation notes: RESILIENCE_PLANNER_DEMO.md. Exact modified files: FILE_MANIFEST.md.
+
+## Innovation feature-branch release audit — 1 November 2026
+
+Authoritative target: codex/innovation-phase-7-8, fast-forwarded from remote 4e777061 to
+completed 266eace; no merge commit and no main changes. Rejected ffed644 and unrelated
+origin/codex/inspo-dashboard-theme (965ddaa) are absent from ancestry and their new UI
+components are absent from the tree. Approved Phase 6 color tokens, Overview, entry point,
+package manifests and Vite config compare identical. No reverse patch is needed for changes
+never integrated. Existing backend/data/schema artifacts are preserved.
+
+Fresh checks: 63 backend resilience tests passed in 22.08s (one inherited deprecation warning),
+54 frontend focused tests passed in 10.21s, strict TypeScript/Prettier passed, production build
+passed (2607 modules, 10.23s). Real HTTP demo against existing isolated port 8001 passed all
+11 checks without creating a new run, including baseline immutability and Phase 6 regressions.
+No unnecessary full regression or model training was repeated. See INNOVATION_RELEASE.md
+for excluded UI scope, exact included commits and distinctions between stress plans.

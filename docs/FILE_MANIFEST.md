@@ -320,3 +320,14 @@ frontend/src/features/planner/Replay.tsx
 frontend/src/styles/index.css
 frontend/tests/planner.test.tsx
 ```
+
+## Innovation release exclusion audit
+
+Documentation-only release commit; completed functionality stays exactly at 266eace:
+
+```text
+docs/FILE_MANIFEST.md
+docs/HANDOFF.md
+docs/INNOVATION_RELEASE.md
+docs/VERIFICATION.md
+```
